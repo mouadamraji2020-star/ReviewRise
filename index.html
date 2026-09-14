@@ -129,7 +129,21 @@
     </div>
 
     <div class="message" id="message"></div>
+<div id="feedbackForm" style="display:none; margin-top:20px;">
 
+  <textarea
+    id="feedbackText"
+    placeholder="Tell us what went wrong and how we can improve..."
+    style="width:100%; min-height:120px; padding:15px; border:1px solid #ddd; border-radius:12px; resize:none; font-family:Arial;">
+  </textarea>
+
+  <button
+    id="submitFeedback"
+    style="margin-top:12px; width:100%; padding:15px; border:none; border-radius:12px; background:#172033; color:white; font-weight:bold;">
+    Submit Feedback
+  </button>
+
+</div>
     <a
       id="googleButton"
       class="google-button"
@@ -151,7 +165,9 @@
     const stars = document.querySelectorAll(".star");
     const message = document.getElementById("message");
     const googleButton = document.getElementById("googleButton");
-
+const feedbackForm = document.getElementById("feedbackForm");
+const feedbackText = document.getElementById("feedbackText");
+const submitFeedback = document.getElementById("submitFeedback");
     stars.forEach(star => {
 
       star.addEventListener("click", () => {
@@ -174,9 +190,9 @@
 
           googleButton.style.display = "inline-block";
           googleButton.href = GOOGLE_REVIEW_URL;
-
+feedbackForm.style.display = "none";
         } else {
-
+feedbackForm.style.display = "block";
           message.innerHTML =
             "We're sorry we didn't meet your expectations. Please tell us how we can improve.";
 
@@ -186,7 +202,19 @@
       });
 
     });
+submitFeedback.addEventListener("click", () => {
 
+  const feedback = feedbackText.value.trim();
+
+  if (feedback === "") {
+    alert("Please tell us what happened.");
+    return;
+  }
+
+  message.innerHTML = "Thank you for your feedback. We appreciate your honesty.";
+  feedbackText.value = "";
+
+});
   </script>
 
 </body>
