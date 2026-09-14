@@ -173,34 +173,41 @@ const submitFeedback = document.getElementById("submitFeedback");
 
         const rating = Number(star.dataset.rating);
 
-        stars.forEach(s => {
-          s.classList.toggle(
-            "active",
-            Number(s.dataset.rating) <= rating
-          );
-        });
+        stars.forEach(star => {
+  star.addEventListener("click", () => {
 
-        message.style.display = "block";
+    const rating = Number(star.dataset.rating);
 
-        if (rating >= 4) {
+    stars.forEach(s => {
+      const number = Number(s.dataset.rating);
 
-          message.innerHTML =
-            "Thank you! We're happy you enjoyed your experience.";
-
-          googleButton.style.display = "inline-block";
-          googleButton.href = GOOGLE_REVIEW_URL;
-feedbackForm.style.display = "none";
-        } else {
-feedbackForm.style.display = "block";
-          message.innerHTML =
-            "We're sorry we didn't meet your expectations. Please tell us how we can improve.";
-
-          googleButton.style.display = "none";
-        }
-
-      });
-
+      if (number <= rating) {
+        s.classList.add("active");
+      } else {
+        s.classList.remove("active");
+      }
     });
+
+    message.style.display = "block";
+
+    if (rating >= 4) {
+      message.innerHTML =
+        "Thank you! We're happy you enjoyed your experience.";
+
+      googleButton.style.display = "inline-block";
+      googleButton.href = GOOGLE_REVIEW_URL;
+      feedbackForm.style.display = "none";
+
+    } else {
+      message.innerHTML =
+        "We're sorry we didn't meet your expectations. Please tell us how we can improve.";
+
+      googleButton.style.display = "none";
+      feedbackForm.style.display = "block";
+    }
+
+  });
+});
 submitFeedback.addEventListener("click", () => {
 const feedback = feedbackText.value.trim();
 
