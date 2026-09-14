@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>ReviewBoost Dashboard</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      color: #172033;
+    }
+
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 230px;
+      height: 100vh;
+      background: #172033;
+      color: white;
+      padding: 30px 20px;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 45px;
+    }
+
+    .menu {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .menu a {
+      color: #b9c0ce;
+      text-decoration: none;
+      padding: 13px 15px;
+      border-radius: 10px;
+      font-size: 15px;
+    }
+
+    .menu a.active,
+    .menu a:hover {
+      background: #2b3852;
+      color: white;
+    }
+
+    .main {
+      margin-left: 230px;
+      padding: 35px;
+    }
+
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .top h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    .business {
+      background: white;
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-size: 14px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      background: white;
+      padding: 22px;
+      border-radius: 16px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    }
+
+    .card-title {
+      color: #737c8c;
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+
+    .number {
+      font-size: 30px;
+      font-weight: bold;
+    }
+
+    .content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .section {
+      background: white;
+      padding: 25px;
+      border-radius: 16px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    }
+
+    .section h2 {
+      margin-top: 0;
+      font-size: 20px;
+    }
+
+    .rating {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin: 18px 0;
+    }
+
+    .stars {
+      color: #ffc107;
+      font-size: 22px;
+    }
+
+    .feedback {
+      border-top: 1px solid #eee;
+      padding: 18px 0;
+    }
+
+    .feedback:first-of-type {
+      border-top: none;
+    }
+
+    .feedback-top {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .feedback-rating {
+      color: #ffc107;
+    }
+
+    .date {
+      color: #9299a6;
+      font-size: 12px;
+    }
+
+    .feedback p {
+      margin: 5px 0 0;
+      color: #555f70;
+      line-height: 1.5;
+    }
+
+    .bar {
+      height: 10px;
+      background: #edf0f5;
+      border-radius: 10px;
+      margin: 8px 0 18px;
+      overflow: hidden;
+    }
+
+    .bar span {
+      display: block;
+      height: 100%;
+      border-radius: 10px;
+      background: #172033;
+    }
+
+    .demo {
+      margin-top: 25px;
+      text-align: center;
+      color: #9299a6;
+      font-size: 12px;
+    }
+
+    @media (max-width: 900px) {
+      .cards {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .content {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 650px) {
+      .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+      }
+
+      .menu {
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+
+      .main {
+        margin-left: 0;
+        padding: 20px;
+      }
+
+      .top {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+      }
+
+      .cards {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <aside class="sidebar">
+
+    <div class="logo">
+      ReviewBoost
+    </div>
+
+    <nav class="menu">
+      <a href="#" class="active">Dashboard</a>
+      <a href="#">Feedback</a>
+      <a href="#">Analytics</a>
+      <a href="#">Settings</a>
+    </nav>
+
+  </aside>
+
+
+  <main class="main">
+
+    <div class="top">
+
+      <div>
+        <h1>Dashboard</h1>
+        <p>Monitor your customer feedback.</p>
+      </div>
+
+      <div class="business">
+        L'Adresse Boutique Hotel
+      </div>
+
+    </div>
+
+
+    <div class="cards">
+
+      <div class="card">
+        <div class="card-title">Total Reviews</div>
+        <div class="number">128</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">5-Star Reviews</div>
+        <div class="number">86</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Private Feedback</div>
+        <div class="number">18</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Average Rating</div>
+        <div class="number">4.6 ⭐</div>
+      </div>
+
+    </div>
+
+
+    <div class="content">
+
+
+      <section class="section">
+
+        <h2>Rating Overview</h2>
+
+        <div class="rating">
+          <strong>5 ⭐</strong>
+          <strong>86</strong>
+        </div>
+
+        <div class="bar">
+          <span style="width: 85%;"></span>
+        </div>
+
+
+        <div class="rating">
+          <strong>4 ⭐</strong>
+          <strong>27</strong>
+        </div>
+
+        <div class="bar">
+          <span style="width: 55%;"></span>
+        </div>
+
+
+        <div class="rating">
+          <strong>3 ⭐</strong>
+          <strong>8</strong>
+        </div>
+
+        <div class="bar">
+          <span style="width: 25%;"></span>
+        </div>
+
+
+        <div class="rating">
+          <strong>2 ⭐</strong>
+          <strong>4</strong>
+        </div>
+
+        <div class="bar">
+          <span style="width: 15%;"></span>
+        </div>
+
+
+        <div class="rating">
+          <strong>1 ⭐</strong>
+          <strong>3</strong>
+        </div>
+
+        <div class="bar">
+          <span style="width: 10%;"></span>
+        </div>
+
+      </section>
+
+
+      <section class="section">
+
+        <h2>Recent Feedback</h2>
+
+
+        <div class="feedback">
+
+          <div class="feedback-top">
+            <strong>Customer</strong>
+            <span class="date">Today</span>
+          </div>
+
+          <div class="feedback-rating">
+            ★★★★★
+          </div>
+
+          <p>
+            Amazing experience. The staff were very friendly.
+          </p>
+
+        </div>
+
+
+        <div class="feedback">
+
+          <div class="feedback-top">
+            <strong>Customer</strong>
+            <span class="date">Yesterday</span>
+          </div>
+
+          <div class="feedback-rating">
+            ★★★
+          </div>
+
+          <p>
+            The room was good, but the service could be improved.
+          </p>
+
+        </div>
+
+
+        <div class="feedback">
+
+          <div class="feedback-top">
+            <strong>Customer</strong>
+            <span class="date">2 days ago</span>
+          </div>
+
+          <div class="feedback-rating">
+            ★★★★★
+          </div>
+
+          <p>
+            Great hotel and excellent location.
+          </p>
+
+        </div>
+
+      </section>
+
+    </div>
+
+
+    <div class="demo">
+      Dashboard preview — demo data
+    </div>
+
+  </main>
+
+</body>
+</html>
