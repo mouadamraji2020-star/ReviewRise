@@ -74,7 +74,6 @@
       padding: 2px;
     }
 
-    .star:hover,
     .star.active {
       color: #ffc107;
       transform: scale(1.08);
@@ -159,25 +158,23 @@
 
   <script>
 
-    const GOOGLE_REVIEW_URL = "https://search.google.com/local/writereview?placeid=ChIJOdbspvWBCw0R2cVHjfyGvHk";
+const GOOGLE_REVIEW_URL = "https://search.google.com/local/writereview?placeid=ChIJOdbspvWBCw0R2cVHjfyGvHk";
 
-    const stars = document.querySelectorAll(".star");
-    const message = document.getElementById("message");
-    const googleButton = document.getElementById("googleButton");
+const stars = document.querySelectorAll(".star");
+const message = document.getElementById("message");
+const googleButton = document.getElementById("googleButton");
 const feedbackForm = document.getElementById("feedbackForm");
 const feedbackText = document.getElementById("feedbackText");
 const submitFeedback = document.getElementById("submitFeedback");
-    stars.forEach(star => {
 
-      star.addEventListener("click", () => {
 
-        const rating = Number(star.dataset.rating);
+stars.forEach(star => {
 
-        stars.forEach(star => {
   star.addEventListener("click", () => {
 
     const rating = Number(star.dataset.rating);
 
+    // Highlight the selected stars
     stars.forEach(s => {
       const number = Number(s.dataset.rating);
 
@@ -188,28 +185,38 @@ const submitFeedback = document.getElementById("submitFeedback");
       }
     });
 
+
     message.style.display = "block";
 
+
     if (rating >= 4) {
+
       message.innerHTML =
         "Thank you! We're happy you enjoyed your experience.";
 
       googleButton.style.display = "inline-block";
       googleButton.href = GOOGLE_REVIEW_URL;
+
       feedbackForm.style.display = "none";
 
     } else {
+
       message.innerHTML =
         "We're sorry we didn't meet your expectations. Please tell us how we can improve.";
 
       googleButton.style.display = "none";
+
       feedbackForm.style.display = "block";
     }
 
   });
+
 });
+
+
 submitFeedback.addEventListener("click", () => {
-const feedback = feedbackText.value.trim();
+
+  const feedback = feedbackText.value.trim();
 
   if (feedback === "") {
     alert("Please write your feedback first.");
@@ -225,17 +232,7 @@ const feedback = feedbackText.value.trim();
     We really appreciate you taking the time to share your experience.
     Your feedback helps us improve our service and provide a better experience.
   `;
-feedbackForm.style.display = "none";
-feedbackText.value = "";
-});
-  const feedback = feedbackText.value.trim();
 
-  if (feedback === "") {
-    alert("Please tell us what happened.");
-    return;
-  }
-
-  message.innerHTML = "Thank you for your feedback. We appreciate your honesty.";
   feedbackText.value = "";
 
 });
