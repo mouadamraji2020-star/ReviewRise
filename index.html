@@ -278,19 +278,26 @@ submitFeedback.addEventListener("click", async function() {
     return;
   }
 
-  const response = await fetch("https://formspree.io/f/xdeoqpzl", {
+const SUPABASE_URL = "https://intlhwmvldxdiytemjlr.supabase.co";
+const SUPABASE_KEY = "sb_publishable_0KjZZApJCuvTEJH3nNyLUg_aps6aXaA
+";
+
+const response = await fetch(
+  SUPABASE_URL + "/rest/v1/Feedback",
+  {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Accept": "application/json"
+      "apikey": SUPABASE_KEY,
+      "Prefer": "return=minimal"
     },
-body: JSON.stringify({
-  rating: selectedRating,
-  feedback: feedback,
-  business: "Appart-Hôtel Flamant Rose",
-  submitted_at: new Date().toISOString()
-})
-  });
+    body: JSON.stringify({
+      rating: selectedRating,
+      feedback: feedback,
+      business: "Appart-Hôtel Flamant Rose"
+    })
+  }
+);
 
   if (response.ok) {
 
