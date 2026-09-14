@@ -208,7 +208,7 @@
 
     const GOOGLE_REVIEW_URL =
       "https://search.google.com/local/writereview?placeid=ChIJOdbspvWBCw0R2cVHjfyGvHk";
-
+    let selectedRating = 0;
     const stars = document.querySelectorAll(".star");
     const message = document.getElementById("message");
     const googleButton = document.getElementById("googleButton");
@@ -224,7 +224,7 @@
       star.addEventListener("click", function() {
 
         const rating = Number(this.dataset.rating);
-
+        selectedRating = rating;
 
         // Remove the active class from every star
         stars.forEach(function(s) {
@@ -284,10 +284,12 @@ submitFeedback.addEventListener("click", async function() {
       "Content-Type": "application/json",
       "Accept": "application/json"
     },
-    body: JSON.stringify({
-      rating: "1-3 stars",
-      feedback: feedback
-    })
+body: JSON.stringify({
+  rating: selectedRating,
+  feedback: feedback,
+  business: "L'Adresse Boutique Hotel",
+  submitted_at: new Date().toISOString()
+})
   });
 
   if (response.ok) {
