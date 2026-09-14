@@ -1,1 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ReviewBoost</title>
+</head>
 
+<body>
+  <h1>ReviewBoost</h1>
+  <p>How was your experience?</p>
+
+  <div>
+    <button>⭐ 1</button>
+    <button>⭐ 2</button>
+    <button>⭐ 3</button>
+    <button>⭐ 4</button>
+    <button>⭐ 5</button>
+  </div>
+
+  <p id="message"></p>
+
+  <script>
+    const buttons = document.querySelectorAll("button");
+    const message = document.getElementById("message");
+
+    buttons.forEach(button => {
+      button.addEventListener("click", () => {
+        const rating = button.textContent;
+
+        if (rating.includes("4") || rating.includes("5")) {
+          message.textContent = "Thank you! We really appreciate your feedback.";
+        } else {
+          message.textContent = "Thank you for your feedback. Please tell us how we can improve.";
+        }
+      });
+    });
+  </script>
+</body>
+</html>
