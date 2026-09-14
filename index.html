@@ -243,17 +243,11 @@
 
 
         // 4 or 5 stars
-        if (rating >= 4) {
+if (rating >= 4) {
 
-          message.innerHTML =
-            "Thank you! We're happy you enjoyed your experience.";
+  window.location.href = GOOGLE_REVIEW_URL;
 
-          googleButton.style.display = "inline-block";
-          googleButton.href = GOOGLE_REVIEW_URL;
-
-          feedbackForm.style.display = "none";
-
-        }
+}
 
 
         // 1, 2 or 3 stars
