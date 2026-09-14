@@ -269,36 +269,49 @@ if (rating >= 4) {
 
     // SUBMIT FEEDBACK
 
-    submitFeedback.addEventListener("click", function() {
+submitFeedback.addEventListener("click", async function() {
 
-      const feedback = feedbackText.value.trim();
+  const feedback = feedbackText.value.trim();
 
+  if (feedback === "") {
+    alert("Please write your feedback first.");
+    return;
+  }
 
-      if (feedback === "") {
+  const response = await fetch("https://formspree.io/f/xdeoqpzl", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json"
+    },
+    body: JSON.stringify({
+      rating: "1-3 stars",
+      feedback: feedback
+    })
+  });
 
-        alert("Please write your feedback first.");
+  if (response.ok) {
 
-        return;
+    feedbackForm.style.display = "none";
+    googleButton.style.display = "none";
 
-      }
+    message.style.display = "block";
 
+    message.innerHTML = `
+      <strong>Thank you for your feedback!</strong><br><br>
+      We really appreciate you taking the time to share your experience.
+      Your feedback helps us improve our service.
+    `;
 
-      feedbackForm.style.display = "none";
+    feedbackText.value = "";
 
-      googleButton.style.display = "none";
+  } else {
 
-      message.style.display = "block";
+    alert("Something went wrong. Please try again.");
 
-      message.innerHTML = `
-        <strong>Thank you for your feedback!</strong><br><br>
-        We really appreciate you taking the time to share your experience.
-        Your feedback helps us improve our service and provide a better experience.
-      `;
+  }
 
-
-      feedbackText.value = "";
-
-    });
+});
 
   </script>
 
