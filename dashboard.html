@@ -3,224 +3,80 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>ReviewBoost Dashboard</title>
+  <title>ReviewRise Dashboard</title>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
     body {
-      margin: 0;
       font-family: Arial, sans-serif;
+      margin: 0;
       background: #f5f7fb;
       color: #172033;
     }
 
-    .sidebar {
-      position: fixed;
-      left: 0;
-      top: 0;
-      width: 230px;
-      height: 100vh;
-      background: #172033;
-      color: white;
-      padding: 30px 20px;
+    .container {
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 20px;
     }
 
-    .logo {
-      font-size: 24px;
-      font-weight: bold;
-      margin-bottom: 45px;
+    h1 {
+      margin-bottom: 10px;
     }
 
-    .menu {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .menu a {
-      color: #b9c0ce;
-      text-decoration: none;
-      padding: 13px 15px;
-      border-radius: 10px;
-      font-size: 15px;
-    }
-
-    .menu a.active,
-    .menu a:hover {
-      background: #2b3852;
-      color: white;
-    }
-
-    .main {
-      margin-left: 230px;
-      padding: 35px;
-    }
-
-    .top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    .subtitle {
+      color: #697386;
       margin-bottom: 30px;
     }
 
-    .top h1 {
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+    }
+
+    .stat-card h2 {
       margin: 0;
       font-size: 28px;
     }
 
-    .business {
-      background: white;
-      padding: 12px 18px;
-      border-radius: 10px;
-      font-size: 14px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    .stat-card p {
+      margin: 8px 0 0;
+      color: #697386;
     }
 
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 18px;
-      margin-bottom: 30px;
-    }
-
-    .card {
+    .feedback-card {
       background: white;
-      padding: 22px;
+      padding: 20px;
+      margin-bottom: 15px;
       border-radius: 16px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.05);
-    }
-
-    .card-title {
-      color: #737c8c;
-      font-size: 14px;
-      margin-bottom: 12px;
-    }
-
-    .number {
-      font-size: 30px;
-      font-weight: bold;
-    }
-
-    .content {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-    }
-
-    .section {
-      background: white;
-      padding: 25px;
-      border-radius: 16px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.05);
-    }
-
-    .section h2 {
-      margin-top: 0;
-      font-size: 20px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.06);
     }
 
     .rating {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      margin: 18px 0;
+      font-size: 20px;
+      margin-bottom: 10px;
     }
 
-    .stars {
-      color: #ffc107;
-      font-size: 22px;
-    }
-
-    .feedback {
-      border-top: 1px solid #eee;
-      padding: 18px 0;
-    }
-
-    .feedback:first-of-type {
-      border-top: none;
-    }
-
-    .feedback-top {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 8px;
-    }
-
-    .feedback-rating {
-      color: #ffc107;
-    }
-
-    .date {
-      color: #9299a6;
-      font-size: 12px;
-    }
-
-    .feedback p {
-      margin: 5px 0 0;
-      color: #555f70;
+    .feedback-text {
+      margin-bottom: 10px;
       line-height: 1.5;
     }
 
-    .bar {
-      height: 10px;
-      background: #edf0f5;
-      border-radius: 10px;
-      margin: 8px 0 18px;
-      overflow: hidden;
+    .details {
+      font-size: 13px;
+      color: #697386;
     }
 
-    .bar span {
-      display: block;
-      height: 100%;
-      border-radius: 10px;
-      background: #172033;
-    }
-
-    .demo {
-      margin-top: 25px;
-      text-align: center;
-      color: #9299a6;
-      font-size: 12px;
-    }
-
-    @media (max-width: 900px) {
-      .cards {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .content {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media (max-width: 650px) {
-      .sidebar {
-        position: relative;
-        width: 100%;
-        height: auto;
-      }
-
-      .menu {
-        flex-direction: row;
-        flex-wrap: wrap;
-      }
-
-      .main {
-        margin-left: 0;
-        padding: 20px;
-      }
-
-      .top {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 15px;
-      }
-
-      .cards {
+    @media (max-width: 700px) {
+      .stats {
         grid-template-columns: 1fr;
       }
     }
@@ -229,190 +85,125 @@
 
 <body>
 
-  <aside class="sidebar">
+  <div class="container">
 
-    <div class="logo">
-      ReviewBoost
-    </div>
+    <h1>ReviewRise Dashboard</h1>
 
-    <nav class="menu">
-      <a href="#" class="active">Dashboard</a>
-      <a href="#">Feedback</a>
-      <a href="#">Analytics</a>
-      <a href="#">Settings</a>
-    </nav>
+    <p class="subtitle">
+      Customer feedback overview
+    </p>
 
-  </aside>
+    <div class="stats">
 
-
-  <main class="main">
-
-    <div class="top">
-
-      <div>
-        <h1>Dashboard</h1>
-        <p>Monitor your customer feedback.</p>
+      <div class="stat-card">
+        <h2 id="totalFeedback">0</h2>
+        <p>Total Feedback</p>
       </div>
 
-      <div class="business">
-        L'Adresse Boutique Hotel
+      <div class="stat-card">
+        <h2 id="averageRating">0</h2>
+        <p>Average Rating</p>
+      </div>
+
+      <div class="stat-card">
+        <h2 id="lowRatings">0</h2>
+        <p>1–3 Star Feedback</p>
       </div>
 
     </div>
 
-
-    <div class="cards">
-
-      <div class="card">
-        <div class="card-title">Total Reviews</div>
-        <div class="number">128</div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">5-Star Reviews</div>
-        <div class="number">86</div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">Private Feedback</div>
-        <div class="number">18</div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">Average Rating</div>
-        <div class="number">4.6 ⭐</div>
-      </div>
-
+    <div id="feedbackList">
+      Loading feedback...
     </div>
 
+  </div>
 
-    <div class="content">
+  <script>
 
+    const SUPABASE_URL = "https://intlhwmvldxdiytemjlr.supabase.co";
 
-      <section class="section">
+    const SUPABASE_KEY =
+      "sb_publishable_0KjZZApJCuvTEJH3nNyLUg_aps6aXaA";
 
-        <h2>Rating Overview</h2>
+    async function loadFeedback() {
 
-        <div class="rating">
-          <strong>5 ⭐</strong>
-          <strong>86</strong>
-        </div>
+      const response = await fetch(
+        SUPABASE_URL + "/rest/v1/Feedback?select=*&order=created_at.desc",
+        {
+          headers: {
+            "apikey": SUPABASE_KEY
+          }
+        }
+      );
 
-        <div class="bar">
-          <span style="width: 85%;"></span>
-        </div>
+      const data = await response.json();
 
+      const feedbackList = document.getElementById("feedbackList");
 
-        <div class="rating">
-          <strong>4 ⭐</strong>
-          <strong>27</strong>
-        </div>
+      if (!response.ok) {
+        feedbackList.innerHTML = "Could not load feedback.";
+        return;
+      }
 
-        <div class="bar">
-          <span style="width: 55%;"></span>
-        </div>
+      document.getElementById("totalFeedback").textContent =
+        data.length;
 
+      let totalRating = 0;
+      let lowRatings = 0;
 
-        <div class="rating">
-          <strong>3 ⭐</strong>
-          <strong>8</strong>
-        </div>
+      data.forEach(function(item) {
+        totalRating += item.rating;
 
-        <div class="bar">
-          <span style="width: 25%;"></span>
-        </div>
+        if (item.rating <= 3) {
+          lowRatings++;
+        }
+      });
 
+      const average =
+        data.length > 0
+          ? (totalRating / data.length).toFixed(1)
+          : 0;
 
-        <div class="rating">
-          <strong>2 ⭐</strong>
-          <strong>4</strong>
-        </div>
+      document.getElementById("averageRating").textContent =
+        average;
 
-        <div class="bar">
-          <span style="width: 15%;"></span>
-        </div>
+      document.getElementById("lowRatings").textContent =
+        lowRatings;
 
+      feedbackList.innerHTML = "";
 
-        <div class="rating">
-          <strong>1 ⭐</strong>
-          <strong>3</strong>
-        </div>
+      data.forEach(function(item) {
 
-        <div class="bar">
-          <span style="width: 10%;"></span>
-        </div>
+        const card = document.createElement("div");
+        card.className = "feedback-card";
 
-      </section>
+        const stars =
+          "★".repeat(item.rating) +
+          "☆".repeat(5 - item.rating);
 
+        card.innerHTML = `
+          <div class="rating">${stars}</div>
 
-      <section class="section">
-
-        <h2>Recent Feedback</h2>
-
-
-        <div class="feedback">
-
-          <div class="feedback-top">
-            <strong>Customer</strong>
-            <span class="date">Today</span>
+          <div class="feedback-text">
+            ${item.feedback}
           </div>
 
-          <div class="feedback-rating">
-            ★★★★★
+          <div class="details">
+            ${item.business}
+            <br>
+            ${new Date(item.created_at).toLocaleString()}
           </div>
+        `;
 
-          <p>
-            Amazing experience. The staff were very friendly.
-          </p>
+        feedbackList.appendChild(card);
 
-        </div>
+      });
 
+    }
 
-        <div class="feedback">
+    loadFeedback();
 
-          <div class="feedback-top">
-            <strong>Customer</strong>
-            <span class="date">Yesterday</span>
-          </div>
-
-          <div class="feedback-rating">
-            ★★★
-          </div>
-
-          <p>
-            The room was good, but the service could be improved.
-          </p>
-
-        </div>
-
-
-        <div class="feedback">
-
-          <div class="feedback-top">
-            <strong>Customer</strong>
-            <span class="date">2 days ago</span>
-          </div>
-
-          <div class="feedback-rating">
-            ★★★★★
-          </div>
-
-          <p>
-            Great hotel and excellent location.
-          </p>
-
-        </div>
-
-      </section>
-
-    </div>
-
-
-    <div class="demo">
-      Dashboard preview — demo data
-    </div>
-
-  </main>
+  </script>
 
 </body>
 </html>
