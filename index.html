@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>ReviewBoost</title>
 
   <style>
@@ -29,7 +30,7 @@
       border-radius: 24px;
       padding: 35px 25px;
       text-align: center;
-      box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
     }
 
     .logo {
@@ -70,8 +71,12 @@
       font-size: 42px;
       cursor: pointer;
       color: #d6d9df;
-      transition: 0.2s;
       padding: 2px;
+      transition: transform 0.2s, color 0.2s;
+    }
+
+    .star:hover {
+      transform: scale(1.08);
     }
 
     .star.active {
@@ -99,6 +104,43 @@
       font-weight: bold;
     }
 
+    .google-button:hover {
+      opacity: 0.9;
+    }
+
+    #feedbackForm {
+      display: none;
+      margin-top: 20px;
+    }
+
+    #feedbackText {
+      width: 100%;
+      min-height: 120px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      resize: none;
+      font-family: Arial, sans-serif;
+      font-size: 15px;
+    }
+
+    #submitFeedback {
+      margin-top: 12px;
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 12px;
+      background: #172033;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 15px;
+    }
+
+    #submitFeedback:hover {
+      opacity: 0.9;
+    }
+
     .footer {
       margin-top: 30px;
       font-size: 12px;
@@ -119,36 +161,41 @@
       Your feedback helps us improve and provide a better experience.
     </p>
 
-<div class="stars">
-  <button class="star" data-rating="1">★</button>
-  <button class="star" data-rating="2">★</button>
-  <button class="star" data-rating="3">★</button>
-  <button class="star" data-rating="4">★</button>
-  <button class="star" data-rating="5">★</button>
-</div>
+    <div class="stars">
+
+      <button class="star" type="button" data-rating="1">★</button>
+      <button class="star" type="button" data-rating="2">★</button>
+      <button class="star" type="button" data-rating="3">★</button>
+      <button class="star" type="button" data-rating="4">★</button>
+      <button class="star" type="button" data-rating="5">★</button>
+
+    </div>
 
     <div class="message" id="message"></div>
-<div id="feedbackForm" style="display: none;">
-  <textarea
-    id="feedbackText"
-    placeholder="Tell us what went wrong and how we can improve..."
-    style="width:100%; min-height:120px; padding:15px; border:1px solid #ddd; border-radius:12px; resize:none; font-family:Arial;">
-  </textarea>
 
-  <button
-    id="submitFeedback"
-    style="margin-top:12px; width:100%; padding:15px; border:none; border-radius:12px; background:#172033; color:white; font-weight:bold;">
-    Submit Feedback
-  </button>
-
-</div>
     <a
       id="googleButton"
       class="google-button"
       href="#"
-      target="_blank">
+      target="_blank"
+      rel="noopener noreferrer">
       Leave us a Google review
     </a>
+
+    <div id="feedbackForm">
+
+      <textarea
+        id="feedbackText"
+        placeholder="Tell us what went wrong and how we can improve...">
+      </textarea>
+
+      <button
+        id="submitFeedback"
+        type="button">
+        Submit Feedback
+      </button>
+
+    </div>
 
     <div class="footer">
       Powered by ReviewBoost
@@ -156,86 +203,109 @@
 
   </div>
 
+
   <script>
 
-const GOOGLE_REVIEW_URL = "https://search.google.com/local/writereview?placeid=ChIJOdbspvWBCw0R2cVHjfyGvHk";
+    const GOOGLE_REVIEW_URL =
+      "https://search.google.com/local/writereview?placeid=ChIJOdbspvWBCw0R2cVHjfyGvHk";
 
-const stars = document.querySelectorAll(".star");
-const message = document.getElementById("message");
-const googleButton = document.getElementById("googleButton");
-const feedbackForm = document.getElementById("feedbackForm");
-const feedbackText = document.getElementById("feedbackText");
-const submitFeedback = document.getElementById("submitFeedback");
+    const stars = document.querySelectorAll(".star");
+    const message = document.getElementById("message");
+    const googleButton = document.getElementById("googleButton");
+    const feedbackForm = document.getElementById("feedbackForm");
+    const feedbackText = document.getElementById("feedbackText");
+    const submitFeedback = document.getElementById("submitFeedback");
 
 
-stars.forEach(star => {
+    // STAR RATING
 
-  star.addEventListener("click", () => {
+    stars.forEach(function(star) {
 
-    const rating = Number(star.dataset.rating);
+      star.addEventListener("click", function() {
 
-    // Highlight the selected stars
-    stars.forEach(s => {
-      const number = Number(s.dataset.rating);
+        const rating = Number(this.dataset.rating);
 
-      if (number <= rating) {
-        s.classList.add("active");
-      } else {
-        s.classList.remove("active");
-      }
+
+        // Remove the active class from every star
+        stars.forEach(function(s) {
+          s.classList.remove("active");
+        });
+
+
+        // Add active class to the selected stars
+        for (let i = 0; i < rating; i++) {
+          stars[i].classList.add("active");
+        }
+
+
+        // Show message
+        message.style.display = "block";
+
+
+        // 4 or 5 stars
+        if (rating >= 4) {
+
+          message.innerHTML =
+            "Thank you! We're happy you enjoyed your experience.";
+
+          googleButton.style.display = "inline-block";
+          googleButton.href = GOOGLE_REVIEW_URL;
+
+          feedbackForm.style.display = "none";
+
+        }
+
+
+        // 1, 2 or 3 stars
+        else {
+
+          message.innerHTML =
+            "We're sorry we didn't meet your expectations. Please tell us how we can improve.";
+
+          googleButton.style.display = "none";
+
+          feedbackForm.style.display = "block";
+
+        }
+
+      });
+
     });
 
 
-    message.style.display = "block";
+    // SUBMIT FEEDBACK
+
+    submitFeedback.addEventListener("click", function() {
+
+      const feedback = feedbackText.value.trim();
 
 
-    if (rating >= 4) {
+      if (feedback === "") {
 
-      message.innerHTML =
-        "Thank you! We're happy you enjoyed your experience.";
+        alert("Please write your feedback first.");
 
-      googleButton.style.display = "inline-block";
-      googleButton.href = GOOGLE_REVIEW_URL;
+        return;
+
+      }
+
 
       feedbackForm.style.display = "none";
 
-    } else {
-
-      message.innerHTML =
-        "We're sorry we didn't meet your expectations. Please tell us how we can improve.";
-
       googleButton.style.display = "none";
 
-      feedbackForm.style.display = "block";
-    }
+      message.style.display = "block";
 
-  });
+      message.innerHTML = `
+        <strong>Thank you for your feedback!</strong><br><br>
+        We really appreciate you taking the time to share your experience.
+        Your feedback helps us improve our service and provide a better experience.
+      `;
 
-});
 
+      feedbackText.value = "";
 
-submitFeedback.addEventListener("click", () => {
+    });
 
-  const feedback = feedbackText.value.trim();
-
-  if (feedback === "") {
-    alert("Please write your feedback first.");
-    return;
-  }
-
-  feedbackForm.style.display = "none";
-
-  message.style.display = "block";
-
-  message.innerHTML = `
-    <strong>Thank you for your feedback!</strong><br><br>
-    We really appreciate you taking the time to share your experience.
-    Your feedback helps us improve our service and provide a better experience.
-  `;
-
-  feedbackText.value = "";
-
-});
   </script>
 
 </body>
