@@ -204,7 +204,7 @@ a.menu-item:visited {
 }
   
 .mobile-menu-btn {
-    display: block;
+    display: none;
     position: fixed;
     top: 20px;
     left: 20px;
@@ -267,7 +267,9 @@ a.menu-item:visited {
 
 
 <div id="dashboard">
-
+  
+<button class="mobile-menu-btn" id="mobileMenuBtn" onclick="toggleSidebar()">☰</button>
+  
   <aside class="sidebar">
     
     <button class="close-menu-btn" onclick="toggleSidebar()">×</button>
@@ -533,6 +535,8 @@ function showDashboard() {
 
   dashboard.style.display =
   "block";
+
+  document.getElementById("mobileMenuBtn").style.display = "block";
 
   loadFeedback();
 
