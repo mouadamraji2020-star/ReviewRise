@@ -173,22 +173,6 @@ body {
   color: #888;
   font-size: 13px;
 }
-
-@media(max-width:800px) {
-
-  .sidebar {
-    width: 190px;
-  }
-
-  .main {
-    margin-left: 190px;
-    padding: 20px;
-  }
-
-  .stats {
-    grid-template-columns: 1fr;
-  }
-}
   
 a.menu-item {
     color: white;
@@ -199,6 +183,22 @@ a.menu-item {
 a.menu-item:visited {
     color: white;
     text-decoration: none;
+}
+  
+@media (max-width: 800px) {
+    .sidebar {
+        display: none;
+    }
+
+    .main {
+        margin-left: 0;
+        padding: 20px;
+        width: 100%;
+    }
+
+    .stats {
+        grid-template-columns: 1fr;
+    }
 }
   
 </style>
