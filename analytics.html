@@ -212,7 +212,10 @@ async function loadAnalytics() {
     );
 
     const feedback = await response.json();
-
+    
+    console.log("STATUS:", response.status);
+    console.log("FEEDBACK:", feedback);
+    
     const total = feedback.length;
 
     document.getElementById("totalFeedback").textContent = total;
