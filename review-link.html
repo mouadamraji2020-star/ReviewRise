@@ -64,10 +64,54 @@ body {
     margin: 0;
     color: #6b7280;
 }
+
+        @media (max-width: 800px) {
+
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 80%;
+        max-width: 320px;
+        height: 100vh;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        z-index: 1000;
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+    }
+
+    .mobile-menu-btn {
+        display: block;
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 1100;
+        background: #111827;
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 16px;
+        font-size: 26px;
+        cursor: pointer;
+    }
+
+    main {
+        margin-left: 0;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 90px 20px 30px;
+    }
+}
+        
 </style>
 </head>
     
 <body>
+    
+    <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
     
 <aside class="sidebar">
     <div class="logo">ReviewRise</div>
@@ -88,6 +132,28 @@ body {
     <h1>Review Links</h1>
     <p>Manage the links your customers use to share their experience.</p>
 </main>
+
+    <script>
+const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+const sidebar = document.querySelector(".sidebar");
+
+mobileMenuBtn.addEventListener("click", function () {
+    sidebar.classList.toggle("open");
+
+    if (sidebar.classList.contains("open")) {
+        mobileMenuBtn.style.display = "none";
+    } else {
+        mobileMenuBtn.style.display = "block";
+    }
+});
+
+document.querySelectorAll(".menu-item").forEach(function (item) {
+    item.addEventListener("click", function () {
+        sidebar.classList.remove("open");
+        mobileMenuBtn.style.display = "block";
+    });
+});
+</script>
     
 </body>
 </html>
