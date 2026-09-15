@@ -6,9 +6,13 @@
   <title>ReviewRise Dashboard</title>
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Arial, sans-serif;
       margin: 0;
+      font-family: Arial, sans-serif;
       background: #f5f7fb;
       color: #172033;
     }
@@ -19,13 +23,66 @@
       padding: 20px;
     }
 
-    h1 {
-      margin-bottom: 10px;
+    .login-card {
+      max-width: 420px;
+      margin: 100px auto;
+      background: white;
+      padding: 35px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
     }
 
-    .subtitle {
+    .login-card h1 {
+      text-align: center;
+    }
+
+    .login-card p {
+      text-align: center;
       color: #697386;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      margin-top: 12px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      font-size: 15px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 15px;
+      border: none;
+      border-radius: 10px;
+      background: #172033;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    #loginError {
+      color: #d93025;
+      margin-top: 15px;
+      text-align: center;
+    }
+
+    #dashboard {
+      display: none;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       margin-bottom: 30px;
+    }
+
+    .logout {
+      width: auto;
+      padding: 10px 18px;
+      margin: 0;
     }
 
     .stats {
@@ -35,7 +92,8 @@
       margin-bottom: 30px;
     }
 
-    .stat-card {
+    .stat-card,
+    .feedback-card {
       background: white;
       padding: 20px;
       border-radius: 16px;
@@ -48,31 +106,23 @@
     }
 
     .stat-card p {
-      margin: 8px 0 0;
       color: #697386;
+      margin-bottom: 0;
     }
 
     .feedback-card {
-      background: white;
-      padding: 20px;
       margin-bottom: 15px;
-      border-radius: 16px;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.06);
     }
 
     .rating {
-      font-size: 20px;
+      font-size: 21px;
       margin-bottom: 10px;
-    }
-
-    .feedback-text {
-      margin-bottom: 10px;
-      line-height: 1.5;
     }
 
     .details {
-      font-size: 13px;
+      margin-top: 12px;
       color: #697386;
+      font-size: 13px;
     }
 
     @media (max-width: 700px) {
@@ -85,13 +135,43 @@
 
 <body>
 
-  <div class="container">
+  <div id="loginSection" class="login-card">
 
-    <h1>ReviewRise Dashboard</h1>
+    <h1>ReviewRise</h1>
+    <p>Sign in to your dashboard</p>
 
-    <p class="subtitle">
-      Customer feedback overview
-    </p>
+    <input
+      type="email"
+      id="email"
+      placeholder="Email address">
+
+    <input
+      type="password"
+      id="password"
+      placeholder="Password">
+
+    <button id="loginButton">
+      Sign In
+    </button>
+
+    <div id="loginError"></div>
+
+  </div>
+
+
+  <div id="dashboard" class="container">
+
+    <div class="topbar">
+      <div>
+        <h1>ReviewRise Dashboard</h1>
+        <p>Customer feedback overview</p>
+      </div>
+
+      <button class="logout" id="logoutButton">
+        Log Out
+      </button>
+    </div>
+
 
     <div class="stats">
 
@@ -118,92 +198,201 @@
 
   </div>
 
-  <script>
 
-    const SUPABASE_URL = "https://intlhwmvldxdiytemjlr.supabase.co";
+<script>
 
-    const SUPABASE_KEY =
-      "sb_publishable_0KjZZApJCuvTEJH3nNyLUg_aps6aXaA";
+const SUPABASE_URL =
+  "https://intlhwmvldxdiytemjlr.supabase.co";
 
-    async function loadFeedback() {
+const SUPABASE_KEY = "sb_publishable_0KjZZApJCuvTEJH3nNyLUg_aps6aXaA";
 
-      const response = await fetch(
-        SUPABASE_URL + "/rest/v1/Feedback?select=*&order=created_at.desc",
-        {
-          headers: {
-            "apikey": SUPABASE_KEY
-          }
-        }
-      );
+const loginSection =
+  document.getElementById("loginSection");
 
-      const data = await response.json();
+const dashboard =
+  document.getElementById("dashboard");
 
-      const feedbackList = document.getElementById("feedbackList");
+const loginButton =
+  document.getElementById("loginButton");
 
-      if (!response.ok) {
-        feedbackList.innerHTML = "Could not load feedback.";
-        return;
+const logoutButton =
+  document.getElementById("logoutButton");
+
+const loginError =
+  document.getElementById("loginError");
+
+
+loginButton.addEventListener("click", async function() {
+
+  loginError.textContent = "";
+
+  const email =
+    document.getElementById("email").value.trim();
+
+  const password =
+    document.getElementById("password").value;
+
+  const response = await fetch(
+    SUPABASE_URL + "/auth/v1/token?grant_type=password",
+    {
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": SUPABASE_KEY
+      },
+
+      body: JSON.stringify({
+        email: email,
+        password: password
+      })
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    loginError.textContent =
+      data.error_description ||
+      data.msg ||
+      "Login failed.";
+    return;
+  }
+
+  localStorage.setItem(
+    "reviewrise_access_token",
+    data.access_token
+  );
+
+  showDashboard(data.access_token);
+
+});
+
+
+async function showDashboard(token) {
+
+  loginSection.style.display = "none";
+  dashboard.style.display = "block";
+
+  await loadFeedback(token);
+
+}
+
+
+async function loadFeedback(token) {
+
+  const feedbackList =
+    document.getElementById("feedbackList");
+
+  const response = await fetch(
+    SUPABASE_URL +
+    "/rest/v1/Feedback?select=*&order=created_at.desc",
+    {
+      headers: {
+        "apikey": SUPABASE_KEY,
+        "Authorization": "Bearer " + token
       }
+    }
+  );
 
-      document.getElementById("totalFeedback").textContent =
-        data.length;
+  const data = await response.json();
 
-      let totalRating = 0;
-      let lowRatings = 0;
+  if (!response.ok) {
+    feedbackList.innerHTML =
+      "Could not load feedback.";
+    return;
+  }
 
-      data.forEach(function(item) {
-        totalRating += item.rating;
+  document.getElementById("totalFeedback")
+    .textContent = data.length;
 
-        if (item.rating <= 3) {
-          lowRatings++;
-        }
-      });
+  let totalRating = 0;
+  let lowRatings = 0;
 
-      const average =
-        data.length > 0
-          ? (totalRating / data.length).toFixed(1)
-          : 0;
+  data.forEach(function(item) {
 
-      document.getElementById("averageRating").textContent =
-        average;
+    totalRating += item.rating;
 
-      document.getElementById("lowRatings").textContent =
-        lowRatings;
-
-      feedbackList.innerHTML = "";
-
-      data.forEach(function(item) {
-
-        const card = document.createElement("div");
-        card.className = "feedback-card";
-
-        const stars =
-          "★".repeat(item.rating) +
-          "☆".repeat(5 - item.rating);
-
-        card.innerHTML = `
-          <div class="rating">${stars}</div>
-
-          <div class="feedback-text">
-            ${item.feedback}
-          </div>
-
-          <div class="details">
-            ${item.business}
-            <br>
-            ${new Date(item.created_at).toLocaleString()}
-          </div>
-        `;
-
-        feedbackList.appendChild(card);
-
-      });
-
+    if (item.rating <= 3) {
+      lowRatings++;
     }
 
-    loadFeedback();
+  });
 
-  </script>
+  const average =
+    data.length > 0
+      ? (totalRating / data.length).toFixed(1)
+      : "0";
+
+  document.getElementById("averageRating")
+    .textContent = average;
+
+  document.getElementById("lowRatings")
+    .textContent = lowRatings;
+
+  feedbackList.innerHTML = "";
+
+  data.forEach(function(item) {
+
+    const card =
+      document.createElement("div");
+
+    card.className = "feedback-card";
+
+    const rating =
+      document.createElement("div");
+
+    rating.className = "rating";
+    rating.textContent =
+      "★".repeat(item.rating) +
+      "☆".repeat(5 - item.rating);
+
+    const text =
+      document.createElement("div");
+
+    text.textContent = item.feedback;
+
+    const details =
+      document.createElement("div");
+
+    details.className = "details";
+
+    details.textContent =
+      item.business +
+      " • " +
+      new Date(item.created_at).toLocaleString();
+
+    card.appendChild(rating);
+    card.appendChild(text);
+    card.appendChild(details);
+
+    feedbackList.appendChild(card);
+
+  });
+
+}
+
+
+logoutButton.addEventListener("click", function() {
+
+  localStorage.removeItem(
+    "reviewrise_access_token"
+  );
+
+  dashboard.style.display = "none";
+  loginSection.style.display = "block";
+
+});
+
+
+const savedToken =
+  localStorage.getItem("reviewrise_access_token");
+
+if (savedToken) {
+  showDashboard(savedToken);
+}
+
+</script>
 
 </body>
 </html>
