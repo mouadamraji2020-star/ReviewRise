@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feedback - ReviewRise</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      color: #172033;
+    }
+
+    .sidebar {
+      position: fixed;
+      width: 220px;
+      height: 100vh;
+      background: #171722;
+      color: white;
+      padding: 30px 20px;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 40px;
+    }
+
+    .menu-item {
+      padding: 13px;
+      margin-bottom: 8px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .menu-item.active {
+      background: #30303d;
+    }
+
+    .main {
+      margin-left: 220px;
+      padding: 40px;
+    }
+
+    h1 {
+      margin-bottom: 5px;
+    }
+
+    .subtitle {
+      color: #777;
+      margin-bottom: 30px;
+    }
+
+    .feedback-card {
+      background: white;
+      padding: 20px;
+      border-radius: 14px;
+      margin-bottom: 15px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+    }
+
+    .stars {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    .date {
+      color: #888;
+      font-size: 13px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <aside class="sidebar">
+    <div class="logo">ReviewRise</div>
+
+    <div class="menu-item" onclick="window.location.href='dashboard.html'">
+      Dashboard
+    </div>
+
+    <div class="menu-item active">
+      Feedback
+    </div>
+
+    <div class="menu-item">
+      Analytics
+    </div>
+
+    <div class="menu-item">
+      QR & NFC
+    </div>
+
+    <div class="menu-item">
+      Settings
+    </div>
+  </aside>
+
+  <main class="main">
+    <h1>Customer Feedback</h1>
+    <p class="subtitle">View and manage your customer feedback.</p>
+
+    <div id="feedbackList">
+      Loading feedback...
+    </div>
+  </main>
+
+  <script>
+    const SUPABASE_URL =
+      "https://intlhwmvldxdiytemjlr.supabase.co";
+
+    const SUPABASE_KEY =
+      "sb_publishable_0KjZZApJCuvTEJH3nNyLUg_aps6aXaA";
+
+    async function loadFeedback() {
+
+      const token = localStorage.getItem("reviewrise_token");
+
+      if (!token) {
+        window.location.href = "dashboard.html";
+        return;
+      }
+
+      const response = await fetch(
+        SUPABASE_URL + "/rest/v1/Feedback?select=*&order=created_at.desc",
+        {
+          headers: {
+            "apikey": SUPABASE_KEY,
+            "Authorization": "Bearer " + token
+          }
+        }
+      );
+
+      const feedback = await response.json();
+
+      const list = document.getElementById("feedbackList");
+      list.innerHTML = "";
+
+      feedback.forEach(item => {
+
+        const card = document.createElement("div");
+        card.className = "feedback-card";
+
+        const stars =
+          "★".repeat(item.rating) +
+          "☆".repeat(5 - item.rating);
+
+        card.innerHTML = `
+          <div class="stars">${stars}</div>
+          <div>${item.feedback}</div>
+          <div class="date">
+            ${item.business} •
+            ${new Date(item.created_at).toLocaleString()}
+          </div>
+        `;
+
+        list.appendChild(card);
+      });
+    }
+
+    loadFeedback();
+  </script>
+
+</body>
+</html>
