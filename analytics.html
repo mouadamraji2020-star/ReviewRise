@@ -318,6 +318,12 @@ const sidebar = document.querySelector(".sidebar");
 mobileMenuBtn.addEventListener("click", function () {
     sidebar.classList.toggle("open");
 });
+
+document.querySelectorAll(".menu-item").forEach(function (item) {
+    item.addEventListener("click", function () {
+        sidebar.classList.remove("open");
+    });
+});
 </script>
 
 </body>
