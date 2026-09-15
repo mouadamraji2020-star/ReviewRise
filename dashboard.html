@@ -437,9 +437,8 @@ console.log(await response.text());
     return;
   }
 
-
-  const feedback = await response.json();
-
+const feedback = await response.json();
+console.log(feedback);
 
   document.getElementById("totalFeedback")
     .textContent = feedback.length;
