@@ -187,6 +187,18 @@ a.menu-item:visited {
   
 @media (max-width: 800px) {
   
+  .close-menu-btn {
+    display: block;
+    position: absolute;
+    top: 25px;
+    right: 25px;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 36px;
+    cursor: pointer;
+}
+  
   .mobile-menu-btn {
     display: block;
     position: absolute;
@@ -253,7 +265,9 @@ a.menu-item:visited {
 <div id="dashboard">
 
   <aside class="sidebar">
-
+    
+    <button class="close-menu-btn" onclick="toggleSidebar()">×</button>
+    
     <div class="logo">ReviewRise</div>
 
     <div class="menu-item active">
