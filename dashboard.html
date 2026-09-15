@@ -186,10 +186,32 @@ a.menu-item:visited {
 }
   
 @media (max-width: 800px) {
+  
+  .mobile-menu-btn {
+    display: block;
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 1001;
+    background: #111827;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 24px;
+    cursor: pointer;
+}
+  
     .sidebar {
         display: none;
     }
 
+  .sidebar.open {
+    display: block;
+    width: 240px;
+    z-index: 1000;
+}
+  
     .main {
         margin-left: 0;
         padding: 20px;
@@ -206,6 +228,8 @@ a.menu-item:visited {
 
 <body>
 
+<button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
+  
 <div id="loginSection">
 
   <div class="login-card">
@@ -533,6 +557,10 @@ if (
 feedbackMenu.addEventListener("click", function () {
     window.location.href = "feedback.html";
 });
+  
+ function toggleSidebar() {
+    document.querySelector(".sidebar").classList.toggle("open");
+} 
   
 </script>
 
