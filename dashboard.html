@@ -224,9 +224,9 @@ body {
       Dashboard
     </div>
 
-    <div class="menu-item">
-      Feedback
-    </div>
+<div class="menu-item" id="feedbackMenu">
+    Feedback
+</div>
 
     <div class="menu-item">
       Analytics
@@ -313,7 +313,9 @@ document.getElementById("loginSection");
 const dashboard =
 document.getElementById("dashboard");
 
-
+const feedbackMenu =
+document.getElementById("feedbackMenu");
+  
 async function login() {
 
   const email =
@@ -522,7 +524,12 @@ if (
   showDashboard();
 
 }
-
+feedbackMenu.addEventListener("click", function () {
+  document.getElementById("feedbackList").scrollIntoView({
+    behavior: "smooth"
+  });
+});
+  
 </script>
 
 </body>
