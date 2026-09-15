@@ -1,12 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+    <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Review Links - ReviewRise</title>
+        
+    <style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f6f7fb;
+    color: #172033;
+}
+
+.sidebar {
+    width: 240px;
+    height: 100vh;
+    background: #111827;
+    color: white;
+    position: fixed;
+    left: 0;
+    top: 0;
+    padding: 28px 20px;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 40px;
+}
+
+.menu-item {
+    display: block;
+    text-decoration: none;
+    padding: 13px 15px;
+    margin-bottom: 8px;
+    border-radius: 9px;
+    cursor: pointer;
+    color: #d1d5db;
+}
+
+.menu-item:hover,
+.menu-item.active {
+    background: #1f2937;
+    color: white;
+}
+</style>
 </head>
-
+    
 <body>
+    
+<aside class="sidebar">
+    <div class="logo">ReviewRise</div>
 
+    <a href="dashboard.html" class="menu-item">Dashboard</a>
+
+    <a href="feedback.html" class="menu-item">Feedback</a>
+
+    <a href="analytics.html" class="menu-item">Analytics</a>
+
+    <a href="review-links.html" class="menu-item active">Review Links</a>
+
+    <div class="menu-item">QR & NFC</div>
+
+    <div class="menu-item">Settings</div>
+</aside>
+    
 </body>
 </html>
