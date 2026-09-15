@@ -425,7 +425,8 @@ async function loadFeedback() {
       }
     }
   );
-
+  
+console.log(await response.text());
 
   if (!response.ok) {
 
@@ -534,7 +535,6 @@ function showDashboard() {
   loadFeedback();
 
 }
-
 
 function logout() {
 
