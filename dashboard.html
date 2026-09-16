@@ -677,11 +677,13 @@ function toggleSidebar() {
 
     sidebar.classList.toggle("open");
 
+if (window.innerWidth <= 800) {
     if (sidebar.classList.contains("open")) {
         menuButton.style.display = "none";
     } else {
         menuButton.style.display = "block";
     }
+  }
 }
 
   function toggleAccountMenu() {
