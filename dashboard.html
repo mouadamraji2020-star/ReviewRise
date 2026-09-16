@@ -882,14 +882,8 @@ function toggleSidebar() {
     }
 
 // LAPTOP ONLY
-const sidebarIsVisible = window.getComputedStyle(sidebar).display !== "none";
-
-if (sidebarIsVisible) {
-    sidebar.style.display = "none";
-} else {
-        sidebar.style.display = "block";
-        sidebar.style.width = "240px";
-    }
+sidebar.classList.toggle("open");
+  
 }  // closes toggleSidebar
 
 function toggleAccountMenu() {
