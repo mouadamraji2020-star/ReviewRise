@@ -464,8 +464,9 @@ a.menu-item:visited {
     cursor: pointer;
 }
 
-  /* LAPTOP ONLY */
+/* LAPTOP ONLY */
 @media (min-width: 801px) {
+
     .mobile-menu-btn {
         display: block !important;
         position: static !important;
@@ -485,26 +486,34 @@ a.menu-item:visited {
     .sidebar.open {
         display: block !important;
         position: fixed;
-        top: 0;
+        top: 72px;
         left: 0;
         width: 240px;
-        height: 100vh;
+        height: calc(100vh - 72px);
+        background: #111827;
         z-index: 1000;
+        padding: 24px 16px;
+        box-sizing: border-box;
     }
-}
 
-.sidebar.open .logo {
-    display: none;
-}
+    .sidebar.open .logo {
+        display: none;
+    }
 
-.sidebar.open .close-menu-btn {
-    display: none;
-}
+    .sidebar.open .close-menu-btn {
+        display: none;
+    }
 
-.sidebar.open .menu-item {
-    display: block;
-    color: white;
-    text-decoration: none;
+    .sidebar.open .menu-item {
+        display: block;
+        color: white;
+        text-decoration: none;
+        padding: 12px 14px;
+        margin-bottom: 6px;
+        border-radius: 8px;
+        background: transparent;
+    }
+
 }
   
 </style>
