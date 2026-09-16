@@ -202,25 +202,6 @@ body {
 </main>
 
     <script>
-const mobileMenuBtn = document.getElementById("mobileMenuBtn");
-const sidebar = document.querySelector(".sidebar");
-
-mobileMenuBtn.addEventListener("click", function () {
-    sidebar.classList.toggle("open");
-
-    if (sidebar.classList.contains("open")) {
-        mobileMenuBtn.style.display = "none";
-    } else {
-        mobileMenuBtn.style.display = "block";
-    }
-});
-
-document.querySelectorAll(".menu-item").forEach(function (item) {
-    item.addEventListener("click", function () {
-        sidebar.classList.remove("open");
-        mobileMenuBtn.style.display = "block";
-    });
-});
 
         function toggleSidebar() {
     const sidebar = document.querySelector(".sidebar");
