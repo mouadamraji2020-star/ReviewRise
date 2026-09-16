@@ -339,7 +339,7 @@ a.menu-item:visited {
 }
   
 .mobile-menu-btn {
-    display: none;
+    display: block;
     position: absolute;
     top: 20px;
     left: 20px;
@@ -352,15 +352,20 @@ a.menu-item:visited {
     font-size: 26px;
     cursor: pointer;
 }
-  
-    .sidebar {
-        display: none;
-    }
 
-  .sidebar.open {
+.sidebar {
+    display: none;
+}
+
+.sidebar.open {
     display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 240px;
+    height: 100vh;
     z-index: 1000;
+    background: #111827;
 }
   
     .main {
