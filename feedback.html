@@ -185,15 +185,17 @@
 
 <body>
 
-<header class="mobile-topbar">
-    <button class="topbar-menu" onclick="document.querySelector('.sidebar').classList.toggle('open')">
-        ☰
-    </button>
+<div class="top-navbar">
+    <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="toggleSidebar()">☰</button>
 
-    <div class="topbar-logo">ReviewRise</div>
+    <div class="top-navbar-logo">ReviewRise</div>
 
-    <div class="topbar-user">♙</div>
-</header>
+    <div class="top-navbar-actions">
+        <button class="navbar-icon" aria-label="Account">
+            ♙
+        </button>
+    </div>
+</div>
   
   <aside class="sidebar">
     <div class="logo">ReviewRise</div>
