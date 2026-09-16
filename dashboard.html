@@ -496,13 +496,25 @@ a.menu-item:visited {
         box-sizing: border-box;
     }
 
-    .sidebar.open .logo {
-        display: none;
-    }
+.sidebar.open .logo {
+    display: block;
+    color: white;
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 30px;
+}
 
-    .sidebar.open .close-menu-btn {
-        display: none;
-    }
+.sidebar.open .close-menu-btn {
+    display: block;
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 26px;
+    cursor: pointer;
+}
 
     .sidebar.open .menu-item {
         display: block;
