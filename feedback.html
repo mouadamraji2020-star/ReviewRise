@@ -131,41 +131,53 @@
     z-index: 1000;
 }
 }
-
-.mobile-topbar {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    width: 100% !important;
-    height: 76px !important;
-    padding: 0 20px !important;
-    box-sizing: border-box !important;
-    background: #ffffff !important;
+/* ReviewRise top navigation */
+.top-navbar {
+    width: 100%;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    box-sizing: border-box;
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+    position: relative;
+    z-index: 900;
 }
 
-.mobile-topbar .topbar-menu {
-    position: static !important;
-    display: block !important;
-    background: transparent !important;
-    border: none !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    width: auto !important;
-    height: auto !important;
-    font-size: 30px !important;
-    color: #111827 !important;
+.top-navbar-logo {
+    font-size: 27px;
+    font-weight: 700;
+    color: #111827;
+    margin-left: 18px;
 }
 
-.mobile-topbar .topbar-logo {
-    font-size: 30px !important;
-    font-weight: 700 !important;
-    margin: 0 !important;
+.top-navbar-actions {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
 }
 
-.mobile-topbar .topbar-user {
-    font-size: 27px !important;
-    margin: 0 !important;
+.navbar-icon {
+    background: transparent;
+    border: none;
+    color: #111827;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+/* Put the existing hamburger inside the navbar */
+.top-navbar .mobile-menu-btn {
+    position: static;
+    display: block;
+    background: transparent;
+    color: #111827;
+    border: none;
+    padding: 0;
+    margin: 0;
+    font-size: 30px;
+    line-height: 1;
+    cursor: pointer;
 }
     
   </style>
