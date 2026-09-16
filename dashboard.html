@@ -589,7 +589,36 @@ a.menu-item:visited {
     <div class="menu-item">
       Settings
     </div>
+    
+/* LAPTOP SIDEBAR ONLY */
+@media (min-width: 801px) {
+    .sidebar.open {
+        display: block !important;
+        position: fixed;
+        top: 72px;
+        left: 0;
+        width: 240px;
+        height: calc(100vh - 72px);
+        background: #111827;
+        z-index: 1000;
+        padding: 24px 16px;
+        box-sizing: border-box;
+    }
 
+    .sidebar.open .logo {
+        display: none;
+    }
+
+    .sidebar.open .close-menu-btn {
+        display: none;
+    }
+
+    .sidebar.open .menu-item {
+        display: block;
+        color: white;
+        text-decoration: none;
+    }
+}
   </aside>
 
 
