@@ -193,7 +193,7 @@
     cursor: pointer;
 }
 
-/* LAPTOP SIDEBAR ONLY - DO NOT AFFECT FORM */
+/* LAPTOP ONLY */
 @media (min-width: 801px) {
 
     .mobile-menu-btn {
@@ -205,7 +205,6 @@
         padding: 0 !important;
         margin: 0 !important;
         font-size: 30px !important;
-        line-height: 1;
         cursor: pointer;
     }
 
@@ -218,13 +217,21 @@
         height: 100vh;
         background: #111827;
         z-index: 1000;
-        padding: 24px 16px;
-        box-sizing: border-box;
+
         transform: translateX(-100%);
         transition: transform 0.3s ease;
     }
 
     .sidebar.open {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 240px;
+        height: 100vh;
+        background: #111827;
+        z-index: 1000;
+        padding: 24px 16px;
+        box-sizing: border-box;
         transform: translateX(0);
     }
 
@@ -233,17 +240,18 @@
         color: white;
         font-size: 24px;
         font-weight: 700;
+        margin-bottom: 30px;
     }
 
     .sidebar.open .close-menu-btn {
         display: block;
         position: absolute;
-        top: 25px;
+        top: 18px;
         right: 18px;
         background: transparent;
         border: none;
         color: white;
-        font-size: 25px;
+        font-size: 26px;
         cursor: pointer;
     }
 
