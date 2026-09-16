@@ -352,6 +352,7 @@ a.menu-item:visited {
         z-index: 1000;
     }
 }
+
   
 </style>
 </head>
@@ -369,7 +370,7 @@ a.menu-item:visited {
 
     <input id="password" type="password" placeholder="Password">
 
-    <button id="loginButton">Sign In</button>
+    < id="login">Sign In</>
 
     <p id="loginMessage"></p>
 
@@ -381,15 +382,16 @@ a.menu-item:visited {
 <div id="dashboard">
   
 <div class="top-navbar">
-    <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="toggleSidebar()">☰</button>
-
+  
+<button class="mobile-menu-btn" id="mobileMenuBtn" type="button" onclick="toggleSidebar()">☰</button>
+  
     <div class="top-navbar-logo">ReviewRise</div>
 
 <div class="top-navbar-actions">
-
-    <button class="navbar-icon" id="accountButton" onclick="toggleAccountMenu()" aria-label="Account">
-        ♙
-    </button>
+  
+<button class="navbar-icon" id="accountButton" type="button" onclick="toggleAccountMenu()" aria-label="Account">
+    ♙
+</button>
 
     <div class="account-menu" id="accountMenu">
         <button onclick="logout()">Log Out</button>
