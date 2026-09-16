@@ -221,6 +221,20 @@ document.querySelectorAll(".menu-item").forEach(function (item) {
         mobileMenuBtn.style.display = "block";
     });
 });
+
+        function toggleSidebar() {
+    const sidebar = document.querySelector(".sidebar");
+    const menuButton = document.getElementById("mobileMenuBtn");
+
+    sidebar.classList.toggle("open");
+
+    if (sidebar.classList.contains("open")) {
+        menuButton.style.display = "none";
+    } else {
+        menuButton.style.display = "block";
+    }
+}
+        
 </script>
     
 </body>
