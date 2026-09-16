@@ -675,17 +675,27 @@ function toggleSidebar() {
     const sidebar = document.querySelector(".sidebar");
     const menuButton = document.getElementById("mobileMenuBtn");
 
-    sidebar.classList.toggle("open");
+    // PHONE — keep existing behavior
+    if (window.innerWidth <= 800) {
+        sidebar.classList.toggle("open");
 
-if (window.innerWidth <= 800) {
-    if (sidebar.classList.contains("open")) {
-        menuButton.style.display = "none";
-    } else {
-        menuButton.style.display = "block";
+        if (sidebar.classList.contains("open")) {
+            menuButton.style.display = "none";
+        } else {
+            menuButton.style.display = "block";
+        }
+
+        return;
     }
-  }
-}
 
+    // LAPTOP ONLY
+    if (sidebar.style.display === "block") {
+        sidebar.style.display = "none";
+    } else {
+        sidebar.style.display = "block";
+        sidebar.style.width = "240px";
+    }
+}
   function toggleAccountMenu() {
     const accountMenu = document.getElementById("accountMenu");
     accountMenu.classList.toggle("open");
