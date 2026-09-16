@@ -99,13 +99,71 @@ body {
     padding: 90px 20px 30px;
 }
 }
+/* ReviewRise top navigation */
+.top-navbar {
+    width: 100%;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    box-sizing: border-box;
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+    position: relative;
+    z-index: 900;
+}
+
+.top-navbar-logo {
+    font-size: 27px;
+    font-weight: 700;
+    color: #111827;
+    margin-left: 18px;
+}
+
+.top-navbar-actions {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+}
+
+.navbar-icon {
+    background: transparent;
+    border: none;
+    color: #111827;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+/* Put the existing hamburger inside the navbar */
+.top-navbar .mobile-menu-btn {
+    position: static;
+    display: block;
+    background: transparent;
+    color: #111827;
+    border: none;
+    padding: 0;
+    margin: 0;
+    font-size: 30px;
+    line-height: 1;
+    cursor: pointer;
+}
         
 </style>
 </head>
     
 <body>
     
-    <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+ <div class="top-navbar">
+    <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="toggleSidebar()">☰</button>
+
+    <div class="top-navbar-logo">ReviewRise</div>
+
+    <div class="top-navbar-actions">
+        <button class="navbar-icon" aria-label="Account">
+            ♙
+        </button>
+    </div>
+</div>
     
 <aside class="sidebar">
     <div class="logo">ReviewRise</div>
