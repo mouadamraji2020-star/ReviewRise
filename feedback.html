@@ -131,6 +131,47 @@
     z-index: 1000;
 }
 }
+
+    /* ReviewRise mobile top navigation */
+.mobile-topbar {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .mobile-topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: relative;
+        width: 100%;
+        height: 76px;
+        padding: 0 20px;
+        box-sizing: border-box;
+        background: white;
+        border-bottom: 1px solid #e5e7eb;
+        z-index: 900;
+    }
+
+    .topbar-menu {
+        background: none;
+        border: none;
+        padding: 0;
+        color: #111827;
+        font-size: 30px;
+        cursor: pointer;
+    }
+
+    .topbar-logo {
+        font-size: 30px;
+        font-weight: 700;
+        color: #111827;
+    }
+
+    .topbar-user {
+        font-size: 27px;
+        color: #111827;
+    }
+}
     
   </style>
 </head>
