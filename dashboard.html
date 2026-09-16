@@ -887,10 +887,12 @@ const sidebarIsVisible = window.getComputedStyle(sidebar).display !== "none";
 if (sidebarIsVisible) {
     sidebar.style.display = "none";
 } else {
-    sidebar.style.display = "block";
-    sidebar.style.width = "240px";
-}
-  function toggleAccountMenu() {
+        sidebar.style.display = "block";
+        sidebar.style.width = "240px";
+    }
+}  // closes toggleSidebar
+
+function toggleAccountMenu() {
     const accountMenu = document.getElementById("accountMenu");
     accountMenu.classList.toggle("open");
 }
