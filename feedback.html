@@ -192,6 +192,84 @@
     line-height: 1;
     cursor: pointer;
 }
+
+/* LAPTOP SIDEBAR ONLY - DO NOT AFFECT FORM */
+@media (min-width: 801px) {
+
+    .mobile-menu-btn {
+        display: block !important;
+        position: static !important;
+        background: transparent !important;
+        color: #111827 !important;
+        border: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        font-size: 30px !important;
+        line-height: 1;
+        cursor: pointer;
+    }
+
+    .sidebar {
+        display: block !important;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 240px;
+        height: 100vh;
+        background: #111827;
+        z-index: 1000;
+        padding: 24px 16px;
+        box-sizing: border-box;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+    }
+
+    .sidebar.open .logo {
+        display: block;
+        color: white;
+        font-size: 24px;
+        font-weight: 700;
+    }
+
+    .sidebar.open .close-menu-btn {
+        display: block;
+        position: absolute;
+        top: 25px;
+        right: 18px;
+        background: transparent;
+        border: none;
+        color: white;
+        font-size: 25px;
+        cursor: pointer;
+    }
+
+    .sidebar.open .menu-item {
+        display: block;
+        color: #e5e7eb;
+        text-decoration: none;
+        padding: 12px 14px;
+        margin-bottom: 6px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 500;
+        transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .sidebar.open .menu-item:hover {
+        background: #1f2937;
+        color: #ffffff;
+    }
+
+    .sidebar.open .menu-item.active {
+        background: #2563eb;
+        color: #ffffff;
+        font-weight: 600;
+    }
+}
     
   </style>
 </head>
