@@ -64,8 +64,21 @@ body {
     margin: 0;
     color: #6b7280;
 }
-
+.close-menu-btn {
+    display: none;
+}
         @media (max-width: 800px) {
+            .close-menu-btn {
+    display: block;
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 28px;
+    cursor: pointer;
+}
 
     .sidebar {
         display: none;
@@ -166,6 +179,9 @@ body {
 </div>
     
 <aside class="sidebar">
+    
+    <button class="close-menu-btn" onclick="toggleSidebar()">×</button>
+    
     <div class="logo">ReviewRise</div>
 
     <a href="dashboard.html" class="menu-item">Dashboard</a>
