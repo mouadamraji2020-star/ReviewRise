@@ -881,13 +881,14 @@ function toggleSidebar() {
         return;
     }
 
-    // LAPTOP ONLY
-    if (sidebar.style.display === "block") {
-        sidebar.style.display = "none";
-    } else {
-        sidebar.style.display = "block";
-        sidebar.style.width = "240px";
-    }
+// LAPTOP ONLY
+const sidebarIsVisible = window.getComputedStyle(sidebar).display !== "none";
+
+if (sidebarIsVisible) {
+    sidebar.style.display = "none";
+} else {
+    sidebar.style.display = "block";
+    sidebar.style.width = "240px";
 }
   function toggleAccountMenu() {
     const accountMenu = document.getElementById("accountMenu");
