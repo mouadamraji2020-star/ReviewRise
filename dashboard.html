@@ -323,6 +323,35 @@ a.menu-item:visited {
     line-height: 1;
     cursor: pointer;
 }
+
+  /* LAPTOP ONLY */
+@media (min-width: 801px) {
+    .mobile-menu-btn {
+        display: block !important;
+        position: static !important;
+        background: transparent !important;
+        color: #111827 !important;
+        border: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        font-size: 30px !important;
+        cursor: pointer;
+    }
+
+    .sidebar {
+        display: none !important;
+    }
+
+    .sidebar.open {
+        display: block !important;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 240px;
+        height: 100vh;
+        z-index: 1000;
+    }
+}
   
 </style>
 </head>
