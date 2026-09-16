@@ -265,7 +265,43 @@ a.menu-item:visited {
     display: flex;
     align-items: center;
 }
+.top-navbar-actions {
+    position: relative;
+}
 
+.account-menu {
+    display: none;
+    position: absolute;
+    top: 45px;
+    right: 0;
+    min-width: 140px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    padding: 6px;
+    z-index: 2000;
+}
+
+.account-menu.open {
+    display: block;
+}
+
+.account-menu button {
+    width: 100%;
+    padding: 10px 14px;
+    background: transparent;
+    border: none;
+    border-radius: 7px;
+    text-align: left;
+    font-size: 14px;
+    color: #111827;
+    cursor: pointer;
+}
+
+.account-menu button:hover {
+    background: #f3f4f6;
+}
 .navbar-icon {
     background: transparent;
     border: none;
@@ -322,11 +358,18 @@ a.menu-item:visited {
 
     <div class="top-navbar-logo">ReviewRise</div>
 
-    <div class="top-navbar-actions">
-        <button class="navbar-icon" aria-label="Account">
-            ♙
-        </button>
+<div class="top-navbar-actions">
+
+    <button class="navbar-icon" id="accountButton" onclick="toggleAccountMenu()" aria-label="Account">
+        ♙
+    </button>
+
+    <div class="account-menu" id="accountMenu">
+        <button onclick="logout()">Log Out</button>
     </div>
+
+</div>
+  
 </div>
   
   <aside class="sidebar">
@@ -648,6 +691,11 @@ function toggleSidebar() {
     } else {
         menuButton.style.display = "block";
     }
+}
+
+  function toggleAccountMenu() {
+    const accountMenu = document.getElementById("accountMenu");
+    accountMenu.classList.toggle("open");
 }
   
 </script>
