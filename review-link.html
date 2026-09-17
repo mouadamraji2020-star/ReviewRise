@@ -78,9 +78,20 @@ body {
     margin: 0;
     color: #6b7280;
 }
+        
 .close-menu-btn {
-    display: none;
+    display: block;
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    font-size: 28px;
+    cursor: pointer;
+    z-index: 1100;
 }
+        
         @media (max-width: 800px) {
             .close-menu-btn {
     display: block;
@@ -109,17 +120,9 @@ body {
 }
 
 .sidebar.open {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 240px;
-    height: 100vh;
-    background: #111827;
-    z-index: 1000;
-    padding: 24px 16px;
-    box-sizing: border-box;
     transform: translateX(0);
 }
+            
 .mobile-menu-btn {
     display: block;
     position: static;
