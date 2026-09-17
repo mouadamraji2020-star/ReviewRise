@@ -706,6 +706,85 @@ body.page-leaving {
         margin-left: 58px;
     }
 }
+
+.review-link-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.review-link-info h3 {
+    margin: 0 0 5px 0;
+}
+
+.review-link-subtitle {
+    display: block;
+    color: #7b8494;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.review-link-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.review-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    padding: 7px 10px;
+
+    background: #f0fdf4;
+    border: 1px solid #dcfce7;
+    border-radius: 999px;
+
+    color: #15803d;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #22c55e;
+}
+
+.review-copy-btn {
+    border: 1px solid #e2e6ec;
+    background: #ffffff;
+
+    padding: 9px 13px;
+    border-radius: 10px;
+
+    color: #344054;
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+    transition: 0.18s ease;
+}
+
+.review-copy-btn:hover {
+    background: #f8fafc;
+    border-color: #d5dae2;
+}
+
+.review-open-btn {
+    padding: 9px 14px !important;
+    border-radius: 10px !important;
+}
+
+@media (max-width: 700px) {
+    .review-link-actions {
+        width: 100%;
+        margin-left: 58px;
+        flex-wrap: wrap;
+    }
+}
         
 </style>
 </head>
@@ -975,23 +1054,70 @@ async function loadReviewLinks() {
 
     container.innerHTML = "";
 
-    reviewLinks.forEach(function(link) {
-        const item = document.createElement("div");
-        item.className = "review-link-item";
+reviewLinks.forEach(function(link) {
+    const item = document.createElement("div");
+    item.className = "review-link-item";
 
-        const name = document.createElement("h3");
-        name.textContent = link.business_name;
+    // Business information
+    const info = document.createElement("div");
+    info.className = "review-link-info";
 
-        const url = document.createElement("a");
-        url.href = link.google_review_link;
-        url.target = "_blank";
-        url.rel = "noopener noreferrer";
-        url.textContent = "Open Google Review Link";
+    const name = document.createElement("h3");
+    name.textContent = link.business_name;
 
-        item.appendChild(name);
-        item.appendChild(url);
-        container.appendChild(item);
+    const subtitle = document.createElement("span");
+    subtitle.className = "review-link-subtitle";
+    subtitle.textContent = "Google Reviews";
+
+    info.appendChild(name);
+    info.appendChild(subtitle);
+
+    // Actions
+    const actions = document.createElement("div");
+    actions.className = "review-link-actions";
+
+    // Active status
+    const status = document.createElement("span");
+    status.className = "review-status";
+    status.innerHTML = '<span class="status-dot"></span> Active';
+
+    // Copy button
+    const copyButton = document.createElement("button");
+    copyButton.className = "review-copy-btn";
+    copyButton.textContent = "Copy Link";
+
+    copyButton.addEventListener("click", async function() {
+        try {
+            await navigator.clipboard.writeText(link.google_review_link);
+
+            copyButton.textContent = "✓ Copied";
+
+            setTimeout(function() {
+                copyButton.textContent = "Copy Link";
+            }, 1800);
+
+        } catch (error) {
+            console.error("Could not copy link:", error);
+        }
     });
+
+    // Open button
+    const openButton = document.createElement("a");
+    openButton.className = "review-open-btn";
+    openButton.href = link.google_review_link;
+    openButton.target = "_blank";
+    openButton.rel = "noopener noreferrer";
+    openButton.textContent = "Open ↗";
+
+    actions.appendChild(status);
+    actions.appendChild(copyButton);
+    actions.appendChild(openButton);
+
+    item.appendChild(info);
+    item.appendChild(actions);
+
+    container.appendChild(item);
+});
 }
 
 loadReviewLinks();
