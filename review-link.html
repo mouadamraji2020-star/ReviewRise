@@ -952,7 +952,7 @@ body.page-leaving {
 
         <div class="review-modal-header">
             <div>
-                <h2>Add Review Link</h2>
+                <h2 id="reviewModalTitle">Add Review Link</h2>
                 <p>Create a new review destination for your business.</p>
             </div>
 
@@ -982,9 +982,9 @@ body.page-leaving {
                 Cancel
             </button>
 
-    <button class="save-link-btn" onclick="createReviewLink()">
-        Create Review Link
-    </button>
+<button id="saveReviewLinkBtn" class="save-link-btn" onclick="createReviewLink()">
+    Create Review Link
+</button>
         </div>
 
     </div>
@@ -1217,6 +1217,9 @@ document.querySelectorAll(".review-options-menu").forEach(function(openMenu) {
 
     menu.remove();
 
+        document.getElementById("reviewModalTitle").textContent = "Edit Review Link";
+        document.getElementById("saveReviewLinkBtn").textContent = "Save Changes";
+        
     document.getElementById("businessName").value = link.business_name;
     document.getElementById("googleReviewLink").value = link.google_review_link;
 
