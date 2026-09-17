@@ -918,8 +918,18 @@ if (
 
 }
 feedbackMenu.addEventListener("click", function () {
-    window.location.href = "feedback.html";
+    navigateSmoothly("feedback.html");
 });
+  
+function navigateSmoothly(page) {
+    const sidebar = document.querySelector(".sidebar");
+
+    sidebar.classList.remove("open");
+
+    setTimeout(function () {
+        window.location.href = page;
+    }, 300);
+}
   
 function toggleSidebar() {
     const sidebar = document.querySelector(".sidebar");
