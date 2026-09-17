@@ -310,6 +310,82 @@ body.page-leaving {
     background: #1d4ed8;
     transform: translateY(-1px);
 }
+
+/* Review Links card */
+.review-links-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 24px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.04);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.card-header h2 {
+    margin: 0 0 6px;
+    font-size: 20px;
+    color: #111827;
+}
+
+.card-header p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 55px 20px;
+    border-top: 1px solid #f0f1f3;
+}
+
+.empty-icon {
+    width: 52px;
+    height: 52px;
+    margin: 0 auto 16px;
+    border-radius: 12px;
+    background: #eff6ff;
+    color: #2563eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 25px;
+    font-weight: 600;
+}
+
+.empty-state h3 {
+    margin: 0 0 8px;
+    font-size: 18px;
+    color: #111827;
+}
+
+.empty-state p {
+    margin: 0 auto 20px;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.empty-add-btn {
+    background: #2563eb;
+    color: #ffffff;
+    border: none;
+    border-radius: 9px;
+    padding: 11px 17px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.empty-add-btn:hover {
+    background: #1d4ed8;
+}
         
 </style>
 </head>
@@ -370,6 +446,24 @@ body.page-leaving {
         <button class="add-link-btn">+ Add Review Link</button>
     </div>
 
+ <div class="review-links-card">
+
+    <div class="card-header">
+        <div>
+            <h2>Your Review Links</h2>
+            <p>Create and manage review destinations for your business.</p>
+        </div>
+    </div>
+
+    <div class="empty-state">
+        <div class="empty-icon">↗</div>
+        <h3>No review links yet</h3>
+        <p>Add your first review link to start collecting customer reviews.</p>
+        <button class="empty-add-btn">+ Add Review Link</button>
+    </div>
+
+</div>
+    
 </main>
 
     <script>
