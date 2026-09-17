@@ -1140,10 +1140,32 @@ menuBtn.className = "review-menu-btn";
 menuBtn.textContent = "•••";
 menuBtn.title = "More options";
 
-menuBtn.onclick = function () {
-    alert("Edit and Delete options coming next");
-};
+menuBtn.onclick = function (event) {
+    event.stopPropagation();
 
+    const existingMenu = item.querySelector(".review-options-menu");
+
+    if (existingMenu) {
+        existingMenu.remove();
+        return;
+    }
+
+    const menu = document.createElement("div");
+    menu.className = "review-options-menu";
+
+    const editBtn = document.createElement("button");
+    editBtn.className = "review-option";
+    editBtn.textContent = "Edit";
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.className = "review-option delete-option";
+    deleteBtn.textContent = "Delete";
+
+    menu.appendChild(editBtn);
+    menu.appendChild(deleteBtn);
+
+    item.appendChild(menu);
+};
 actions.appendChild(menuBtn);
     
     item.appendChild(info);
