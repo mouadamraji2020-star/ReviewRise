@@ -1258,19 +1258,6 @@ document.querySelectorAll(".review-options-menu").forEach(function(openMenu) {
         menu.remove();
     });
 };
-    editBtn.onclick = function (event) {
-    event.stopPropagation();
-
-    menu.remove();
-
-        document.getElementById("reviewModalTitle").textContent = "Edit Review Link";
-        document.getElementById("saveReviewLinkBtn").textContent = "Save Changes";
-        
-    document.getElementById("businessName").value = link.business_name;
-    document.getElementById("googleReviewLink").value = link.google_review_link;
-
-    openReviewLinkModal();
-};
     
     const deleteBtn = document.createElement("button");
     deleteBtn.className = "review-option delete-option";
