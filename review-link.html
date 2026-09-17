@@ -602,9 +602,9 @@ body.page-leaving {
                 Cancel
             </button>
 
-            <button class="save-link-btn">
-                Create Review Link
-            </button>
+    <button class="save-link-btn" onclick="createReviewLink()">
+        Create Review Link
+    </button>
         </div>
 
     </div>
@@ -633,6 +633,21 @@ function openReviewLinkModal() {
 
 function closeReviewLinkModal() {
     document.getElementById("reviewLinkModal").classList.remove("open");
+}
+
+function createReviewLink() {
+    const businessName = document.getElementById("businessName").value.trim();
+    const googleReviewLink = document.getElementById("googleReviewLink").value.trim();
+
+    if (!businessName || !googleReviewLink) {
+        alert("Please enter the business name and Google review link.");
+        return;
+    }
+
+    console.log("Business:", businessName);
+    console.log("Google Review Link:", googleReviewLink);
+
+    alert("Review link information received!");
 }
         
 </script>
