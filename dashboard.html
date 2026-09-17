@@ -551,6 +551,16 @@ a.menu-item:visited {
 
 }
   
+/* Smooth page transition */
+body {
+    opacity: 1;
+    transition: opacity 0.25s ease;
+}
+
+body.page-leaving {
+    opacity: 0;
+}
+  
 </style>
 </head>
 
@@ -917,8 +927,13 @@ if (
   showDashboard();
 
 }
+  
 feedbackMenu.addEventListener("click", function () {
-    navigateSmoothly("feedback.html");
+    document.body.classList.add("page-leaving");
+
+    setTimeout(function () {
+        window.location.href = "feedback.html";
+    }, 250);
 });
   
 function navigateSmoothly(page) {
