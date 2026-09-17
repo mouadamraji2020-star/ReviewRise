@@ -929,7 +929,7 @@ if (
 }
   
 feedbackMenu.addEventListener("click", function () {
-    document.body.classList.add("page-leaving");
+    document.body.classList.add("");
 
     setTimeout(function () {
         window.location.href = "feedback.html";
@@ -937,9 +937,7 @@ feedbackMenu.addEventListener("click", function () {
 });
   
 function smoothNavigate(page) {
-    const sidebar = document.querySelector(".sidebar");
-
-    sidebar.classList.remove("open");
+    document.body.classList.add("");
 
     setTimeout(function () {
         window.location.href = page;
