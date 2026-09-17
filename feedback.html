@@ -278,6 +278,22 @@
         font-weight: 600;
     }
 }
+/* Smooth page entrance */
+body {
+    animation: pageEnter 0.3s ease-out;
+}
+
+@keyframes pageEnter {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
     
   </style>
 </head>
