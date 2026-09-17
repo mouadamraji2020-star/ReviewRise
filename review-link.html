@@ -629,12 +629,14 @@ body.page-leaving {
         </div>
     </div>
 
-    <div class="empty-state">
+<div id="reviewLinksContainer">
+    <div class="empty-state" id="emptyState">
         <div class="empty-icon">↗</div>
         <h3>No review links yet</h3>
         <p>Add your first review link to start collecting customer reviews.</p>
-<button class="empty-add-btn" onclick="openReviewLinkModal()">+ Add Review Link</button>
+        <button class="empty-add-btn" onclick="openReviewLinkModal()">+ Add Review Link</button>
     </div>
+</div>
 
 </div>
 
@@ -786,7 +788,59 @@ setTimeout(function () {
 
     document.getElementById("businessName").value = "";
     document.getElementById("googleReviewLink").value = "";
+
+    loadReviewLinks();
 }
+
+async function loadReviewLinks() {
+    const token = localStorage.getItem("reviewrise_token");
+    const container = document.getElementById("reviewLinksContainer");
+
+    if (!token || !container) return;
+
+    const response = await fetch(
+        SUPABASE_URL + "/rest/v1/ReviewLinks?select=*&order=created_at.desc",
+        {
+            headers: {
+                "apikey": SUPABASE_KEY,
+                "Authorization": "Bearer " + token
+            }
+        }
+    );
+
+    if (!response.ok) {
+        console.error("Could not load review links:", await response.text());
+        return;
+    }
+
+    const reviewLinks = await response.json();
+
+    if (reviewLinks.length === 0) {
+        return;
+    }
+
+    container.innerHTML = "";
+
+    reviewLinks.forEach(function(link) {
+        const item = document.createElement("div");
+        item.className = "review-link-item";
+
+        const name = document.createElement("h3");
+        name.textContent = link.business_name;
+
+        const url = document.createElement("a");
+        url.href = link.google_review_link;
+        url.target = "_blank";
+        url.rel = "noopener noreferrer";
+        url.textContent = "Open Google Review Link";
+
+        item.appendChild(name);
+        item.appendChild(url);
+        container.appendChild(item);
+    });
+}
+
+loadReviewLinks();
         
 </script>
     
