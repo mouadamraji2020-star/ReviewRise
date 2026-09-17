@@ -995,6 +995,9 @@ body.page-leaving {
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <script>
+
+  let editingReviewLinkId = null;
+        
         const SUPABASE_URL = "https://intlhwmvldxdiytemjlr.supabase.co";
         const SUPABASE_KEY = "sb_publishable_0KjZZApJCuvTEJH3nNyLUg_aps6aXaA";
         
@@ -1056,22 +1059,35 @@ if (!userResponse.ok) {
 }
 
 const user = await userResponse.json();
-const insertResponse = await fetch(
-  SUPABASE_URL + "/rest/v1/Reviewlinks",
-  {
-    method: "POST",
+const isEditing = editingReviewLinkId !== null;
+
+const requestUrl = isEditing
+    ? SUPABASE_URL + "/rest/v1/ReviewLinks?id=eq." + encodeURIComponent(editingReviewLinkId)
+    : SUPABASE_URL + "/rest/v1/ReviewLinks";
+
+const insertResponse = await fetch(requestUrl, {
+    method: isEditing ? "PATCH" : "POST",
+
     headers: {
-      "apikey": SUPABASE_KEY,
-      "Authorization": "Bearer " + token,
-      "Content-Type": "application/json",
-      "Prefer": "return=minimal"
+        "apikey": SUPABASE_KEY,
+        "Authorization": "Bearer " + token,
+        "Content-Type": "application/json",
+        "Prefer": "return=minimal"
     },
-    body: JSON.stringify({
-      business_name: businessName,
-      google_review_link: googleReviewLink,
-      user_id: user.id
-    })
-  }
+
+    body: JSON.stringify(
+        isEditing
+            ? {
+                business_name: businessName,
+                google_review_link: googleReviewLink
+            }
+            : {
+                business_name: businessName,
+                google_review_link: googleReviewLink,
+                user_id: user.id
+            }
+    )
+});
 );
 
 const error = insertResponse.ok
@@ -1083,13 +1099,30 @@ const error = insertResponse.ok
         alert("Could not create the review link.");
         return;
     }
+const toastTitle = successToast?.querySelector(".toast-title");
+const toastMessage = successToast?.querySelector(".toast-message");
     
 const successToast = document.getElementById("successToast");
+    const toastTitle = successToast.querySelector("strong");
+    
+const toastMessage = successToast.querySelector("span");
+
+if (isEditing) {
+    toastTitle.textContent = "Review link updated";
+    toastMessage.textContent = "Your changes have been saved successfully.";
+} else {
+    toastTitle.textContent = "Review link created";
+    toastMessage.textContent = "Your new review link is ready to use.";
+} 
 successToast.classList.add("show");
 
 setTimeout(function () {
     successToast.classList.remove("show");
 }, 3000);
+
+editingReviewLinkId = null;
+
+document.querySelector(".save-link-btn").textContent = "Create Review Link";
     
     closeReviewLinkModal();
 
@@ -1212,6 +1245,22 @@ document.querySelectorAll(".review-options-menu").forEach(function(openMenu) {
     editBtn.className = "review-option";
     editBtn.textContent = "Edit";
 
+    editBtn.onclick = function (event) {
+    event.stopPropagation();
+
+    editingReviewLinkId = link.id;
+
+    document.getElementById("businessName").value = link.business_name;
+    document.getElementById("googleReviewLink").value = link.google_review_link;
+
+    document.querySelector(".save-link-btn").textContent = "Save Changes";
+
+    document.getElementById("reviewLinkModal").classList.add("open");
+
+    document.querySelectorAll(".review-options-menu").forEach(function(menu) {
+        menu.remove();
+    });
+};
     editBtn.onclick = function (event) {
     event.stopPropagation();
 
