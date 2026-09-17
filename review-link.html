@@ -1212,6 +1212,17 @@ document.querySelectorAll(".review-options-menu").forEach(function(openMenu) {
     editBtn.className = "review-option";
     editBtn.textContent = "Edit";
 
+    editBtn.onclick = function (event) {
+    event.stopPropagation();
+
+    menu.remove();
+
+    document.getElementById("businessName").value = link.business_name;
+    document.getElementById("googleReviewLink").value = link.google_review_link;
+
+    openReviewLinkModal();
+};
+    
     const deleteBtn = document.createElement("button");
     deleteBtn.className = "review-option delete-option";
     deleteBtn.textContent = "Delete";
