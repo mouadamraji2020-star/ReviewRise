@@ -639,23 +639,23 @@ body.page-leaving {
     
     <div class="logo">ReviewRise</div>
 
-    <div class="menu-item active">
-      Dashboard
-    </div>
+<div class="menu-item active" onclick="smoothNavigate('dashboard.html')">
+    Dashboard
+</div>
 
-<a href="feedback.html" class="menu-item">Feedback</a>
+<div class="menu-item" onclick="smoothNavigate('feedback.html')">Feedback</div>
 
-<a href="analytics.html" class="menu-item">Analytics</a>
+<div class="menu-item" onclick="smoothNavigate('analytics.html')">Analytics</div>
 
-<a href="review-link.html" class="menu-item">Review Links</a>
+<div class="menu-item" onclick="smoothNavigate('review-link.html')">Review Links</div>
     
-    <div class="menu-item">
-      QR & NFC
-    </div>
+<div class="menu-item" onclick="smoothNavigate('qr-nfc.html')">
+    QR & NFC
+</div>
 
-    <div class="menu-item">
-      Settings
-    </div>
+<div class="menu-item" onclick="smoothNavigate('settings.html')">
+    Settings
+</div>
     
   </aside>
 
@@ -936,14 +936,14 @@ feedbackMenu.addEventListener("click", function () {
     }, 250);
 });
   
-function navigateSmoothly(page) {
+function smoothNavigate(page) {
     const sidebar = document.querySelector(".sidebar");
 
     sidebar.classList.remove("open");
 
     setTimeout(function () {
         window.location.href = page;
-    }, 300);
+    }, 250);
 }
   
 function toggleSidebar() {
