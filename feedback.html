@@ -294,6 +294,16 @@ body {
         transform: translateY(0);
     }
 }
+
+/* Smooth page transition */
+body {
+    opacity: 1;
+    transition: opacity 0.25s ease;
+}
+
+body.page-leaving {
+    opacity: 0;
+}
     
   </style>
 </head>
@@ -318,29 +328,30 @@ body {
     
     <div class="logo">ReviewRise</div>
 
-    <div class="menu-item" onclick="window.location.href='dashboard.html'">
-      Dashboard
-    </div>
+<div class="menu-item" onclick="smoothNavigate('dashboard.html')">
+    Dashboard
+</div>
 
-    <div class="menu-item active">
-      Feedback
-    </div>
+<div class="menu-item active">
+    Feedback
+</div>
 
-<div class="menu-item" onclick="window.location.href='analytics.html'">
-      Analytics
-    </div>
+<div class="menu-item" onclick="smoothNavigate('analytics.html')">
+    Analytics
+</div>
 
-<a href="review-link.html" class="menu-item">
+<div class="menu-item" onclick="smoothNavigate('review-link.html')">
     Review Links
-</a>
+</div>
 
-    <div class="menu-item">
-      QR & NFC
-    </div>
+<div class="menu-item" onclick="smoothNavigate('qr-nfc.html')">
+    QR & NFC
+</div>
 
-    <div class="menu-item">
-      Settings
-    </div>
+<div class="menu-item" onclick="smoothNavigate('settings.html')">
+    Settings
+</div>
+    
   </aside>
 
   <main class="main">
@@ -407,6 +418,14 @@ body {
 
     loadFeedback();
 
+  function smoothNavigate(page) {
+    document.body.classList.add("page-leaving");
+
+    setTimeout(function () {
+        window.location.href = page;
+    }, 250);
+}
+    
     function toggleSidebar() {
     const sidebar = document.querySelector('.sidebar');
     sidebar.classList.toggle('open');
