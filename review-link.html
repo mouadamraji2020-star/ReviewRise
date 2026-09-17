@@ -26,6 +26,10 @@ body {
     left: 0;
     top: 0;
     padding: 28px 20px;
+    box-sizing: border-box;
+    z-index: 1000;
+    transform: translateX(0);
+    transition: transform 0.3s ease;
 }
 
 .logo {
@@ -36,18 +40,33 @@ body {
 
 .menu-item {
     display: block;
+    width: 100%;
+    box-sizing: border-box;
     text-decoration: none;
     padding: 13px 15px;
     margin-bottom: 8px;
     border-radius: 9px;
     cursor: pointer;
     color: #d1d5db;
+    font-size: 15px;
+    font-weight: 500;
+
+    transition:
+        background-color 0.25s ease,
+        color 0.25s ease,
+        transform 0.25s ease;
 }
 
-.menu-item:hover,
+.menu-item:hover {
+    background: #1f2937;
+    color: #ffffff;
+    transform: translateX(3px);
+}
+
 .menu-item.active {
     background: #1f2937;
-    color: white;
+    color: #ffffff;
+    font-weight: 600;
 }
 
 .main {
@@ -80,14 +99,22 @@ body {
     cursor: pointer;
 }
 
-    .sidebar {
-        display: none;
-    }
-
-  .sidebar.open {
-    display: block;
+.sidebar {
+    display: block !important;
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 240px;
+    height: 100vh;
+    background: #111827;
     z-index: 1000;
+
+    transform: translateX(-100%);
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.sidebar.open {
+    transform: translateX(0);
 }
 
 .mobile-menu-btn {
@@ -160,6 +187,15 @@ body {
     line-height: 1;
     cursor: pointer;
 }
+/* Smooth page transition */
+body {
+    opacity: 1;
+    transition: opacity 0.25s ease;
+}
+
+body.page-leaving {
+    opacity: 0;
+}
         
 </style>
 </head>
@@ -184,17 +220,29 @@ body {
     
     <div class="logo">ReviewRise</div>
 
-    <a href="dashboard.html" class="menu-item">Dashboard</a>
+<div class="menu-item" onclick="smoothNavigate('dashboard.html')">
+    Dashboard
+</div>
 
-    <a href="feedback.html" class="menu-item">Feedback</a>
+<div class="menu-item" onclick="smoothNavigate('feedback.html')">
+    Feedback
+</div>
 
-    <a href="analytics.html" class="menu-item">Analytics</a>
+<div class="menu-item" onclick="smoothNavigate('analytics.html')">
+    Analytics
+</div>
 
-    <a href="review-links.html" class="menu-item active">Review Links</a>
+<div class="menu-item active">
+    Review Links
+</div>
 
-    <div class="menu-item">QR & NFC</div>
+<div class="menu-item" onclick="smoothNavigate('qr-nfc.html')">
+    QR & NFC
+</div>
 
-    <div class="menu-item">Settings</div>
+<div class="menu-item" onclick="smoothNavigate('settings.html')">
+    Settings
+</div>
 </aside>
     <main class="main">
     <h1>Review Links</h1>
@@ -203,17 +251,17 @@ body {
 
     <script>
 
-        function toggleSidebar() {
+function toggleSidebar() {
     const sidebar = document.querySelector(".sidebar");
-    const menuButton = document.getElementById("mobileMenuBtn");
-
     sidebar.classList.toggle("open");
+}
+        
+function smoothNavigate(page) {
+    document.body.classList.add("page-leaving");
 
-    if (sidebar.classList.contains("open")) {
-        menuButton.style.display = "none";
-    } else {
-        menuButton.style.display = "block";
-    }
+    setTimeout(function () {
+        window.location.href = page;
+    }, 250);
 }
         
 </script>
