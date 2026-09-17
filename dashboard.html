@@ -928,16 +928,9 @@ if (
 
 }
   
-feedbackMenu.addEventListener("click", function () {
-    document.body.classList.add("");
-
-    setTimeout(function () {
-        window.location.href = "feedback.html";
-    }, 250);
-});
   
 function smoothNavigate(page) {
-    document.body.classList.add("");
+    document.body.classList.add("page-leaving");
 
     setTimeout(function () {
         window.location.href = page;
