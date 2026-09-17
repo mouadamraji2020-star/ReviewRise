@@ -785,6 +785,28 @@ body.page-leaving {
         flex-wrap: wrap;
     }
 }
+
+.review-menu-btn {
+    width: 42px;
+    height: 42px;
+    border: 1px solid #e5e7eb;
+    border-radius: 50%;
+    background: #ffffff;
+    color: #374151;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.review-menu-btn:hover {
+    background: #f5f5f7;
+    border-color: #d1d5db;
+    transform: translateY(-1px);
+}
         
 </style>
 </head>
@@ -1113,6 +1135,17 @@ reviewLinks.forEach(function(link) {
     actions.appendChild(copyButton);
     actions.appendChild(openButton);
 
+    const menuBtn = document.createElement("button");
+menuBtn.className = "review-menu-btn";
+menuBtn.textContent = "•••";
+menuBtn.title = "More options";
+
+menuBtn.onclick = function () {
+    alert("Edit and Delete options coming next");
+};
+
+actions.appendChild(menuBtn);
+    
     item.appendChild(info);
     item.appendChild(actions);
 
