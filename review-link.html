@@ -799,7 +799,7 @@ async function loadReviewLinks() {
     if (!token || !container) return;
 
     const response = await fetch(
-        SUPABASE_URL + "/rest/v1/ReviewLinks?select=*&order=created_at.desc",
+        SUPABASE_URL + "/rest/v1/Reviewlinks?select=*&order=created_at.desc",
         {
             headers: {
                 "apikey": SUPABASE_KEY,
