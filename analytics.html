@@ -334,7 +334,16 @@ h1 {
     color: #ffffff;
     font-weight: 600;
 }
-    
+
+/* Smooth page transition */
+body {
+    opacity: 1;
+    transition: opacity 0.25s ease;
+}
+
+body.page-leaving {
+    opacity: 0;
+}    
 </style>
 </head>
 
@@ -358,13 +367,13 @@ h1 {
     
     <div class="logo">ReviewRise</div>
 
-    <a href="dashboard.html" class="menu-item">Dashboard</a>
+    <div class="menu-item" onclick="smoothNavigate('dashboard.html')">Dashboard</div>
 
-<div class="menu-item" onclick="window.location.href='feedback.html'">Feedback</div>
+<div class="menu-item" onclick="smoothNavigate('feedback.html')">Feedback</div>
 
-    <a href="analytics.html" class="menu-item active">Analytics</a>
-
-<a href="review-link.html" class="menu-item">Review Links</a>
+<div class="menu-item active" onclick="smoothNavigate('analytics.html')">Analytics</div>
+    
+<div class="menu-item" onclick="smoothNavigate('review-link.html')">Review Links</div>
 
     <div class="menu-item">QR & NFC</div>
 
@@ -491,6 +500,14 @@ loadAnalytics();
 </script>
 
 <script>  
+
+function smoothNavigate(page) {
+    document.body.classList.add("page-leaving");
+
+    setTimeout(function () {
+        window.location.href = page;
+    }, 250);
+}
     
 function toggleSidebar() {
     const sidebar = document.querySelector(".sidebar");
