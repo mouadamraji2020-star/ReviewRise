@@ -653,14 +653,29 @@ async function createReviewLink() {
         return;
     }
 
-    const { data: { user }, error: userError } =
-        await supabaseClient.auth.getUser();
+const token = localStorage.getItem("reviewrise_token");
 
-    if (userError || !user) {
-        alert("Please log in again.");
-        return;
+if (!token) {
+  alert("Please log in again.");
+  return;
+}
+
+const userResponse = await fetch(
+  SUPABASE_URL + "/auth/v1/user",
+  {
+    headers: {
+      "apikey": SUPABASE_KEY,
+      "Authorization": "Bearer " + token
     }
+  }
+);
 
+if (!userResponse.ok) {
+  alert("Please log in again.");
+  return;
+}
+
+const user = await userResponse.json();
     const { error } = await supabaseClient
         .from("Reviewlinks")
         .insert({
