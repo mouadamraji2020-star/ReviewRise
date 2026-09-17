@@ -937,7 +937,7 @@ body.page-leaving {
     </div>
 
 <div id="reviewLinksContainer">
-    <div class="empty-state" id="emptyState">
+   <div class="empty-state" id="emptyState" style="display: none;">
         <div class="empty-icon">↗</div>
         <h3>No review links yet</h3>
         <p>Add your first review link to start collecting customer reviews.</p>
@@ -1152,11 +1152,20 @@ async function loadReviewLinks() {
 
     const reviewLinks = await response.json();
 
-    if (reviewLinks.length === 0) {
-        return;
-    }
+const emptyState = document.getElementById("emptyState");
 
-    container.innerHTML = "";
+if (reviewLinks.length === 0) {
+    if (emptyState) {
+        emptyState.style.display = "";
+    }
+    return;
+}
+
+if (emptyState) {
+    emptyState.style.display = "none";
+}
+
+container.innerHTML = "";
 
 reviewLinks.forEach(function(link) {
     const item = document.createElement("div");
