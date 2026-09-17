@@ -810,8 +810,13 @@ body.page-leaving {
 
 .review-link-item {
     position: relative;
+    z-index: 1;
 }
 
+.review-link-item:has(.review-options-menu) {
+    z-index: 1000;
+}
+        
 .review-options-menu {
     position: absolute;
     right: 18px;
@@ -825,7 +830,7 @@ body.page-leaving {
         0 12px 30px rgba(0, 0, 0, 0.12),
         0 2px 8px rgba(0, 0, 0, 0.06);
     backdrop-filter: blur(18px);
-    z-index: 100;
+    z-index: 9999;
 }
 
 .review-option {
