@@ -135,7 +135,7 @@ body {
     box-sizing: border-box;
 }
 }
-    /* ReviewRise top navigation */
+/* ReviewRise top navigation */
 .top-navbar {
     width: 100%;
     height: 72px;
@@ -154,8 +154,6 @@ body {
     font-weight: 700;
     color: #111827;
     margin-left: 18px;
-    position: absolute;
-    left: 50px;
 }
 
 .top-navbar-actions {
@@ -163,7 +161,43 @@ body {
     display: flex;
     align-items: center;
 }
+.top-navbar-actions {
+    position: relative;
+}
 
+.account-menu {
+    display: none;
+    position: absolute;
+    top: 45px;
+    right: 0;
+    min-width: 140px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    padding: 6px;
+    z-index: 2000;
+}
+
+.account-menu.open {
+    display: block;
+}
+
+.account-menu button {
+    width: 100%;
+    padding: 10px 14px;
+    background: transparent;
+    border: none;
+    border-radius: 7px;
+    text-align: left;
+    font-size: 14px;
+    color: #111827;
+    cursor: pointer;
+}
+
+.account-menu button:hover {
+    background: #f3f4f6;
+}
 .navbar-icon {
     background: transparent;
     border: none;
@@ -185,7 +219,6 @@ body {
     line-height: 1;
     cursor: pointer;
 }
-/* Smooth page transition */
 body {
     opacity: 1;
     transition: opacity 0.25s ease;
