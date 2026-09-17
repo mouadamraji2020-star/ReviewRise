@@ -927,7 +927,7 @@ body.page-leaving {
 <button class="add-link-btn" onclick="openReviewLinkModal()">+ Add Review Link</button>
     </div>
 
- <div class="review-links-card">
+<div class="review-links-card" id="reviewLinksCard" style="visibility: hidden;">
 
     <div class="card-header">
         <div>
@@ -1153,11 +1153,13 @@ async function loadReviewLinks() {
     const reviewLinks = await response.json();
 
 const emptyState = document.getElementById("emptyState");
-
+const reviewLinksCard = document.getElementById("reviewLinksCard");
 if (reviewLinks.length === 0) {
     if (emptyState) {
         emptyState.style.display = "";
     }
+
+    if (reviewLinksCard) reviewLinksCard.style.visibility = "visible";
     return;
 }
 
@@ -1284,6 +1286,8 @@ actions.appendChild(menuBtn);
 
     container.appendChild(item);
 });
+document.querySelector(".review-links-card").style.visibility = "visible";
+    
 }
 document.addEventListener("click", function () {
     document.querySelectorAll(".review-options-menu").forEach(function(menu) {
