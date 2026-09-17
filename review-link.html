@@ -443,7 +443,7 @@ body.page-leaving {
             <p>Manage the links your customers use to share their experience.</p>
         </div>
 
-        <button class="add-link-btn">+ Add Review Link</button>
+<button class="add-link-btn" onclick="openReviewLinkModal()">+ Add Review Link</button>
     </div>
 
  <div class="review-links-card">
@@ -459,9 +459,52 @@ body.page-leaving {
         <div class="empty-icon">↗</div>
         <h3>No review links yet</h3>
         <p>Add your first review link to start collecting customer reviews.</p>
-        <button class="empty-add-btn">+ Add Review Link</button>
+<button class="empty-add-btn" onclick="openReviewLinkModal()">+ Add Review Link</button>
     </div>
 
+</div>
+
+<div class="review-modal" id="reviewLinkModal">
+    <div class="review-modal-box">
+
+        <div class="review-modal-header">
+            <div>
+                <h2>Add Review Link</h2>
+                <p>Create a new review destination for your business.</p>
+            </div>
+
+            <button class="modal-close" onclick="closeReviewLinkModal()">×</button>
+        </div>
+
+        <div class="form-group">
+            <label>Business name</label>
+            <input
+                type="text"
+                id="businessName"
+                placeholder="e.g. L'Adresse Boutique Hotel"
+            >
+        </div>
+
+        <div class="form-group">
+            <label>Google review link</label>
+            <input
+                type="url"
+                id="googleReviewLink"
+                placeholder="https://..."
+            >
+        </div>
+
+        <div class="modal-actions">
+            <button class="cancel-btn" onclick="closeReviewLinkModal()">
+                Cancel
+            </button>
+
+            <button class="save-link-btn">
+                Create Review Link
+            </button>
+        </div>
+
+    </div>
 </div>
     
 </main>
@@ -479,6 +522,14 @@ function smoothNavigate(page) {
     setTimeout(function () {
         window.location.href = page;
     }, 250);
+}
+
+function openReviewLinkModal() {
+    document.getElementById("reviewLinkModal").classList.add("open");
+}
+
+function closeReviewLinkModal() {
+    document.getElementById("reviewLinkModal").classList.remove("open");
 }
         
 </script>
