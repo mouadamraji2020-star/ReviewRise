@@ -114,9 +114,17 @@ body {
 }
 
 .sidebar.open {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 240px;
+    height: 100vh;
+    background: #111827;
+    z-index: 1000;
+    padding: 24px 16px;
+    box-sizing: border-box;
     transform: translateX(0);
 }
-
 .mobile-menu-btn {
     display: block;
     position: static;
