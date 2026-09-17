@@ -615,7 +615,14 @@ body.page-leaving {
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <script>
-
+        const SUPABASE_URL = "NEXT_PUBLIC_SUPABASE_URL=https://intlhwmvldxdiytemjlr.supabase.co";
+        const SUPABASE_KEY = "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_0KjZZApJCuvTEJH3nNyLUg_aps6aXaA";
+        
+   const supabaseClient = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+        
 function toggleSidebar() {
     const sidebar = document.querySelector(".sidebar");
     sidebar.classList.toggle("open");
@@ -637,7 +644,7 @@ function closeReviewLinkModal() {
     document.getElementById("reviewLinkModal").classList.remove("open");
 }
 
-function createReviewLink() {
+async function createReviewLink() {
     const businessName = document.getElementById("businessName").value.trim();
     const googleReviewLink = document.getElementById("googleReviewLink").value.trim();
 
@@ -646,10 +653,34 @@ function createReviewLink() {
         return;
     }
 
-    console.log("Business:", businessName);
-    console.log("Google Review Link:", googleReviewLink);
+    const { data: { user }, error: userError } =
+        await supabaseClient.auth.getUser();
 
-    alert("Review link information received!");
+    if (userError || !user) {
+        alert("Please log in again.");
+        return;
+    }
+
+    const { error } = await supabaseClient
+        .from("Reviewlinks")
+        .insert({
+            business_name: businessName,
+            google_review_link: googleReviewLink,
+            user_id: user.id
+        });
+
+    if (error) {
+        console.error(error);
+        alert("Could not create the review link.");
+        return;
+    }
+
+    closeReviewLinkModal();
+
+    document.getElementById("businessName").value = "";
+    document.getElementById("googleReviewLink").value = "";
+
+    alert("Review link created successfully!");
 }
         
 </script>
