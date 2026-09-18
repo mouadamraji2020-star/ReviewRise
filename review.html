@@ -278,7 +278,7 @@ footer {
 
   <main class="page">
 
-  <section class="review-card" id="reviewCard" style="visibility: hidden;">
+  <section class="review-card" id="reviewCard" style="visibility: hidden; opacity: 0; transform: translateY(8px); transition: opacity 0.45s ease, transform 0.35s ease;">
     
 <div class="business-logo" id="businessLogo">
     <img id="businessLogoImage" alt="Business logo" style="display:none;">
@@ -529,7 +529,12 @@ if (link.logo_url) {
 
         reviewRiseGoogleReviewUrl =
             link.google_review_link;
-      document.getElementById("reviewCard").style.visibility = "visible";
+const reviewCard = document.getElementById("reviewCard");
+reviewCard.style.visibility = "visible";
+requestAnimationFrame(() => {
+    reviewCard.style.opacity = "1";
+    reviewCard.style.transform = "translateY(0)";
+});
 
     } catch (error) {
         console.error("Error loading business:", error);
