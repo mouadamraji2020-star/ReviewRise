@@ -485,6 +485,62 @@ loadBusiness();
 
     }
 
+        const SUPABASE_URL = "https://intlhwmvldxdiytemjlr.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_0KjZZApJCuvTEJH3nNyLUg_aps6aXaA";
+
+async function loadBusinessFromReviewLink() {
+    const params = new URLSearchParams(window.location.search);
+    const reviewLinkId = params.get("id");
+
+    if (!reviewLinkId) return;
+
+    try {
+        const response = await fetch(
+            SUPABASE_URL +
+            "/rest/v1/Reviewlinks?id=eq." +
+            encodeURIComponent(reviewLinkId) +
+            "&select=id,business_name,google_review_link",
+            {
+                headers: {
+                    "apikey": SUPABASE_KEY
+                }
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            console.error("Could not load review link:", data);
+            return;
+        }
+
+        if (!data.length) {
+            console.error("Review link not found.");
+            return;
+        }
+
+        const link = data[0];
+
+        document.getElementById("businessName").textContent =
+            link.business_name;
+
+        const logo = document.getElementById("businessLogo");
+
+        if (logo && link.business_name) {
+            logo.textContent =
+                link.business_name.charAt(0).toUpperCase();
+        }
+
+        window.reviewRiseGoogleReviewUrl =
+            link.google_review_link;
+
+    } catch (error) {
+        console.error("Error loading business:", error);
+    }
+}
+
+loadBusinessFromReviewLink();
+    
   </script>
 
 </body>
