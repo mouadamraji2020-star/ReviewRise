@@ -1060,6 +1060,7 @@ if (!userResponse.ok) {
 
 const user = await userResponse.json();
 const isEditing = editingReviewLinkId !== null;
+    alert("Editing ID: " + editingReviewLinkId);
 
 const requestUrl = isEditing
     ? SUPABASE_URL + "/rest/v1/Reviewlinks?id=eq." + encodeURIComponent(editingReviewLinkId)
