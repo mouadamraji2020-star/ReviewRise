@@ -278,8 +278,8 @@ footer {
 
   <main class="page">
 
-    <section class="review-card">
-
+  <section class="review-card" id="reviewCard" style="visibility: hidden;">
+    
 <div class="business-logo" id="businessLogo">
     <img id="businessLogoImage" alt="Business logo" style="display:none;">
   <span id="businessLogoLetter"></span>
@@ -345,7 +345,7 @@ footer {
 const SUPABASE_KEY = "sb_publishable_0KjZZApJCuvTEJH3nNyLUg_aps6aXaA";
 
 async function loadBusiness() {
-    const params = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams(location.search);
     const id = params.get("id");
 
     if (!id) return;
@@ -378,7 +378,7 @@ async function loadBusiness() {
     document.getElementById("businessLogo").textContent =
         business.business_name.charAt(0).toUpperCase();
 
-    window.businessGoogleReviewLink =
+    businessGoogleReviewLink =
         business.google_review_link;
 }
 
@@ -485,7 +485,7 @@ loadBusiness();
     }
 
 async function loadBusinessFromReviewLink() {
-    const params = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams(location.search);
     const reviewLinkId = params.get("id");
 
     if (!reviewLinkId) return;
@@ -527,8 +527,9 @@ if (link.logo_url) {
     businessLogo.textContent = link.business_name.charAt(0).toUpperCase();
 }
 
-        window.reviewRiseGoogleReviewUrl =
+        reviewRiseGoogleReviewUrl =
             link.google_review_link;
+      document.getElementById("reviewCard").style.visibility = "visible";
 
     } catch (error) {
         console.error("Error loading business:", error);
