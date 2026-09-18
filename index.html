@@ -205,7 +205,53 @@
 
 
   <script>
+const SUPABASE_URL = "https://intl...supabase.co";
+const SUPABASE_KEY = "YOUR_EXISTING_PUBLISHABLE_KEY";
 
+const params = new URLSearchParams(window.location.search);
+const reviewLinkId = params.get("id");
+
+async function loadBusiness() {
+
+  if (!reviewLinkId) {
+    console.error("No review link ID found.");
+    return;
+  }
+
+  const response = await fetch(
+    SUPABASE_URL +
+    "/rest/v1/Reviewlinks?id=eq." +
+    encodeURIComponent(reviewLinkId) +
+    "&select=business_name",
+    {
+      headers: {
+        "apikey": SUPABASE_KEY
+      }
+    }
+  );
+
+  if (!response.ok) {
+    console.error("Could not load business.");
+    return;
+  }
+
+  const data = await response.json();
+
+  if (!data.length) {
+    console.error("Business not found.");
+    return;
+  }
+
+  const businessName = data[0].business_name;
+
+  document.getElementById("businessName").textContent = businessName;
+
+  document.getElementById("businessLogo").textContent =
+    businessName.charAt(0).toUpperCase();
+}
+
+loadBusiness();
+    
     const GOOGLE_REVIEW_URL =
       "https://search.google.com/local/writereview?placeid=ChIJOdbspvWBCw0R2cVHjfyGvHk";
     let selectedRating = 0;
