@@ -1171,6 +1171,9 @@ container.innerHTML = "";
 reviewLinks.forEach(function(link) {
     const item = document.createElement("div");
     item.className = "review-link-item";
+    const customerReviewUrl =
+  new URL("review.html", window.location.href).href +
+  "?id=" + encodeURIComponent(link.id);
 
     // Business information
     const info = document.createElement("div");
