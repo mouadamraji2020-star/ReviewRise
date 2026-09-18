@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Share Your Experience | ReviewRise</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(99,102,241,.08), transparent 35%),
+        radial-gradient(circle at bottom right, rgba(16,185,129,.06), transparent 35%),
+        #f7f8fc;
+      color: #171923;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---------- BRAND ---------- */
+
+    .brand {
+      width: 100%;
+      padding: 30px 24px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .brand-inner {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 21px;
+      font-weight: 750;
+      letter-spacing: -0.5px;
+      color: #151823;
+    }
+
+    .brand-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: #171923;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 17px;
+      font-weight: 700;
+      box-shadow: 0 6px 16px rgba(0,0,0,.12);
+    }
+
+    /* ---------- PAGE ---------- */
+
+    .page {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 30px 20px 70px;
+    }
+
+    .review-card {
+      width: 100%;
+      max-width: 560px;
+      background: rgba(255,255,255,.96);
+      border: 1px solid rgba(17,24,39,.07);
+      border-radius: 26px;
+      padding: 52px 46px 44px;
+      text-align: center;
+      box-shadow:
+        0 25px 70px rgba(15,23,42,.08),
+        0 4px 14px rgba(15,23,42,.03);
+    }
+
+    /* ---------- BUSINESS ---------- */
+
+    .business-logo {
+      width: 68px;
+      height: 68px;
+      margin: 0 auto 22px;
+      border-radius: 19px;
+      background: linear-gradient(145deg, #20232f, #11131a);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 27px;
+      font-weight: 700;
+      box-shadow: 0 12px 28px rgba(17,24,39,.18);
+    }
+
+    .business-name {
+      font-size: 16px;
+      font-weight: 650;
+      color: #5d6472;
+      margin-bottom: 13px;
+    }
+
+    h1 {
+      font-size: 32px;
+      line-height: 1.18;
+      letter-spacing: -1px;
+      font-weight: 750;
+      color: #151823;
+      margin-bottom: 14px;
+    }
+
+    .description {
+      max-width: 410px;
+      margin: 0 auto;
+      font-size: 16px;
+      line-height: 1.65;
+      color: #737986;
+    }
+
+    /* ---------- STARS ---------- */
+
+    .rating-area {
+      margin-top: 38px;
+    }
+
+    .stars {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .star {
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      font-size: 46px;
+      line-height: 1;
+      color: #d9dde5;
+      padding: 2px;
+      transition:
+        color .18s ease,
+        transform .18s ease,
+        filter .18s ease;
+    }
+
+    .star:hover {
+      transform: translateY(-4px) scale(1.07);
+    }
+
+    .star.active {
+      color: #f5b82e;
+      filter: drop-shadow(0 5px 8px rgba(245,184,46,.22));
+    }
+
+    .rating-label {
+      height: 24px;
+      margin-top: 18px;
+      font-size: 15px;
+      font-weight: 650;
+      color: #525866;
+      transition: .2s;
+    }
+
+    .hint {
+      margin-top: 5px;
+      font-size: 13px;
+      color: #a0a5af;
+    }
+
+    /* ---------- DIVIDER ---------- */
+
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: #eef0f4;
+      margin: 38px 0 25px;
+    }
+
+    /* ---------- TRUST ---------- */
+
+    .trust {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 7px;
+      font-size: 13px;
+      color: #9298a4;
+    }
+
+    .shield {
+      width: 17px;
+      height: 17px;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      color: #777e8c;
+    }
+
+    /* ---------- FOOTER ---------- */
+
+    footer {
+      padding: 0 20px 28px;
+      text-align: center;
+      font-size: 13px;
+      color: #a1a6b0;
+    }
+
+    footer strong {
+      color: #626875;
+      font-weight: 650;
+    }
+
+    /* ---------- MOBILE ---------- */
+
+    @media (max-width: 600px) {
+
+      .brand {
+        padding: 23px 20px;
+      }
+
+      .page {
+        align-items: flex-start;
+        padding: 18px 16px 45px;
+      }
+
+      .review-card {
+        padding: 42px 22px 34px;
+        border-radius: 22px;
+      }
+
+      h1 {
+        font-size: 28px;
+      }
+
+      .description {
+        font-size: 15px;
+      }
+
+      .stars {
+        gap: 5px;
+      }
+
+      .star {
+        font-size: 42px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- REVIEWRISE BRAND -->
+
+  <header class="brand">
+    <div class="brand-inner">
+      <div class="brand-icon">R</div>
+      ReviewRise
+    </div>
+  </header>
+
+
+  <!-- CUSTOMER REVIEW -->
+
+  <main class="page">
+
+    <section class="review-card">
+
+      <div class="business-logo" id="businessLogo">
+        B
+      </div>
+
+      <div class="business-name" id="businessName">
+        Your Business
+      </div>
+
+      <h1>How was your experience?</h1>
+
+      <p class="description">
+        We'd love to hear about your recent experience.
+        Your feedback helps us continue to improve.
+      </p>
+
+
+      <div class="rating-area">
+
+        <div class="stars" id="stars">
+
+          <button class="star" data-rating="1" aria-label="1 star">★</button>
+          <button class="star" data-rating="2" aria-label="2 stars">★</button>
+          <button class="star" data-rating="3" aria-label="3 stars">★</button>
+          <button class="star" data-rating="4" aria-label="4 stars">★</button>
+          <button class="star" data-rating="5" aria-label="5 stars">★</button>
+
+        </div>
+
+        <div class="rating-label" id="ratingLabel">
+          Select your rating
+        </div>
+
+        <div class="hint">
+          Tap a star to continue
+        </div>
+
+      </div>
+
+
+      <div class="divider"></div>
+
+
+      <div class="trust">
+
+        <span class="shield">✓</span>
+
+        Your feedback is secure and appreciated
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <footer>
+    Powered by <strong>ReviewRise</strong>
+  </footer>
+
+
+  <script>
+
+    const stars = document.querySelectorAll(".star");
+    const ratingLabel = document.getElementById("ratingLabel");
+
+    const labels = {
+      1: "Very disappointing",
+      2: "Could be better",
+      3: "Good",
+      4: "Great experience",
+      5: "Excellent!"
+    };
+
+
+    stars.forEach(star => {
+
+      star.addEventListener("mouseenter", function () {
+
+        const rating = Number(this.dataset.rating);
+
+        highlightStars(rating);
+
+        ratingLabel.textContent = labels[rating];
+
+      });
+
+
+      star.addEventListener("click", function () {
+
+        const rating = Number(this.dataset.rating);
+
+        highlightStars(rating);
+
+        ratingLabel.textContent = labels[rating];
+
+        handleRating(rating);
+
+      });
+
+    });
+
+
+    document.getElementById("stars").addEventListener("mouseleave", function () {
+
+      const selected = document.querySelector(".star.selected");
+
+      if (!selected) {
+
+        highlightStars(0);
+
+        ratingLabel.textContent = "Select your rating";
+
+      } else {
+
+        const rating = Number(selected.dataset.rating);
+
+        highlightStars(rating);
+
+        ratingLabel.textContent = labels[rating];
+
+      }
+
+    });
+
+
+    function highlightStars(rating) {
+
+      stars.forEach(star => {
+
+        const value = Number(star.dataset.rating);
+
+        star.classList.toggle("active", value <= rating);
+
+      });
+
+    }
+
+
+    function handleRating(rating) {
+
+      stars.forEach(star => {
+        star.classList.remove("selected");
+      });
+
+      stars[rating - 1].classList.add("selected");
+
+
+      /*
+        NEXT STEP:
+
+        Here we will connect this page to Supabase.
+
+        The rating will belong to the correct
+        ReviewRise business/review link.
+
+        Then we will show the next customer step.
+      */
+
+      console.log("Selected rating:", rating);
+
+    }
+
+  </script>
+
+</body>
+</html>
