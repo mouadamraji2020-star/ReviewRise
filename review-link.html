@@ -925,6 +925,7 @@ body.page-leaving {
         </div>
 
 <button class="add-link-btn" onclick="openReviewLinkModal()">+ Add Review Link</button>
+        <input type="file" id="businessLogoInput" accept="image/png,image/jpeg,image/webp" style="display:none;">
     </div>
 
 <div class="review-links-card" id="reviewLinksCard" style="visibility: hidden;">
@@ -968,6 +969,15 @@ body.page-leaving {
             >
         </div>
 
+        <div class="form-group">
+    <label>Business logo</label>
+    <input
+        type="file"
+        id="businessLogoInput"
+        accept="image/png,image/jpeg,image/webp"
+    >
+</div>
+        
         <div class="form-group">
             <label>Google review link</label>
             <input
@@ -1059,6 +1069,41 @@ if (!userResponse.ok) {
 }
 
 const user = await userResponse.json();
+    const logoInput = document.getElementById("businessLogoInput");
+const logoFile = logoInput.files[0];
+
+let logoUrl = null;
+
+if (logoFile) {
+    const fileExt = logoFile.name.split(".").pop();
+    const fileName = `${user.id}-${Date.now()}.${fileExt}`;
+
+    const uploadResponse = await fetch(
+        SUPABASE_URL + "/storage/v1/object/business-logos/" + fileName,
+        {
+            method: "POST",
+            headers: {
+                "apikey": SUPABASE_KEY,
+                "Authorization": "Bearer " + token,
+                "Content-Type": logoFile.type
+            },
+            body: logoFile
+        }
+    );
+
+    if (!uploadResponse.ok) {
+        const uploadError = await uploadResponse.text();
+        console.error("Logo upload failed:", uploadError);
+        alert("The business logo could not be uploaded.");
+        return;
+    }
+
+    logoUrl =
+        SUPABASE_URL +
+        "/storage/v1/object/public/business-logos/" +
+        fileName;
+}
+    
 const isEditing = editingReviewLinkId !== null;
 
 const requestUrl = isEditing
@@ -1077,15 +1122,17 @@ const insertResponse = await fetch(requestUrl, {
 
     body: JSON.stringify(
         isEditing
-            ? {
-                business_name: businessName,
-                google_review_link: googleReviewLink
-            }
-            : {
-                business_name: businessName,
-                google_review_link: googleReviewLink,
-                user_id: user.id
-            }
+? {
+    business_name: businessName,
+    google_review_link: googleReviewLink,
+    logo_url: logoUrl
+}
+: {
+    business_name: businessName,
+    google_review_link: googleReviewLink,
+    logo_url: logoUrl,
+    user_id: user.id
+}
     )
 });
 
