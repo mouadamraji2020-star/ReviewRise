@@ -342,6 +342,49 @@ footer {
 
   <script>
 
+   const SUPABASE_URL = "https://intl1hwmv1dxdiytemjlr.supabase.co";
+const SUPABASE_KEY = "sb_publishable_0KjZZApJCuvTEJH3nNyLUg_aps6aXaA";
+
+async function loadBusiness() {
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
+
+    if (!id) return;
+
+    const response = await fetch(
+        SUPABASE_URL + "/rest/v1/Reviewlinks?id=eq." +
+        encodeURIComponent(id) +
+        "&select=business_name,google_review_link",
+        {
+            headers: {
+                "apikey": SUPABASE_KEY
+            }
+        }
+    );
+
+    if (!response.ok) {
+        console.error("Could not load business");
+        return;
+    }
+
+    const data = await response.json();
+
+    if (data.length === 0) return;
+
+    const business = data[0];
+
+    document.getElementById("businessName").textContent =
+        business.business_name;
+
+    document.getElementById("businessLogo").textContent =
+        business.business_name.charAt(0).toUpperCase();
+
+    window.businessGoogleReviewLink =
+        business.google_review_link;
+}
+
+loadBusiness();
+    
     const stars = document.querySelectorAll(".star");
     const ratingLabel = document.getElementById("ratingLabel");
 
