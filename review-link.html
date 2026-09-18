@@ -11,7 +11,7 @@
 }
 
 body {
-    margin: 0;
+    margin: 0;const response
     font-family: Arial, sans-serif;
     background: #f6f7fb;
     color: #172033;
@@ -1136,10 +1136,11 @@ async function loadReviewLinks() {
     const response = await fetch(
         SUPABASE_URL + "/rest/v1/Reviewlinks?select=*&order=created_at.desc",
         {
-            headers: {
-                "apikey": SUPABASE_KEY,
-                "Authorization": "Bearer " + token
-            }
+headers: {
+    "apikey": SUPABASE_KEY,
+    "Authorization": "Bearer " + token,
+    "Prefer": "return=representation"
+}
         }
     );
 
@@ -1287,19 +1288,29 @@ document.querySelectorAll(".review-options-menu").forEach(function(openMenu) {
             SUPABASE_URL + "/rest/v1/Reviewlinks?id=eq." + encodeURIComponent(link.id),
             {
                 method: "DELETE",
-                headers: {
-                    "apikey": SUPABASE_KEY,
-                    "Authorization": "Bearer " + token
-                }
+headers: {
+    "apikey": SUPABASE_KEY,
+    "Authorization": "Bearer " + token,
+    "Prefer": "return=representation"
+}
             }
         );
 
-        if (!response.ok) {
-            throw new Error("Delete failed");
-        }
+if (!response.ok) {
+    const errorText = await response.text();
+    console.error("Delete error:", errorText);
+    throw new Error("Delete failed");
+}
 
-        // Remove it immediately from the page
-        item.remove();
+const deletedRows = await response.json();
+
+if (deletedRows.length === 0) {
+    alert("The review link was not deleted from the database.");
+    return;
+}
+
+// It was really deleted from Supabase
+item.remove();
         
         const successToast = document.getElementById("successToast");
 const toastTitle = successToast.querySelector("strong");
