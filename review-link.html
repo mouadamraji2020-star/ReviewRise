@@ -1065,8 +1065,6 @@ const requestUrl = isEditing
     ? SUPABASE_URL + "/rest/v1/Reviewlinks?id=eq." + encodeURIComponent(editingReviewLinkId)
     : SUPABASE_URL + "/rest/v1/Reviewlinks";
     
-    alert("PATCH URL: " + requestUrl);
-
 const insertResponse = await fetch(requestUrl, {
     method: isEditing ? "PATCH" : "POST",
 
@@ -1090,13 +1088,6 @@ const insertResponse = await fetch(requestUrl, {
             }
     )
 });
-
-const result = await insertResponse.json();
-
-alert(
-    "Status: " + insertResponse.status +
-    "\nResponse: " + JSON.stringify(result)
-);
 
 const error = insertResponse.ok ? null : result;
 
