@@ -45,19 +45,59 @@
       color: #151823;
     }
 
-    .brand-icon {
-      width: 34px;
-      height: 34px;
-      border-radius: 10px;
-      background: #171923;
-      color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 17px;
-      font-weight: 700;
-      box-shadow: 0 6px 16px rgba(0,0,0,.12);
-    }
+.reviewrise-mark {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reviewrise-mark svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.rr-bar {
+  fill: #168cff;
+}
+
+.rr-bar-1 {
+  opacity: .72;
+}
+
+.rr-bar-2 {
+  opacity: .86;
+}
+
+.rr-bar-3 {
+  opacity: 1;
+}
+
+.rr-arrow {
+  stroke: #06b6f0;
+}
+
+.reviewrise-wordmark {
+  display: flex;
+  align-items: center;
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.8px;
+  line-height: 1;
+}
+
+.review-word {
+  color: #171923;
+}
+
+.rise-word {
+  background: linear-gradient(135deg, #00bce9, #1769ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
 
     /* ---------- PAGE ---------- */
 
@@ -258,11 +298,40 @@
   <!-- REVIEWRISE BRAND -->
 
   <header class="brand">
-    <div class="brand-inner">
-      <div class="brand-icon">R</div>
-      ReviewRise
+<header class="brand">
+  <div class="brand-inner">
+
+    <div class="reviewrise-mark">
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <path class="rr-bar rr-bar-1" d="M8 30h6v10H8z"/>
+        <path class="rr-bar rr-bar-2" d="M17 23h6v17h-6z"/>
+        <path class="rr-bar rr-bar-3" d="M26 15h6v25h-6z"/>
+
+        <path
+          class="rr-arrow"
+          d="M6 40 C17 38, 29 31, 39 17"
+          fill="none"
+          stroke-width="3.2"
+          stroke-linecap="round"
+        />
+
+        <path
+          class="rr-arrow"
+          d="M34 18 L40 15 L40 22"
+          fill="none"
+          stroke-width="3.2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
     </div>
-  </header>
+
+    <div class="reviewrise-wordmark">
+      <span class="review-word">Review</span><span class="rise-word">Rise</span>
+    </div>
+
+  </div>
+</header>
 
 
   <!-- CUSTOMER REVIEW -->
