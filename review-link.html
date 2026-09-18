@@ -1072,7 +1072,7 @@ const insertResponse = await fetch(requestUrl, {
         "apikey": SUPABASE_KEY,
         "Authorization": "Bearer " + token,
         "Content-Type": "application/json",
-        "Prefer": "return=minimal"
+       "Prefer": "return=representation"
     },
 
     body: JSON.stringify(
