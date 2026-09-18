@@ -1064,6 +1064,8 @@ const isEditing = editingReviewLinkId !== null;
 const requestUrl = isEditing
     ? SUPABASE_URL + "/rest/v1/Reviewlinks?id=eq." + encodeURIComponent(editingReviewLinkId)
     : SUPABASE_URL + "/rest/v1/Reviewlinks";
+    
+    alert("PATCH URL: " + requestUrl);
 
 const insertResponse = await fetch(requestUrl, {
     method: isEditing ? "PATCH" : "POST",
