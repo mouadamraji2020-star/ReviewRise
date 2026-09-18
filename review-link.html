@@ -1174,6 +1174,17 @@ reviewLinks.forEach(function(link) {
     const customerReviewUrl =
   new URL("review.html", window.location.href).href +
   "?id=" + encodeURIComponent(link.id);
+    const openReviewPage = document.createElement("a");
+openReviewPage.href = customerReviewUrl;
+openReviewPage.target = "_blank";
+openReviewPage.textContent = "Open Review Page";
+openReviewPage.style.display = "inline-block";
+openReviewPage.style.marginTop = "10px";
+openReviewPage.style.color = "#168cff";
+openReviewPage.style.fontWeight = "600";
+openReviewPage.style.textDecoration = "none";
+
+item.appendChild(openReviewPage);
 
     // Business information
     const info = document.createElement("div");
