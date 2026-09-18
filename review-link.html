@@ -1060,7 +1060,6 @@ if (!userResponse.ok) {
 
 const user = await userResponse.json();
 const isEditing = editingReviewLinkId !== null;
-    alert("Editing ID: " + editingReviewLinkId);
 
 const requestUrl = isEditing
     ? SUPABASE_URL + "/rest/v1/Reviewlinks?id=eq." + encodeURIComponent(editingReviewLinkId)
@@ -1090,9 +1089,14 @@ const insertResponse = await fetch(requestUrl, {
     )
 });
 
-const error = insertResponse.ok
-  ? null
-  : await insertResponse.json();
+const result = await insertResponse.json();
+
+alert(
+    "Status: " + insertResponse.status +
+    "\nResponse: " + JSON.stringify(result)
+);
+
+const error = insertResponse.ok ? null : result;
 
     if (error) {
         console.error(error);
