@@ -495,8 +495,7 @@ async function loadBusinessFromReviewLink() {
             SUPABASE_URL +
             "/rest/v1/Reviewlinks?id=eq." +
             encodeURIComponent(reviewLinkId) +
-            "&select=id,business_name,google_review_link",
-            {
+"&select=id,business_name,google_review_link,logo_url"            {
                 headers: {
                     "apikey": SUPABASE_KEY
                 }
