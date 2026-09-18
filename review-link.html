@@ -859,6 +859,76 @@ body.page-leaving {
 .delete-option:hover {
     background: #fff1f1;
 }
+
+.logo-upload-box {
+    width: 100%;
+    min-height: 92px;
+    border: 1.5px dashed #cbd5e1;
+    border-radius: 12px;
+    background: #f8fafc;
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.logo-upload-box:hover {
+    border-color: #0f766e;
+    background: #f0fdfa;
+}
+
+.logo-upload-placeholder {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.logo-upload-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    background: #ccfbf1;
+    color: #0f766e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.logo-upload-placeholder strong,
+.logo-preview-info strong {
+    display: block;
+    font-size: 14px;
+    color: #0f172a;
+    margin-bottom: 3px;
+}
+
+.logo-upload-placeholder span,
+.logo-preview-info span {
+    display: block;
+    font-size: 12px;
+    color: #64748b;
+}
+
+.logo-preview-container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+#logoPreview {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    object-fit: contain;
+    background: white;
+    border: 1px solid #e2e8f0;
+    padding: 4px;
+}
         
 </style>
 </head>
@@ -960,14 +1030,34 @@ body.page-leaving {
             <button class="modal-close" onclick="closeReviewLinkModal()">×</button>
         </div>
 
-        <div class="form-group">
-            <label>Business name</label>
-            <input
-                type="text"
-                id="businessName"
-                placeholder="e.g. L'Adresse Boutique Hotel"
-            >
+<div class="form-group">
+    <label>Business logo</label>
+
+    <div class="logo-upload-box" id="logoUploadBox">
+        <input
+            type="file"
+            id="businessLogoInput"
+            accept="image/png,image/jpeg,image/webp"
+            hidden
+        >
+
+        <div class="logo-upload-placeholder" id="logoUploadPlaceholder">
+            <div class="logo-upload-icon">↑</div>
+            <div>
+                <strong>Upload business logo</strong>
+                <span>PNG, JPG or WebP</span>
+            </div>
         </div>
+
+        <div class="logo-preview-container" id="logoPreviewContainer" style="display:none;">
+            <img id="logoPreview" alt="Business logo preview">
+            <div class="logo-preview-info">
+                <strong id="logoFileName">Logo selected</strong>
+                <span>Click to change</span>
+            </div>
+        </div>
+    </div>
+</div>
 
         <div class="form-group">
     <label>Business logo</label>
@@ -1530,6 +1620,31 @@ function showDeleteConfirmation(businessName) {
     });
 }        
 loadReviewLinks();
+
+const logoUploadBox = document.getElementById("logoUploadBox");
+const businessLogoInput = document.getElementById("businessLogoInput");
+const logoUploadPlaceholder = document.getElementById("logoUploadPlaceholder");
+const logoPreviewContainer = document.getElementById("logoPreviewContainer");
+const logoPreview = document.getElementById("logoPreview");
+const logoFileName = document.getElementById("logoFileName");
+
+logoUploadBox.addEventListener("click", function () {
+    businessLogoInput.click();
+});
+
+businessLogoInput.addEventListener("change", function () {
+    const file = this.files[0];
+
+    if (!file) return;
+
+    const imageUrl = URL.createObjectURL(file);
+
+    logoPreview.src = imageUrl;
+    logoFileName.textContent = file.name;
+
+    logoUploadPlaceholder.style.display = "none";
+    logoPreviewContainer.style.display = "flex";
+});        
         
 </script>
     
