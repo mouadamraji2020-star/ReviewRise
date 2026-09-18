@@ -25,80 +25,6 @@
       flex-direction: column;
     }
 
-    /* ---------- BRAND ---------- */
-
-    .brand {
-      width: 100%;
-      padding: 30px 24px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .brand-inner {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 21px;
-      font-weight: 750;
-      letter-spacing: -0.5px;
-      color: #151823;
-    }
-
-.reviewrise-mark {
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.reviewrise-mark svg {
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-}
-
-.rr-bar {
-  fill: #168cff;
-}
-
-.rr-bar-1 {
-  opacity: .72;
-}
-
-.rr-bar-2 {
-  opacity: .86;
-}
-
-.rr-bar-3 {
-  opacity: 1;
-}
-
-.rr-arrow {
-  stroke: #06b6f0;
-}
-
-.reviewrise-wordmark {
-  display: flex;
-  align-items: center;
-  font-size: 24px;
-  font-weight: 800;
-  letter-spacing: -0.8px;
-  line-height: 1;
-}
-
-.review-word {
-  color: #171923;
-}
-
-.rise-word {
-  background: linear-gradient(135deg, #00bce9, #1769ff);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
     /* ---------- PAGE ---------- */
 
     .page {
@@ -124,20 +50,36 @@
 
     /* ---------- BUSINESS ---------- */
 
-    .business-logo {
-      width: 68px;
-      height: 68px;
-      margin: 0 auto 22px;
-      border-radius: 19px;
-      background: linear-gradient(145deg, #20232f, #11131a);
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 27px;
-      font-weight: 700;
-      box-shadow: 0 12px 28px rgba(17,24,39,.18);
-    }
+.business-logo {
+  width: 82px;
+  height: 82px;
+  margin: 0 auto 20px;
+  border-radius: 20px;
+
+  background: #ffffff;
+  border: 1px solid #e8ebf0;
+
+  color: #172033;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 29px;
+  font-weight: 750;
+
+  overflow: hidden;
+
+  box-shadow:
+    0 10px 30px rgba(15, 23, 42, 0.08),
+    0 2px 6px rgba(15, 23, 42, 0.04);
+}
+    .business-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 8px;
+}
 
     .business-name {
       font-size: 16px;
@@ -259,10 +201,6 @@
     /* ---------- MOBILE ---------- */
 
     @media (max-width: 600px) {
-
-      .brand {
-        padding: 23px 20px;
-      }
 
       .page {
         align-items: flex-start;
