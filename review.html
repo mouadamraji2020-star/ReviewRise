@@ -280,9 +280,10 @@ footer {
 
     <section class="review-card">
 
-      <div class="business-logo" id="businessLogo">
-        B
-      </div>
+<div class="business-logo" id="businessLogo">
+    <img id="businessLogoImage" alt="Business logo" style="display:none;">
+    <span id="businessLogoLetter">B</span>
+</div>
 
       <div class="business-name" id="businessName">
         Your Business
@@ -520,13 +521,13 @@ async function loadBusinessFromReviewLink() {
 
         document.getElementById("businessName").textContent =
             link.business_name;
+      const businessLogo = document.getElementById("businessLogo");
 
-        const logo = document.getElementById("businessLogo");
-
-        if (logo && link.business_name) {
-            logo.textContent =
-                link.business_name.charAt(0).toUpperCase();
-        }
+if (link.logo_url) {
+    businessLogo.innerHTML = `<img src="${link.logo_url}" alt="${link.business_name} logo">`;
+} else {
+    businessLogo.textContent = link.business_name.charAt(0).toUpperCase();
+}
 
         window.reviewRiseGoogleReviewUrl =
             link.google_review_link;
