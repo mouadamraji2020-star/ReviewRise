@@ -1149,6 +1149,31 @@ async function createReviewLink() {
     const businessName = document.getElementById("businessName").value.trim();
     const googleReviewLink = document.getElementById("googleReviewLink").value.trim();
 
+    let validGoogleReviewLink = false;
+
+try {
+    const url = new URL(googleReviewLink);
+    const host = url.hostname.toLowerCase();
+
+    validGoogleReviewLink =
+        url.protocol === "https:" &&
+        (
+            host === "g.page" ||
+            host === "maps.app.goo.gl" ||
+            host === "goo.gl" ||
+            host === "google.com" ||
+            host.endsWith(".google.com")
+        );
+} catch (error) {
+    validGoogleReviewLink = false;
+}
+
+if (!validGoogleReviewLink) {
+    alert("Please enter a valid Google review link.");
+    return;
+}
+    
+
     if (!businessName || !googleReviewLink) {
         alert("Please enter the business name and Google review link.");
         return;
