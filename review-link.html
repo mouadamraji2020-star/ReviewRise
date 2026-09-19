@@ -1164,15 +1164,8 @@ const logoFile = logoInput.files[0];
 
 let logoUrl = editingReviewLinkId ? editingLogoUrl : null;
 
-if (editingReviewLinkId !== null) {
-    const existingLink = reviewLinks.find(
-        link => String(link.id) === String(editingReviewLinkId)
-    );
-
-    if (existingLink) {
-        logoUrl = existingLink.logo_url || null;
-    }
-}
+    if (logoFile) {
+    const fileExt = logoFile.name.split(".").pop();
 
 if (logoFile) {
     const fileExt = logoFile.name.split(".").pop();
