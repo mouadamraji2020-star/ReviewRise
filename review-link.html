@@ -1120,9 +1120,27 @@ function smoothNavigate(page) {
 }
 
 function openReviewLinkModal() {
+    // Reset edit mode
+    editingReviewLinkId = null;
+    editingLogoUrl = null;
+
+    // Clear the form
+    document.getElementById("businessName").value = "";
+    document.getElementById("googleReviewLink").value = "";
+    document.getElementById("businessLogoInput").value = "";
+
+    // Reset logo preview
+    document.getElementById("logoPreview").src = "";
+    document.getElementById("logoPreviewContainer").style.display = "none";
+    document.getElementById("logoUploadPlaceholder").style.display = "";
+
+    // Reset button
+    document.querySelector(".save-link-btn").textContent = "Create Review Link";
+
+    // Open modal
     document.getElementById("reviewLinkModal").classList.add("open");
 }
-
+        
 function closeReviewLinkModal() {
     document.getElementById("reviewLinkModal").classList.remove("open");
 }
