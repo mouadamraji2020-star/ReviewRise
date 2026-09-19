@@ -1137,6 +1137,8 @@ function smoothNavigate(page) {
 }
 
 function openReviewLinkModal() {
+    document.getElementById("googleReviewLinkError").style.display = "none";
+document.getElementById("googleReviewLink").classList.remove("input-error");
     // Reset edit mode
     editingReviewLinkId = null;
     editingLogoUrl = null;
