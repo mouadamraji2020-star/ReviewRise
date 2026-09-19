@@ -1412,7 +1412,23 @@ document.querySelectorAll(".review-options-menu").forEach(function(openMenu) {
 
     document.getElementById("businessName").value = link.business_name;
     document.getElementById("googleReviewLink").value = link.google_review_link;
+const logoPreview = document.getElementById("logoPreview");
+const logoPreviewContainer = document.getElementById("logoPreviewContainer");
+const logoUploadPlaceholder = document.getElementById("logoUploadPlaceholder");
+const businessLogoInput = document.getElementById("businessLogoInput");
 
+businessLogoInput.value = "";
+
+if (editingLogoUrl) {
+    logoPreview.src = editingLogoUrl;
+    logoPreviewContainer.style.display = "flex";
+    logoUploadPlaceholder.style.display = "none";
+} else {
+    logoPreview.src = "";
+    logoPreviewContainer.style.display = "none";
+    logoUploadPlaceholder.style.display = "";
+}
+        
     document.querySelector(".save-link-btn").textContent = "Save Changes";
 
     document.getElementById("reviewLinkModal").classList.add("open");
