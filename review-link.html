@@ -1186,7 +1186,9 @@ try {
 }
 
 if (!validGoogleReviewLink) {
-    alert("Please enter a valid Google review link.");
+   document.getElementById("googleReviewLinkError").style.display = "block";
+document.getElementById("googleReviewLink").classList.add("input-error");
+document.getElementById("googleReviewLink").focus();
     return;
 }
     
