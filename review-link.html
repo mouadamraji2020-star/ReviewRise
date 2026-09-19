@@ -1470,7 +1470,10 @@ document.querySelectorAll(".review-options-menu").forEach(function(openMenu) {
 
     editBtn.onclick = function (event) {
     event.stopPropagation();
-
+        
+document.getElementById("googleReviewLinkError").style.display = "none";
+document.getElementById("googleReviewLink").classList.remove("input-error");
+        
     editingReviewLinkId = link.id;
         editingLogoUrl = link.logo_url || null;
 
