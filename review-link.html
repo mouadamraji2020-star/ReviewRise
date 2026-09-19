@@ -1096,6 +1096,7 @@ body.page-leaving {
     <script>
 
   let editingReviewLinkId = null;
+        let editingLogoUrl = null;
         
         const SUPABASE_URL = "https://intlhwmvldxdiytemjlr.supabase.co";
         const SUPABASE_KEY = "sb_publishable_0KjZZApJCuvTEJH3nNyLUg_aps6aXaA";
@@ -1161,11 +1162,21 @@ const user = await userResponse.json();
     const logoInput = document.getElementById("businessLogoInput");
 const logoFile = logoInput.files[0];
 
-let logoUrl = null;
+let logoUrl = editingReviewLinkId ? editingLogoUrl : null;
+
+if (editingReviewLinkId !== null) {
+    const existingLink = reviewLinks.find(
+        link => String(link.id) === String(editingReviewLinkId)
+    );
+
+    if (existingLink) {
+        logoUrl = existingLink.logo_url || null;
+    }
+}
 
 if (logoFile) {
     const fileExt = logoFile.name.split(".").pop();
-    const fileName = `${user.id}-${Date.now()}.${fileExt}`;
+const fileName = `${user.id}-${editingReviewLinkId || "new"}-${Date.now()}.${fileExt}`;
 
     const uploadResponse = await fetch(
         SUPABASE_URL + "/storage/v1/object/business-logos/" + fileName,
@@ -1252,6 +1263,7 @@ setTimeout(function () {
 }, 3000);
 
 editingReviewLinkId = null;
+    editingLogoUrl = null;
 
 document.querySelector(".save-link-btn").textContent = "Create Review Link";
     
@@ -1406,6 +1418,7 @@ document.querySelectorAll(".review-options-menu").forEach(function(openMenu) {
     event.stopPropagation();
 
     editingReviewLinkId = link.id;
+        editingLogoUrl = link.logo_url || null;
 
     document.getElementById("businessName").value = link.business_name;
     document.getElementById("googleReviewLink").value = link.google_review_link;
