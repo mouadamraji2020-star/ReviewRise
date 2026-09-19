@@ -1164,9 +1164,6 @@ const logoFile = logoInput.files[0];
 
 let logoUrl = editingReviewLinkId ? editingLogoUrl : null;
 
-    if (logoFile) {
-    const fileExt = logoFile.name.split(".").pop();
-
 if (logoFile) {
     const fileExt = logoFile.name.split(".").pop();
 const fileName = `${user.id}-${editingReviewLinkId || "new"}-${Date.now()}.${fileExt}`;
