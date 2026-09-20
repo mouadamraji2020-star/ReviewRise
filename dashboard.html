@@ -764,7 +764,12 @@ async function login() {
     "reviewrise_token",
     data.access_token
   );
-
+  
+localStorage.setItem(
+    "reviewrise_refresh_token",
+    data.refresh_token
+);
+  
   showDashboard();
 
 }
@@ -772,8 +777,12 @@ async function login() {
 
 async function loadFeedback() {
 
-  const token =
-  localStorage.getItem("reviewrise_token");
+let token = await getValidAccessToken();
+
+if (!token) {
+    logout();
+    return;
+}
 
   const response = await fetch(
 
@@ -901,11 +910,66 @@ function showDashboard() {
 
 }
 
+async function refreshAccessToken() {
+    const refreshToken = localStorage.getItem("reviewrise_refresh_token");
+
+    if (!refreshToken) {
+        return null;
+    }
+
+    try {
+        const response = await fetch(
+            SUPABASE_URL + "/auth/v1/token?grant_type=refresh_token",
+            {
+                method: "POST",
+
+                headers: {
+                    "apikey": SUPABASE_KEY,
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    refresh_token: refreshToken
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            return null;
+        }
+
+        localStorage.setItem(
+            "reviewrise_token",
+            data.access_token
+        );
+
+        if (data.refresh_token) {
+            localStorage.setItem(
+                "reviewrise_refresh_token",
+                data.refresh_token
+            );
+        }
+
+        return data.access_token;
+
+    } catch (error) {
+        console.error("Token refresh failed:", error);
+        return null;
+    }
+}
+  
 function logout() {
 
   localStorage.removeItem(
     "reviewrise_token"
   );
+  
+  localStorage.removeItem(
+    "reviewrise_refresh_token"
+);
+  
 
   dashboard.style.display =
   "none";
@@ -918,17 +982,17 @@ function logout() {
 document.getElementById("login")
     .addEventListener("click", login);
 
-if (
-  localStorage.getItem(
-    "reviewrise_token"
-  )
-) {
+(async function restoreSession() {
+    const token = await getValidAccessToken();
 
-  showDashboard();
-
-}
-  
-  
+    if (token) {
+        showDashboard();
+    } else {
+        loginSection.style.display = "flex";
+        dashboard.style.display = "none";
+    }
+})();
+   
 function smoothNavigate(page) {
     document.body.classList.add("page-leaving");
 
