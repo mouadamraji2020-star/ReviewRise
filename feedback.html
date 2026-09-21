@@ -418,6 +418,26 @@ async function getValidAccessToken() {
         return currentToken;
     }
 }
+   function restoreFeedbackCache() {
+    const cached = localStorage.getItem("reviewrise_feedback_cache");
+
+    if (!cached) return;
+
+    try {
+        document.getElementById("feedbackList").innerHTML = cached;
+    } catch (error) {
+        console.error("Feedback cache error:", error);
+    }
+}
+
+function saveFeedbackCache() {
+    const list = document.getElementById("feedbackList");
+
+    localStorage.setItem(
+        "reviewrise_feedback_cache",
+        list.innerHTML
+    );
+}
     
     async function loadFeedback() {
 
@@ -463,8 +483,11 @@ async function getValidAccessToken() {
 
         list.appendChild(card);
       });
+      
+      saveFeedbackCache();
     }
 
+    restoreFeedbackCache();
     loadFeedback();
 
   function smoothNavigate(page) {
