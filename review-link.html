@@ -1328,31 +1328,6 @@ document.querySelector(".save-link-btn").textContent = "Create Review Link";
 
     loadReviewLinks();
 }
-function restoreReviewLinksCache() {
-    const cached = localStorage.getItem("reviewrise_reviewlinks_cache");
-
-    if (!cached) return;
-
-    const container = document.getElementById("reviewLinksContainer");
-
-    if (!container) return;
-
-    try {
-        container.innerHTML = cached;
-    } catch (error) {
-        console.error("Review Links cache error:", error);
-    }
-}
-
-function saveReviewLinksCache() {
-    const container = document.getElementById("reviewLinksContainer");
-
-    if (!container) return;
-
-    localStorage.setItem(
-        "reviewrise_reviewlinks_cache",
-        container.innerHTML
-    );
 }
         
 function renderReviewLinks(reviewLinks) {
