@@ -426,6 +426,54 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
 "sb_publishable_0KjZZApJCuvTEJH3nNyLUg_aps6aXaA";
 
+function restoreAnalyticsCache() {
+    const cached = localStorage.getItem("reviewrise_analytics_cache");
+
+    if (!cached) return;
+
+    try {
+        const data = JSON.parse(cached);
+
+        document.getElementById("totalFeedback").textContent =
+            data.totalFeedback;
+
+        document.getElementById("averageRating").textContent =
+            data.averageRating;
+
+        document.getElementById("lowRatings").textContent =
+            data.lowRatings;
+
+        if (data.ratingChartHTML) {
+            document.getElementById("ratingChart").innerHTML =
+                data.ratingChartHTML;
+        }
+
+    } catch (error) {
+        console.error("Analytics cache error:", error);
+    }
+}
+
+function saveAnalyticsCache() {
+    const data = {
+        totalFeedback:
+            document.getElementById("totalFeedback").textContent,
+
+        averageRating:
+            document.getElementById("averageRating").textContent,
+
+        lowRatings:
+            document.getElementById("lowRatings").textContent,
+
+        ratingChartHTML:
+            document.getElementById("ratingChart").innerHTML
+    };
+
+    localStorage.setItem(
+        "reviewrise_analytics_cache",
+        JSON.stringify(data)
+    );
+}    
+
 console.log("TOKEN FUNCTION VERSION 2");
     
 async function getValidAccessToken() {
@@ -549,8 +597,10 @@ const token = await getValidAccessToken();
             </div>
         `;
     }
+    saveAnalyticsCache();
 }
 
+restoreAnalyticsCache();
 loadAnalytics();
 
 </script>
