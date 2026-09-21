@@ -1355,18 +1355,37 @@ function saveReviewLinksCache() {
     );
 }
         
- function renderReviewLinks(reviewLinks) {
+function renderReviewLinks(reviewLinks) {
     const container = document.getElementById("reviewLinksContainer");
     const emptyState = document.getElementById("emptyState");
     const reviewLinksCard = document.getElementById("reviewLinksCard");
 
     if (!container) return;
-        
-async function loadReviewLinks() {
-    const token = localStorage.getItem("reviewrise_token");
-    const container = document.getElementById("reviewLinksContainer");
 
-    if (!token || !container) return;
+    if (reviewLinks.length === 0) {
+        if (emptyState) {
+            emptyState.style.display = "";
+        }
+
+        if (reviewLinksCard) {
+            reviewLinksCard.style.visibility = "visible";
+        }
+
+        return;
+    }
+}
+        
+async function loadReviewLinks(cachedReviewLinks = null) {
+const container = document.getElementById("reviewLinksContainer");
+
+if (!container) return;
+
+let reviewLinks = cachedReviewLinks;
+
+if (!reviewLinks) {
+    const token = await getValidAccessToken();
+
+    if (!token) return;
 
     const response = await fetch(
         SUPABASE_URL + "/rest/v1/Reviewlinks?select=*&order=created_at.desc",
@@ -1384,13 +1403,14 @@ headers: {
         return;
     }
 
-    const reviewLinks = await response.json();
+reviewLinks = await response.json();
     
     localStorage.setItem(
     "reviewrise_reviewlinks_data",
     JSON.stringify(reviewLinks)
 );
-
+}
+    
 const emptyState = document.getElementById("emptyState");
 const reviewLinksCard = document.getElementById("reviewLinksCard");
 if (reviewLinks.length === 0) {
@@ -1743,9 +1763,20 @@ function showDeleteConfirmation(businessName) {
         });
     });
 } 
-restoreReviewLinksCache();
-loadReviewLinks();
+const cachedReviewLinksData =
+    localStorage.getItem("reviewrise_reviewlinks_data");
 
+if (cachedReviewLinksData) {
+    try {
+        loadReviewLinks(
+            JSON.parse(cachedReviewLinksData)
+        );
+    } catch (error) {
+        console.error("Review Links data cache error:", error);
+    }
+}
+
+loadReviewLinks();
 const logoUploadBox = document.getElementById("logoUploadBox");
 const businessLogoInput = document.getElementById("businessLogoInput");
 const logoUploadPlaceholder = document.getElementById("logoUploadPlaceholder");
