@@ -772,6 +772,60 @@ document.getElementById("dashboard");
 
 const feedbackMenu =
 document.getElementById("feedbackMenu");
+
+  function restoreDashboardCache() {
+    const cached = localStorage.getItem("reviewrise_dashboard_cache");
+
+    if (!cached) return;
+
+    try {
+        const data = JSON.parse(cached);
+
+        if (data.totalFeedback !== undefined) {
+            document.getElementById("totalFeedback").textContent =
+                data.totalFeedback;
+        }
+
+        if (data.averageRating !== undefined) {
+            document.getElementById("averageRating").textContent =
+                data.averageRating;
+        }
+
+        if (data.lowRatings !== undefined) {
+            document.getElementById("lowRatings").textContent =
+                data.lowRatings;
+        }
+
+        if (data.feedbackHTML) {
+            document.getElementById("feedbackList").innerHTML =
+                data.feedbackHTML;
+        }
+
+    } catch (error) {
+        console.error("Dashboard cache error:", error);
+    }
+}
+
+function saveDashboardCache() {
+    const data = {
+        totalFeedback:
+            document.getElementById("totalFeedback").textContent,
+
+        averageRating:
+            document.getElementById("averageRating").textContent,
+
+        lowRatings:
+            document.getElementById("lowRatings").textContent,
+
+        feedbackHTML:
+            document.getElementById("feedbackList").innerHTML
+    };
+
+    localStorage.setItem(
+        "reviewrise_dashboard_cache",
+        JSON.stringify(data)
+    );
+}
   
 async function login() {
 
@@ -940,7 +994,7 @@ console.log(feedback);
     list.appendChild(card);
 
   });
-
+saveDashboardCache();
 }
 
 
@@ -954,6 +1008,7 @@ function showDashboard() {
 
   document.getElementById("mobileMenuBtn").style.display = "block";
 
+  restoreDashboardCache();
   loadFeedback();
 
 }
