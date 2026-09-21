@@ -1328,7 +1328,33 @@ document.querySelector(".save-link-btn").textContent = "Create Review Link";
 
     loadReviewLinks();
 }
+function restoreReviewLinksCache() {
+    const cached = localStorage.getItem("reviewrise_reviewlinks_cache");
 
+    if (!cached) return;
+
+    const container = document.getElementById("reviewLinksContainer");
+
+    if (!container) return;
+
+    try {
+        container.innerHTML = cached;
+    } catch (error) {
+        console.error("Review Links cache error:", error);
+    }
+}
+
+function saveReviewLinksCache() {
+    const container = document.getElementById("reviewLinksContainer");
+
+    if (!container) return;
+
+    localStorage.setItem(
+        "reviewrise_reviewlinks_cache",
+        container.innerHTML
+    );
+}
+        
 async function loadReviewLinks() {
     const token = localStorage.getItem("reviewrise_token");
     const container = document.getElementById("reviewLinksContainer");
@@ -1579,7 +1605,8 @@ actions.appendChild(menuBtn);
     container.appendChild(item);
 });
 document.querySelector(".review-links-card").style.visibility = "visible";
-    
+
+saveReviewLinksCache();    
 }
 document.addEventListener("click", function () {
     document.querySelectorAll(".review-options-menu").forEach(function(menu) {
@@ -1703,7 +1730,8 @@ function showDeleteConfirmation(businessName) {
             }
         });
     });
-}        
+} 
+restoreReviewLinksCache();
 loadReviewLinks();
 
 const logoUploadBox = document.getElementById("logoUploadBox");
