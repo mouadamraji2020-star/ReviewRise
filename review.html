@@ -535,9 +535,25 @@ async function loadBusinessFromReviewLink() {
       const businessLogo = document.getElementById("businessLogo");
 
 if (link.logo_url) {
-    businessLogo.innerHTML = `<img src="${link.logo_url}" alt="${link.business_name} logo">`;
+    const logoImage = new Image();
+    logoImage.alt = link.business_name + " logo";
+
+    await new Promise((resolve) => {
+        logoImage.onload = resolve;
+        logoImage.onerror = resolve;
+        logoImage.src = link.logo_url;
+    });
+
+    if (logoImage.naturalWidth > 0) {
+        businessLogo.innerHTML = "";
+        businessLogo.appendChild(logoImage);
+    } else {
+        businessLogo.textContent =
+            link.business_name.charAt(0).toUpperCase();
+    }
 } else {
-    businessLogo.textContent = link.business_name.charAt(0).toUpperCase();
+    businessLogo.textContent =
+        link.business_name.charAt(0).toUpperCase();
 }
 
         reviewRiseGoogleReviewUrl =
