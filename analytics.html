@@ -426,9 +426,63 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
 "sb_publishable_0KjZZApJCuvTEJH3nNyLUg_aps6aXaA";
 
+async function getValidAccessToken() {
+    const currentToken = localStorage.getItem("reviewrise_token");
+    const refreshToken = localStorage.getItem("reviewrise_refresh_token");
+
+    if (!refreshToken) {
+        return currentToken;
+    }
+
+    try {
+        const response = await fetch(
+            SUPABASE_URL + "/auth/v1/token?grant_type=refresh_token",
+            {
+                method: "POST",
+                headers: {
+                    "apikey": SUPABASE_KEY,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    refresh_token: refreshToken
+                })
+            }
+        );
+
+        if (!response.ok) {
+            return currentToken;
+        }
+
+        const data = await response.json();
+
+        localStorage.setItem(
+            "reviewrise_token",
+            data.access_token
+        );
+
+        if (data.refresh_token) {
+            localStorage.setItem(
+                "reviewrise_refresh_token",
+                data.refresh_token
+            );
+        }
+
+        return data.access_token;
+
+    } catch (error) {
+        console.error("Token refresh failed:", error);
+        return currentToken;
+    }
+}
+    
 async function loadAnalytics() {
 
-    const token = localStorage.getItem("reviewrise_token");
+const token = await getValidAccessToken();
+    
+    if (!token) {
+    window.location.href = "dashboard.html";
+    return;
+}
     
     const response = await fetch(
         SUPABASE_URL + "/rest/v1/Feedback?select=rating",
