@@ -1355,6 +1355,13 @@ function saveReviewLinksCache() {
     );
 }
         
+ function renderReviewLinks(reviewLinks) {
+    const container = document.getElementById("reviewLinksContainer");
+    const emptyState = document.getElementById("emptyState");
+    const reviewLinksCard = document.getElementById("reviewLinksCard");
+
+    if (!container) return;
+        
 async function loadReviewLinks() {
     const token = localStorage.getItem("reviewrise_token");
     const container = document.getElementById("reviewLinksContainer");
@@ -1378,6 +1385,11 @@ headers: {
     }
 
     const reviewLinks = await response.json();
+    
+    localStorage.setItem(
+    "reviewrise_reviewlinks_data",
+    JSON.stringify(reviewLinks)
+);
 
 const emptyState = document.getElementById("emptyState");
 const reviewLinksCard = document.getElementById("reviewLinksCard");
