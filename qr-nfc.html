@@ -433,21 +433,21 @@ body.page-leaving {
             Select one of your Review Links to generate a QR code or program an NFC card.
         </div>
 
-        <div class="empty-state">
+<div id="qrReviewLinksContainer"></div>
 
-            <div class="qr-icon">
-                ▦
-            </div>
+<div class="empty-state" id="qrEmptyState" style="display: none;">
 
-            <h2>
-                Your QR codes will appear here
-            </h2>
+  <div class="qr-icon">
+    ▦
+  </div>
 
-            <p>
-                Your existing Review Links will automatically appear here once we connect this page to ReviewRise.
-            </p>
+  <h2>No Review Links yet</h2>
 
-        </div>
+  <p>
+    Create a Review Link first, then it will automatically appear here.
+  </p>
+
+</div>
 
     </div>
 
@@ -455,6 +455,47 @@ body.page-leaving {
 
 
 <script>
+    
+ function loadQRReviewLinks() {
+    const container = document.getElementById("qrReviewLinksContainer");
+    const emptyState = document.getElementById("qrEmptyState");
+
+    const cachedData = localStorage.getItem("reviewrise_reviewlinks_data");
+
+    if (!cachedData) {
+        emptyState.style.display = "flex";
+        return;
+    }
+
+    try {
+        const reviewLinks = JSON.parse(cachedData);
+
+        if (!Array.isArray(reviewLinks) || reviewLinks.length === 0) {
+            emptyState.style.display = "flex";
+            return;
+        }
+
+        emptyState.style.display = "none";
+        container.innerHTML = "";
+
+        reviewLinks.forEach(function(link) {
+            const item = document.createElement("div");
+            item.className = "qr-review-link-item";
+
+            const name = document.createElement("strong");
+            name.textContent = link.business_name;
+
+            item.appendChild(name);
+            container.appendChild(item);
+        });
+
+    } catch (error) {
+        console.error("QR Review Links error:", error);
+        emptyState.style.display = "flex";
+    }
+}
+
+loadQRReviewLinks();   
 
 function smoothNavigate(page) {
     document.body.classList.add("page-leaving");
