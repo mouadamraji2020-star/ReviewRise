@@ -179,41 +179,37 @@
 
   <!-- SIDEBAR -->
 
-  <aside class="sidebar">
+<div class="top-navbar">
+    <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="toggleSidebar()">☰</button>
 
-    <div class="brand">
-      ReviewRise
+    <div class="top-navbar-logo">ReviewRise</div>
+
+    <div class="top-navbar-actions">
+        <button class="navbar-icon" aria-label="Account">
+            ♙
+        </button>
     </div>
+</div>
+    
+<aside class="sidebar">
+    
+<button class="close-menu-btn" onclick="toggleSidebar()">×</button>
+    
+    <div class="logo">ReviewRise</div>
 
-    <nav class="menu">
+    <div class="menu-item" onclick="smoothNavigate('dashboard.html')">Dashboard</div>
 
-      <a href="dashboard.html" class="menu-item">
-        Dashboard
-      </a>
+<div class="menu-item" onclick="smoothNavigate('feedback.html')">Feedback</div>
 
-      <a href="feedback.html" class="menu-item">
-        Feedback
-      </a>
+<div class="menu-item active" onclick="smoothNavigate('analytics.html')">Analytics</div>
+    
+<div class="menu-item" onclick="smoothNavigate('review-link.html')">Review Links</div>
 
-      <a href="analytics.html" class="menu-item">
-        Analytics
-      </a>
+    <div class="menu-item">QR & NFC</div>
 
-      <a href="review-link.html" class="menu-item">
-        Review Links
-      </a>
+    <div class="menu-item">Settings</div>
 
-      <a href="qr-nfc.html" class="menu-item active">
-        QR & NFC
-      </a>
-
-      <a href="settings.html" class="menu-item">
-        Settings
-      </a>
-
-    </nav>
-
-  </aside>
+</aside>
 
 
   <!-- MAIN -->
