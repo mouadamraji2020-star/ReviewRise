@@ -1,373 +1,492 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QR & NFC | ReviewRise</title>
 
-  <title>QR & NFC | ReviewRise</title>
+<style>
+* {
+    box-sizing: border-box;
+}
 
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f5f7f8;
+    color: #172033;
+}
+
+.sidebar {
+    width: 240px;
+    height: 100vh;
+    background: #111827;
+    color: white;
+    position: fixed;
+    left: 0;
+    top: 0;
+    padding: 28px 20px;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 40px;
+}
+
+.menu-item {
+    display: block;
+    text-decoration: none;
+    padding: 13px 15px;
+    margin-bottom: 8px;
+    border-radius: 9px;
+    cursor: pointer;
+    color: #d1d5db;
+}
+
+.menu-item:hover,
+.menu-item.active {
+    background: #1f2937;
+    color: white;
+}
+
+.main {
+    margin-left: 240px;
+    padding: 40px;
+}
+
+h1 {
+    font-size: 36px;
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    color: #777;
+    margin-bottom: 40px;
+}
+
+/* QR & NFC CONTENT */
+
+.card {
+    background: white;
+    padding: 30px;
+    border-radius: 14px;
+}
+
+.card-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.card-description {
+    color: #777;
+    margin-bottom: 25px;
+}
+
+.empty-state {
+    min-height: 350px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    border: 1px dashed #d7dde7;
+    border-radius: 14px;
+    background: #fbfcfe;
+    padding: 40px;
+}
+
+.qr-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 16px;
+    background: #eaf2ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    font-size: 32px;
+}
+
+.empty-state h2 {
+    font-size: 19px;
+    margin-bottom: 9px;
+}
+
+.empty-state p {
+    color: #667085;
+    font-size: 14px;
+    max-width: 430px;
+    line-height: 1.6;
+}
+
+.mobile-menu-btn {
+    display: none;
+}
+
+.close-menu-btn {
+    display: none;
+}
+
+@media (max-width: 800px) {
+
+    .close-menu-btn {
+        display: block !important;
+        position: absolute !important;
+        top: 12px !important;
+        right: 12px !important;
+        width: auto !important;
+        height: auto !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        background: transparent !important;
+        border: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        color: white !important;
+        font-size: 28px !important;
+        font-weight: normal !important;
+        line-height: 1 !important;
+        cursor: pointer;
+        appearance: none;
+        -webkit-appearance: none;
     }
 
-    body {
-      font-family: Arial, sans-serif;
-      background: #f7f9fc;
-      color: #172033;
+    .mobile-menu-btn {
+        display: block;
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        z-index: 1100;
+        background: #111827;
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 16px;
+        font-size: 26px;
+        cursor: pointer;
     }
-
-    /* SIDEBAR */
 
     .sidebar {
-      position: fixed;
-      left: 0;
-      top: 0;
-      width: 240px;
-      height: 100vh;
-      background: #ffffff;
-      border-right: 1px solid #e7ebf0;
-      padding: 28px 18px;
-      z-index: 1000;
+        transform: translateX(-100%);
+        transition: transform 0.45s ease;
+        z-index: 1000;
     }
 
-    .brand {
-      font-size: 24px;
-      font-weight: 800;
-      margin-bottom: 40px;
-      padding-left: 12px;
+    .sidebar.open {
+        transform: translateX(0);
     }
-
-    .menu {
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
-    }
-
-    .menu-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 13px 14px;
-      text-decoration: none;
-      color: #667085;
-      border-radius: 10px;
-      font-size: 14px;
-      font-weight: 600;
-      transition: 0.2s;
-    }
-
-    .menu-item:hover {
-      background: #f2f6ff;
-      color: #166cff;
-    }
-
-    .menu-item.active {
-      background: #eaf2ff;
-      color: #166cff;
-    }
-
-    /* MAIN CONTENT */
 
     .main {
-      margin-left: 240px;
-      padding: 42px;
+        margin-left: 0 !important;
+        width: 100% !important;
+        padding: 25px 20px 30px !important;
+        box-sizing: border-box;
     }
+}
 
-    .page-header {
-      margin-bottom: 30px;
-    }
+/* ReviewRise top navigation */
 
-    .page-header h1 {
-      font-size: 30px;
-      margin-bottom: 8px;
-    }
+.top-navbar {
+    width: 100%;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    box-sizing: border-box;
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+    position: relative;
+    z-index: 900;
+}
 
-    .page-header p {
-      color: #667085;
-      font-size: 15px;
-    }
+.top-navbar-logo {
+    font-size: 27px;
+    font-weight: 700;
+    color: #111827;
+    margin-left: 18px;
+    position: absolute;
+    left: 50px;
+}
 
-    /* CARD */
+.top-navbar-actions {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+}
 
-    .card {
-      background: white;
-      border: 1px solid #e7ebf0;
-      border-radius: 16px;
-      padding: 28px;
-      box-shadow: 0 3px 12px rgba(20, 30, 55, 0.04);
-    }
+.navbar-icon {
+    background: transparent;
+    border: none;
+    color: #111827;
+    font-size: 28px;
+    cursor: pointer;
+}
 
-    .card-title {
-      font-size: 18px;
-      font-weight: 700;
-      margin-bottom: 6px;
-    }
+/* Put the existing hamburger inside the navbar */
 
-    .card-description {
-      color: #667085;
-      font-size: 14px;
-      margin-bottom: 25px;
-    }
+.top-navbar .mobile-menu-btn {
+    position: static;
+    display: block;
+    background: transparent;
+    color: #111827;
+    border: none;
+    padding: 0;
+    margin: 0;
+    font-size: 30px;
+    line-height: 1;
+    cursor: pointer;
+}
 
-    /* EMPTY STATE */
-
-    .empty-state {
-      min-height: 350px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      border: 1px dashed #d7dde7;
-      border-radius: 14px;
-      background: #fbfcfe;
-      padding: 40px;
-    }
-
-    .qr-icon {
-      width: 70px;
-      height: 70px;
-      border-radius: 16px;
-      background: #eaf2ff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 20px;
-      font-size: 32px;
-    }
-
-    .empty-state h2 {
-      font-size: 19px;
-      margin-bottom: 9px;
-    }
-
-    .empty-state p {
-      color: #667085;
-      font-size: 14px;
-      max-width: 430px;
-      line-height: 1.6;
-    }
-
-    /* MOBILE */
-
-    .mobile-menu-button {
-      display: none;
-    }
-
-    @media (max-width: 800px) {
-
-      .sidebar {
-        display: none;
-      }
-
-      .main {
-        margin-left: 0;
-        padding: 25px 18px;
-      }
-
-      .page-header h1 {
-        font-size: 26px;
-      }
-    }
-
- /* =========================================
-   REVIEWRISE LAPTOP LAYOUT
-   Match Analytics
-   ========================================= */
+/* LAPTOP ONLY */
 
 @media (min-width: 801px) {
 
-    /* SIDEBAR */
-    .sidebar {
-        display: none !important;
-        position: fixed !important;
-        top: 0 !important;
-        left: 0 !important;
-        width: 240px !important;
-        height: 100vh !important;
-        background: #111827 !important;
-        color: white !important;
-        padding: 28px 20px !important;
-        box-sizing: border-box !important;
-        z-index: 1000 !important;
-    }
-
-    .sidebar .logo {
-        font-size: 24px !important;
-        font-weight: 700 !important;
-        margin-bottom: 40px !important;
-        color: white !important;
-    }
-
-    .sidebar .menu-item {
+    .mobile-menu-btn {
         display: block !important;
-        width: 100% !important;
-        box-sizing: border-box !important;
-        padding: 13px 15px !important;
-        margin-bottom: 8px !important;
-        border-radius: 9px !important;
-        color: #d1d5db !important;
-        text-decoration: none !important;
-        cursor: pointer !important;
-    }
-
-    .sidebar .menu-item:hover {
-        background: #1f2937 !important;
-        color: white !important;
-    }
-
-    .sidebar .menu-item.active {
-        background: #2563eb !important;
-        color: white !important;
-    }
-
-    /* TOP NAVBAR */
-    .top-navbar {
-        position: fixed !important;
-        top: 0 !important;
-        left: 240px !important;
-        right: 0 !important;
-        width: auto !important;
-        height: 72px !important;
-        display: flex !important;
-        align-items: center !important;
-        padding: 0 24px !important;
-        box-sizing: border-box !important;
-        background: #ffffff !important;
-        border-bottom: 1px solid #e5e7eb !important;
-        z-index: 900 !important;
-    }
-
-    .top-navbar-logo {
-        font-size: 27px !important;
-        font-weight: 700 !important;
-        color: #111827 !important;
-        margin-left: 18px !important;
-    }
-
-    .top-navbar-actions {
-        margin-left: auto !important;
-        display: flex !important;
-        align-items: center !important;
-    }
-
-    .navbar-icon {
-        background: transparent !important;
-        border: none !important;
-        color: #111827 !important;
-        font-size: 28px !important;
-        cursor: pointer !important;
-    }
-
-    /* HAMBURGER */
-    .top-navbar .mobile-menu-btn {
         position: static !important;
-        display: block !important;
         background: transparent !important;
         color: #111827 !important;
         border: none !important;
         padding: 0 !important;
         margin: 0 !important;
         font-size: 30px !important;
-        line-height: 1 !important;
-        cursor: pointer !important;
+        cursor: pointer;
     }
 
-    /* QR PAGE CONTENT */
-    .main {
-        margin-left: 240px !important;
-        padding-top: 72px !important;
-        box-sizing: border-box !important;
-        min-height: 100vh !important;
+    .sidebar {
+        display: block !important;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 240px;
+        height: 100vh;
+        background: #111827;
+        z-index: 1000;
+
+        transform: translateX(-100%);
+        transition: transform 0.45s ease;
+    }
+
+    .sidebar.open {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 240px;
+        height: 100vh;
+        background: #111827;
+        z-index: 1000;
+        padding: 24px 16px;
+        box-sizing: border-box;
+        transform: translateX(0);
     }
 }
-    
-  </style>
+
+.sidebar.open .logo {
+    display: block;
+    color: white;
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 30px;
+}
+
+.sidebar.open .close-menu-btn {
+    display: block;
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 26px;
+    cursor: pointer;
+}
+
+.sidebar.open .menu-item {
+    display: block;
+    color: #e5e7eb;
+    text-decoration: none;
+    padding: 12px 14px;
+    margin-bottom: 6px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.sidebar.open .menu-item:hover {
+    background: #1f2937;
+    color: #ffffff;
+}
+
+.sidebar.open .menu-item.active {
+    background: #2563eb;
+    color: #ffffff;
+    font-weight: 600;
+}
+
+/* Smooth page transition */
+
+body {
+    opacity: 1;
+    transition: opacity 0.25s ease;
+}
+
+body.page-leaving {
+    opacity: 0;
+}
+
+</style>
 </head>
 
 <body>
 
-  <!-- SIDEBAR -->
-
 <div class="top-navbar">
-    <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="toggleSidebar()">☰</button>
 
-    <div class="top-navbar-logo">ReviewRise</div>
+    <button
+        class="mobile-menu-btn"
+        id="mobileMenuBtn"
+        onclick="toggleSidebar()">
+        ☰
+    </button>
+
+    <div class="top-navbar-logo">
+        ReviewRise
+    </div>
 
     <div class="top-navbar-actions">
         <button class="navbar-icon" aria-label="Account">
             ♙
         </button>
     </div>
+
 </div>
-    
+
+
 <aside class="sidebar">
-    
-<button class="close-menu-btn" onclick="toggleSidebar()">×</button>
-    
-    <div class="logo">ReviewRise</div>
 
-    <div class="menu-item" onclick="smoothNavigate('dashboard.html')">Dashboard</div>
+    <button
+        class="close-menu-btn"
+        onclick="toggleSidebar()">
+        ×
+    </button>
 
-<div class="menu-item" onclick="smoothNavigate('feedback.html')">Feedback</div>
+    <div class="logo">
+        ReviewRise
+    </div>
 
-<div class="menu-item" onclick="smoothNavigate('analytics.html')">Analytics</div>
-    
-<div class="menu-item" onclick="smoothNavigate('review-link.html')">Review Links</div>
+    <div
+        class="menu-item"
+        onclick="smoothNavigate('dashboard.html')">
+        Dashboard
+    </div>
 
-  <div class="menu-item active" onclick="smoothNavigate('qr-nfc.html')">QR & NFC</div>
-  
-<div class="menu-item" onclick="smoothNavigate('settings.html')">Settings</div>
-  
+    <div
+        class="menu-item"
+        onclick="smoothNavigate('feedback.html')">
+        Feedback
+    </div>
+
+    <div
+        class="menu-item"
+        onclick="smoothNavigate('analytics.html')">
+        Analytics
+    </div>
+
+    <div
+        class="menu-item"
+        onclick="smoothNavigate('review-link.html')">
+        Review Links
+    </div>
+
+    <div
+        class="menu-item active"
+        onclick="smoothNavigate('qr-nfc.html')">
+        QR & NFC
+    </div>
+
+    <div
+        class="menu-item"
+        onclick="smoothNavigate('settings.html')">
+        Settings
+    </div>
+
 </aside>
 
 
-  <!-- MAIN -->
+<main class="main">
 
-  <main class="main">
+    <h1>QR & NFC</h1>
 
-    <div class="page-header">
-
-      <h1>QR & NFC</h1>
-
-      <p>
+    <div class="subtitle">
         Turn your ReviewRise links into QR codes and NFC-ready links.
-      </p>
+    </div>
+
+    <div class="card">
+
+        <div class="card-title">
+            QR Codes & NFC
+        </div>
+
+        <div class="card-description">
+            Select one of your Review Links to generate a QR code or program an NFC card.
+        </div>
+
+        <div class="empty-state">
+
+            <div class="qr-icon">
+                ▦
+            </div>
+
+            <h2>
+                Your QR codes will appear here
+            </h2>
+
+            <p>
+                Your existing Review Links will automatically appear here once we connect this page to ReviewRise.
+            </p>
+
+        </div>
 
     </div>
 
-
-    <section class="card">
-
-      <div class="card-title">
-        QR Codes & NFC
-      </div>
-
-      <div class="card-description">
-        Select one of your Review Links to generate a QR code or program an NFC card.
-      </div>
+</main>
 
 
-      <div class="empty-state">
+<script>
 
-        <div class="qr-icon">
-          ▦
-        </div>
+function smoothNavigate(page) {
+    document.body.classList.add("page-leaving");
 
-        <h2>Your QR codes will appear here</h2>
+    setTimeout(function () {
+        window.location.href = page;
+    }, 250);
+}
 
-        <p>
-          Your existing Review Links will automatically appear here once we connect this page to ReviewRise.
-        </p>
+function toggleSidebar() {
+    const sidebar = document.querySelector(".sidebar");
+    const menuButton = document.getElementById("mobileMenuBtn");
 
-      </div>
+    // PHONE - keep existing behavior
+    if (window.innerWidth <= 800) {
 
-    </section>
+        sidebar.classList.toggle("open");
 
-  </main>
+        if (sidebar.classList.contains("open")) {
+            menuButton.style.display = "none";
+        } else {
+            menuButton.style.display = "block";
+        }
+
+        return;
+    }
+
+    // LAPTOP - same behavior as Analytics
+    sidebar.classList.toggle("open");
+}
+
+</script>
 
 </body>
 </html>
