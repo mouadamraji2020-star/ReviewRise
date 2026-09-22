@@ -400,22 +400,25 @@ body.page-leaving {
 .qr-page-icon {
     width: 64px;
     height: 64px;
-    border-radius: 18px;
+    border-radius: 16px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    color: #2563eb;
-
-    background:
-        linear-gradient(145deg, #eef4ff 0%, #e4edff 55%, #f3f0ff 100%);
-
-    border: 1px solid rgba(37, 99, 235, 0.08);
+    padding: 8px;
 
     box-shadow:
-        0 8px 20px rgba(37, 99, 235, 0.08),
-        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+        0 6px 18px rgba(37, 99, 235, 0.08);
+}
+
+.qr-page-icon-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 8px;
 }
 
 .qr-page-icon svg {
@@ -589,25 +592,13 @@ body.page-leaving {
 <div class="qr-page-header">
 
     <div class="qr-page-title-wrap">
-<div class="qr-page-icon" aria-hidden="true">
-    <svg viewBox="0 0 48 48" width="34" height="34" fill="none">
-        <rect x="5" y="5" width="14" height="14" rx="3" fill="currentColor"/>
-        <rect x="9" y="9" width="6" height="6" rx="1.5" fill="white"/>
-
-        <rect x="29" y="5" width="14" height="14" rx="3" fill="currentColor"/>
-        <rect x="33" y="9" width="6" height="6" rx="1.5" fill="white"/>
-
-        <rect x="5" y="29" width="14" height="14" rx="3" fill="currentColor"/>
-        <rect x="9" y="33" width="6" height="6" rx="1.5" fill="white"/>
-
-        <rect x="28" y="28" width="6" height="6" rx="1.5" fill="currentColor"/>
-        <rect x="37" y="28" width="6" height="6" rx="1.5" fill="currentColor"/>
-        <rect x="28" y="37" width="6" height="6" rx="1.5" fill="currentColor"/>
-        <rect x="37" y="37" width="6" height="6" rx="1.5" fill="currentColor"/>
-        <rect x="34" y="34" width="5" height="5" rx="1.2" fill="currentColor"/>
-    </svg>
+<div class="qr-page-icon">
+    <img
+        src="qr-preview.png"
+        alt="QR Code"
+        class="qr-page-icon-image"
+    >
 </div>
-
         <div>
             <h1>QR & NFC</h1>
 
