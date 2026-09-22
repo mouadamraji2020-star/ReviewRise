@@ -1,11 +1,264 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR & NFC - ReviewRise</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>QR & NFC | ReviewRise</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f7f9fc;
+      color: #172033;
+    }
+
+    /* SIDEBAR */
+
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 240px;
+      height: 100vh;
+      background: #ffffff;
+      border-right: 1px solid #e7ebf0;
+      padding: 28px 18px;
+      z-index: 1000;
+    }
+
+    .brand {
+      font-size: 24px;
+      font-weight: 800;
+      margin-bottom: 40px;
+      padding-left: 12px;
+    }
+
+    .menu {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 14px;
+      text-decoration: none;
+      color: #667085;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+
+    .menu-item:hover {
+      background: #f2f6ff;
+      color: #166cff;
+    }
+
+    .menu-item.active {
+      background: #eaf2ff;
+      color: #166cff;
+    }
+
+    /* MAIN CONTENT */
+
+    .main {
+      margin-left: 240px;
+      padding: 42px;
+    }
+
+    .page-header {
+      margin-bottom: 30px;
+    }
+
+    .page-header h1 {
+      font-size: 30px;
+      margin-bottom: 8px;
+    }
+
+    .page-header p {
+      color: #667085;
+      font-size: 15px;
+    }
+
+    /* CARD */
+
+    .card {
+      background: white;
+      border: 1px solid #e7ebf0;
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 3px 12px rgba(20, 30, 55, 0.04);
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .card-description {
+      color: #667085;
+      font-size: 14px;
+      margin-bottom: 25px;
+    }
+
+    /* EMPTY STATE */
+
+    .empty-state {
+      min-height: 350px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      border: 1px dashed #d7dde7;
+      border-radius: 14px;
+      background: #fbfcfe;
+      padding: 40px;
+    }
+
+    .qr-icon {
+      width: 70px;
+      height: 70px;
+      border-radius: 16px;
+      background: #eaf2ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      font-size: 32px;
+    }
+
+    .empty-state h2 {
+      font-size: 19px;
+      margin-bottom: 9px;
+    }
+
+    .empty-state p {
+      color: #667085;
+      font-size: 14px;
+      max-width: 430px;
+      line-height: 1.6;
+    }
+
+    /* MOBILE */
+
+    .mobile-menu-button {
+      display: none;
+    }
+
+    @media (max-width: 800px) {
+
+      .sidebar {
+        display: none;
+      }
+
+      .main {
+        margin-left: 0;
+        padding: 25px 18px;
+      }
+
+      .page-header h1 {
+        font-size: 26px;
+      }
+    }
+  </style>
 </head>
+
 <body>
+
+  <!-- SIDEBAR -->
+
+  <aside class="sidebar">
+
+    <div class="brand">
+      ReviewRise
+    </div>
+
+    <nav class="menu">
+
+      <a href="dashboard.html" class="menu-item">
+        Dashboard
+      </a>
+
+      <a href="feedback.html" class="menu-item">
+        Feedback
+      </a>
+
+      <a href="analytics.html" class="menu-item">
+        Analytics
+      </a>
+
+      <a href="review-link.html" class="menu-item">
+        Review Links
+      </a>
+
+      <a href="qr-nfc.html" class="menu-item active">
+        QR & NFC
+      </a>
+
+      <a href="settings.html" class="menu-item">
+        Settings
+      </a>
+
+    </nav>
+
+  </aside>
+
+
+  <!-- MAIN -->
+
+  <main class="main">
+
+    <div class="page-header">
+
+      <h1>QR & NFC</h1>
+
+      <p>
+        Turn your ReviewRise links into QR codes and NFC-ready links.
+      </p>
+
+    </div>
+
+
+    <section class="card">
+
+      <div class="card-title">
+        QR Codes & NFC
+      </div>
+
+      <div class="card-description">
+        Select one of your Review Links to generate a QR code or program an NFC card.
+      </div>
+
+
+      <div class="empty-state">
+
+        <div class="qr-icon">
+          ▦
+        </div>
+
+        <h2>Your QR codes will appear here</h2>
+
+        <p>
+          Your existing Review Links will automatically appear here once we connect this page to ReviewRise.
+        </p>
+
+      </div>
+
+    </section>
+
+  </main>
 
 </body>
 </html>
