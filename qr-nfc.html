@@ -346,21 +346,192 @@ body.page-leaving {
 }
 
 .qr-review-link-item {
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    padding: 20px;
-    min-height: 90px;
+    position: relative;
+    min-height: 205px;
+    padding: 18px;
+    background: linear-gradient(145deg, #ffffff 65%, #f3f7ff 100%);
+    border: 1px solid #e1e8f2;
+    border-radius: 18px;
+    box-shadow: 0 6px 20px rgba(28, 65, 120, 0.06);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
 
+.qr-review-link-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(28, 65, 120, 0.12);
+}
+
+/* TOP PART */
+
+.qr-card-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    position: relative;
+}
+
+.qr-business-logo {
+    width: 86px;
+    height: 86px;
+    border-radius: 15px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, #dceaff, #edf3ff);
     display: flex;
     align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    font-weight: 700;
+    color: #2563eb;
+}
 
+.qr-business-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.qr-business-info {
+    min-width: 0;
+    flex: 1;
+}
+
+.qr-business-name {
+    padding-right: 25px;
+    margin-top: 3px;
     font-size: 16px;
-    color: #172033;
+    line-height: 1.3;
+    font-weight: 700;
+    color: #101c35;
+}
 
-    transition: box-shadow 0.2s ease,
-                border-color 0.2s ease,
-                transform 0.2s ease;
+.qr-view-link {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 8px;
+    color: #2563eb;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.qr-view-link:hover {
+    text-decoration: underline;
+}
+
+.qr-business-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 10px;
+}
+
+.qr-hotel-tag,
+.qr-location-tag {
+    display: inline-flex;
+    align-items: center;
+    min-height: 27px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.qr-hotel-tag {
+    color: #08783f;
+    background: #e3f8ed;
+}
+
+.qr-location-tag {
+    color: #43516a;
+    background: #eef2f8;
+}
+
+.qr-more-btn {
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    width: 30px;
+    height: 34px;
+    border: 0;
+    background: transparent;
+    color: #17355f;
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    border-radius: 8px;
+}
+
+.qr-more-btn:hover {
+    background: #eef4ff;
+}
+
+/* BUTTON AREA */
+
+.qr-card-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1.7fr) minmax(120px, 1fr);
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.qr-generate-btn,
+.qr-nfc-btn {
+    min-height: 47px;
+    border-radius: 11px;
+    border: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 14px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.qr-generate-btn {
+    color: #ffffff;
+    background: linear-gradient(135deg, #1688ff, #0867f2);
+    box-shadow: 0 6px 14px rgba(8, 103, 242, 0.20);
+}
+
+.qr-generate-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px rgba(8, 103, 242, 0.28);
+}
+
+.qr-nfc-btn {
+    color: #1260c9;
+    background: linear-gradient(135deg, #edf5ff, #f1efff);
+    border: 1px solid #e3e9fb;
+}
+
+.qr-nfc-btn:hover {
+    transform: translateY(-1px);
+    background: #e8f1ff;
+}
+
+/* MOBILE */
+
+@media (max-width: 700px) {
+    .qr-review-link-item {
+        min-height: auto;
+    }
+
+    .qr-business-logo {
+        width: 70px;
+        height: 70px;
+    }
+
+    .qr-card-actions {
+        grid-template-columns: 1fr;
+    }
 }
 
 .qr-review-link-item:hover {
@@ -689,16 +860,70 @@ body.page-leaving {
         emptyState.style.display = "none";
         container.innerHTML = "";
 
-        reviewLinks.forEach(function(link) {
-            const item = document.createElement("div");
-            item.className = "qr-review-link-item";
+reviewLinks.forEach(function(link) {
+    const item = document.createElement("div");
+    item.className = "qr-review-link-item";
 
-            const name = document.createElement("strong");
-            name.textContent = link.business_name;
+    item.innerHTML = `
+        <div class="qr-card-top">
 
-            item.appendChild(name);
-            container.appendChild(item);
-        });
+            <div class="qr-business-logo">
+                ${
+                    link.logo_url
+                        ? `<img src="${link.logo_url}" alt="">`
+                        : `<span>${(link.business_name || "B").charAt(0).toUpperCase()}</span>`
+                }
+            </div>
+
+            <div class="qr-business-info">
+                <div class="qr-business-name">
+                    ${link.business_name || "Business"}
+                </div>
+
+                <a
+                    class="qr-view-link"
+                    href="${link.google_review_link || "#"}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    ↗ View Review Link
+                </a>
+
+                <div class="qr-business-tags">
+                    <span class="qr-hotel-tag">Hotel</span>
+                    <span class="qr-location-tag">⌖ Tangier</span>
+                </div>
+            </div>
+
+            <button class="qr-more-btn" type="button">⋮</button>
+
+        </div>
+
+        <div class="qr-card-actions">
+
+            <button
+                class="qr-generate-btn"
+                type="button"
+                data-link-id="${link.id || ""}"
+            >
+                ▦
+                <span>Generate QR Code</span>
+            </button>
+
+            <button
+                class="qr-nfc-btn"
+                type="button"
+                data-link-id="${link.id || ""}"
+            >
+                ))) 
+                <span>NFC Link</span>
+            </button>
+
+        </div>
+    `;
+
+    container.appendChild(item);
+});
 
     } catch (error) {
         console.error("QR Review Links error:", error);
