@@ -398,15 +398,30 @@ body.page-leaving {
 }
 
 .qr-page-icon {
-    width: 58px;
-    height: 58px;
-    border-radius: 16px;
+    width: 64px;
+    height: 64px;
+    border-radius: 18px;
+
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 28px;
+
     color: #2563eb;
-    background: linear-gradient(135deg, #dbeafe, #eef2ff);
+
+    background:
+        linear-gradient(145deg, #eef4ff 0%, #e4edff 55%, #f3f0ff 100%);
+
+    border: 1px solid rgba(37, 99, 235, 0.08);
+
+    box-shadow:
+        0 8px 20px rgba(37, 99, 235, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.qr-page-icon svg {
+    width: 34px;
+    height: 34px;
+    stroke-width: 2.4;
 }
 
 .qr-page-header h1 {
@@ -575,15 +590,21 @@ body.page-leaving {
 
     <div class="qr-page-title-wrap">
 <div class="qr-page-icon" aria-hidden="true">
-    <svg viewBox="0 0 24 24" width="30" height="30" fill="none">
-        <rect x="3" y="3" width="6" height="6" rx="1.2" stroke="currentColor" stroke-width="2"/>
-        <rect x="15" y="3" width="6" height="6" rx="1.2" stroke="currentColor" stroke-width="2"/>
-        <rect x="3" y="15" width="6" height="6" rx="1.2" stroke="currentColor" stroke-width="2"/>
+    <svg viewBox="0 0 48 48" width="34" height="34" fill="none">
+        <rect x="5" y="5" width="14" height="14" rx="3" fill="currentColor"/>
+        <rect x="9" y="9" width="6" height="6" rx="1.5" fill="white"/>
 
-        <path d="M15 15h2v2h-2z" fill="currentColor"/>
-        <path d="M19 15h2v4h-2z" fill="currentColor"/>
-        <path d="M15 19h4v2h-4z" fill="currentColor"/>
-        <path d="M21 21h-2v-2h2z" fill="currentColor"/>
+        <rect x="29" y="5" width="14" height="14" rx="3" fill="currentColor"/>
+        <rect x="33" y="9" width="6" height="6" rx="1.5" fill="white"/>
+
+        <rect x="5" y="29" width="14" height="14" rx="3" fill="currentColor"/>
+        <rect x="9" y="33" width="6" height="6" rx="1.5" fill="white"/>
+
+        <rect x="28" y="28" width="6" height="6" rx="1.5" fill="currentColor"/>
+        <rect x="37" y="28" width="6" height="6" rx="1.5" fill="currentColor"/>
+        <rect x="28" y="37" width="6" height="6" rx="1.5" fill="currentColor"/>
+        <rect x="37" y="37" width="6" height="6" rx="1.5" fill="currentColor"/>
+        <rect x="34" y="34" width="5" height="5" rx="1.2" fill="currentColor"/>
     </svg>
 </div>
 
