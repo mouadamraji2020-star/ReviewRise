@@ -387,6 +387,43 @@ body.page-leaving {
     box-shadow: 0 12px 28px rgba(28, 65, 120, 0.08);
 }
 
+/* QR & NFC FEATURES */
+
+.qr-features {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 24px;
+}
+
+.qr-feature {
+    background: #ffffff;
+    border: 1px solid #e1e8f2;
+    border-radius: 16px;
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    box-shadow: 0 6px 20px rgba(28, 65, 120, 0.05);
+}
+
+.qr-feature strong {
+    font-size: 15px;
+    font-weight: 700;
+    color: #101c35;
+}
+
+.qr-feature span {
+    font-size: 13px;
+    color: #667085;
+}
+
+@media (max-width: 700px) {
+    .qr-features {
+        grid-template-columns: 1fr;
+    }
+}
+    
 .qr-create-plus {
     width: 52px;
     height: 52px;
@@ -917,6 +954,23 @@ body.page-leaving {
 
     </div>
 
+<div class="qr-features">
+    <div class="qr-feature">
+        <strong>QR Codes</strong>
+        <span>Ready to scan</span>
+    </div>
+
+    <div class="qr-feature">
+        <strong>NFC Ready</strong>
+        <span>Tap to review</span>
+    </div>
+
+    <div class="qr-feature">
+        <strong>More Reviews</strong>
+        <span>Make feedback easier</span>
+    </div>
+</div>
+    
 </main>
 
 
