@@ -358,12 +358,79 @@ body.page-leaving {
     justify-content: space-between;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-
+  
 .qr-review-link-item:hover {
     transform: translateY(-3px);
     box-shadow: 0 12px 28px rgba(28, 65, 120, 0.12);
 }
+/* CREATE NEW REVIEW LINK CARD */
 
+.qr-create-link-card {
+    min-height: 205px;
+    padding: 18px;
+    border: 1.5px dashed #d5deeb;
+    border-radius: 18px;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    box-sizing: border-box;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.qr-create-link-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(28, 65, 120, 0.08);
+}
+
+.qr-create-plus {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: #e8f1ff;
+    color: #1267d6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 34px;
+    font-weight: 400;
+    line-height: 1;
+    margin-bottom: 10px;
+}
+
+.qr-create-title {
+    color: #101c35;
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 7px;
+}
+
+.qr-create-text {
+    color: #65738a;
+    font-size: 13px;
+    line-height: 1.45;
+    margin-bottom: 12px;
+}
+
+.qr-create-button {
+    border: 0;
+    border-radius: 10px;
+    padding: 9px 15px;
+    background: #f3f6fb;
+    color: #17355f;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.qr-create-button:hover {
+    background: #e8f1ff;
+    transform: translateY(-1px);
+}
+    
 /* TOP PART */
 
 .qr-card-top {
@@ -940,6 +1007,27 @@ reviewLinks.forEach(function(link) {
     container.appendChild(item);
 });
 
+const createCard = document.createElement("div");
+createCard.className = "qr-create-link-card";
+
+createCard.innerHTML = `
+    <div class="qr-create-plus">+</div>
+    <div class="qr-create-title">Create a New Review Link</div>
+    <div class="qr-create-text">
+        Go to the Review Links page<br>
+        to create a new link.
+    </div>
+    <button class="qr-create-button" type="button">
+        Go to Review Links →
+    </button>
+`;
+
+createCard.querySelector(".qr-create-button").addEventListener("click", function () {
+    window.location.href = "review-links.html";
+});
+
+container.appendChild(createCard);
+        
     } catch (error) {
         console.error("QR Review Links error:", error);
         emptyState.style.display = "flex";
