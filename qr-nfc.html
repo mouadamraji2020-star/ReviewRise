@@ -1129,7 +1129,11 @@ body.page-leaving {
 reviewLinks.forEach(function(link) {
     const item = document.createElement("div");
     item.className = "qr-review-link-item";
-
+    
+   const customerReviewUrl =
+    new URL("review.html", window.location.href).href +
+    "?id=" + encodeURIComponent(link.id);
+    
     item.innerHTML = `
         <div class="qr-card-top">
 
