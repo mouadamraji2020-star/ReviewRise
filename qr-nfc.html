@@ -918,45 +918,132 @@ body.page-leaving {
     inset: 0;
     z-index: 9999;
     background: rgba(15, 23, 42, 0.55);
-    backdrop-filter: blur(5px);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
 
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 20px;
+    padding: 24px;
 }
 
-.qr-modal-box {
+.qr-modal {
     position: relative;
-    width: min(420px, 100%);
-    padding: 32px;
-    border-radius: 22px;
+    width: 100%;
+    max-width: 420px;
+    padding: 34px 32px 32px;
+
     background: #ffffff;
-    box-shadow: 0 25px 70px rgba(15, 23, 42, 0.25);
+    border: 1px solid #e6ecf5;
+    border-radius: 24px;
+
+    box-shadow:
+        0 30px 80px rgba(15, 23, 42, 0.28),
+        0 8px 25px rgba(15, 23, 42, 0.08);
+
     text-align: center;
+    animation: qrModalIn 0.2s ease;
 }
 
-.qr-modal-box h2 {
-    margin: 0 35px 8px;
+@keyframes qrModalIn {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.qr-modal-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+
+    width: 36px;
+    height: 36px;
+
+    border: 0;
+    border-radius: 10px;
+
+    background: #f1f5f9;
+    color: #475569;
+
+    font-size: 24px;
+    line-height: 1;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+}
+
+.qr-modal-close:hover {
+    background: #e2e8f0;
+}
+
+.qr-modal h2 {
+    margin: 4px 35px 8px;
     color: #0f172a;
-    font-size: 21px;
+
+    font-size: 22px;
+    line-height: 1.25;
     font-weight: 700;
 }
 
-.qr-modal-box p {
-    margin: 0 0 24px;
+.qr-modal p {
+    margin: 0 0 22px;
     color: #64748b;
+
     font-size: 14px;
+    line-height: 1.5;
 }
 
-.qr-code-output {
-    width: 252px;
-    min-height: 252px;
+.generated-qr-code {
+    width: 260px;
+    height: 260px;
     margin: 0 auto;
-    padding: 16px;
-    border-radius: 18px;
+
+    padding: 15px;
+
     background: #ffffff;
-    border: 1px solid
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.07);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.generated-qr-code img,
+.generated-qr-code canvas {
+    width: 230px !important;
+    height: 230px !important;
+    display: block;
+}
+
+@media (max-width: 500px) {
+    .qr-modal {
+        padding: 30px 20px 24px;
+        border-radius: 20px;
+    }
+
+    .generated-qr-code {
+        width: 230px;
+        height: 230px;
+    }
+
+    .generated-qr-code img,
+    .generated-qr-code canvas {
+        width: 200px !important;
+        height: 200px !important;
+    }
+}
     
 </style>
 </head>
