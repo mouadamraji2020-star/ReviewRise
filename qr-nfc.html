@@ -2144,6 +2144,8 @@ function loadExportImage(src) {
 
         const img = new Image();
 
+        img.crossOrigin = "anonymous";
+
         img.onload = function () {
             resolve(img);
         };
