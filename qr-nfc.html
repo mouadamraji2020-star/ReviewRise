@@ -2138,8 +2138,206 @@ generateBtn.addEventListener("click", function () {
             .replace(/^-|-$/g, "") ||
             "reviewrise";
     }
+    
+function loadExportImage(src) {
+    return new Promise(function (resolve, reject) {
 
+        const img = new Image();
 
+        img.onload = function () {
+            resolve(img);
+        };
+
+        img.onerror = function () {
+            reject(
+                new Error("Could not load image: " + src)
+            );
+        };
+
+        img.src = src;
+    });
+}
+    async function createExportCanvas() {
+
+    const backgroundStyle =
+        window.getComputedStyle(poster).backgroundImage;
+
+    const backgroundUrl =
+        backgroundStyle
+            .replace(/^url\(["']?/, "")
+            .replace(/["']?\)$/, "");
+
+    const backgroundImage =
+        await loadExportImage(backgroundUrl);
+
+    const canvas =
+        document.createElement("canvas");
+
+    canvas.width =
+        backgroundImage.naturalWidth;
+
+    canvas.height =
+        backgroundImage.naturalHeight;
+
+    const ctx =
+        canvas.getContext("2d");
+
+    ctx.drawImage(
+        backgroundImage,
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+    return canvas;
+}
+    
+async function buildExportCanvas() {
+
+    const exportCanvas = document.createElement("canvas");
+
+    const ctx = exportCanvas.getContext("2d");
+
+    let backgroundSrc = "imagesqr-bg-elegant.jpeg";
+
+    if (poster.classList.contains("theme-blue")) {
+        backgroundSrc = "imagesqr-bg-modern.jpeg";
+    }
+
+    if (poster.classList.contains("theme-dark")) {
+        backgroundSrc = "imagesqr-bg-luxury.jpeg";
+    }
+
+    const backgroundImage =
+        await loadExportImage(backgroundSrc);
+    
+    exportCanvas.width = backgroundImage.naturalWidth;
+exportCanvas.height = backgroundImage.naturalHeight;
+
+    ctx.drawImage(
+        backgroundImage,
+        0,
+        0,
+        exportCanvas.width,
+        exportCanvas.height
+    );
+    
+const qrSource =
+    modal.querySelector(".qr-poster-code canvas");
+
+if (qrSource) {
+
+    const scale =
+        exportCanvas.width / 964;
+
+    const qrSize =
+        360 * scale;
+
+    const qrX =
+        (exportCanvas.width - qrSize) / 2;
+
+    const qrY =
+        410 * scale;
+
+    ctx.fillStyle = "#ffffff";
+
+    ctx.fillRect(
+        qrX - 18 * scale,
+        qrY - 18 * scale,
+        qrSize + 36 * scale,
+        qrSize + 36 * scale
+    );
+
+    ctx.drawImage(
+        qrSource,
+        qrX,
+        qrY,
+        qrSize,
+        qrSize
+    );
+}
+
+ const exportName =
+    (
+        poster.querySelector(".qr-poster-business-name")?.textContent ||
+        businessName ||
+        ""
+    ).trim();
+
+if (exportName) {
+
+    const scale =
+        exportCanvas.width / 964;
+
+    const centerX =
+        exportCanvas.width / 2;
+
+    const startY =
+        250 * scale;
+
+    const maxWidth =
+        620 * scale;
+
+    const lineHeight =
+        54 * scale;
+
+    const fontSize =
+        52 * scale;
+
+    ctx.fillStyle =
+        poster.classList.contains("theme-dark")
+            ? "#f8f4ea"
+            : "#3a3a3a";
+
+    ctx.font =
+        `700 ${fontSize}px Arial`;
+
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    const words =
+        exportName.split(" ");
+
+    const lines = [];
+    let currentLine =
+        words[0] || "";
+
+    for (let i = 1; i < words.length; i++) {
+
+        const testLine =
+            currentLine + " " + words[i];
+
+        if (ctx.measureText(testLine).width <= maxWidth) {
+            currentLine = testLine;
+        } else {
+            lines.push(currentLine);
+            currentLine = words[i];
+        }
+    }
+
+    lines.push(currentLine);
+
+    const finalLines =
+        lines.slice(0, 2);
+
+    const firstLineY =
+        finalLines.length === 2
+            ? startY - (lineHeight / 2)
+            : startY;
+
+    finalLines.forEach(function (line, index) {
+        ctx.fillText(
+            line,
+            centerX,
+            firstLineY + (index * lineHeight)
+        );
+    });
+}
+    
+    return exportCanvas;
+}
+    
     /* DOWNLOAD PNG */
 
     modal
