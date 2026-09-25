@@ -910,6 +910,53 @@ body.page-leaving {
         width: 100%;
     }
 }
+
+/* QR CODE POPUP */
+
+.qr-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(15, 23, 42, 0.55);
+    backdrop-filter: blur(5px);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.qr-modal-box {
+    position: relative;
+    width: min(420px, 100%);
+    padding: 32px;
+    border-radius: 22px;
+    background: #ffffff;
+    box-shadow: 0 25px 70px rgba(15, 23, 42, 0.25);
+    text-align: center;
+}
+
+.qr-modal-box h2 {
+    margin: 0 35px 8px;
+    color: #0f172a;
+    font-size: 21px;
+    font-weight: 700;
+}
+
+.qr-modal-box p {
+    margin: 0 0 24px;
+    color: #64748b;
+    font-size: 14px;
+}
+
+.qr-code-output {
+    width: 252px;
+    min-height: 252px;
+    margin: 0 auto;
+    padding: 16px;
+    border-radius: 18px;
+    background: #ffffff;
+    border: 1px solid
     
 </style>
 </head>
@@ -1192,6 +1239,56 @@ reviewLinks.forEach(function(link) {
         </div>
     `;
 
+ const generateBtn = item.querySelector(".qr-generate-btn");
+
+generateBtn.addEventListener("click", function () {
+
+    const overlay = document.createElement("div");
+    overlay.className = "qr-modal-overlay";
+
+    const modal = document.createElement("div");
+    modal.className = "qr-modal";
+
+    const closeBtn = document.createElement("button");
+    closeBtn.className = "qr-modal-close";
+    closeBtn.type = "button";
+    closeBtn.textContent = "×";
+
+    const title = document.createElement("h2");
+    title.textContent = link.business_name || "Review QR Code";
+
+    const text = document.createElement("p");
+    text.textContent = "Scan this QR code to leave a review.";
+
+    const qrBox = document.createElement("div");
+    qrBox.className = "generated-qr-code";
+
+    modal.appendChild(closeBtn);
+    modal.appendChild(title);
+    modal.appendChild(text);
+    modal.appendChild(qrBox);
+
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    new QRCode(qrBox, {
+        text: customerReviewUrl,
+        width: 220,
+        height: 220,
+        correctLevel: QRCode.CorrectLevel.H
+    });
+
+    closeBtn.addEventListener("click", function () {
+        overlay.remove();
+    });
+
+    overlay.addEventListener("click", function (event) {
+        if (event.target === overlay) {
+            overlay.remove();
+        }
+    });
+});
+    
     container.appendChild(item);
 });
 
