@@ -1044,6 +1044,668 @@ body.page-leaving {
         height: 200px !important;
     }
 }
+
+/* =========================================
+   PROFESSIONAL REVIEWRISE QR GENERATOR
+========================================= */
+
+.qr-generator-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    background: rgba(15, 23, 42, 0.68);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 24px;
+    overflow-y: auto;
+}
+
+.qr-generator-modal {
+    position: relative;
+
+    width: min(1050px, 96vw);
+    max-height: 94vh;
+    overflow-y: auto;
+
+    background: #ffffff;
+    border: 1px solid #e6ebf2;
+    border-radius: 26px;
+
+    padding: 30px;
+
+    box-shadow:
+        0 35px 90px rgba(15, 23, 42, 0.30),
+        0 10px 30px rgba(15, 23, 42, 0.10);
+}
+
+.qr-generator-close {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+
+    width: 40px;
+    height: 40px;
+
+    border: 0;
+    border-radius: 50%;
+
+    background: #f1f5f9;
+    color: #334155;
+
+    font-size: 26px;
+    line-height: 1;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+    z-index: 5;
+}
+
+.qr-generator-close:hover {
+    background: #e2e8f0;
+}
+
+.qr-generator-header {
+    margin-bottom: 24px;
+    padding-right: 55px;
+}
+
+.qr-generator-header h2 {
+    margin: 0 0 6px;
+
+    font-size: 28px;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.qr-generator-header p {
+    margin: 0;
+
+    font-size: 14px;
+    color: #64748b;
+}
+
+.qr-generator-layout {
+    display: grid;
+    grid-template-columns: minmax(360px, 1fr) 360px;
+    gap: 28px;
+    align-items: start;
+}
+
+
+/* =========================
+   QR POSTER
+========================= */
+
+.qr-poster {
+    --poster-text: #10213b;
+    --poster-subtext: #64748b;
+    --poster-accent: #d9a441;
+
+    position: relative;
+
+    width: 100%;
+    max-width: 500px;
+    min-height: 680px;
+
+    margin: 0 auto;
+    padding: 42px 36px 30px;
+
+    border-radius: 26px;
+    overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    text-align: center;
+
+    color: var(--poster-text);
+
+    box-shadow:
+        0 20px 55px rgba(15, 23, 42, 0.16);
+}
+
+
+/* ===== DESIGN 1: ELEGANT ===== */
+
+.qr-poster.theme-cream {
+    --poster-text: #13213a;
+    --poster-subtext: #687386;
+    --poster-accent: #dfa536;
+
+    background:
+        radial-gradient(
+            circle at 0% 20%,
+            rgba(221, 202, 177, 0.30),
+            transparent 35%
+        ),
+        radial-gradient(
+            circle at 100% 80%,
+            rgba(227, 206, 179, 0.28),
+            transparent 38%
+        ),
+        linear-gradient(
+            145deg,
+            #fffdf9 0%,
+            #f7f1e8 48%,
+            #fffaf2 100%
+        );
+}
+
+.qr-poster.theme-cream::before {
+    content: "";
+    position: absolute;
+    left: -80px;
+    bottom: -120px;
+
+    width: 360px;
+    height: 250px;
+
+    border-radius: 50%;
+
+    background: #13263f;
+    transform: rotate(10deg);
+
+    z-index: 0;
+}
+
+
+/* ===== DESIGN 2: MODERN BLUE ===== */
+
+.qr-poster.theme-blue {
+    --poster-text: #ffffff;
+    --poster-subtext: #dcecff;
+    --poster-accent: #7dd3fc;
+
+    background:
+        radial-gradient(
+            circle at 15% 15%,
+            rgba(56, 189, 248, 0.40),
+            transparent 38%
+        ),
+        radial-gradient(
+            circle at 90% 80%,
+            rgba(99, 102, 241, 0.45),
+            transparent 40%
+        ),
+        linear-gradient(
+            145deg,
+            #075bd8 0%,
+            #0b7cf5 45%,
+            #173cae 100%
+        );
+}
+
+.qr-poster.theme-blue::before {
+    content: "";
+    position: absolute;
+    right: -100px;
+    top: -80px;
+
+    width: 320px;
+    height: 320px;
+
+    border-radius: 50%;
+    border: 55px solid rgba(255,255,255,0.08);
+}
+
+
+/* ===== DESIGN 3: DARK LUXURY ===== */
+
+.qr-poster.theme-dark {
+    --poster-text: #ffffff;
+    --poster-subtext: #cbd5e1;
+    --poster-accent: #d5ad5c;
+
+    background:
+        radial-gradient(
+            circle at 25% 15%,
+            rgba(209, 169, 89, 0.18),
+            transparent 32%
+        ),
+        linear-gradient(
+            145deg,
+            #080d17 0%,
+            #121b2a 55%,
+            #05070b 100%
+        );
+
+    border: 1px solid rgba(213, 173, 92, 0.35);
+}
+
+.qr-poster.theme-dark::before {
+    content: "";
+    position: absolute;
+    inset: 18px;
+
+    border: 1px solid rgba(213, 173, 92, 0.25);
+    border-radius: 20px;
+
+    pointer-events: none;
+}
+
+
+/* Keep poster content above decorations */
+
+.qr-poster > * {
+    position: relative;
+    z-index: 2;
+}
+
+
+/* BUSINESS LOGO */
+
+.qr-poster-logo {
+    width: 82px;
+    height: 82px;
+
+    margin-bottom: 17px;
+
+    border-radius: 18px;
+    overflow: hidden;
+
+    background: rgba(255,255,255,0.94);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+}
+
+.qr-poster-logo img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: contain;
+
+    padding: 5px;
+    box-sizing: border-box;
+}
+
+.qr-logo-fallback {
+    font-size: 30px;
+    font-weight: 800;
+    color: #2563eb;
+}
+
+
+/* BUSINESS NAME */
+
+.qr-poster-business-name {
+    max-width: 90%;
+
+    font-size: 27px;
+    line-height: 1.16;
+    font-weight: 800;
+
+    letter-spacing: -0.5px;
+}
+
+.qr-poster-location {
+    margin-top: 8px;
+    margin-bottom: 24px;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    text-transform: uppercase;
+    letter-spacing: 2.2px;
+
+    color: var(--poster-subtext);
+}
+
+
+/* QR CODE */
+
+.qr-poster-code {
+    width: 264px;
+    height: 264px;
+
+    padding: 17px;
+
+    border-radius: 22px;
+
+    background: #ffffff;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    box-shadow:
+        0 12px 32px rgba(15, 23, 42, 0.14);
+
+    box-sizing: border-box;
+}
+
+.qr-poster-code img,
+.qr-poster-code canvas {
+    width: 230px !important;
+    height: 230px !important;
+
+    display: block;
+}
+
+
+/* REVIEW MESSAGE */
+
+.qr-poster-stars {
+    margin-top: 21px;
+
+    color: var(--poster-accent);
+
+    font-size: 23px;
+    letter-spacing: 3px;
+}
+
+.qr-poster-title {
+    margin-top: 10px;
+
+    font-size: 23px;
+    line-height: 1.25;
+    font-weight: 800;
+}
+
+.qr-poster-subtitle {
+    margin-top: 6px;
+
+    font-size: 13px;
+    color: var(--poster-subtext);
+}
+
+
+/* REVIEWRISE BRAND */
+
+.qr-poster-brand {
+    margin-top: auto;
+    padding-top: 28px;
+
+    font-size: 13px;
+    color: var(--poster-subtext);
+}
+
+.qr-poster-brand strong {
+    font-size: 17px;
+    color: inherit;
+}
+
+
+/* =========================
+   RIGHT CONTROL PANEL
+========================= */
+
+.qr-generator-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.qr-generator-section {
+    padding: 18px;
+
+    background: #ffffff;
+
+    border: 1px solid #e6ebf2;
+    border-radius: 18px;
+
+    box-shadow: 0 6px 20px rgba(15, 23, 42, 0.05);
+}
+
+.qr-generator-section h3 {
+    margin: 0 0 14px;
+
+    font-size: 15px;
+    color: #0f172a;
+}
+
+
+/* THEME BUTTONS */
+
+.qr-theme-options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 9px;
+}
+
+.qr-theme-btn {
+    min-height: 74px;
+
+    padding: 10px 7px;
+
+    border: 2px solid transparent;
+    border-radius: 13px;
+
+    background: #f8fafc;
+    color: #334155;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+.qr-theme-btn:nth-child(1) {
+    background:
+        linear-gradient(
+            145deg,
+            #fffdf9,
+            #eee2d1
+        );
+}
+
+.qr-theme-btn:nth-child(2) {
+    color: #ffffff;
+
+    background:
+        linear-gradient(
+            145deg,
+            #0b86ff,
+            #2740b8
+        );
+}
+
+.qr-theme-btn:nth-child(3) {
+    color: #f5d78e;
+
+    background:
+        linear-gradient(
+            145deg,
+            #101827,
+            #05070b
+        );
+}
+
+.qr-theme-btn.active {
+    border-color: #1688ff;
+
+    box-shadow:
+        0 0 0 3px rgba(22, 136, 255, 0.12);
+}
+
+
+/* BUSINESS PREVIEW */
+
+.qr-business-preview-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.qr-business-preview-logo {
+    width: 56px;
+    height: 56px;
+
+    border-radius: 13px;
+
+    background: #f1f5f9;
+
+    overflow: hidden;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #2563eb;
+
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.qr-business-preview-logo img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+}
+
+.qr-business-preview-row > div:last-child {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.qr-business-preview-name {
+    color: #0f172a;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.qr-business-preview-row span {
+    font-size: 12px;
+    color: #64748b;
+}
+
+
+/* EXPORT BUTTONS */
+
+.qr-generator-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.qr-export-btn {
+    width: 100%;
+    min-height: 54px;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+
+    background: #ffffff;
+    color: #0f172a;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+.qr-export-btn:hover {
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 7px 18px rgba(15, 23, 42, 0.08);
+}
+
+.qr-export-primary {
+    border: 0;
+
+    color: #ffffff;
+
+    background:
+        linear-gradient(
+            135deg,
+            #1688ff,
+            #0867f2
+        );
+
+    box-shadow:
+        0 8px 20px rgba(8, 103, 242, 0.22);
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 850px) {
+
+    .qr-generator-modal {
+        padding: 22px 16px;
+    }
+
+    .qr-generator-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .qr-generator-panel {
+        width: 100%;
+    }
+
+    .qr-poster {
+        max-width: 430px;
+        min-height: 610px;
+    }
+}
+
+@media (max-width: 500px) {
+
+    .qr-generator-overlay {
+        padding: 10px;
+        align-items: flex-start;
+    }
+
+    .qr-generator-modal {
+        width: 100%;
+        border-radius: 20px;
+    }
+
+    .qr-generator-header h2 {
+        font-size: 23px;
+    }
+
+    .qr-poster {
+        min-height: 570px;
+        padding: 30px 18px 24px;
+    }
+
+    .qr-poster-business-name {
+        font-size: 22px;
+    }
+
+    .qr-poster-code {
+        width: 230px;
+        height: 230px;
+    }
+
+    .qr-poster-code img,
+    .qr-poster-code canvas {
+        width: 198px !important;
+        height: 198px !important;
+    }
+
+    .qr-theme-options {
+        grid-template-columns: 1fr;
+    }
+}
     
 </style>
 </head>
@@ -1234,7 +1896,9 @@ body.page-leaving {
     
 </main>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script>
     
@@ -1327,55 +1991,480 @@ reviewLinks.forEach(function(link) {
     `;
 
  const generateBtn = item.querySelector(".qr-generate-btn");
-
+    
 generateBtn.addEventListener("click", function () {
 
     const overlay = document.createElement("div");
-    overlay.className = "qr-modal-overlay";
+    overlay.className = "qr-generator-overlay";
 
     const modal = document.createElement("div");
-    modal.className = "qr-modal";
+    modal.className = "qr-generator-modal";
 
-    const closeBtn = document.createElement("button");
-    closeBtn.className = "qr-modal-close";
-    closeBtn.type = "button";
-    closeBtn.textContent = "×";
+    modal.innerHTML = `
+        <button class="qr-generator-close" type="button">×</button>
 
-    const title = document.createElement("h2");
-    title.textContent = link.business_name || "Review QR Code";
+        <div class="qr-generator-header">
+            <h2>Generate QR Code</h2>
+            <p>Choose a design, then download or print it for your customers.</p>
+        </div>
 
-    const text = document.createElement("p");
-    text.textContent = "Scan this QR code to leave a review.";
+        <div class="qr-generator-layout">
 
-    const qrBox = document.createElement("div");
-    qrBox.className = "generated-qr-code";
+            <div class="qr-poster theme-cream">
 
-    modal.appendChild(closeBtn);
-    modal.appendChild(title);
-    modal.appendChild(text);
-    modal.appendChild(qrBox);
+                <div class="qr-poster-logo">
+                    <img alt="Business logo">
+                    <span class="qr-logo-fallback"></span>
+                </div>
+
+                <div class="qr-poster-business-name"></div>
+
+                <div class="qr-poster-location">Tanger</div>
+
+                <div class="qr-poster-code"></div>
+
+                <div class="qr-poster-stars">★★★★★</div>
+
+                <div class="qr-poster-title">
+                    Scan to leave us a review
+                </div>
+
+                <div class="qr-poster-subtitle">
+                    Your feedback helps us improve.
+                </div>
+
+                <div class="qr-poster-brand">
+                    Powered by <strong>ReviewRise</strong>
+                </div>
+
+            </div>
+
+            <div class="qr-generator-panel">
+
+                <div class="qr-generator-section">
+                    <h3>Select design</h3>
+
+                    <div class="qr-theme-options">
+                        <button
+                            type="button"
+                            class="qr-theme-btn active"
+                            data-theme="theme-cream"
+                        >
+                            Elegant
+                        </button>
+
+                        <button
+                            type="button"
+                            class="qr-theme-btn"
+                            data-theme="theme-blue"
+                        >
+                            Modern
+                        </button>
+
+                        <button
+                            type="button"
+                            class="qr-theme-btn"
+                            data-theme="theme-dark"
+                        >
+                            Luxury
+                        </button>
+                    </div>
+                </div>
+
+                <div class="qr-generator-section qr-business-preview">
+                    <h3>Business</h3>
+
+                    <div class="qr-business-preview-row">
+                        <div class="qr-business-preview-logo"></div>
+
+                        <div>
+                            <strong class="qr-business-preview-name"></strong>
+                            <span>ReviewRise review page</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="qr-generator-actions">
+
+                    <button
+                        type="button"
+                        class="qr-export-btn qr-export-primary"
+                        data-action="png"
+                    >
+                        Download PNG
+                    </button>
+
+                    <button
+                        type="button"
+                        class="qr-export-btn"
+                        data-action="pdf"
+                    >
+                        Download PDF
+                    </button>
+
+                    <button
+                        type="button"
+                        class="qr-export-btn"
+                        data-action="print"
+                    >
+                        Print
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+    `;
 
     overlay.appendChild(modal);
     document.body.appendChild(overlay);
 
-    new QRCode(qrBox, {
+
+    /* BUSINESS DATA */
+
+    const poster = modal.querySelector(".qr-poster");
+
+    const businessName =
+        link.business_name || "Your Business";
+
+    const posterName =
+        modal.querySelector(".qr-poster-business-name");
+
+    const previewName =
+        modal.querySelector(".qr-business-preview-name");
+
+    posterName.textContent = businessName;
+    previewName.textContent = businessName;
+
+
+    /* BUSINESS LOGO */
+
+    const posterLogo =
+        modal.querySelector(".qr-poster-logo img");
+
+    const logoFallback =
+        modal.querySelector(".qr-logo-fallback");
+
+    const previewLogo =
+        modal.querySelector(".qr-business-preview-logo");
+
+    if (link.logo_url) {
+
+        posterLogo.crossOrigin = "anonymous";
+        posterLogo.src = link.logo_url;
+        posterLogo.style.display = "block";
+
+        logoFallback.style.display = "none";
+
+        const previewImage =
+            document.createElement("img");
+
+        previewImage.crossOrigin = "anonymous";
+        previewImage.src = link.logo_url;
+        previewImage.alt = businessName;
+
+        previewLogo.appendChild(previewImage);
+
+    } else {
+
+        posterLogo.style.display = "none";
+
+        const initial =
+            businessName.charAt(0).toUpperCase();
+
+        logoFallback.textContent = initial;
+        previewLogo.textContent = initial;
+    }
+
+
+    /* REAL REVIEWRISE QR CODE */
+
+    const qrContainer =
+        modal.querySelector(".qr-poster-code");
+
+    new QRCode(qrContainer, {
         text: customerReviewUrl,
-        width: 220,
-        height: 220,
+        width: 230,
+        height: 230,
         correctLevel: QRCode.CorrectLevel.H
     });
 
-    closeBtn.addEventListener("click", function () {
-        overlay.remove();
-    });
 
-    overlay.addEventListener("click", function (event) {
-        if (event.target === overlay) {
-            overlay.remove();
+    /* BACKGROUND / THEME SELECTION */
+
+    modal
+        .querySelectorAll(".qr-theme-btn")
+        .forEach(function (button) {
+
+            button.addEventListener(
+                "click",
+                function () {
+
+                    modal
+                        .querySelectorAll(".qr-theme-btn")
+                        .forEach(function (btn) {
+                            btn.classList.remove("active");
+                        });
+
+                    button.classList.add("active");
+
+                    poster.classList.remove(
+                        "theme-cream",
+                        "theme-blue",
+                        "theme-dark"
+                    );
+
+                    poster.classList.add(
+                        button.dataset.theme
+                    );
+                }
+            );
+
+        });
+
+
+    /* SAFE FILE NAME */
+
+    function getFileName() {
+
+        return businessName
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/^-|-$/g, "") ||
+            "reviewrise";
+    }
+
+
+    /* DOWNLOAD PNG */
+
+    modal
+        .querySelector('[data-action="png"]')
+        .addEventListener(
+            "click",
+            async function () {
+
+                const canvas =
+                    await html2canvas(
+                        poster,
+                        {
+                            scale: 3,
+                            useCORS: true,
+                            backgroundColor: null
+                        }
+                    );
+
+                const downloadLink =
+                    document.createElement("a");
+
+                downloadLink.download =
+                    getFileName() +
+                    "-review-qr.png";
+
+                downloadLink.href =
+                    canvas.toDataURL("image/png");
+
+                downloadLink.click();
+            }
+        );
+
+
+    /* DOWNLOAD PDF */
+
+    modal
+        .querySelector('[data-action="pdf"]')
+        .addEventListener(
+            "click",
+            async function () {
+
+                const canvas =
+                    await html2canvas(
+                        poster,
+                        {
+                            scale: 3,
+                            useCORS: true,
+                            backgroundColor: "#ffffff"
+                        }
+                    );
+
+                const imageData =
+                    canvas.toDataURL(
+                        "image/png"
+                    );
+
+                const { jsPDF } =
+                    window.jspdf;
+
+                const pdf =
+                    new jsPDF({
+                        orientation: "portrait",
+                        unit: "mm",
+                        format: "a5"
+                    });
+
+                const pageWidth =
+                    pdf.internal.pageSize.getWidth();
+
+                const pageHeight =
+                    pdf.internal.pageSize.getHeight();
+
+                const margin = 10;
+
+                const availableWidth =
+                    pageWidth - margin * 2;
+
+                const availableHeight =
+                    pageHeight - margin * 2;
+
+                const imageRatio =
+                    canvas.width /
+                    canvas.height;
+
+                let imageWidth =
+                    availableWidth;
+
+                let imageHeight =
+                    imageWidth /
+                    imageRatio;
+
+                if (
+                    imageHeight >
+                    availableHeight
+                ) {
+
+                    imageHeight =
+                        availableHeight;
+
+                    imageWidth =
+                        imageHeight *
+                        imageRatio;
+                }
+
+                const x =
+                    (pageWidth -
+                        imageWidth) / 2;
+
+                const y =
+                    (pageHeight -
+                        imageHeight) / 2;
+
+                pdf.addImage(
+                    imageData,
+                    "PNG",
+                    x,
+                    y,
+                    imageWidth,
+                    imageHeight
+                );
+
+                pdf.save(
+                    getFileName() +
+                    "-review-qr.pdf"
+                );
+            }
+        );
+
+
+    /* PRINT */
+
+    modal
+        .querySelector('[data-action="print"]')
+        .addEventListener(
+            "click",
+            async function () {
+
+                const printWindow =
+                    window.open(
+                        "",
+                        "_blank"
+                    );
+
+                const canvas =
+                    await html2canvas(
+                        poster,
+                        {
+                            scale: 3,
+                            useCORS: true,
+                            backgroundColor: "#ffffff"
+                        }
+                    );
+
+                const image =
+                    canvas.toDataURL(
+                        "image/png"
+                    );
+
+                printWindow.document.write(`
+                    <html>
+                    <head>
+                        <title>${businessName}</title>
+
+                        <style>
+                            body {
+                                margin: 0;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                min-height: 100vh;
+                                background: white;
+                            }
+
+                            img {
+                                width: auto;
+                                max-width: 100%;
+                                max-height: 100vh;
+                            }
+
+                            @media print {
+                                body {
+                                    margin: 0;
+                                }
+                            }
+                        </style>
+
+                    </head>
+
+                    <body>
+                        <img src="${image}">
+                    </body>
+                    </html>
+                `);
+
+                printWindow.document.close();
+
+                printWindow.onload =
+                    function () {
+                        printWindow.print();
+                    };
+            }
+        );
+
+
+    /* CLOSE */
+
+    modal
+        .querySelector(".qr-generator-close")
+        .addEventListener(
+            "click",
+            function () {
+                overlay.remove();
+            }
+        );
+
+    overlay.addEventListener(
+        "click",
+        function (event) {
+
+            if (
+                event.target === overlay
+            ) {
+                overlay.remove();
+            }
         }
-    });
+    );
+
 });
-    
+
     container.appendChild(item);
 });
 
