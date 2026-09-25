@@ -2223,6 +2223,56 @@ exportCanvas.height = backgroundImage.naturalHeight;
         exportCanvas.height
     );
     
+    const logoImg =
+    poster.querySelector(".qr-poster-logo img");
+
+const logoSrc =
+    logoImg?.getAttribute("src") || "";
+
+if (logoSrc) {
+    try {
+        const logoImage =
+            await loadExportImage(logoSrc);
+
+        const scale =
+            exportCanvas.width / 964;
+
+        const logoSize =
+            120 * scale;
+
+        const logoX =
+            (exportCanvas.width - logoSize) / 2;
+
+        const logoY =
+            92 * scale;
+
+        ctx.save();
+
+        ctx.beginPath();
+        ctx.roundRect(
+            logoX,
+            logoY,
+            logoSize,
+            logoSize,
+            24 * scale
+        );
+        ctx.closePath();
+        ctx.clip();
+
+        ctx.drawImage(
+            logoImage,
+            logoX,
+            logoY,
+            logoSize,
+            logoSize
+        );
+
+        ctx.restore();
+    } catch (error) {
+        console.error("Logo export error:", error);
+    }
+}
+    
 const qrSource =
     modal.querySelector(".qr-poster-code canvas");
 
@@ -2346,15 +2396,8 @@ if (exportName) {
             "click",
             async function () {
 
-                const canvas =
-                    await html2canvas(
-                        poster,
-                        {
-                            scale: 6,
-                            useCORS: true,
-                            backgroundColor: null
-                        }
-                    );
+const canvas =
+    await buildExportCanvas();
 
                 const downloadLink =
                     document.createElement("a");
