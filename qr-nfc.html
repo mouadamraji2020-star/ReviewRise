@@ -410,7 +410,64 @@ body.page-leaving {
     justify-content: center;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+    
+.qr-feature-icon {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 48px;
+    height: 48px;
+    border-radius: 13px;
 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #ffffff;
+    font-size: 21px;
+    font-weight: 800;
+
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.18);
+}
+.qr-feature-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 13px;
+    display: block;
+}
+    
+.qr-icon-code {
+    background: linear-gradient(135deg, #38a7ff, #1677ff);
+}
+
+.qr-icon-nfc {
+    background: linear-gradient(135deg, #7c3aed, #a855f7);
+}
+
+.qr-icon-reviews {
+    background: linear-gradient(135deg, #10b981, #06c167);
+}
+
+.qr-feature-text {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.qr-feature-text strong {
+    color: #101c35;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.qr-feature-text span {
+    color: #667085;
+    font-size: 13px;
+    line-height: 1.45;
+}
+    
 .qr-feature:hover {
     transform: translateY(-3px);
     box-shadow: 0 12px 28px rgba(28, 65, 120, 0.12);
@@ -1010,25 +1067,34 @@ body.page-leaving {
 <div class="qr-features">
 
     <div class="qr-feature">
-        <div class="qr-feature-text">
-            <strong>QR Codes</strong>
-            <span>Generate clean QR codes ready to scan.</span>
-        </div>
+<div class="qr-feature-icon qr-icon-code">
+    <img src="images/qr-code.png" alt="QR Codes">
+</div>
+    <div class="qr-feature-text">
+        <strong>QR Codes</strong>
+        <span>Generate clean QR codes ready to scan.</span>
     </div>
+</div>
 
-    <div class="qr-feature">
-        <div class="qr-feature-text">
-            <strong>NFC Ready</strong>
-            <span>Connect your ReviewRise links to NFC cards.</span>
-        </div>
+<div class="qr-feature">
+    <div class="qr-feature-icon qr-icon-nfc">
+        <span>)))</span>
     </div>
+    <div class="qr-feature-text">
+        <strong>NFC Ready</strong>
+        <span>Connect your ReviewRise links to NFC cards.</span>
+    </div>
+</div>
 
-    <div class="qr-feature">
-        <div class="qr-feature-text">
-            <strong>More Reviews</strong>
-            <span>Make leaving feedback faster and easier.</span>
-        </div>
+<div class="qr-feature">
+    <div class="qr-feature-icon qr-icon-reviews">
+        <span>★</span>
     </div>
+    <div class="qr-feature-text">
+        <strong>More Reviews</strong>
+        <span>Make leaving feedback faster and easier.</span>
+    </div>
+</div>
 
 </div>
     
