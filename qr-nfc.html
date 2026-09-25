@@ -1173,125 +1173,35 @@ body.page-leaving {
         0 20px 55px rgba(15, 23, 42, 0.16);
 }
 
-
-/* ===== DESIGN 1: ELEGANT ===== */
-
+/* ELEGANT */
 .qr-poster.theme-cream {
-    --poster-text: #13213a;
-    --poster-subtext: #687386;
-    --poster-accent: #dfa536;
-
-    background:
-        radial-gradient(
-            circle at 0% 20%,
-            rgba(221, 202, 177, 0.30),
-            transparent 35%
-        ),
-        radial-gradient(
-            circle at 100% 80%,
-            rgba(227, 206, 179, 0.28),
-            transparent 38%
-        ),
-        linear-gradient(
-            145deg,
-            #fffdf9 0%,
-            #f7f1e8 48%,
-            #fffaf2 100%
-        );
+    background-image: url("images/qr-bg-elegant.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
-.qr-poster.theme-cream::before {
-    content: "";
-    position: absolute;
-    left: -80px;
-    bottom: -120px;
-
-    width: 360px;
-    height: 250px;
-
-    border-radius: 50%;
-
-    background: #13263f;
-    transform: rotate(10deg);
-
-    z-index: 0;
-}
-
-
-/* ===== DESIGN 2: MODERN BLUE ===== */
-
+/* MODERN */
 .qr-poster.theme-blue {
-    --poster-text: #ffffff;
-    --poster-subtext: #dcecff;
-    --poster-accent: #7dd3fc;
-
-    background:
-        radial-gradient(
-            circle at 15% 15%,
-            rgba(56, 189, 248, 0.40),
-            transparent 38%
-        ),
-        radial-gradient(
-            circle at 90% 80%,
-            rgba(99, 102, 241, 0.45),
-            transparent 40%
-        ),
-        linear-gradient(
-            145deg,
-            #075bd8 0%,
-            #0b7cf5 45%,
-            #173cae 100%
-        );
+    background-image: url("images/qr-bg-modern.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
-.qr-poster.theme-blue::before {
-    content: "";
-    position: absolute;
-    right: -100px;
-    top: -80px;
-
-    width: 320px;
-    height: 320px;
-
-    border-radius: 50%;
-    border: 55px solid rgba(255,255,255,0.08);
-}
-
-
-/* ===== DESIGN 3: DARK LUXURY ===== */
-
+/* LUXURY */
 .qr-poster.theme-dark {
-    --poster-text: #ffffff;
-    --poster-subtext: #cbd5e1;
-    --poster-accent: #d5ad5c;
-
-    background:
-        radial-gradient(
-            circle at 25% 15%,
-            rgba(209, 169, 89, 0.18),
-            transparent 32%
-        ),
-        linear-gradient(
-            145deg,
-            #080d17 0%,
-            #121b2a 55%,
-            #05070b 100%
-        );
-
-    border: 1px solid rgba(213, 173, 92, 0.35);
+    background-image: url("images/qr-bg-luxury.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
-
+    
+.qr-poster.theme-cream::before,
+.qr-poster.theme-blue::before,
 .qr-poster.theme-dark::before {
-    content: "";
-    position: absolute;
-    inset: 18px;
-
-    border: 1px solid rgba(213, 173, 92, 0.25);
-    border-radius: 20px;
-
-    pointer-events: none;
+    display: none;
 }
-
 
 /* Keep poster content above decorations */
 
@@ -2019,23 +1929,7 @@ generateBtn.addEventListener("click", function () {
 
                 <div class="qr-poster-business-name"></div>
 
-                <div class="qr-poster-location">Tanger</div>
-
                 <div class="qr-poster-code"></div>
-
-                <div class="qr-poster-stars">★★★★★</div>
-
-                <div class="qr-poster-title">
-                    Scan to leave us a review
-                </div>
-
-                <div class="qr-poster-subtitle">
-                    Your feedback helps us improve.
-                </div>
-
-                <div class="qr-poster-brand">
-                    Powered by <strong>ReviewRise</strong>
-                </div>
 
             </div>
 
