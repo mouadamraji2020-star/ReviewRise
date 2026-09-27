@@ -1627,7 +1627,7 @@ body.page-leaving {
     }
 }
 /* ==========================================
-   SHARP REVIEW TEXT OVERLAY
+   REVIEW CONTENT
    ========================================== */
 
 .qr-poster-review-content {
@@ -1640,80 +1640,63 @@ body.page-leaving {
     text-align: center;
     z-index: 10;
 
-    /* NO WHITE BOX */
-    background: transparent !important;
+    background: none !important;
+    background-color: transparent !important;
+    background-image: none !important;
+
     padding: 0 !important;
+    margin: 0 !important;
+
+    border: none !important;
     border-radius: 0 !important;
     box-shadow: none !important;
-    border: none !important;
 }
 
+/* STARS */
 .qr-poster-review-stars {
+    margin: 0 0 14px 0;
+
     font-size: 28px;
     line-height: 1;
     letter-spacing: 7px;
+    font-weight: 700;
 
     color: #d5a94e;
 
-    margin-bottom: 14px;
-
-    font-weight: 700;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
 }
 
+/* MAIN TEXT */
 .qr-poster-review-title {
     margin: 0;
 
     font-size: 24px;
     line-height: 1.15;
-
     font-weight: 800;
+    letter-spacing: -0.02em;
 
     color: #17233d;
 
-    letter-spacing: -0.02em;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
 }
 
+/* SECOND TEXT */
 .qr-poster-review-subtitle {
     margin: 8px 0 0;
 
     font-size: 15px;
     line-height: 1.4;
-
     font-weight: 500;
 
     color: #6b7280;
-}
-    
- .qr-poster .qr-poster-review-content {
+
     background: transparent !important;
-    background-color: transparent !important;
-    padding: 0 !important;
-    border: 0 !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
-}
-    
-/* REMOVE WHITE REVIEW BOX */
-.qr-poster-review-content,
-.qr-poster-review-content::before,
-.qr-poster-review-content::after {
-    background: none !important;
-    background-color: transparent !important;
-    background-image: none !important;
-    box-shadow: none !important;
     border: none !important;
-}
-
-/* QR itself keeps its own white card */
-.qr-poster-code {
-    background: #ffffff !important;
-}
-
-/* Make sure QR white card does NOT extend downward */
-.qr-poster-code::before,
-.qr-poster-code::after {
-    display: none !important;
-    content: none !important;
+    box-shadow: none !important;
 }
     
 </style>
