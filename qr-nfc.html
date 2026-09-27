@@ -2387,7 +2387,9 @@ if (exportName) {
     return exportCanvas;
 }
     
-/* DOWNLOAD PNG */
+/* =========================================================
+   DOWNLOAD PNG — HIGH QUALITY EXACT POSTER
+   ========================================================= */
 
 modal
   .querySelector('[data-action="png"]')
@@ -2396,65 +2398,171 @@ modal
     const poster = modal.querySelector(".qr-poster");
 
     if (!poster) {
-      console.error("QR poster not found");
+      console.error("ReviewRise: QR poster not found.");
       return;
     }
 
-    // Wait until the exact preview is fully rendered
-    await document.fonts.ready;
+    try {
 
-    // Wait for every image used by the poster
-    const images = [...poster.querySelectorAll("img")];
+      /* 1. Wait for fonts */
+      if (document.fonts && document.fonts.ready) {
+        await document.fonts.ready;
+      }
 
-    await Promise.all(
-      images.map((img) => {
-        if (img.complete && img.naturalWidth > 0) {
-          return Promise.resolve();
-        }
+      /* 2. Wait for all images inside the poster */
+      const posterImages = Array.from(
+        poster.querySelectorAll("img")
+      );
 
-        return new Promise((resolve) => {
-          img.addEventListener("load", resolve, { once: true });
-          img.addEventListener("error", resolve, { once: true });
+      await Promise.all(
+        posterImages.map((img) => {
+
+          if (img.complete && img.naturalWidth > 0) {
+            return Promise.resolve();
+          }
+
+          return new Promise((resolve) => {
+
+            const finish = () => resolve();
+
+            img.addEventListener(
+              "load",
+              finish,
+              { once: true }
+            );
+
+            img.addEventListener(
+              "error",
+              finish,
+              { once: true }
+            );
+
+          });
+
+        })
+      );
+
+      /* 3. Give the browser one frame to finish painting */
+      await new Promise((resolve) => {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(resolve);
         });
-      })
-    );
+      });
 
-    // Capture the EXACT poster that is visible in ReviewRise
-    const canvas = await html2canvas(poster, {
-      scale: 4,
-      useCORS: true,
-      allowTaint: false,
-      backgroundColor: null,
-      logging: false,
-      imageTimeout: 0
-    });
+      /*
+       * IMPORTANT:
+       * We capture the REAL poster.
+       *
+       * scale does NOT change the layout.
+       * It only increases pixel density.
+       */
 
-    // Export lossless PNG
-    canvas.toBlob(
-      function (blob) {
-        if (!blob) {
-          console.error("PNG could not be created");
-          return;
+      const EXPORT_SCALE = 6;
+
+      const canvas = await html2canvas(
+        poster,
+        {
+          scale: EXPORT_SCALE,
+
+          useCORS: true,
+
+          allowTaint: false,
+
+          backgroundColor: null,
+
+          logging: false,
+
+          imageTimeout: 15000,
+
+          removeContainer: true,
+
+          scrollX: 0,
+
+          scrollY: -window.scrollY
         }
+      );
 
-        const url = URL.createObjectURL(blob);
-        const downloadLink = document.createElement("a");
+      /* 4. Create lossless PNG */
+      canvas.toBlob(
+        function (blob) {
 
-        downloadLink.href = url;
-        downloadLink.download = "reviewrise-review-qr.png";
+          if (!blob) {
+            console.error(
+              "ReviewRise: PNG creation failed."
+            );
+            return;
+          }
 
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        downloadLink.remove();
+          const url =
+            URL.createObjectURL(blob);
 
-        setTimeout(() => {
-          URL.revokeObjectURL(url);
-        }, 1000);
-      },
-      "image/png"
-    );
+          const link =
+            document.createElement("a");
+
+          /*
+           * Use a safe filename.
+           * We don't depend on getFileName()
+           * or getFilename().
+           */
+
+          const businessName =
+            (
+              poster.querySelector(
+                ".qr-poster-business-name"
+              )?.textContent ||
+              "reviewrise"
+            )
+              .trim()
+              .toLowerCase()
+              .normalize("NFD")
+              .replace(
+                /[\u0300-\u036f]/g,
+                ""
+              )
+              .replace(
+                /[^a-z0-9]+/g,
+                "-"
+              )
+              .replace(
+                /^-+|-+$/g,
+                ""
+              ) ||
+            "reviewrise";
+
+          link.href = url;
+
+          link.download =
+            businessName +
+            "-review-qr.png";
+
+          document.body.appendChild(link);
+
+          link.click();
+
+          link.remove();
+
+          setTimeout(
+            function () {
+              URL.revokeObjectURL(url);
+            },
+            2000
+          );
+
+        },
+
+        "image/png"
+      );
+
+    } catch (error) {
+
+      console.error(
+        "ReviewRise PNG export failed:",
+        error
+      );
+
+    }
+
   });
-
     /* DOWNLOAD PDF */
 
     modal
