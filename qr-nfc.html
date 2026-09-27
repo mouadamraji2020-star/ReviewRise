@@ -1693,6 +1693,29 @@ body.page-leaving {
     box-shadow: none !important;
 }
     
+/* REMOVE WHITE REVIEW BOX */
+.qr-poster-review-content,
+.qr-poster-review-content::before,
+.qr-poster-review-content::after {
+    background: none !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    border: none !important;
+}
+
+/* QR itself keeps its own white card */
+.qr-poster-code {
+    background: #ffffff !important;
+}
+
+/* Make sure QR white card does NOT extend downward */
+.qr-poster-code::before,
+.qr-poster-code::after {
+    display: none !important;
+    content: none !important;
+}
+    
 </style>
 </head>
 
