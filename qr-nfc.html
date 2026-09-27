@@ -1626,6 +1626,62 @@ body.page-leaving {
         grid-template-columns: 1fr;
     }
 }
+/* ==========================================
+   SHARP REVIEW TEXT OVERLAY
+   ========================================== */
+
+.qr-poster-review-content {
+    position: absolute;
+    left: 50%;
+    top: 66%;
+    transform: translateX(-50%);
+
+    width: 82%;
+    text-align: center;
+
+    z-index: 10;
+
+    /* Covers the old baked-in text underneath */
+background: transparent;
+padding: 0;
+border-radius: 0;
+}
+
+.qr-poster-review-stars {
+    font-size: 28px;
+    line-height: 1;
+    letter-spacing: 7px;
+
+    color: #d5a94e;
+
+    margin-bottom: 14px;
+
+    font-weight: 700;
+}
+
+.qr-poster-review-title {
+    margin: 0;
+
+    font-size: 24px;
+    line-height: 1.15;
+
+    font-weight: 800;
+
+    color: #17233d;
+
+    letter-spacing: -0.02em;
+}
+
+.qr-poster-review-subtitle {
+    margin: 8px 0 0;
+
+    font-size: 15px;
+    line-height: 1.4;
+
+    font-weight: 500;
+
+    color: #6b7280;
+}
     
 </style>
 </head>
@@ -1940,6 +1996,24 @@ generateBtn.addEventListener("click", function () {
                 <div class="qr-poster-business-name"></div>
 
                 <div class="qr-poster-code"></div>
+                
+<div class="qr-poster-code"></div>
+
+<div class="qr-poster-review-content">
+
+    <div class="qr-poster-review-stars">
+        ★★★★★
+    </div>
+
+    <p class="qr-poster-review-title">
+        Scan to leave us a review
+    </p>
+
+    <p class="qr-poster-review-subtitle">
+        Your feedback helps us improve ♡
+    </p>
+
+</div>
 
             </div>
 
