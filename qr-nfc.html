@@ -1185,7 +1185,7 @@ body.page-leaving {
 
 /* MODERN */
 .qr-poster.theme-blue {
-    background-image: url("images/qr-bg-modern.jpeg");
+    background-image: url("imagesqr-bg-modern.jpeg");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -1193,7 +1193,7 @@ body.page-leaving {
 
 /* LUXURY */
 .qr-poster.theme-dark {
-    background-image: url("images/qr-bg-luxury.jpeg");
+    background-image: url("imagesqr-bg-luxury.jpeg");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -2292,11 +2292,11 @@ async function buildExportCanvas() {
     let backgroundSrc = "Image C2.png";
 
     if (poster.classList.contains("theme-blue")) {
-        backgroundSrc = "qr-bg-modern.jpeg";
+        backgroundSrc = "imagesqr-bg-modern.jpeg";
     }
 
     if (poster.classList.contains("theme-dark")) {
-        backgroundSrc = "qr-bg-luxury.jpeg";
+        backgroundSrc = "imagesqr-bg-luxury.jpeg";
     }
 
     const backgroundImage =
