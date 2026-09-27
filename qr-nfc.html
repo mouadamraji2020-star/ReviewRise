@@ -2387,66 +2387,72 @@ if (exportName) {
     return exportCanvas;
 }
     
-    /* DOWNLOAD PNG */
+/* DOWNLOAD PNG */
 
 modal
   .querySelector('[data-action="png"]')
   .addEventListener("click", async function () {
 
-    // Wait for fonts before capturing
+    const poster = modal.querySelector(".qr-poster");
+
+    if (!poster) {
+      console.error("QR poster not found");
+      return;
+    }
+
+    // Wait until the exact preview is fully rendered
     await document.fonts.ready;
 
-    // Wait for all poster images
+    // Wait for every image used by the poster
     const images = [...poster.querySelectorAll("img")];
 
     await Promise.all(
-      images.map(img => {
-        if (img.complete) return Promise.resolve();
+      images.map((img) => {
+        if (img.complete && img.naturalWidth > 0) {
+          return Promise.resolve();
+        }
 
-        return new Promise(resolve => {
-          img.onload = resolve;
-          img.onerror = resolve;
+        return new Promise((resolve) => {
+          img.addEventListener("load", resolve, { once: true });
+          img.addEventListener("error", resolve, { once: true });
         });
       })
     );
 
-    // Capture THE ACTUAL POSTER shown in the preview
-const rect = poster.getBoundingClientRect();
+    // Capture the EXACT poster that is visible in ReviewRise
+    const canvas = await html2canvas(poster, {
+      scale: 4,
+      useCORS: true,
+      allowTaint: false,
+      backgroundColor: null,
+      logging: false,
+      imageTimeout: 0
+    });
 
-const canvas = await html2canvas(poster, {
-    scale: 4,
-    width: rect.width,
-    height: rect.height,
-    windowWidth: document.documentElement.clientWidth,
-    windowHeight: document.documentElement.clientHeight,
-    useCORS: true,
-    allowTaint: false,
-    backgroundColor: null,
-    logging: false,
-    imageTimeout: 0,
-    removeContainer: true
-});
+    // Export lossless PNG
+    canvas.toBlob(
+      function (blob) {
+        if (!blob) {
+          console.error("PNG could not be created");
+          return;
+        }
 
-canvas.toBlob(function (blob) {
-    if (!blob) return;
+        const url = URL.createObjectURL(blob);
+        const downloadLink = document.createElement("a");
 
-    const url = URL.createObjectURL(blob);
-    const downloadLink = document.createElement("a");
+        downloadLink.href = url;
+        downloadLink.download = "reviewrise-review-qr.png";
 
-downloadLink.download =
-    "reviewrise-review-qr.png";
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        downloadLink.remove();
 
-    downloadLink.href = url;
-
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    downloadLink.remove();
-
-    setTimeout(() => {
-        URL.revokeObjectURL(url);
-    }, 1000);
-
-}, "image/png");
+        setTimeout(() => {
+          URL.revokeObjectURL(url);
+        }, 1000);
+      },
+      "image/png"
+    );
   });
 
     /* DOWNLOAD PDF */
