@@ -159,6 +159,64 @@
       color: #a0a5af;
     }
 
+    #feedbackForm {
+      display: none;
+      margin-top: 28px;
+      text-align: left;
+    }
+
+    #feedbackText {
+      width: 100%;
+      min-height: 120px;
+      padding: 15px 16px;
+      border: 1px solid #e4e7ee;
+      border-radius: 14px;
+      resize: none;
+      font-family: inherit;
+      font-size: 15px;
+      line-height: 1.5;
+      color: #171923;
+      background: #fff;
+    }
+
+    #feedbackText:focus {
+      outline: none;
+      border-color: #c5cad6;
+    }
+
+    #submitFeedback {
+      margin-top: 12px;
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 14px;
+      background: #151823;
+      color: white;
+      font-weight: 650;
+      cursor: pointer;
+      font-size: 15px;
+    }
+
+    #submitFeedback:hover {
+      opacity: 0.92;
+    }
+
+    #submitFeedback:disabled {
+      opacity: 0.65;
+      cursor: default;
+    }
+
+    #feedbackMessage {
+      display: none;
+      margin-top: 22px;
+      padding: 18px 16px;
+      border-radius: 16px;
+      background: #f7f8fc;
+      font-size: 15px;
+      line-height: 1.6;
+      color: #525866;
+    }
+
     /* ---------- DIVIDER ---------- */
 
     .divider {
@@ -290,6 +348,13 @@ footer {
 
   <main class="page">
 
+  <section class="review-card" id="pageError" style="display: none;">
+      <h1>This review link is unavailable</h1>
+      <p class="description" id="pageErrorText">
+        This page could not be loaded. Please check the link and try again.
+      </p>
+    </section>
+
   <section class="review-card" id="reviewCard" style="visibility: hidden; opacity: 0; transform: translateY(8px); transition: opacity 0.55s ease, transform 0.35s ease;">
     
 <div class="business-logo" id="businessLogo">
@@ -323,11 +388,22 @@ footer {
           Select your rating
         </div>
 
-        <div class="hint">
+        <div class="hint" id="ratingHint">
           Tap a star to continue
         </div>
 
       </div>
+
+      <div id="feedbackForm">
+        <textarea
+          id="feedbackText"
+          placeholder="Tell us what went wrong and how we can improve..."></textarea>
+        <button id="submitFeedback" type="button">
+          Submit Feedback
+        </button>
+      </div>
+
+      <div id="feedbackMessage"></div>
 
 
       <div class="divider"></div>
@@ -353,225 +429,311 @@ footer {
 
   <script>
 
-   const SUPABASE_URL = "https://intlhwmvldxdiytemjlr.supabase.co";
+const SUPABASE_URL = "https://intlhwmvldxdiytemjlr.supabase.co";
 const SUPABASE_KEY = "sb_publishable_0KjZZApJCuvTEJH3nNyLUg_aps6aXaA";
 
-async function loadBusiness() {
-    const params = new URLSearchParams(location.search);
-    const id = params.get("id");
+let currentBusiness = null;
+let selectedRating = 0;
+let feedbackSubmitted = false;
 
-    if (!id) return;
+const stars = document.querySelectorAll(".star");
+const ratingLabel = document.getElementById("ratingLabel");
+const ratingHint = document.getElementById("ratingHint");
+const feedbackForm = document.getElementById("feedbackForm");
+const feedbackText = document.getElementById("feedbackText");
+const submitFeedback = document.getElementById("submitFeedback");
+const feedbackMessage = document.getElementById("feedbackMessage");
+const reviewCard = document.getElementById("reviewCard");
+const pageError = document.getElementById("pageError");
+const pageErrorText = document.getElementById("pageErrorText");
+const businessNameEl = document.getElementById("businessName");
+const businessLogoImage = document.getElementById("businessLogoImage");
+const businessLogoLetter = document.getElementById("businessLogoLetter");
 
-    const response = await fetch(
-        SUPABASE_URL + "/rest/v1/Reviewlinks?id=eq." +
-        encodeURIComponent(id) +
-      
-       "&select=id,business_name,google_review_link,logo_url",
+const labels = {
+  1: "Very disappointing",
+  2: "Could be better",
+  3: "Good",
+  4: "Great experience",
+  5: "Excellent!"
+};
+
+function showPageError(message) {
+  reviewCard.style.visibility = "hidden";
+  reviewCard.style.opacity = "0";
+  pageError.style.display = "block";
+  pageErrorText.textContent = message;
+}
+
+function showReviewCard() {
+  pageError.style.display = "none";
+  reviewCard.style.visibility = "visible";
+  requestAnimationFrame(function () {
+    reviewCard.style.opacity = "1";
+    reviewCard.style.transform = "translateY(0)";
+  });
+}
+
+function setLetterLogo(name) {
+  const letter = name && name.charAt(0)
+    ? name.charAt(0).toUpperCase()
+    : "R";
+
+  businessLogoImage.style.display = "none";
+  businessLogoImage.removeAttribute("src");
+  businessLogoLetter.style.display = "";
+  businessLogoLetter.textContent = letter;
+}
+
+async function applyLogo(link) {
+  const name = link.business_name || "";
+
+  if (!link.logo_url) {
+    setLetterLogo(name);
+    return;
+  }
+
+  businessLogoImage.alt = name ? name + " logo" : "Business logo";
+
+  await new Promise(function (resolve) {
+    businessLogoImage.onload = resolve;
+    businessLogoImage.onerror = resolve;
+    businessLogoImage.src = link.logo_url;
+  });
+
+  if (businessLogoImage.naturalWidth > 0) {
+    businessLogoLetter.style.display = "none";
+    businessLogoImage.style.display = "block";
+  } else {
+    setLetterLogo(name);
+  }
+}
+
+async function loadBusinessFromReviewLink() {
+  const reviewLinkId = new URLSearchParams(location.search).get("id");
+
+  if (!reviewLinkId || !reviewLinkId.trim()) {
+    showPageError(
+      "This review link is missing. Please scan the QR code or open the original link again."
+    );
+    return;
+  }
+
+  try {
+    const selectWithUser =
+      "id,business_name,logo_url,google_review_link,user_id";
+    const selectWithoutUser =
+      "id,business_name,logo_url,google_review_link";
+
+    async function fetchReviewLink(select) {
+      return fetch(
+        SUPABASE_URL +
+        "/rest/v1/Reviewlinks?id=eq." +
+        encodeURIComponent(reviewLinkId.trim()) +
+        "&select=" + select,
         {
-            headers: {
-                "apikey": SUPABASE_KEY
-            }
+          headers: {
+            "apikey": SUPABASE_KEY
+          }
         }
+      );
+    }
+
+    let response = await fetchReviewLink(selectWithUser);
+    let data = null;
+
+    try {
+      data = await response.json();
+    } catch (parseError) {
+      data = null;
+    }
+
+    if (!response.ok) {
+      response = await fetchReviewLink(selectWithoutUser);
+
+      try {
+        data = await response.json();
+      } catch (parseError) {
+        showPageError("This review link could not be loaded. Please try again later.");
+        return;
+      }
+    }
+
+    if (!response.ok || !Array.isArray(data)) {
+      console.error("Could not load review link:", data);
+      showPageError("This review link could not be loaded. Please try again later.");
+      return;
+    }
+
+    if (!data.length) {
+      showPageError("This review link was not found. It may have been removed.");
+      return;
+    }
+
+    const link = data[0];
+
+    if (!link.business_name) {
+      showPageError("This review link is incomplete. Please contact the business.");
+      return;
+    }
+
+    currentBusiness = {
+      id: link.id,
+      business_name: link.business_name,
+      logo_url: link.logo_url || null,
+      google_review_link: link.google_review_link || "",
+      user_id: link.user_id || null
+    };
+
+    businessNameEl.textContent = currentBusiness.business_name;
+    document.title = currentBusiness.business_name + " | ReviewRise";
+
+    await applyLogo(currentBusiness);
+    showReviewCard();
+
+  } catch (error) {
+    console.error("Error loading business:", error);
+    showPageError("This review link could not be loaded. Please try again later.");
+  }
+}
+
+function highlightStars(rating) {
+  stars.forEach(function (star) {
+    const value = Number(star.dataset.rating);
+    star.classList.toggle("active", value <= rating);
+  });
+}
+
+function handleRating(rating) {
+  if (!currentBusiness || feedbackSubmitted) {
+    return;
+  }
+
+  selectedRating = rating;
+
+  stars.forEach(function (star) {
+    star.classList.remove("selected");
+  });
+
+  stars[rating - 1].classList.add("selected");
+  highlightStars(rating);
+  ratingLabel.textContent = labels[rating];
+
+  if (rating >= 4) {
+    const googleUrl = currentBusiness.google_review_link;
+
+    if (!googleUrl) {
+      feedbackMessage.style.display = "block";
+      feedbackMessage.textContent =
+        "A Google review link is not available for this business.";
+      return;
+    }
+
+    window.location.href = googleUrl;
+    return;
+  }
+
+  feedbackMessage.style.display = "none";
+  feedbackForm.style.display = "block";
+  ratingHint.textContent = "Please tell us how we can improve";
+}
+
+stars.forEach(function (star) {
+  star.addEventListener("mouseenter", function () {
+    if (feedbackSubmitted) {
+      return;
+    }
+
+    const rating = Number(this.dataset.rating);
+    highlightStars(rating);
+    ratingLabel.textContent = labels[rating];
+  });
+
+  star.addEventListener("click", function () {
+    const rating = Number(this.dataset.rating);
+    handleRating(rating);
+  });
+});
+
+document.getElementById("stars").addEventListener("mouseleave", function () {
+  if (feedbackSubmitted) {
+    highlightStars(selectedRating);
+    return;
+  }
+
+  const selected = document.querySelector(".star.selected");
+
+  if (!selected) {
+    highlightStars(0);
+    ratingLabel.textContent = "Select your rating";
+  } else {
+    const rating = Number(selected.dataset.rating);
+    highlightStars(rating);
+    ratingLabel.textContent = labels[rating];
+  }
+});
+
+submitFeedback.addEventListener("click", async function () {
+  if (!currentBusiness || feedbackSubmitted) {
+    return;
+  }
+
+  if (selectedRating < 1 || selectedRating > 3) {
+    return;
+  }
+
+  const feedback = feedbackText.value.trim();
+
+  if (feedback === "") {
+    alert("Please write your feedback first.");
+    return;
+  }
+
+  submitFeedback.disabled = true;
+  submitFeedback.textContent = "Sending...";
+
+  try {
+    const response = await fetch(
+      SUPABASE_URL + "/rest/v1/Feedback",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": SUPABASE_KEY,
+          "Prefer": "return=minimal"
+        },
+        body: JSON.stringify({
+          rating: selectedRating,
+          feedback: feedback,
+          business: currentBusiness.business_name
+        })
+      }
     );
 
     if (!response.ok) {
-        console.error("Could not load business");
-        return;
+      throw new Error("Feedback could not be saved");
     }
 
-    const data = await response.json();
-
-    if (data.length === 0) return;
-
-    const business = data[0];
-
-    document.getElementById("businessName").textContent =
-        business.business_name;
-
-    document.getElementById("businessLogo").textContent =
-        business.business_name.charAt(0).toUpperCase();
-
-    businessGoogleReviewLink =
-        business.google_review_link;
-}
-
-loadBusiness();
-    
-    const stars = document.querySelectorAll(".star");
-    const ratingLabel = document.getElementById("ratingLabel");
-
-    const labels = {
-      1: "Very disappointing",
-      2: "Could be better",
-      3: "Good",
-      4: "Great experience",
-      5: "Excellent!"
-    };
-
-
-    stars.forEach(star => {
-
-      star.addEventListener("mouseenter", function () {
-
-        const rating = Number(this.dataset.rating);
-
-        highlightStars(rating);
-
-        ratingLabel.textContent = labels[rating];
-
-      });
-
-
-      star.addEventListener("click", function () {
-
-        const rating = Number(this.dataset.rating);
-
-        highlightStars(rating);
-
-        ratingLabel.textContent = labels[rating];
-
-        handleRating(rating);
-
-      });
-
-    });
-
-
-    document.getElementById("stars").addEventListener("mouseleave", function () {
-
-      const selected = document.querySelector(".star.selected");
-
-      if (!selected) {
-
-        highlightStars(0);
-
-        ratingLabel.textContent = "Select your rating";
-
-      } else {
-
-        const rating = Number(selected.dataset.rating);
-
-        highlightStars(rating);
-
-        ratingLabel.textContent = labels[rating];
-
-      }
-
-    });
-
-
-    function highlightStars(rating) {
-
-      stars.forEach(star => {
-
-        const value = Number(star.dataset.rating);
-
-        star.classList.toggle("active", value <= rating);
-
-      });
-
-    }
-
-
-    function handleRating(rating) {
-
-      stars.forEach(star => {
-        star.classList.remove("selected");
-      });
-
-      stars[rating - 1].classList.add("selected");
-
-
-      /*
-        NEXT STEP:
-
-        Here we will connect this page to Supabase.
-
-        The rating will belong to the correct
-        ReviewRise business/review link.
-
-        Then we will show the next customer step.
-      */
-
-      console.log("Selected rating:", rating);
-
-    }
-
-async function loadBusinessFromReviewLink() {
-    const params = new URLSearchParams(location.search);
-    const reviewLinkId = params.get("id");
-
-    if (!reviewLinkId) return;
-
-    try {
-        const response = await fetch(
-            SUPABASE_URL +
-            "/rest/v1/Reviewlinks?id=eq." +
-            encodeURIComponent(reviewLinkId) +
-"&select=id,business_name,google_review_link,logo_url",       
-          {
-                headers: {
-                    "apikey": SUPABASE_KEY
-                }
-            }
-        );
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            console.error("Could not load review link:", data);
-            return;
-        }
-
-        if (!data.length) {
-            console.error("Review link not found.");
-            return;
-        }
-
-        const link = data[0];
-
-        document.getElementById("businessName").textContent =
-            link.business_name;
-      const businessLogo = document.getElementById("businessLogo");
-
-if (link.logo_url) {
-    const logoImage = new Image();
-    logoImage.alt = link.business_name + " logo";
-
-    await new Promise((resolve) => {
-        logoImage.onload = resolve;
-        logoImage.onerror = resolve;
-        logoImage.src = link.logo_url;
-    });
-
-    if (logoImage.naturalWidth > 0) {
-        businessLogo.innerHTML = "";
-        businessLogo.appendChild(logoImage);
-    } else {
-        businessLogo.textContent =
-            link.business_name.charAt(0).toUpperCase();
-    }
-} else {
-    businessLogo.textContent =
-        link.business_name.charAt(0).toUpperCase();
-}
-
-        reviewRiseGoogleReviewUrl =
-            link.google_review_link;
-const reviewCard = document.getElementById("reviewCard");
-reviewCard.style.visibility = "visible";
-requestAnimationFrame(() => {
-    reviewCard.style.opacity = "1";
-    reviewCard.style.transform = "translateY(0)";
+    feedbackSubmitted = true;
+    feedbackForm.style.display = "none";
+    ratingHint.style.display = "none";
+    feedbackMessage.style.display = "block";
+    feedbackMessage.innerHTML =
+      "<strong>Thank you for your feedback!</strong><br><br>" +
+      "We really appreciate you taking the time to share your experience. " +
+      "Your feedback helps us improve our service.";
+    feedbackText.value = "";
+
+  } catch (error) {
+    console.error("Feedback submit error:", error);
+    alert("Something went wrong. Please try again.");
+    submitFeedback.disabled = false;
+    submitFeedback.textContent = "Submit Feedback";
+  }
 });
 
-    } catch (error) {
-        console.error("Error loading business:", error);
-    }
-}
-
 loadBusinessFromReviewLink();
-    
+
   </script>
 
 </body>
