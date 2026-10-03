@@ -4,17 +4,21 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Settings - ReviewRise</title>
-
 <style>
-* {
-    box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
     margin: 0;
-    font-family: Arial, sans-serif;
-    background: #f5f7fb;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f6f7fb;
     color: #172033;
+}
+
+.icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    display: block;
 }
 
 .sidebar {
@@ -25,229 +29,505 @@ body {
     position: fixed;
     left: 0;
     top: 0;
-    padding: 28px 20px;
+    z-index: 1000;
+    padding: 24px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
 }
 
-.logo {
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 40px;
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 4px 8px 28px;
+}
+
+.sidebar-brand-name {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.4px;
+    color: #ffffff;
+}
+
+.sidebar-nav {
+    flex: 1;
 }
 
 .menu-item {
-    display: block;
-    text-decoration: none;
-    padding: 13px 15px;
-    margin-bottom: 8px;
-    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 12px;
+    margin-bottom: 6px;
+    border-radius: 8px;
     cursor: pointer;
     color: #d1d5db;
+    font-size: 15px;
+    font-weight: 500;
 }
 
-.menu-item:hover,
-.menu-item.active {
+.menu-item:hover {
     background: #1f2937;
-    color: white;
+    color: #ffffff;
 }
 
-.main {
-    margin-left: 0px;
-    padding: 40px;
+.menu-item.active {
+    background: #2563eb;
+    color: #ffffff;
+    font-weight: 600;
 }
 
-h1 {
-    font-size: 36px;
-    margin: 0 0 8px;
+.menu-item svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
 
-.subtitle {
-    color: #777;
-    margin-bottom: 32px;
+.sidebar-logout {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 11px 12px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: #9ca3af;
+    font-size: 15px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    text-align: left;
 }
 
-.settings-card {
-    background: white;
-    padding: 28px 30px;
-    border-radius: 14px;
-    margin-bottom: 20px;
+.sidebar-logout:hover {
+    background: #1f2937;
+    color: #ffffff;
 }
 
-.settings-card h2 {
+.sidebar-logout svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.close-menu-btn {
+    display: none;
+}
+
+.app {
+    min-height: 100vh;
+}
+
+.topbar {
+    display: none;
+}
+
+.page {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 32px 32px 48px;
+}
+
+.page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.page-header h1 {
     margin: 0 0 6px;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: #111827;
+}
+
+.page-header .subtitle {
+    margin: 0;
+    color: #6b7280;
+    font-size: 14px;
+    line-height: 1.5;
+    max-width: 520px;
+}
+
+.account-chip {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px 8px 8px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    box-shadow: 0 1px 2px rgba(17, 24, 39, 0.04);
+}
+
+.account-chip-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: #eff6ff;
+    color: #2563eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.account-chip-icon svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+}
+
+.account-chip strong {
+    display: block;
+    font-size: 13px;
+    color: #111827;
+}
+
+.account-chip span {
+    display: block;
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.settings-shell {
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr);
+    gap: 24px;
+    align-items: start;
+}
+
+.settings-nav {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    box-shadow: 0 1px 2px rgba(17, 24, 39, 0.04);
+    padding: 8px;
+    position: sticky;
+    top: 24px;
+}
+
+.settings-nav-btn {
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+    font-family: inherit;
+    color: inherit;
+}
+
+.settings-nav-btn:hover {
+    background: #f8fafc;
+}
+
+.settings-nav-btn.active {
+    background: #eff6ff;
+}
+
+.settings-nav-btn.active .nav-icon {
+    background: #2563eb;
+    color: #ffffff;
+}
+
+.settings-nav-btn.active strong {
+    color: #1d4ed8;
+}
+
+.nav-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: #f3f4f6;
+    color: #4b5563;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.nav-icon svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.settings-nav-btn strong {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 2px;
+}
+
+.settings-nav-btn span {
+    display: block;
+    font-size: 12px;
+    line-height: 1.4;
+    color: #6b7280;
+}
+
+.settings-content {
+    min-width: 0;
+}
+
+.panel { display: none; }
+.panel.active { display: block; }
+
+.panel-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.panel-head h2 {
+    margin: 0 0 4px;
     font-size: 20px;
     color: #111827;
 }
 
-.card-description {
-    margin: 0 0 24px;
+.panel-head p {
+    margin: 0;
+    font-size: 13px;
     color: #6b7280;
-    font-size: 14px;
-    line-height: 1.55;
+    line-height: 1.5;
+}
+
+.card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    box-shadow: 0 1px 2px rgba(17, 24, 39, 0.04);
+    padding: 20px 24px;
+    margin-bottom: 16px;
+}
+
+.card h3 {
+    margin: 0 0 16px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #111827;
+}
+
+.grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
 }
 
 .form-group {
-    margin-bottom: 18px;
+    margin-bottom: 16px;
 }
+
+.form-group.full { grid-column: 1 / -1; }
 
 .form-group label {
     display: block;
     margin-bottom: 8px;
     color: #374151;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
 }
 
 .form-group input,
 .form-group select {
-    display: block;
     width: 100%;
-    max-width: 520px;
-    height: 48px;
-    padding: 0 16px;
+    height: 44px;
+    padding: 0 12px;
     background: #ffffff;
     border: 1px solid #d1d5db;
-    border-radius: 12px;
+    border-radius: 10px;
     color: #111827;
-    font-size: 15px;
+    font-size: 14px;
     font-family: inherit;
     outline: none;
 }
 
 .form-group input:focus,
 .form-group select:focus {
-    border-color: #111827;
-    box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.08);
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
 }
 
-.save-btn {
-    display: inline-block;
-    height: 46px;
-    padding: 0 20px;
-    margin-top: 6px;
-    border: none;
-    border-radius: 12px;
-    background: #111827;
-    color: #ffffff;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
+.field-hint {
+    margin: 8px 0 0;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #6b7280;
 }
 
-.save-btn:hover {
-    background: #1f2937;
-}
-
-.secondary-btn {
-    display: inline-block;
-    height: 46px;
-    padding: 0 18px;
-    border: 1px solid #d1d5db;
-    border-radius: 12px;
-    background: #ffffff;
-    color: #111827;
+.btn {
+    height: 44px;
+    padding: 0 16px;
+    border-radius: 10px;
     font-size: 14px;
     font-weight: 600;
+    font-family: inherit;
     cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 }
 
-.secondary-btn:hover {
-    background: #f3f4f6;
+.btn-primary {
+    border: none;
+    background: #2563eb;
+    color: #ffffff;
 }
 
-.logo-upload-area {
+.btn-primary:hover { background: #1d4ed8; }
+
+.btn-secondary {
+    border: 1px solid #d1d5db;
+    background: #ffffff;
+    color: #111827;
+}
+
+.btn-secondary:hover { background: #f9fafb; }
+
+.btn-danger {
+    border: none;
+    background: #dc2626;
+    color: #ffffff;
+}
+
+.btn-danger:hover { background: #b91c1c; }
+
+.btn-ghost {
+    border: 1px solid #fecaca;
+    background: #ffffff;
+    color: #b91c1c;
+}
+
+.btn-ghost:hover { background: #fef2f2; }
+
+.logo-row {
     display: flex;
     align-items: center;
     gap: 16px;
     flex-wrap: wrap;
-    margin-bottom: 8px;
 }
 
-.business-logo-preview {
+.logo-preview {
     width: 72px;
     height: 72px;
-    border-radius: 16px;
+    border-radius: 12px;
     border: 1px solid #e5e7eb;
-    background: #f9fafb;
+    background: #f8fafc;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    flex-shrink: 0;
+    color: #9ca3af;
 }
 
-.business-logo-preview img {
+.logo-preview img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: none;
 }
 
-.logo-letter {
-    color: #111827;
-    font-size: 26px;
-    font-weight: 700;
+.logo-preview svg {
+    width: 24px;
+    height: 24px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
 }
 
-.logo-note {
-    margin: 8px 0 18px;
-    color: #6b7280;
-    font-size: 13px;
+.logo-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
 }
 
 .threshold-options {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 8px;
     margin-bottom: 12px;
 }
 
 .threshold-btn {
-    min-width: 86px;
+    min-width: 92px;
     height: 44px;
     padding: 0 14px;
     border: 1px solid #d1d5db;
-    border-radius: 12px;
+    border-radius: 10px;
     background: #ffffff;
     color: #374151;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     cursor: pointer;
+    font-family: inherit;
 }
 
+.threshold-btn:hover { border-color: #2563eb; color: #1d4ed8; }
+
 .threshold-btn.active {
-    background: #111827;
-    border-color: #111827;
+    background: #2563eb;
+    border-color: #2563eb;
     color: #ffffff;
 }
 
-.notification-row {
+.pref-row {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    gap: 20px;
+    gap: 24px;
+    padding: 16px 0;
 }
 
-.notification-copy {
-    max-width: 460px;
+.pref-row + .pref-row {
+    border-top: 1px solid #f3f4f6;
 }
 
-.notification-copy strong {
+.pref-row strong {
     display: block;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
+    font-size: 14px;
     color: #111827;
-    font-size: 15px;
 }
 
-.notification-copy span {
-    color: #6b7280;
-    font-size: 14px;
+.pref-row span {
+    display: block;
+    font-size: 13px;
     line-height: 1.5;
+    color: #6b7280;
 }
 
 .toggle {
     position: relative;
-    width: 48px;
-    height: 28px;
+    width: 44px;
+    height: 24px;
     flex-shrink: 0;
     border: none;
     border-radius: 999px;
@@ -256,431 +536,503 @@ h1 {
     padding: 0;
 }
 
-.toggle.on {
-    background: #2563eb;
-}
+.toggle.on { background: #2563eb; }
 
 .toggle-knob {
     position: absolute;
-    top: 3px;
-    left: 3px;
-    width: 22px;
-    height: 22px;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
     background: #ffffff;
     transition: transform 0.18s ease;
 }
 
-.toggle.on .toggle-knob {
-    transform: translateX(20px);
+.toggle.on .toggle-knob { transform: translateX(20px); }
+
+.plan-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.plan-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 6px;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    height: 24px;
+    padding: 0 10px;
+    border-radius: 999px;
+    background: #ecfdf5;
+    color: #047857;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.session-box {
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 13px;
+    color: #4b5563;
+    line-height: 1.6;
 }
 
 .danger-card {
-    background: #ffffff;
+    background: #fff;
     border: 1px solid #fecaca;
-    padding: 28px 30px;
-    border-radius: 14px;
-    margin-bottom: 20px;
-}
-
-.danger-card h2 {
-    margin: 0 0 6px;
-    font-size: 20px;
-    color: #b91c1c;
-}
-
-.delete-btn {
-    display: inline-block;
-    height: 46px;
-    padding: 0 20px;
-    margin-top: 8px;
-    border: none;
     border-radius: 12px;
-    background: #dc2626;
-    color: #ffffff;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
+    padding: 20px 24px;
 }
 
-.delete-btn:hover {
-    background: #b91c1c;
+.danger-card h3 {
+    margin: 0 0 6px;
+    color: #b91c1c;
+    font-size: 16px;
 }
 
-.mobile-menu-btn {
-    display: none;
+.danger-card p {
+    margin: 0 0 16px;
+    color: #6b7280;
+    font-size: 13px;
+    line-height: 1.55;
 }
 
-.close-menu-btn {
-    display: none;
+body.page-leaving { opacity: 0; }
+body { opacity: 1; transition: opacity 0.25s ease; }
+
+@media (min-width: 1100px) {
+    .app { margin-left: 240px; }
 }
 
-@media (max-width: 800px) {
+@media (max-width: 1099px) {
+    .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.35s ease;
+    }
+
+    .sidebar.open { transform: translateX(0); }
+
     .close-menu-btn {
         display: block;
         position: absolute;
-        top: 12px;
-        right: 12px;
-        background: none;
+        top: 14px;
+        right: 14px;
+        background: transparent;
         border: none;
-        color: white;
-        font-size: 28px;
-        cursor: pointer;
-    }
-
-    .mobile-menu-btn {
-        display: block;
-        position: absolute;
-        top: 20px;
-        left: 20px;
-        z-index: 1100;
-        background: #111827;
-        color: white;
-        border: none;
-        border-radius: 12px;
-        padding: 12px 16px;
+        color: #ffffff;
         font-size: 26px;
         cursor: pointer;
+        line-height: 1;
     }
 
-    .sidebar {
-        display: none;
-    }
-
-    .sidebar.open {
-        display: block;
-        position: fixed;
+    .topbar {
+        display: flex;
+        align-items: center;
+        height: 64px;
+        padding: 0 16px;
+        background: #ffffff;
+        border-bottom: 1px solid #e5e7eb;
+        position: sticky;
         top: 0;
-        left: 0;
-        width: 240px;
-        height: 100vh;
-        z-index: 1000;
-        background: #111827;
+        z-index: 900;
+        gap: 12px;
     }
 
-    .main {
-        margin-left: 0 !important;
-        width: 100% !important;
-        padding: 25px 20px 30px !important;
-        box-sizing: border-box;
-    }
-
-    h1 {
-        font-size: 29px;
-    }
-
-    .settings-card,
-    .danger-card {
-        padding: 22px 18px;
-    }
-
-    .form-group input,
-    .form-group select {
-        max-width: 100%;
-    }
-
-    .notification-row {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-}
-
-.top-navbar {
-    width: 100%;
-    height: 72px;
-    display: flex;
-    align-items: center;
-    padding: 0 24px;
-    box-sizing: border-box;
-    background: #ffffff;
-    border-bottom: 1px solid #e5e7eb;
-    position: relative;
-    z-index: 900;
-}
-
-.top-navbar-logo {
-    font-size: 27px;
-    font-weight: 700;
-    color: #111827;
-    margin-left: 18px;
-}
-
-.top-navbar-actions {
-    margin-left: auto;
-    display: flex;
-    align-items: center;
-}
-
-.navbar-icon {
-    background: transparent;
-    border: none;
-    color: #111827;
-    font-size: 28px;
-    cursor: pointer;
-}
-
-.top-navbar .mobile-menu-btn {
-    position: static;
-    display: block;
-    background: transparent;
-    color: #111827;
-    border: none;
-    padding: 0;
-    margin: 0;
-    font-size: 30px;
-    line-height: 1;
-    cursor: pointer;
-}
-
-@media (min-width: 801px) {
     .mobile-menu-btn {
-        display: block !important;
-        position: static !important;
-        background: transparent !important;
-        color: #111827 !important;
-        border: none !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        font-size: 30px !important;
+        background: transparent;
+        border: none;
+        color: #111827;
+        font-size: 28px;
         cursor: pointer;
+        padding: 0;
+        line-height: 1;
     }
 
-    .sidebar {
-        display: block !important;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 240px;
-        height: 100vh;
-        background: #111827;
-        z-index: 1000;
-        transform: translateX(-100%);
-        transition: transform 0.45s ease;
+    .topbar-brand {
+        font-size: 20px;
+        font-weight: 700;
+        color: #111827;
     }
 
-    .sidebar.open {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 240px;
-        height: 100vh;
-        background: #111827;
-        z-index: 1000;
-        padding: 24px 16px;
-        box-sizing: border-box;
-        transform: translateX(0);
+    .page { padding: 24px 20px 40px; }
+
+    .settings-shell {
+        grid-template-columns: 1fr;
+    }
+
+    .settings-nav {
+        position: static;
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding: 8px;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .settings-nav-btn {
+        min-width: 210px;
+        flex-shrink: 0;
     }
 }
 
-.sidebar.open .logo {
-    display: block;
-    color: white;
-    font-size: 24px;
-    font-weight: 700;
-    margin-bottom: 30px;
-}
+@media (max-width: 700px) {
+    .page-header,
+    .panel-head,
+    .plan-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
 
-.sidebar.open .close-menu-btn {
-    display: block;
-    position: absolute;
-    top: 18px;
-    right: 18px;
-    background: transparent;
-    border: none;
-    color: white;
-    font-size: 26px;
-    cursor: pointer;
-}
+    .grid-2 { grid-template-columns: 1fr; }
 
-.sidebar.open .menu-item {
-    display: block;
-    color: #e5e7eb;
-    text-decoration: none;
-    padding: 12px 14px;
-    margin-bottom: 6px;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 500;
-    transition: background 0.2s ease, color 0.2s ease;
-}
+    .page-header h1 { font-size: 24px; }
 
-.sidebar.open .menu-item:hover {
-    background: #1f2937;
-    color: #ffffff;
-}
-
-.sidebar.open .menu-item.active {
-    background: #2563eb;
-    color: #ffffff;
-    font-weight: 600;
-}
-
-body {
-    opacity: 1;
-    transition: opacity 0.25s ease;
-}
-
-body.page-leaving {
-    opacity: 0;
+    .pref-row { flex-direction: column; }
 }
 </style>
 </head>
-
 <body>
-
-<div class="top-navbar">
-    <button class="mobile-menu-btn" id="mobileMenuBtn" type="button" onclick="toggleSidebar()">☰</button>
-
-    <div class="top-navbar-logo">ReviewRise</div>
-
-    <div class="top-navbar-actions">
-        <button class="navbar-icon" type="button" aria-label="Account">♙</button>
-    </div>
-</div>
 
 <aside class="sidebar">
     <button class="close-menu-btn" type="button" onclick="toggleSidebar()">×</button>
 
-    <div class="logo">ReviewRise</div>
-
-<div class="menu-item" onclick="smoothNavigate('dashboard.html')">
-    Dashboard
-</div>
-
-<div class="menu-item" onclick="smoothNavigate('feedback.html')">Feedback</div>
-
-<div class="menu-item" onclick="smoothNavigate('analytics.html')">Analytics</div>
-
-<div class="menu-item" onclick="smoothNavigate('review-link.html')">Review Links</div>
-    
-<div class="menu-item" onclick="smoothNavigate('qr-nfc.html')">
-    QR & NFC
-</div>
-
-<div class="menu-item active">
-    Settings
-</div>
-    
-</aside>
-
-<main class="main">
-
-    <h1>Settings</h1>
-    <div class="subtitle">
-        Manage your ReviewRise account and preferences.
+    <div class="sidebar-brand">
+        <div class="sidebar-brand-name">ReviewRise</div>
     </div>
 
-    <section class="settings-card">
-        <h2>Profile</h2>
-        <p class="card-description">
-            Update the name and email shown on your ReviewRise account.
-        </p>
-
-        <div class="form-group">
-            <label for="fullName">Full Name</label>
-            <input id="fullName" type="text" placeholder="Your full name" autocomplete="name">
+    <nav class="sidebar-nav">
+        <div class="menu-item" onclick="smoothNavigate('dashboard.html')">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10.5V20h12v-9.5"/></svg>
+            Dashboard
         </div>
-
-        <div class="form-group">
-            <label for="emailAddress">Email Address</label>
-            <input id="emailAddress" type="email" placeholder="name@company.com" autocomplete="email">
+        <div class="menu-item" onclick="smoothNavigate('feedback.html')">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14v10H8l-3 3V6z"/></svg>
+            Feedback
         </div>
-
-        <button class="save-btn" type="button">Save Changes</button>
-    </section>
-
-    <section class="settings-card">
-        <h2>Business Settings</h2>
-        <p class="card-description">
-            Set the business details customers see on your review page.
-        </p>
-
-        <div class="form-group">
-            <label for="businessName">Business Name</label>
-            <input id="businessName" type="text" placeholder="e.g. L'Adresse Boutique Hotel">
+        <div class="menu-item" onclick="smoothNavigate('analytics.html')">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19V10"/><path d="M12 19V5"/><path d="M19 19v-7"/></svg>
+            Analytics
         </div>
-
-        <div class="form-group">
-            <label for="googleReviewLink">Google Review Link</label>
-            <input id="googleReviewLink" type="url" placeholder="https://...">
+        <div class="menu-item" onclick="smoothNavigate('review-link.html')">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.07 0l1.41-1.41a5 5 0 0 0-7.07-7.07L10 5.9"/><path d="M14 11a5 5 0 0 0-7.07 0L5.5 12.41a5 5 0 0 0 7.07 7.07L14 18.1"/></svg>
+            Review Links
         </div>
+        <div class="menu-item" onclick="smoothNavigate('qr-nfc.html')">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h7v7H4z"/><path d="M13 4h7v7h-7z"/><path d="M4 13h7v7H4z"/><path d="M16 13h4v4h-4z"/><path d="M13 20h3"/></svg>
+            QR & NFC
+        </div>
+        <div class="menu-item active">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a7.7 7.7 0 0 0 .1-2l2-1.5-2-3.5-2.4.5a7.6 7.6 0 0 0-1.7-1L15 4h-6l-.4 2.5a7.6 7.6 0 0 0-1.7 1L6.5 8 4.5 11.5 6.5 13a7.7 7.7 0 0 0 .1 2l-2 1.5 2 3.5 2.4-.5a7.6 7.6 0 0 0 1.7 1L9 20h6l.4-2.5a7.6 7.6 0 0 0 1.7-1l2.4.5 2-3.5-2-1.5z"/></svg>
+            Settings
+        </div>
+    </nav>
 
-        <div class="form-group">
-            <label>Business Logo</label>
-            <div class="logo-upload-area">
-                <div class="business-logo-preview">
-                    <img id="businessLogoPreview" alt="Business logo">
-                    <span class="logo-letter" id="logoLetter">R</span>
+    <button class="sidebar-logout" type="button" onclick="logout()">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 7V5a2 2 0 0 1 2-2h7v18h-7a2 2 0 0 1-2-2v-2"/><path d="M15 12H4"/><path d="M7 9 4 12l3 3"/></svg>
+        Log Out
+    </button>
+</aside>
+
+<div class="app">
+    <div class="topbar">
+        <button class="mobile-menu-btn" id="mobileMenuBtn" type="button" onclick="toggleSidebar()">☰</button>
+        <div class="topbar-brand">ReviewRise</div>
+    </div>
+
+    <main class="page">
+        <div class="page-header">
+            <div>
+                <h1>Settings</h1>
+                <p class="subtitle">Manage your business information, preferences and account settings.</p>
+            </div>
+            <div class="account-chip">
+                <div class="account-chip-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v12H4z"/><path d="M8 7V5h8v2"/></svg>
                 </div>
-                <button class="secondary-btn" type="button" onclick="document.getElementById('businessLogoInput').click()">
-                    Change / Upload Logo
+                <div>
+                    <strong>Your business</strong>
+                    <span>ReviewRise account</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-shell">
+            <nav class="settings-nav" aria-label="Settings sections">
+                <button class="settings-nav-btn active" type="button" data-section="business">
+                    <span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M4 20V9l8-5 8 5v11"/><path d="M9 20v-6h6v6"/></svg></span>
+                    <span><strong>Business Profile</strong><span>Name, address and public details</span></span>
                 </button>
+                <button class="settings-nav-btn" type="button" data-section="account">
+                    <span class="nav-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 19a7 7 0 0 1 14 0"/></svg></span>
+                    <span><strong>Account</strong><span>Your personal login details</span></span>
+                </button>
+                <button class="settings-nav-btn" type="button" data-section="security">
+                    <span class="nav-icon"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span>
+                    <span><strong>Security</strong><span>Password and session</span></span>
+                </button>
+                <button class="settings-nav-btn" type="button" data-section="reviews">
+                    <span class="nav-icon"><svg viewBox="0 0 24 24"><path d="m12 3 2.4 5.7L20 10l-4.5 4 1.2 6.2L12 17.3 7.3 20.2 8.5 14 4 10l5.6-1.3z"/></svg></span>
+                    <span><strong>Review Settings</strong><span>Threshold and review routing</span></span>
+                </button>
+                <button class="settings-nav-btn" type="button" data-section="notifications">
+                    <span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M6 9a6 6 0 1 1 12 0c0 7 2 8 2 8H4s2-1 2-8"/><path d="M10 20a2 2 0 0 0 4 0"/></svg></span>
+                    <span><strong>Notifications</strong><span>Email alerts for new feedback</span></span>
+                </button>
+                <button class="settings-nav-btn" type="button" data-section="subscription">
+                    <span class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/></svg></span>
+                    <span><strong>Subscription</strong><span>Plan and billing</span></span>
+                </button>
+                <button class="settings-nav-btn" type="button" data-section="danger">
+                    <span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M12 8v5"/><path d="M12 16.5h.01"/><path d="M10.3 4.7 2.8 18a2 2 0 0 0 1.7 3h15a2 2 0 0 0 1.7-3L13.7 4.7a2 2 0 0 0-3.4 0z"/></svg></span>
+                    <span><strong>Danger Zone</strong><span>Delete account</span></span>
+                </button>
+            </nav>
+
+            <div class="settings-content">
+
+                <section class="panel active" id="panel-business">
+                    <div class="panel-head">
+                        <div>
+                            <h2>Business Profile</h2>
+                            <p>These details appear on your customer review experience.</p>
+                        </div>
+                        <button class="btn btn-primary" type="button">Save Changes</button>
+                    </div>
+
+                    <div class="card">
+                        <h3>Business Information</h3>
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label for="businessName">Business Name</label>
+                                <input id="businessName" type="text" placeholder="e.g. L'Adresse Boutique Hotel">
+                            </div>
+                            <div class="form-group">
+                                <label for="businessType">Business Type</label>
+                                <select id="businessType">
+                                    <option value="">Select type</option>
+                                    <option>Hotel</option>
+                                    <option>Restaurant</option>
+                                    <option>Cafe</option>
+                                    <option>Retail</option>
+                                    <option>Services</option>
+                                    <option>Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="businessPhone">Phone Number</label>
+                                <input id="businessPhone" type="tel" placeholder="+212 ...">
+                            </div>
+                            <div class="form-group">
+                                <label for="businessEmail">Email Address</label>
+                                <input id="businessEmail" type="email" placeholder="hello@business.com">
+                            </div>
+                            <div class="form-group full">
+                                <label for="businessWebsite">Website</label>
+                                <input id="businessWebsite" type="url" placeholder="https://">
+                            </div>
+                            <div class="form-group full">
+                                <label>Business Logo</label>
+                                <div class="logo-row">
+                                    <div class="logo-preview" id="logoPreviewBox">
+                                        <img id="businessLogoPreview" alt="Business logo">
+                                        <svg id="logoEmptyIcon" viewBox="0 0 24 24" aria-hidden="true">
+                                            <rect x="4" y="5" width="16" height="14" rx="2"/>
+                                            <circle cx="9" cy="10" r="1.5"/>
+                                            <path d="m4 16 5-5 4 4 2-2 5 5"/>
+                                        </svg>
+                                    </div>
+                                    <div class="logo-actions">
+                                        <button class="btn btn-secondary" type="button" onclick="document.getElementById('businessLogoInput').click()">Upload / Change Logo</button>
+                                        <button class="btn btn-ghost" type="button" id="removeLogoBtn">Remove Logo</button>
+                                    </div>
+                                </div>
+                                <p class="field-hint">Recommended size: 512 × 512 px. PNG, JPG or WebP with a transparent background works best.</p>
+                                <input id="businessLogoInput" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Business Address</h3>
+                        <div class="grid-2">
+                            <div class="form-group full">
+                                <label for="businessAddress">Address</label>
+                                <input id="businessAddress" type="text" placeholder="Street address">
+                            </div>
+                            <div class="form-group">
+                                <label for="businessCity">City</label>
+                                <input id="businessCity" type="text" placeholder="City">
+                            </div>
+                            <div class="form-group">
+                                <label for="businessCountry">Country</label>
+                                <input id="businessCountry" type="text" placeholder="Country">
+                            </div>
+                            <div class="form-group">
+                                <label for="businessPostal">Postal Code</label>
+                                <input id="businessPostal" type="text" placeholder="Postal code">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Google Review Link</h3>
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label for="googleReviewLink">Google review URL</label>
+                            <input id="googleReviewLink" type="url" placeholder="https://search.google.com/local/writereview?...">
+                            <p class="field-hint">This link is opened for customers whose rating meets the positive review threshold.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="panel" id="panel-account">
+                    <div class="panel-head">
+                        <div>
+                            <h2>Account</h2>
+                            <p>Update the name and email used to sign in to ReviewRise.</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="form-group">
+                            <label for="fullName">Full Name</label>
+                            <input id="fullName" type="text" placeholder="Your full name" autocomplete="name">
+                        </div>
+                        <div class="form-group">
+                            <label for="emailAddress">Email Address</label>
+                            <input id="emailAddress" type="email" placeholder="name@company.com" autocomplete="email">
+                        </div>
+                        <button class="btn btn-primary" type="button">Save Changes</button>
+                    </div>
+                </section>
+
+                <section class="panel" id="panel-security">
+                    <div class="panel-head">
+                        <div>
+                            <h2>Security</h2>
+                            <p>Manage how you sign in to ReviewRise.</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>Password</h3>
+                        <p class="field-hint" style="margin-top:0; margin-bottom:16px;">Choose a strong password that you do not use elsewhere.</p>
+                        <button class="btn btn-secondary" type="button">Change Password</button>
+                    </div>
+                    <div class="card">
+                        <h3>Current session</h3>
+                        <div class="session-box">
+                            Signed in on this browser. Session tokens are stored locally on this device.
+                        </div>
+                    </div>
+                </section>
+
+                <section class="panel" id="panel-reviews">
+                    <div class="panel-head">
+                        <div>
+                            <h2>Review Settings</h2>
+                            <p>Control how ratings are routed to Google or private feedback.</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>Positive review threshold</h3>
+                        <div class="threshold-options" id="thresholdOptions">
+                            <button class="threshold-btn" type="button" data-threshold="3">3 stars</button>
+                            <button class="threshold-btn active" type="button" data-threshold="4">4 stars</button>
+                            <button class="threshold-btn" type="button" data-threshold="5">5 stars</button>
+                        </div>
+                        <p class="field-hint" id="thresholdHelp">Ratings at or above the threshold are directed to Google. Lower ratings collect private feedback.</p>
+                    </div>
+                    <div class="card">
+                        <div class="pref-row">
+                            <div>
+                                <strong>Private Feedback</strong>
+                                <span>Collect private comments when a rating is below the threshold.</span>
+                            </div>
+                            <button class="toggle on" id="privateFeedbackToggle" type="button" aria-pressed="true" aria-label="Collect private feedback">
+                                <span class="toggle-knob"></span>
+                            </button>
+                        </div>
+                        <div class="pref-row">
+                            <div>
+                                <strong>Google Review Redirect</strong>
+                                <span>Send customers at or above the threshold to your Google review link.</span>
+                            </div>
+                            <button class="toggle on" id="googleRedirectToggle" type="button" aria-pressed="true" aria-label="Google review redirect">
+                                <span class="toggle-knob"></span>
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="panel" id="panel-notifications">
+                    <div class="panel-head">
+                        <div>
+                            <h2>Notifications</h2>
+                            <p>Choose how ReviewRise emails you about new customer feedback.</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="pref-row" style="padding-top:0; padding-bottom:0;">
+                            <div>
+                                <strong>Email me when new private feedback is received.</strong>
+                                <span>Get an email whenever a customer leaves a private comment below your review threshold.</span>
+                            </div>
+                            <button class="toggle" id="feedbackEmailToggle" type="button" aria-pressed="false" aria-label="Email me when new private feedback is received">
+                                <span class="toggle-knob"></span>
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="panel" id="panel-subscription">
+                    <div class="panel-head">
+                        <div>
+                            <h2>Subscription</h2>
+                            <p>Your current ReviewRise plan.</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="plan-row">
+                            <div>
+                                <div class="plan-name">Free</div>
+                                <span class="badge">Active</span>
+                            </div>
+                            <button class="btn btn-primary" type="button">Upgrade Plan</button>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="panel" id="panel-danger">
+                    <div class="panel-head">
+                        <div>
+                            <h2>Danger Zone</h2>
+                            <p>Irreversible account actions.</p>
+                        </div>
+                    </div>
+                    <div class="danger-card">
+                        <h3>Danger Zone</h3>
+                        <p>Permanently delete your ReviewRise account and all associated data. This cannot be undone.</p>
+                        <button class="btn btn-danger" type="button">Delete Account</button>
+                    </div>
+                </section>
+
             </div>
-            <p class="logo-note">PNG, JPG or WebP. This preview stays on this page only.</p>
-            <input id="businessLogoInput" type="file" accept="image/png,image/jpeg,image/webp" hidden>
         </div>
-
-        <button class="save-btn" type="button">Save Changes</button>
-    </section>
-
-    <section class="settings-card">
-        <h2>Review Preferences</h2>
-        <p class="card-description">
-            Choose when customers are sent to Google instead of private feedback.
-        </p>
-
-        <div class="form-group">
-            <label>Positive review threshold</label>
-            <div class="threshold-options" id="thresholdOptions">
-                <button class="threshold-btn" type="button" data-threshold="3">3 stars</button>
-                <button class="threshold-btn active" type="button" data-threshold="4">4 stars</button>
-                <button class="threshold-btn" type="button" data-threshold="5">5 stars</button>
-            </div>
-            <p class="logo-note" id="thresholdHelp">
-                Ratings of 4 stars or above are directed to Google. Lower ratings collect private feedback.
-            </p>
-        </div>
-    </section>
-
-    <section class="settings-card">
-        <h2>Notifications</h2>
-        <p class="card-description">
-            Control how ReviewRise notifies you about new customer feedback.
-        </p>
-
-        <div class="notification-row">
-            <div class="notification-copy">
-                <strong>Email me when new private feedback is received</strong>
-                <span>Get an email whenever a customer leaves a 1–3 star private comment.</span>
-            </div>
-            <button class="toggle" id="feedbackEmailToggle" type="button" aria-pressed="false" aria-label="Email me when new private feedback is received">
-                <span class="toggle-knob"></span>
-            </button>
-        </div>
-    </section>
-
-    <section class="settings-card">
-        <h2>Security</h2>
-        <p class="card-description">
-            Manage how you sign in to ReviewRise.
-        </p>
-        <button class="secondary-btn" type="button">Change Password</button>
-    </section>
-
-    <section class="danger-card">
-        <h2>Danger Zone</h2>
-        <p class="card-description">
-            Permanently delete your ReviewRise account and all associated data. This cannot be undone.
-        </p>
-        <button class="delete-btn" type="button">Delete Account</button>
-    </section>
-
-</main>
+    </main>
+</div>
 
 <script>
 function smoothNavigate(page) {
     document.body.classList.add("page-leaving");
-
     setTimeout(function () {
         window.location.href = page;
     }, 250);
@@ -689,34 +1041,52 @@ function smoothNavigate(page) {
 function toggleSidebar() {
     const sidebar = document.querySelector(".sidebar");
     const menuButton = document.getElementById("mobileMenuBtn");
-
-    if (window.innerWidth <= 800) {
-        sidebar.classList.toggle("open");
-
-        if (sidebar.classList.contains("open")) {
-            menuButton.style.display = "none";
-        } else {
-            menuButton.style.display = "block";
-        }
-
-        return;
-    }
-
     sidebar.classList.toggle("open");
+
+    if (window.innerWidth <= 1099 && menuButton) {
+        menuButton.style.display = sidebar.classList.contains("open") ? "none" : "block";
+    }
 }
+
+function logout() {
+    localStorage.removeItem("reviewrise_token");
+    localStorage.removeItem("reviewrise_refresh_token");
+    window.location.href = "dashboard.html";
+}
+
+function showSection(id) {
+    document.querySelectorAll(".panel").forEach(function (panel) {
+        panel.classList.toggle("active", panel.id === "panel-" + id);
+    });
+    document.querySelectorAll(".settings-nav-btn").forEach(function (btn) {
+        btn.classList.toggle("active", btn.getAttribute("data-section") === id);
+    });
+}
+
+document.querySelectorAll(".settings-nav-btn").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+        showSection(btn.getAttribute("data-section"));
+    });
+});
 
 document.getElementById("businessLogoInput").addEventListener("change", function () {
     const file = this.files[0];
     const preview = document.getElementById("businessLogoPreview");
-    const letter = document.getElementById("logoLetter");
-
-    if (!file) {
-        return;
-    }
-
+    const emptyIcon = document.getElementById("logoEmptyIcon");
+    if (!file) return;
     preview.src = URL.createObjectURL(file);
     preview.style.display = "block";
-    letter.style.display = "none";
+    emptyIcon.style.display = "none";
+});
+
+document.getElementById("removeLogoBtn").addEventListener("click", function () {
+    const preview = document.getElementById("businessLogoPreview");
+    const emptyIcon = document.getElementById("logoEmptyIcon");
+    const input = document.getElementById("businessLogoInput");
+    preview.removeAttribute("src");
+    preview.style.display = "none";
+    emptyIcon.style.display = "block";
+    input.value = "";
 });
 
 document.querySelectorAll(".threshold-btn").forEach(function (button) {
@@ -724,20 +1094,20 @@ document.querySelectorAll(".threshold-btn").forEach(function (button) {
         document.querySelectorAll(".threshold-btn").forEach(function (item) {
             item.classList.remove("active");
         });
-
         button.classList.add("active");
-
         const value = button.getAttribute("data-threshold");
         document.getElementById("thresholdHelp").textContent =
             "Ratings of " + value + " stars or above are directed to Google. Lower ratings collect private feedback.";
     });
 });
 
-document.getElementById("feedbackEmailToggle").addEventListener("click", function () {
-    const isOn = this.classList.toggle("on");
-    this.setAttribute("aria-pressed", isOn ? "true" : "false");
+["feedbackEmailToggle", "privateFeedbackToggle", "googleRedirectToggle"].forEach(function (id) {
+    const el = document.getElementById(id);
+    el.addEventListener("click", function () {
+        const isOn = this.classList.toggle("on");
+        this.setAttribute("aria-pressed", isOn ? "true" : "false");
+    });
 });
 </script>
-
 </body>
 </html>
