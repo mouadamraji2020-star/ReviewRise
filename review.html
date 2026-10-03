@@ -519,27 +519,29 @@ async function loadBusinessFromReviewLink() {
     return;
   }
 
+  const rawId = reviewLinkId.trim();
+  const numericId = Number(rawId);
+
+  if (!/^\d+$/.test(rawId) || !Number.isSafeInteger(numericId)) {
+    showPageError("This review link was not found. It may have been removed.");
+    return;
+  }
+
   try {
-    const selectWithUser =
-      "id,business_name,logo_url,google_review_link,user_id";
-    const selectWithoutUser =
-      "id,business_name,logo_url,google_review_link";
+    const response = await fetch(
+      SUPABASE_URL + "/rest/v1/rpc/get_public_review_link",
+      {
+        method: "POST",
+        headers: {
+          "apikey": SUPABASE_KEY,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          p_id: numericId
+        })
+      }
+    );
 
-    async function fetchReviewLink(select) {
-      return fetch(
-        SUPABASE_URL +
-        "/rest/v1/Reviewlinks?id=eq." +
-        encodeURIComponent(reviewLinkId.trim()) +
-        "&select=" + select,
-        {
-          headers: {
-            "apikey": SUPABASE_KEY
-          }
-        }
-      );
-    }
-
-    let response = await fetchReviewLink(selectWithUser);
     let data = null;
 
     try {
@@ -548,29 +550,17 @@ async function loadBusinessFromReviewLink() {
       data = null;
     }
 
-    if (!response.ok) {
-      response = await fetchReviewLink(selectWithoutUser);
+    const link = Array.isArray(data) ? data[0] : data;
 
-      try {
-        data = await response.json();
-      } catch (parseError) {
-        showPageError("This review link could not be loaded. Please try again later.");
-        return;
-      }
-    }
-
-    if (!response.ok || !Array.isArray(data)) {
+    if (!response.ok || !link || !link.id) {
       console.error("Could not load review link:", data);
-      showPageError("This review link could not be loaded. Please try again later.");
+      showPageError(
+        response.ok
+          ? "This review link was not found. It may have been removed."
+          : "This review link could not be loaded. Please try again later."
+      );
       return;
     }
-
-    if (!data.length) {
-      showPageError("This review link was not found. It may have been removed.");
-      return;
-    }
-
-    const link = data[0];
 
     if (!link.business_name) {
       showPageError("This review link is incomplete. Please contact the business.");
@@ -581,8 +571,7 @@ async function loadBusinessFromReviewLink() {
       id: link.id,
       business_name: link.business_name,
       logo_url: link.logo_url || null,
-      google_review_link: link.google_review_link || "",
-      user_id: link.user_id || null
+      google_review_link: link.google_review_link || ""
     };
 
     businessNameEl.textContent = currentBusiness.business_name;
@@ -689,7 +678,7 @@ submitFeedback.addEventListener("click", async function () {
     return;
   }
 
-  if (!currentBusiness.id || !currentBusiness.user_id) {
+  if (!currentBusiness.id) {
     alert("This review link is incomplete, so your feedback could not be sent. Please ask the business for a new link.");
     return;
   }
@@ -711,8 +700,7 @@ submitFeedback.addEventListener("click", async function () {
           rating: selectedRating,
           feedback: feedback,
           business: currentBusiness.business_name,
-          review_link_id: currentBusiness.id,
-          user_id: currentBusiness.user_id
+          review_link_id: currentBusiness.id
         })
       }
     );
