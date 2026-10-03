@@ -2936,8 +2936,10 @@ modal
 
 });
 
-    container.appendChild(item);
+        container.appendChild(item);
 });
+
+renderedReviewLinksKey = reviewLinksRenderKey(reviewLinks);
 
 const createCard = document.createElement("div");
 createCard.className = "qr-create-link-card";
@@ -2983,11 +2985,6 @@ async function refreshQRReviewLinks() {
     }
 
     const ownerId = reviewLinksOwnerId(token);
-    const cachedLinks = readReviewLinksCache(ownerId);
-
-    if (cachedLinks) {
-        loadQRReviewLinks(cachedLinks);
-    }
 
     try {
         const response = await fetch(
@@ -3018,11 +3015,39 @@ async function refreshQRReviewLinks() {
         const links = rows.map(publicReviewLink);
 
         writeReviewLinksCache(ownerId, links);
-        loadQRReviewLinks(links);
+
+        if (reviewLinksRenderKey(links) !== renderedReviewLinksKey) {
+            loadQRReviewLinks(links);
+        }
     } catch (error) {
         console.error("QR Review Links error:", error);
     }
 }
+
+let renderedReviewLinksKey = null;
+
+function reviewLinksRenderKey(links) {
+    return JSON.stringify((links || []).map(publicReviewLink));
+}
+
+(function paintCachedReviewLinks() {
+    const token = localStorage.getItem("reviewrise_token");
+    const refreshToken = localStorage.getItem("reviewrise_refresh_token");
+
+    if (!token && !refreshToken) {
+        return;
+    }
+
+    if (!token) {
+        return;
+    }
+
+    const cachedLinks = readReviewLinksCache(reviewLinksOwnerId(token));
+
+    if (cachedLinks && cachedLinks.length) {
+        loadQRReviewLinks(cachedLinks);
+    }
+})();
 
 refreshQRReviewLinks(); 
 
