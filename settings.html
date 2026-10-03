@@ -3,1894 +3,740 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Settings | ReviewRise</title>
+<title>Settings - ReviewRise</title>
 
 <style>
-
 * {
     box-sizing: border-box;
 }
 
-:root {
-    --navy: #0f1f3a;
-    --navy-2: #13294b;
-    --blue: #1677ff;
-    --blue-soft: #eef6ff;
-    --text: #0f1f3a;
-    --muted: #6b7280;
-    --border: #e4e9f1;
-    --bg: #f7f9fc;
-    --white: #ffffff;
-    --danger: #ef4444;
-}
-
 body {
     margin: 0;
-    font-family: Arial, Helvetica, sans-serif;
-    background: var(--bg);
-    color: var(--text);
+    font-family: Arial, sans-serif;
+    background: #f5f7fb;
+    color: #172033;
 }
 
-/* =========================
-   LEFT SIDEBAR
-========================= */
-
-.app-sidebar {
+.sidebar {
+    width: 240px;
+    height: 100vh;
+    background: #111827;
+    color: white;
     position: fixed;
     left: 0;
     top: 0;
-    bottom: 0;
-    width: 250px;
-    background: linear-gradient(
-        180deg,
-        #101f39 0%,
-        #0d1c35 100%
-    );
-    color: white;
-    z-index: 1000;
-    display: flex;
-    flex-direction: column;
-    padding: 22px 14px;
+    padding: 28px 20px;
 }
 
-.brand {
-    display: flex;
-    align-items: center;
-    gap: 11px;
-    padding: 0 12px 25px;
-}
-
-.brand img {
-    width: 38px;
-    height: 38px;
-    object-fit: contain;
-    border-radius: 8px;
-}
-
-.brand-name {
+.logo {
     font-size: 24px;
-    font-weight: 700;
+    font-weight: bold;
+    margin-bottom: 40px;
 }
 
-.app-nav {
-    display: flex;
-    flex-direction: column;
-    gap: 7px;
-}
-
-.app-nav-item {
-    width: 100%;
-    border: 0;
-    background: transparent;
-    color: #d9e1ee;
-    padding: 14px 16px;
-    border-radius: 11px;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    cursor: pointer;
-    font-size: 15px;
-    text-align: left;
-    transition: .2s ease;
-}
-
-.app-nav-item:hover {
-    background: rgba(255,255,255,.07);
-    color: white;
-}
-
-.app-nav-item.active {
-    background: linear-gradient(
-        135deg,
-        #176ce5,
-        #2388ff
-    );
-    color: white;
-    box-shadow: 0 8px 24px rgba(22,119,255,.25);
-}
-
-.app-nav-icon {
-    width: 24px;
-    text-align: center;
-    font-size: 20px;
-}
-
-.sidebar-bottom {
-    margin-top: auto;
-}
-
-.logout-item {
-    color: #e8edf5;
-}
-
-/* =========================
-   MAIN
-========================= */
-
-.app-main {
-    margin-left: 250px;
-    min-height: 100vh;
-}
-
-/* HEADER */
-
-.page-topbar {
-    height: 92px;
-    background: white;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    padding: 0 34px;
-}
-
-.page-heading h1 {
-    margin: 0 0 5px;
-    font-size: 29px;
-    letter-spacing: -.4px;
-}
-
-.page-heading p {
-    margin: 0;
-    color: var(--muted);
-    font-size: 14px;
-}
-
-.topbar-right {
-    margin-left: auto;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
-
-.notification-btn {
-    border: 0;
-    background: transparent;
-    font-size: 22px;
-    cursor: pointer;
-}
-
-.business-account {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-}
-
-.business-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: var(--blue);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-}
-
-.business-account-name {
-    font-weight: 600;
-    font-size: 14px;
-}
-
-/* =========================
-   SETTINGS WRAPPER
-========================= */
-
-.settings-page {
-    padding: 24px 28px 50px;
-}
-
-.settings-shell {
-    max-width: 1250px;
-    margin: auto;
-    background: white;
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    min-height: 690px;
-    display: grid;
-    grid-template-columns: 300px 1fr;
-    overflow: hidden;
-    box-shadow: 0 5px 24px rgba(15,31,58,.04);
-}
-
-/* SETTINGS LEFT MENU */
-
-.settings-menu {
-    border-right: 1px solid var(--border);
-    padding: 22px 14px;
-    background: #fbfcfe;
-}
-
-.settings-menu-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
-    padding: 16px 15px;
-    border: 0;
-    width: 100%;
-    background: transparent;
-    border-radius: 11px;
-    cursor: pointer;
-    text-align: left;
-    margin-bottom: 4px;
-    color: var(--text);
-}
-
-.settings-menu-item:hover {
-    background: #f1f5fa;
-}
-
-.settings-menu-item.active {
-    background: var(--blue-soft);
-    border-left: 3px solid var(--blue);
-}
-
-.settings-menu-icon {
-    font-size: 22px;
-    width: 28px;
-}
-
-.settings-menu-title {
-    font-weight: 700;
-    font-size: 15px;
-    margin-bottom: 4px;
-}
-
-.settings-menu-description {
-    color: var(--muted);
-    font-size: 12.5px;
-    line-height: 1.4;
-}
-
-.danger-menu .settings-menu-icon,
-.danger-menu .settings-menu-title {
-    color: var(--danger);
-}
-
-/* =========================
-   SETTINGS CONTENT
-========================= */
-
-.settings-content {
-    padding: 24px 26px 40px;
-    min-width: 0;
-}
-
-.settings-section {
-    display: none;
-}
-
-.settings-section.active {
+.menu-item {
     display: block;
-}
-
-.section-top {
-    display: flex;
-    justify-content: space-between;
-    gap: 20px;
-    align-items: flex-start;
-    margin-bottom: 22px;
-}
-
-.section-title h2 {
-    margin: 0 0 6px;
-    font-size: 25px;
-}
-
-.section-title p {
-    margin: 0;
-    font-size: 14px;
-    color: var(--muted);
-}
-
-.save-button {
-    border: 0;
-    border-radius: 10px;
-    background: linear-gradient(
-        135deg,
-        #146ff0,
-        #2388ff
-    );
-    color: white;
-    padding: 13px 20px;
-    font-size: 14px;
-    font-weight: 600;
+    text-decoration: none;
+    padding: 13px 15px;
+    margin-bottom: 8px;
+    border-radius: 9px;
     cursor: pointer;
-    white-space: nowrap;
-    box-shadow: 0 6px 18px rgba(22,119,255,.22);
+    color: #d1d5db;
 }
 
-.save-button:hover {
-    filter: brightness(.96);
+.menu-item:hover,
+.menu-item.active {
+    background: #1f2937;
+    color: white;
 }
 
-/* CARD */
+.main {
+    margin-left: 0px;
+    padding: 40px;
+}
+
+h1 {
+    font-size: 36px;
+    margin: 0 0 8px;
+}
+
+.subtitle {
+    color: #777;
+    margin-bottom: 32px;
+}
 
 .settings-card {
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 21px;
-    margin-bottom: 15px;
     background: white;
+    padding: 28px 30px;
+    border-radius: 14px;
+    margin-bottom: 20px;
 }
 
-.settings-card h3 {
-    margin: 0 0 18px;
-    font-size: 18px;
+.settings-card h2 {
+    margin: 0 0 6px;
+    font-size: 20px;
+    color: #111827;
 }
 
-/* FORMS */
-
-.form-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 18px 26px;
+.card-description {
+    margin: 0 0 24px;
+    color: #6b7280;
+    font-size: 14px;
+    line-height: 1.55;
 }
 
 .form-group {
-    min-width: 0;
-}
-
-.form-group.full-width {
-    grid-column: 1 / -1;
+    margin-bottom: 18px;
 }
 
 .form-group label {
     display: block;
-    font-size: 13px;
-    font-weight: 700;
     margin-bottom: 8px;
+    color: #374151;
+    font-size: 14px;
+    font-weight: 600;
 }
 
-.form-control {
+.form-group input,
+.form-group select {
+    display: block;
     width: 100%;
-    height: 43px;
-    border: 1px solid #d6dce6;
-    border-radius: 9px;
-    background: white;
-    padding: 0 13px;
-    font-size: 14px;
-    color: var(--text);
+    max-width: 520px;
+    height: 48px;
+    padding: 0 16px;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 12px;
+    color: #111827;
+    font-size: 15px;
+    font-family: inherit;
     outline: none;
 }
 
-.form-control:focus {
-    border-color: var(--blue);
-    box-shadow: 0 0 0 3px rgba(22,119,255,.08);
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #111827;
+    box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.08);
 }
 
-select.form-control {
+.save-btn {
+    display: inline-block;
+    height: 46px;
+    padding: 0 20px;
+    margin-top: 6px;
+    border: none;
+    border-radius: 12px;
+    background: #111827;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 600;
     cursor: pointer;
 }
 
-/* BUSINESS INFO */
+.save-btn:hover {
+    background: #1f2937;
+}
 
-.business-info-layout {
-    display: grid;
-    grid-template-columns: 1.2fr .9fr;
-    gap: 28px;
+.secondary-btn {
+    display: inline-block;
+    height: 46px;
+    padding: 0 18px;
+    border: 1px solid #d1d5db;
+    border-radius: 12px;
+    background: #ffffff;
+    color: #111827;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.secondary-btn:hover {
+    background: #f3f4f6;
 }
 
 .logo-upload-area {
     display: flex;
     align-items: center;
-    gap: 18px;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
 }
 
 .business-logo-preview {
-    width: 115px;
-    height: 115px;
-    border-radius: 50%;
-    border: 1px solid var(--border);
+    width: 72px;
+    height: 72px;
+    border-radius: 16px;
+    border: 1px solid #e5e7eb;
+    background: #f9fafb;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #f9fbfe;
     overflow: hidden;
+    flex-shrink: 0;
 }
 
 .business-logo-preview img {
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: cover;
+    display: none;
 }
 
-.logo-placeholder {
-    font-size: 30px;
+.logo-letter {
+    color: #111827;
+    font-size: 26px;
     font-weight: 700;
-    color: var(--blue);
 }
 
-.logo-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 9px;
-}
-
-.upload-btn,
-.remove-btn,
-.secondary-btn {
-    border: 1px solid #d8dee8;
-    background: white;
-    border-radius: 9px;
-    padding: 10px 14px;
+.logo-note {
+    margin: 8px 0 18px;
+    color: #6b7280;
     font-size: 13px;
+}
+
+.threshold-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.threshold-btn {
+    min-width: 86px;
+    height: 44px;
+    padding: 0 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 12px;
+    background: #ffffff;
+    color: #374151;
+    font-size: 14px;
     font-weight: 600;
     cursor: pointer;
 }
 
-.upload-btn:hover,
-.secondary-btn:hover {
-    background: #f7f9fc;
+.threshold-btn.active {
+    background: #111827;
+    border-color: #111827;
+    color: #ffffff;
 }
 
-.remove-btn {
-    color: #e53935;
-    border-color: #f0d1d0;
-}
-
-.logo-note {
-    color: var(--muted);
-    font-size: 11px;
-    margin-top: 7px;
-}
-
-/* ADDRESS */
-
-.address-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 20px;
-}
-
-/* HELP NOTE */
-
-.input-help {
-    margin: 8px 0 0;
-    color: var(--muted);
-    font-size: 12px;
-}
-
-/* ACCOUNT */
-
-.account-profile-row {
+.notification-row {
     display: flex;
-    align-items: center;
-    gap: 18px;
-    margin-bottom: 22px;
-}
-
-.account-circle {
-    width: 65px;
-    height: 65px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #eaf3ff;
-    color: var(--blue);
-    font-size: 22px;
-    font-weight: 700;
-}
-
-/* SECURITY */
-
-.security-row {
-    display: flex;
+    align-items: flex-start;
     justify-content: space-between;
     gap: 20px;
-    align-items: center;
 }
 
-.security-row + .security-row {
-    margin-top: 18px;
-    padding-top: 18px;
-    border-top: 1px solid var(--border);
+.notification-copy {
+    max-width: 460px;
 }
 
-.security-title {
-    font-weight: 700;
-    margin-bottom: 5px;
+.notification-copy strong {
+    display: block;
+    margin-bottom: 6px;
+    color: #111827;
+    font-size: 15px;
 }
 
-.security-description {
-    color: var(--muted);
-    font-size: 13px;
-}
-
-/* REVIEW SETTINGS */
-
-.toggle-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 20px;
-}
-
-.toggle-row + .toggle-row {
-    border-top: 1px solid var(--border);
-    margin-top: 18px;
-    padding-top: 18px;
+.notification-copy span {
+    color: #6b7280;
+    font-size: 14px;
+    line-height: 1.5;
 }
 
 .toggle {
     position: relative;
     width: 48px;
-    height: 27px;
-}
-
-.toggle input {
-    display: none;
-}
-
-.toggle-slider {
-    position: absolute;
-    inset: 0;
-    background: #ccd3de;
-    border-radius: 99px;
+    height: 28px;
+    flex-shrink: 0;
+    border: none;
+    border-radius: 999px;
+    background: #d1d5db;
     cursor: pointer;
-    transition: .25s;
+    padding: 0;
 }
 
-.toggle-slider:before {
-    content: "";
+.toggle.on {
+    background: #2563eb;
+}
+
+.toggle-knob {
     position: absolute;
-    width: 21px;
-    height: 21px;
     top: 3px;
     left: 3px;
-    background: white;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
-    transition: .25s;
-    box-shadow: 0 2px 5px rgba(0,0,0,.15);
+    background: #ffffff;
+    transition: transform 0.18s ease;
 }
 
-.toggle input:checked + .toggle-slider {
-    background: var(--blue);
+.toggle.on .toggle-knob {
+    transform: translateX(20px);
 }
-
-.toggle input:checked + .toggle-slider:before {
-    transform: translateX(21px);
-}
-
-/* BRANDING */
-
-.color-boxes {
-    display: flex;
-    gap: 15px;
-}
-
-.color-option {
-    width: 54px;
-    height: 54px;
-    border-radius: 12px;
-    cursor: pointer;
-    border: 3px solid white;
-    outline: 1px solid #d5dbe5;
-}
-
-.color-blue {
-    background: #1677ff;
-}
-
-.color-dark {
-    background: #101f39;
-}
-
-.color-green {
-    background: #16a36a;
-}
-
-.color-purple {
-    background: #7c3aed;
-}
-
-/* SUBSCRIPTION */
-
-.subscription-plan {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 22px;
-}
-
-.plan-label {
-    display: inline-block;
-    background: #eaf3ff;
-    color: var(--blue);
-    padding: 6px 10px;
-    border-radius: 99px;
-    font-size: 12px;
-    font-weight: 700;
-    margin-bottom: 10px;
-}
-
-.plan-name {
-    font-size: 21px;
-    font-weight: 700;
-    margin-bottom: 5px;
-}
-
-.plan-description {
-    font-size: 13px;
-    color: var(--muted);
-}
-
-/* DANGER */
 
 .danger-card {
-    border-color: #ffd5d5;
+    background: #ffffff;
+    border: 1px solid #fecaca;
+    padding: 28px 30px;
+    border-radius: 14px;
+    margin-bottom: 20px;
 }
 
-.danger-card h3 {
-    color: #d42b2b;
+.danger-card h2 {
+    margin: 0 0 6px;
+    font-size: 20px;
+    color: #b91c1c;
 }
 
-.delete-button {
-    background: white;
-    color: #dc2626;
-    border: 1px solid #ef4444;
-    border-radius: 9px;
-    padding: 11px 15px;
-    cursor: pointer;
+.delete-btn {
+    display: inline-block;
+    height: 46px;
+    padding: 0 20px;
+    margin-top: 8px;
+    border: none;
+    border-radius: 12px;
+    background: #dc2626;
+    color: #ffffff;
+    font-size: 15px;
     font-weight: 600;
+    cursor: pointer;
 }
 
-/* SAVED MESSAGE */
-
-.save-toast {
-    position: fixed;
-    right: 25px;
-    bottom: 25px;
-    background: #101f39;
-    color: white;
-    padding: 13px 18px;
-    border-radius: 10px;
-    font-size: 14px;
-    box-shadow: 0 10px 30px rgba(0,0,0,.18);
-    opacity: 0;
-    pointer-events: none;
-    transform: translateY(15px);
-    transition: .25s;
-    z-index: 3000;
+.delete-btn:hover {
+    background: #b91c1c;
 }
 
-.save-toast.show {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-/* MOBILE MENU BUTTON */
-
-.mobile-menu-button {
+.mobile-menu-btn {
     display: none;
 }
 
-/* =========================
-   RESPONSIVE
-========================= */
-
-@media (max-width: 1000px) {
-
-    .settings-shell {
-        grid-template-columns: 230px 1fr;
-    }
-
-    .business-info-layout {
-        grid-template-columns: 1fr;
-    }
+.close-menu-btn {
+    display: none;
 }
 
 @media (max-width: 800px) {
-
-    .app-sidebar {
-        transform: translateX(-100%);
-        transition: .3s ease;
-    }
-
-    .app-sidebar.open {
-        transform: translateX(0);
-    }
-
-    .app-main {
-        margin-left: 0;
-    }
-
-    .mobile-menu-button {
+    .close-menu-btn {
         display: block;
-        border: 0;
-        background: transparent;
-        font-size: 25px;
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background: none;
+        border: none;
+        color: white;
+        font-size: 28px;
         cursor: pointer;
-        margin-right: 13px;
     }
 
-    .page-topbar {
-        padding: 0 18px;
-        height: 78px;
+    .mobile-menu-btn {
+        display: block;
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        z-index: 1100;
+        background: #111827;
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 16px;
+        font-size: 26px;
+        cursor: pointer;
     }
 
-    .page-heading p {
+    .sidebar {
         display: none;
     }
 
-    .business-account-name {
-        display: none;
+    .sidebar.open {
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 240px;
+        height: 100vh;
+        z-index: 1000;
+        background: #111827;
     }
 
-    .settings-page {
-        padding: 15px;
+    .main {
+        margin-left: 0 !important;
+        width: 100% !important;
+        padding: 25px 20px 30px !important;
+        box-sizing: border-box;
     }
 
-    .settings-shell {
-        grid-template-columns: 1fr;
-        overflow: visible;
+    h1 {
+        font-size: 29px;
     }
 
-    .settings-menu {
-        border-right: none;
-        border-bottom: 1px solid var(--border);
-        display: flex;
-        overflow-x: auto;
-        gap: 7px;
+    .settings-card,
+    .danger-card {
+        padding: 22px 18px;
     }
 
-    .settings-menu-item {
-        min-width: 170px;
-        margin-bottom: 0;
+    .form-group input,
+    .form-group select {
+        max-width: 100%;
     }
 
-    .settings-menu-description {
-        display: none;
-    }
-
-    .settings-content {
-        padding: 19px;
-    }
-
-    .section-top {
-        flex-direction: column;
-    }
-
-    .save-button {
-        width: 100%;
-    }
-
-    .form-grid,
-    .address-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .form-group.full-width {
-        grid-column: auto;
-    }
-
-    .business-info-layout {
-        grid-template-columns: 1fr;
-    }
-
-    .logo-upload-area {
+    .notification-row {
         flex-direction: column;
         align-items: flex-start;
-    }
-
-    .security-row,
-    .subscription-plan {
-        align-items: flex-start;
-        flex-direction: column;
     }
 }
 
+.top-navbar {
+    width: 100%;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    box-sizing: border-box;
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+    position: relative;
+    z-index: 900;
+}
+
+.top-navbar-logo {
+    font-size: 27px;
+    font-weight: 700;
+    color: #111827;
+    margin-left: 18px;
+}
+
+.top-navbar-actions {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+}
+
+.navbar-icon {
+    background: transparent;
+    border: none;
+    color: #111827;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+.top-navbar .mobile-menu-btn {
+    position: static;
+    display: block;
+    background: transparent;
+    color: #111827;
+    border: none;
+    padding: 0;
+    margin: 0;
+    font-size: 30px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+@media (min-width: 801px) {
+    .mobile-menu-btn {
+        display: block !important;
+        position: static !important;
+        background: transparent !important;
+        color: #111827 !important;
+        border: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        font-size: 30px !important;
+        cursor: pointer;
+    }
+
+    .sidebar {
+        display: block !important;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 240px;
+        height: 100vh;
+        background: #111827;
+        z-index: 1000;
+        transform: translateX(-100%);
+        transition: transform 0.45s ease;
+    }
+
+    .sidebar.open {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 240px;
+        height: 100vh;
+        background: #111827;
+        z-index: 1000;
+        padding: 24px 16px;
+        box-sizing: border-box;
+        transform: translateX(0);
+    }
+}
+
+.sidebar.open .logo {
+    display: block;
+    color: white;
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 30px;
+}
+
+.sidebar.open .close-menu-btn {
+    display: block;
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 26px;
+    cursor: pointer;
+}
+
+.sidebar.open .menu-item {
+    display: block;
+    color: #e5e7eb;
+    text-decoration: none;
+    padding: 12px 14px;
+    margin-bottom: 6px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.sidebar.open .menu-item:hover {
+    background: #1f2937;
+    color: #ffffff;
+}
+
+.sidebar.open .menu-item.active {
+    background: #2563eb;
+    color: #ffffff;
+    font-weight: 600;
+}
+
+body {
+    opacity: 1;
+    transition: opacity 0.25s ease;
+}
+
+body.page-leaving {
+    opacity: 0;
+}
 </style>
 </head>
 
 <body>
 
-<!-- APP SIDEBAR -->
+<div class="top-navbar">
+    <button class="mobile-menu-btn" id="mobileMenuBtn" type="button" onclick="toggleSidebar()">☰</button>
 
-<aside class="app-sidebar" id="appSidebar">
+    <div class="top-navbar-logo">ReviewRise</div>
 
-    <div class="brand">
-        <img src="reviewrise-logo.jpeg" alt="ReviewRise">
-        <div class="brand-name">ReviewRise</div>
+    <div class="top-navbar-actions">
+        <button class="navbar-icon" type="button" aria-label="Account">♙</button>
     </div>
+</div>
 
-    <nav class="app-nav">
+<aside class="sidebar">
+    <button class="close-menu-btn" type="button" onclick="toggleSidebar()">×</button>
 
-        <button
-            class="app-nav-item"
-            onclick="goToPage('dashboard.html')">
-            <span class="app-nav-icon">▦</span>
-            Dashboard
-        </button>
+    <div class="logo">ReviewRise</div>
 
-        <button
-            class="app-nav-item"
-            onclick="goToPage('feedback.html')">
-            <span class="app-nav-icon">☵</span>
-            Feedback
-        </button>
+<div class="menu-item" onclick="smoothNavigate('dashboard.html')">
+    Dashboard
+</div>
 
-        <button
-            class="app-nav-item"
-            onclick="goToPage('analytics.html')">
-            <span class="app-nav-icon">▥</span>
-            Analytics
-        </button>
+<div class="menu-item" onclick="smoothNavigate('feedback.html')">Feedback</div>
 
-        <button
-            class="app-nav-item"
-            onclick="goToPage('review-link.html')">
-            <span class="app-nav-icon">🔗</span>
-            Review Links
-        </button>
+<div class="menu-item" onclick="smoothNavigate('analytics.html')">Analytics</div>
 
-        <button
-            class="app-nav-item"
-            onclick="goToPage('qr-nfc.html')">
-            <span class="app-nav-icon">⌁</span>
-            QR & NFC
-        </button>
+<div class="menu-item" onclick="smoothNavigate('review-link.html')">Review Links</div>
+    
+<div class="menu-item" onclick="smoothNavigate('qr-nfc.html')">
+    QR & NFC
+</div>
 
-        <button class="app-nav-item active">
-            <span class="app-nav-icon">⚙</span>
-            Settings
-        </button>
-
-    </nav>
-
-    <div class="sidebar-bottom">
-
-        <button
-            class="app-nav-item logout-item"
-            onclick="logout()">
-            <span class="app-nav-icon">⇥</span>
-            Log Out
-        </button>
-
-    </div>
-
+<div class="menu-item active">
+    Settings
+</div>
+    
 </aside>
 
-
-<!-- MAIN -->
-
-<div class="app-main">
-
-    <header class="page-topbar">
-
-        <button
-            class="mobile-menu-button"
-            onclick="toggleMobileSidebar()">
-            ☰
-        </button>
-
-        <div class="page-heading">
-            <h1>Settings</h1>
-            <p>
-                Manage your business information,
-                preferences and account settings.
-            </p>
-        </div>
-
-        <div class="topbar-right">
-
-            <button class="notification-btn">
-                ♧
-            </button>
-
-            <div class="business-account">
-                <div class="business-avatar">
-                    HM
-                </div>
-
-                <div class="business-account-name">
-                    Hôtel Miramar
-                </div>
-
-                <span>⌄</span>
-            </div>
-
-        </div>
-
-    </header>
-
-
-    <div class="settings-page">
-
-        <div class="settings-shell">
-
-            <!-- SETTINGS MENU -->
-
-            <aside class="settings-menu">
-
-                <button
-                    class="settings-menu-item active"
-                    data-target="businessProfile">
-
-                    <div class="settings-menu-icon">▥</div>
-
-                    <div>
-                        <div class="settings-menu-title">
-                            Business Profile
-                        </div>
-
-                        <div class="settings-menu-description">
-                            Hotel information and contact details
-                        </div>
-                    </div>
-
-                </button>
-
-
-                <button
-                    class="settings-menu-item"
-                    data-target="account">
-
-                    <div class="settings-menu-icon">♙</div>
-
-                    <div>
-                        <div class="settings-menu-title">
-                            Account
-                        </div>
-
-                        <div class="settings-menu-description">
-                            Manage your account
-                        </div>
-                    </div>
-
-                </button>
-
-
-                <button
-                    class="settings-menu-item"
-                    data-target="security">
-
-                    <div class="settings-menu-icon">▢</div>
-
-                    <div>
-                        <div class="settings-menu-title">
-                            Security
-                        </div>
-
-                        <div class="settings-menu-description">
-                            Password and login settings
-                        </div>
-                    </div>
-
-                </button>
-
-
-                <button
-                    class="settings-menu-item"
-                    data-target="reviewSettings">
-
-                    <div class="settings-menu-icon">☆</div>
-
-                    <div>
-                        <div class="settings-menu-title">
-                            Review Settings
-                        </div>
-
-                        <div class="settings-menu-description">
-                            Customize the review experience
-                        </div>
-                    </div>
-
-                </button>
-
-
-                <button
-                    class="settings-menu-item"
-                    data-target="branding">
-
-                    <div class="settings-menu-icon">✎</div>
-
-                    <div>
-                        <div class="settings-menu-title">
-                            Branding
-                        </div>
-
-                        <div class="settings-menu-description">
-                            Logo, colors and QR design
-                        </div>
-                    </div>
-
-                </button>
-
-
-                <button
-                    class="settings-menu-item"
-                    data-target="subscription">
-
-                    <div class="settings-menu-icon">▣</div>
-
-                    <div>
-                        <div class="settings-menu-title">
-                            Subscription
-                        </div>
-
-                        <div class="settings-menu-description">
-                            Your plan and billing
-                        </div>
-                    </div>
-
-                </button>
-
-
-                <button
-                    class="settings-menu-item danger-menu"
-                    data-target="dangerZone">
-
-                    <div class="settings-menu-icon">♲</div>
-
-                    <div>
-                        <div class="settings-menu-title">
-                            Danger Zone
-                        </div>
-
-                        <div class="settings-menu-description">
-                            Delete account or data
-                        </div>
-                    </div>
-
-                </button>
-
-            </aside>
-
-
-            <!-- CONTENT -->
-
-            <main class="settings-content">
-
-
-                <!-- BUSINESS PROFILE -->
-
-                <section
-                    class="settings-section active"
-                    id="businessProfile">
-
-                    <div class="section-top">
-
-                        <div class="section-title">
-                            <h2>Business Profile</h2>
-
-                            <p>
-                                Update your business information.
-                                This information will appear on your
-                                review pages and QR codes.
-                            </p>
-                        </div>
-
-                        <button
-                            class="save-button"
-                            onclick="showSavedMessage()">
-                            ▣ &nbsp; Save Changes
-                        </button>
-
-                    </div>
-
-
-                    <div class="settings-card">
-
-                        <h3>Business Information</h3>
-
-                        <div class="business-info-layout">
-
-                            <div>
-
-                                <div class="form-group">
-
-                                    <label>
-                                        Business Name
-                                    </label>
-
-                                    <input
-                                        class="form-control"
-                                        type="text"
-                                        value="Hotel Miramar">
-
-                                </div>
-
-                                <div class="form-group"
-                                     style="margin-top:18px;">
-
-                                    <label>
-                                        Business Type
-                                    </label>
-
-                                    <select class="form-control">
-                                        <option selected>Hotel</option>
-                                        <option>Riad</option>
-                                        <option>Restaurant</option>
-                                        <option>Café</option>
-                                        <option>Spa</option>
-                                        <option>Other</option>
-                                    </select>
-
-                                </div>
-
-                                <div class="form-group"
-                                     style="margin-top:18px;">
-
-                                    <label>
-                                        Phone Number
-                                    </label>
-
-                                    <input
-                                        class="form-control"
-                                        type="text"
-                                        value="+212 5 39 94 41 46">
-
-                                </div>
-
-                            </div>
-
-
-                            <div>
-
-                                <div class="form-group">
-
-                                    <label>
-                                        Business Logo
-                                    </label>
-
-                                    <div class="logo-upload-area">
-
-                                        <div class="business-logo-preview"
-                                             id="businessLogoPreview">
-
-                                            <div
-                                                class="logo-placeholder"
-                                                id="logoPlaceholder">
-                                                HM
-                                            </div>
-
-                                            <img
-                                                id="logoImage"
-                                                alt="Business logo"
-                                                style="display:none;">
-
-                                        </div>
-
-
-                                        <div>
-
-                                            <div class="logo-buttons">
-
-                                                <button
-                                                    class="upload-btn"
-                                                    onclick="document.getElementById('logoInput').click()">
-
-                                                    ⇧ &nbsp; Upload Logo
-
-                                                </button>
-
-
-                                                <button
-                                                    class="remove-btn"
-                                                    onclick="removeLogo()">
-
-                                                    ♲ &nbsp; Remove
-
-                                                </button>
-
-                                            </div>
-
-                                            <div class="logo-note">
-                                                Recommended:
-                                                500x500px,
-                                                PNG or JPG
-                                            </div>
-
-                                        </div>
-
-                                    </div>
-
-                                    <input
-                                        id="logoInput"
-                                        type="file"
-                                        accept="image/png,image/jpeg"
-                                        style="display:none;"
-                                        onchange="previewLogo(event)">
-
-                                </div>
-
-
-                                <div class="form-group"
-                                     style="margin-top:18px;">
-
-                                    <label>
-                                        Email Address
-                                    </label>
-
-                                    <input
-                                        class="form-control"
-                                        type="email"
-                                        placeholder="info@yourbusiness.com">
-
-                                </div>
-
-
-                                <div class="form-group"
-                                     style="margin-top:18px;">
-
-                                    <label>
-                                        Website
-                                    </label>
-
-                                    <input
-                                        class="form-control"
-                                        type="url"
-                                        placeholder="https://www.yourbusiness.com">
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="settings-card">
-
-                        <h3>Business Address</h3>
-
-                        <div class="form-group">
-
-                            <label>
-                                Address
-                            </label>
-
-                            <input
-                                class="form-control"
-                                type="text"
-                                placeholder="Street address">
-
-                        </div>
-
-
-                        <div class="address-grid"
-                             style="margin-top:18px;">
-
-                            <div class="form-group">
-
-                                <label>
-                                    City
-                                </label>
-
-                                <input
-                                    class="form-control"
-                                    type="text"
-                                    value="Tangier">
-
-                            </div>
-
-
-                            <div class="form-group">
-
-                                <label>
-                                    Country
-                                </label>
-
-                                <select class="form-control">
-                                    <option selected>
-                                        Morocco
-                                    </option>
-                                </select>
-
-                            </div>
-
-
-                            <div class="form-group">
-
-                                <label>
-                                    Postal Code
-                                </label>
-
-                                <input
-                                    class="form-control"
-                                    type="text"
-                                    value="90000">
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="settings-card">
-
-                        <h3>Google Review Link</h3>
-
-                        <div class="form-group">
-
-                            <label>
-                                Google Maps review URL
-                            </label>
-
-                            <input
-                                class="form-control"
-                                type="url"
-                                placeholder="https://g.page/r/.../review">
-
-                            <p class="input-help">
-                                ⓘ This link will be opened when
-                                customers leave a 4–5 star rating.
-                            </p>
-
-                        </div>
-
-                    </div>
-
-                </section>
-
-
-                <!-- ACCOUNT -->
-
-                <section
-                    class="settings-section"
-                    id="account">
-
-                    <div class="section-top">
-
-                        <div class="section-title">
-                            <h2>Account</h2>
-                            <p>
-                                Manage your personal ReviewRise account.
-                            </p>
-                        </div>
-
-                        <button
-                            class="save-button"
-                            onclick="showSavedMessage()">
-                            Save Changes
-                        </button>
-
-                    </div>
-
-
-                    <div class="settings-card">
-
-                        <div class="account-profile-row">
-
-                            <div class="account-circle">
-                                MA
-                            </div>
-
-                            <div>
-                                <strong>Account Profile</strong>
-
-                                <div class="input-help">
-                                    Information associated with your login.
-                                </div>
-                            </div>
-
-                        </div>
-
-
-                        <div class="form-grid">
-
-                            <div class="form-group">
-
-                                <label>
-                                    Full Name
-                                </label>
-
-                                <input
-                                    class="form-control"
-                                    type="text"
-                                    placeholder="Your full name">
-
-                            </div>
-
-
-                            <div class="form-group">
-
-                                <label>
-                                    Email Address
-                                </label>
-
-                                <input
-                                    class="form-control"
-                                    type="email"
-                                    placeholder="name@company.com">
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </section>
-
-
-                <!-- SECURITY -->
-
-                <section
-                    class="settings-section"
-                    id="security">
-
-                    <div class="section-top">
-
-                        <div class="section-title">
-                            <h2>Security</h2>
-
-                            <p>
-                                Manage password and login security.
-                            </p>
-                        </div>
-
-                    </div>
-
-
-                    <div class="settings-card">
-
-                        <div class="security-row">
-
-                            <div>
-                                <div class="security-title">
-                                    Password
-                                </div>
-
-                                <div class="security-description">
-                                    Change your ReviewRise account password.
-                                </div>
-                            </div>
-
-                            <button class="secondary-btn">
-                                Change Password
-                            </button>
-
-                        </div>
-
-
-                        <div class="security-row">
-
-                            <div>
-                                <div class="security-title">
-                                    Active Session
-                                </div>
-
-                                <div class="security-description">
-                                    You are currently signed in.
-                                </div>
-                            </div>
-
-                            <button
-                                class="secondary-btn"
-                                onclick="logout()">
-                                Log Out
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                </section>
-
-
-                <!-- REVIEW SETTINGS -->
-
-                <section
-                    class="settings-section"
-                    id="reviewSettings">
-
-                    <div class="section-top">
-
-                        <div class="section-title">
-                            <h2>Review Settings</h2>
-
-                            <p>
-                                Customize how customers leave feedback.
-                            </p>
-                        </div>
-
-                        <button
-                            class="save-button"
-                            onclick="showSavedMessage()">
-                            Save Changes
-                        </button>
-
-                    </div>
-
-
-                    <div class="settings-card">
-
-                        <div class="toggle-row">
-
-                            <div>
-                                <div class="security-title">
-                                    Google review redirect
-                                </div>
-
-                                <div class="security-description">
-                                    Send 4–5 star customers to Google.
-                                </div>
-                            </div>
-
-                            <label class="toggle">
-
-                                <input
-                                    type="checkbox"
-                                    checked>
-
-                                <span class="toggle-slider"></span>
-
-                            </label>
-
-                        </div>
-
-
-                        <div class="toggle-row">
-
-                            <div>
-                                <div class="security-title">
-                                    Private feedback
-                                </div>
-
-                                <div class="security-description">
-                                    Collect private feedback for
-                                    1–3 star ratings.
-                                </div>
-                            </div>
-
-                            <label class="toggle">
-
-                                <input
-                                    type="checkbox"
-                                    checked>
-
-                                <span class="toggle-slider"></span>
-
-                            </label>
-
-                        </div>
-
-                    </div>
-
-                </section>
-
-
-                <!-- BRANDING -->
-
-                <section
-                    class="settings-section"
-                    id="branding">
-
-                    <div class="section-top">
-
-                        <div class="section-title">
-                            <h2>Branding</h2>
-
-                            <p>
-                                Customize your ReviewRise appearance.
-                            </p>
-                        </div>
-
-                        <button
-                            class="save-button"
-                            onclick="showSavedMessage()">
-                            Save Changes
-                        </button>
-
-                    </div>
-
-
-                    <div class="settings-card">
-
-                        <h3>Brand Color</h3>
-
-                        <div class="color-boxes">
-
-                            <div class="color-option color-blue"></div>
-
-                            <div class="color-option color-dark"></div>
-
-                            <div class="color-option color-green"></div>
-
-                            <div class="color-option color-purple"></div>
-
-                        </div>
-
-                    </div>
-
-                </section>
-
-
-                <!-- SUBSCRIPTION -->
-
-                <section
-                    class="settings-section"
-                    id="subscription">
-
-                    <div class="section-top">
-
-                        <div class="section-title">
-                            <h2>Subscription</h2>
-
-                            <p>
-                                Manage your ReviewRise plan and billing.
-                            </p>
-                        </div>
-
-                    </div>
-
-
-                    <div class="settings-card">
-
-                        <div class="subscription-plan">
-
-                            <div>
-
-                                <div class="plan-label">
-                                    CURRENT PLAN
-                                </div>
-
-                                <div class="plan-name">
-                                    Free
-                                </div>
-
-                                <div class="plan-description">
-                                    ReviewRise starter access.
-                                </div>
-
-                            </div>
-
-                            <button class="save-button">
-                                Upgrade Plan
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                </section>
-
-
-                <!-- DANGER ZONE -->
-
-                <section
-                    class="settings-section"
-                    id="dangerZone">
-
-                    <div class="section-top">
-
-                        <div class="section-title">
-                            <h2>Danger Zone</h2>
-
-                            <p>
-                                Irreversible account actions.
-                            </p>
-                        </div>
-
-                    </div>
-
-
-                    <div class="settings-card danger-card">
-
-                        <h3>Delete Account</h3>
-
-                        <p class="security-description">
-                            Permanently delete your ReviewRise account
-                            and associated data. This action cannot
-                            be undone.
-                        </p>
-
-                        <div style="margin-top:18px;">
-
-                            <button class="delete-button">
-                                Delete Account
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                </section>
-
-
-            </main>
-
-        </div>
-
+<main class="main">
+
+    <h1>Settings</h1>
+    <div class="subtitle">
+        Manage your ReviewRise account and preferences.
     </div>
 
-</div>
+    <section class="settings-card">
+        <h2>Profile</h2>
+        <p class="card-description">
+            Update the name and email shown on your ReviewRise account.
+        </p>
 
+        <div class="form-group">
+            <label for="fullName">Full Name</label>
+            <input id="fullName" type="text" placeholder="Your full name" autocomplete="name">
+        </div>
 
-<div
-    class="save-toast"
-    id="saveToast">
-    ✓ Changes saved
-</div>
+        <div class="form-group">
+            <label for="emailAddress">Email Address</label>
+            <input id="emailAddress" type="email" placeholder="name@company.com" autocomplete="email">
+        </div>
 
+        <button class="save-btn" type="button">Save Changes</button>
+    </section>
+
+    <section class="settings-card">
+        <h2>Business Settings</h2>
+        <p class="card-description">
+            Set the business details customers see on your review page.
+        </p>
+
+        <div class="form-group">
+            <label for="businessName">Business Name</label>
+            <input id="businessName" type="text" placeholder="e.g. L'Adresse Boutique Hotel">
+        </div>
+
+        <div class="form-group">
+            <label for="googleReviewLink">Google Review Link</label>
+            <input id="googleReviewLink" type="url" placeholder="https://...">
+        </div>
+
+        <div class="form-group">
+            <label>Business Logo</label>
+            <div class="logo-upload-area">
+                <div class="business-logo-preview">
+                    <img id="businessLogoPreview" alt="Business logo">
+                    <span class="logo-letter" id="logoLetter">R</span>
+                </div>
+                <button class="secondary-btn" type="button" onclick="document.getElementById('businessLogoInput').click()">
+                    Change / Upload Logo
+                </button>
+            </div>
+            <p class="logo-note">PNG, JPG or WebP. This preview stays on this page only.</p>
+            <input id="businessLogoInput" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+        </div>
+
+        <button class="save-btn" type="button">Save Changes</button>
+    </section>
+
+    <section class="settings-card">
+        <h2>Review Preferences</h2>
+        <p class="card-description">
+            Choose when customers are sent to Google instead of private feedback.
+        </p>
+
+        <div class="form-group">
+            <label>Positive review threshold</label>
+            <div class="threshold-options" id="thresholdOptions">
+                <button class="threshold-btn" type="button" data-threshold="3">3 stars</button>
+                <button class="threshold-btn active" type="button" data-threshold="4">4 stars</button>
+                <button class="threshold-btn" type="button" data-threshold="5">5 stars</button>
+            </div>
+            <p class="logo-note" id="thresholdHelp">
+                Ratings of 4 stars or above are directed to Google. Lower ratings collect private feedback.
+            </p>
+        </div>
+    </section>
+
+    <section class="settings-card">
+        <h2>Notifications</h2>
+        <p class="card-description">
+            Control how ReviewRise notifies you about new customer feedback.
+        </p>
+
+        <div class="notification-row">
+            <div class="notification-copy">
+                <strong>Email me when new private feedback is received</strong>
+                <span>Get an email whenever a customer leaves a 1–3 star private comment.</span>
+            </div>
+            <button class="toggle" id="feedbackEmailToggle" type="button" aria-pressed="false" aria-label="Email me when new private feedback is received">
+                <span class="toggle-knob"></span>
+            </button>
+        </div>
+    </section>
+
+    <section class="settings-card">
+        <h2>Security</h2>
+        <p class="card-description">
+            Manage how you sign in to ReviewRise.
+        </p>
+        <button class="secondary-btn" type="button">Change Password</button>
+    </section>
+
+    <section class="danger-card">
+        <h2>Danger Zone</h2>
+        <p class="card-description">
+            Permanently delete your ReviewRise account and all associated data. This cannot be undone.
+        </p>
+        <button class="delete-btn" type="button">Delete Account</button>
+    </section>
+
+</main>
 
 <script>
+function smoothNavigate(page) {
+    document.body.classList.add("page-leaving");
 
-/* SETTINGS MENU */
-
-const settingsMenuItems =
-    document.querySelectorAll(".settings-menu-item");
-
-const settingsSections =
-    document.querySelectorAll(".settings-section");
-
-
-settingsMenuItems.forEach(function(item) {
-
-    item.addEventListener("click", function() {
-
-        const target =
-            item.getAttribute("data-target");
-
-        settingsMenuItems.forEach(function(button) {
-            button.classList.remove("active");
-        });
-
-        settingsSections.forEach(function(section) {
-            section.classList.remove("active");
-        });
-
-        item.classList.add("active");
-
-        document
-            .getElementById(target)
-            .classList.add("active");
-
-    });
-
-});
-
-
-/* NAVIGATION */
-
-function goToPage(page) {
-    window.location.href = page;
+    setTimeout(function () {
+        window.location.href = page;
+    }, 250);
 }
 
+function toggleSidebar() {
+    const sidebar = document.querySelector(".sidebar");
+    const menuButton = document.getElementById("mobileMenuBtn");
 
-/* MOBILE SIDEBAR */
+    if (window.innerWidth <= 800) {
+        sidebar.classList.toggle("open");
 
-function toggleMobileSidebar() {
+        if (sidebar.classList.contains("open")) {
+            menuButton.style.display = "none";
+        } else {
+            menuButton.style.display = "block";
+        }
 
-    document
-        .getElementById("appSidebar")
-        .classList.toggle("open");
+        return;
+    }
 
+    sidebar.classList.toggle("open");
 }
 
-
-/* LOGOUT */
-
-function logout() {
-
-    localStorage.removeItem(
-        "reviewrise_token"
-    );
-
-    localStorage.removeItem(
-        "reviewrise_refresh_token"
-    );
-
-    window.location.href =
-        "dashboard.html";
-
-}
-
-
-/* LOGO PREVIEW */
-
-function previewLogo(event) {
-
-    const file =
-        event.target.files[0];
+document.getElementById("businessLogoInput").addEventListener("change", function () {
+    const file = this.files[0];
+    const preview = document.getElementById("businessLogoPreview");
+    const letter = document.getElementById("logoLetter");
 
     if (!file) {
         return;
     }
 
-    const reader =
-        new FileReader();
+    preview.src = URL.createObjectURL(file);
+    preview.style.display = "block";
+    letter.style.display = "none";
+});
 
-    reader.onload = function(e) {
+document.querySelectorAll(".threshold-btn").forEach(function (button) {
+    button.addEventListener("click", function () {
+        document.querySelectorAll(".threshold-btn").forEach(function (item) {
+            item.classList.remove("active");
+        });
 
-        const image =
-            document.getElementById(
-                "logoImage"
-            );
+        button.classList.add("active");
 
-        const placeholder =
-            document.getElementById(
-                "logoPlaceholder"
-            );
+        const value = button.getAttribute("data-threshold");
+        document.getElementById("thresholdHelp").textContent =
+            "Ratings of " + value + " stars or above are directed to Google. Lower ratings collect private feedback.";
+    });
+});
 
-        image.src =
-            e.target.result;
-
-        image.style.display =
-            "block";
-
-        placeholder.style.display =
-            "none";
-
-    };
-
-    reader.readAsDataURL(file);
-
-}
-
-
-function removeLogo() {
-
-    const image =
-        document.getElementById(
-            "logoImage"
-        );
-
-    const placeholder =
-        document.getElementById(
-            "logoPlaceholder"
-        );
-
-    image.src = "";
-
-    image.style.display =
-        "none";
-
-    placeholder.style.display =
-        "block";
-
-    document
-        .getElementById("logoInput")
-        .value = "";
-
-}
-
-
-/* SAVE UI TEST */
-
-function showSavedMessage() {
-
-    const toast =
-        document.getElementById(
-            "saveToast"
-        );
-
-    toast.classList.add("show");
-
-    setTimeout(function() {
-
-        toast.classList.remove("show");
-
-    }, 1800);
-
-}
-
+document.getElementById("feedbackEmailToggle").addEventListener("click", function () {
+    const isOn = this.classList.toggle("on");
+    this.setAttribute("aria-pressed", isOn ? "true" : "false");
+});
 </script>
 
 </body>
