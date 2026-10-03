@@ -1827,6 +1827,142 @@ body.page-leaving {
     </div>
     
 <div id="qrReviewLinksContainer"></div>
+<script>
+(function () {
+    var token = localStorage.getItem("reviewrise_token");
+    var refreshToken = localStorage.getItem("reviewrise_refresh_token");
+
+    if (!token && !refreshToken) {
+        return;
+    }
+
+    if (!token) {
+        return;
+    }
+
+    function ownerId(accessToken) {
+        try {
+            var payload = accessToken.split(".")[1];
+            var json = JSON.parse(atob(payload.replace(/-/g, "+").replace(/_/g, "/")));
+            return json.sub || null;
+        } catch (error) {
+            return null;
+        }
+    }
+
+    function publicReviewLink(link) {
+        return {
+            id: link.id,
+            business_name: link.business_name,
+            logo_url: link.logo_url || null,
+            google_review_link: link.google_review_link || ""
+        };
+    }
+
+    var owner = ownerId(token);
+    if (!owner) {
+        return;
+    }
+
+    var parsed;
+    try {
+        parsed = JSON.parse(localStorage.getItem("reviewrise_reviewlinks_data") || "null");
+    } catch (error) {
+        return;
+    }
+
+    if (!parsed || parsed.owner_id !== owner || !Array.isArray(parsed.links) || !parsed.links.length) {
+        return;
+    }
+
+    var container = document.getElementById("qrReviewLinksContainer");
+    if (!container) {
+        return;
+    }
+
+    var links = parsed.links.map(publicReviewLink);
+
+    links.forEach(function (link) {
+        var item = document.createElement("div");
+        item.className = "qr-review-link-item";
+        item.innerHTML = `
+        <div class="qr-card-top">
+
+            <div class="qr-business-logo">
+                ${
+                    link.logo_url
+                        ? `<img src="${link.logo_url}" alt="">`
+                        : `<span>${(link.business_name || "B").charAt(0).toUpperCase()}</span>`
+                }
+            </div>
+
+            <div class="qr-business-info">
+                <div class="qr-business-name">
+                    ${link.business_name || "Business"}
+                </div>
+
+                <a
+                    class="qr-view-link"
+                    href="${link.google_review_link || "#"}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    ↗ View Review Link
+                </a>
+
+                <div class="qr-business-tags">
+                    <span class="qr-hotel-tag">Hotel</span>
+                    <span class="qr-location-tag">⌖ Tangier</span>
+                </div>
+            </div>
+
+            <button class="qr-more-btn" type="button">⋮</button>
+
+        </div>
+
+        <div class="qr-card-actions">
+
+            <button
+                class="qr-generate-btn"
+                type="button"
+                data-link-id="${link.id || ""}"
+            >
+                <img src="image.png" class="qr-button-image" alt="">
+                <span>Generate QR Code</span>
+            </button>
+
+            <button
+                class="qr-nfc-btn"
+                type="button"
+                data-link-id="${link.id || ""}"
+            >
+       <img src="nfc-icon.png" class="nfc-button-icon" alt="">
+            <span>NFC Link</span>
+            </button>
+
+        </div>
+    `;
+        container.appendChild(item);
+    });
+
+    var createCard = document.createElement("div");
+    createCard.className = "qr-create-link-card";
+    createCard.innerHTML = `
+    <div class="qr-create-plus">+</div>
+    <div class="qr-create-title">Create a New Review Link</div>
+    <div class="qr-create-text">
+        Go to the Review Links page<br>
+        to create a new link.
+    </div>
+    <button class="qr-create-button" type="button">
+        Go to Review Links →
+    </button>
+`;
+    container.appendChild(createCard);
+
+    window.__qrPaintedReviewLinksKey = JSON.stringify(links.map(publicReviewLink));
+})();
+</script>
 
 <div class="empty-state" id="qrEmptyState" style="display: none;">
 
@@ -1988,16 +2124,33 @@ function loadQRReviewLinks(reviewLinks) {
 
     try {
         emptyState.style.display = "none";
-        container.innerHTML = "";
 
-reviewLinks.forEach(function(link) {
-    const item = document.createElement("div");
-    item.className = "qr-review-link-item";
+        const nextKey = reviewLinksRenderKey(reviewLinks);
+        const existingItems = Array.prototype.slice.call(
+            container.querySelectorAll(".qr-review-link-item")
+        );
+        const reusePaintedCards =
+            window.__qrPaintedReviewLinksKey === nextKey &&
+            existingItems.length === reviewLinks.length;
+
+        if (!reusePaintedCards) {
+            container.innerHTML = "";
+        }
+
+reviewLinks.forEach(function(link, index) {
+    const item = reusePaintedCards
+        ? existingItems[index]
+        : document.createElement("div");
+
+    if (!reusePaintedCards) {
+        item.className = "qr-review-link-item";
+    }
     
    const customerReviewUrl =
     new URL("review.html", window.location.href).href +
     "?id=" + encodeURIComponent(link.id);
-    
+
+    if (!reusePaintedCards) {
     item.innerHTML = `
         <div class="qr-card-top">
 
@@ -2055,6 +2208,7 @@ reviewLinks.forEach(function(link) {
 
         </div>
     `;
+    }
 
  const generateBtn = item.querySelector(".qr-generate-btn");
  const nfcBtn = item.querySelector(".qr-nfc-btn");
@@ -2936,11 +3090,23 @@ modal
 
 });
 
-        container.appendChild(item);
+        if (!reusePaintedCards) {
+            container.appendChild(item);
+        }
 });
 
-renderedReviewLinksKey = reviewLinksRenderKey(reviewLinks);
+renderedReviewLinksKey = nextKey;
+window.__qrPaintedReviewLinksKey = null;
 
+if (reusePaintedCards) {
+    const paintedCreateButton = container.querySelector(".qr-create-link-card .qr-create-button");
+
+    if (paintedCreateButton) {
+        paintedCreateButton.addEventListener("click", function () {
+            window.location.href = "review-link.html";
+        });
+    }
+} else {
 const createCard = document.createElement("div");
 createCard.className = "qr-create-link-card";
 
@@ -2961,10 +3127,13 @@ createCard.querySelector(".qr-create-button").addEventListener("click", function
 });
 
 container.appendChild(createCard);
+}
         
     } catch (error) {
         console.error("QR Review Links error:", error);
-        emptyState.style.display = "flex";
+        if (!container.querySelector(".qr-review-link-item")) {
+            emptyState.style.display = "flex";
+        }
     }
 }
 
