@@ -1885,26 +1885,108 @@ body.page-leaving {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script>
-    
- function loadQRReviewLinks() {
+
+const SUPABASE_URL = "https://intlhwmvldxdiytemjlr.supabase.co";
+const SUPABASE_KEY = "sb_publishable_0KjZZApJCuvTEJH3nNyLUg_aps6aXaA";
+const REVIEW_LINKS_CACHE_KEY = "reviewrise_reviewlinks_data";
+
+function reviewLinksOwnerId(token) {
+    try {
+        const payload = token.split(".")[1];
+        const json = JSON.parse(atob(payload.replace(/-/g, "+").replace(/_/g, "/")));
+        return json.sub || null;
+    } catch (error) {
+        return null;
+    }
+}
+
+function publicReviewLink(link) {
+    return {
+        id: link.id,
+        business_name: link.business_name,
+        logo_url: link.logo_url || null,
+        google_review_link: link.google_review_link || ""
+    };
+}
+
+function readReviewLinksCache(ownerId) {
+    if (!ownerId) return null;
+
+    try {
+        const parsed = JSON.parse(localStorage.getItem(REVIEW_LINKS_CACHE_KEY) || "null");
+
+        if (!parsed || parsed.owner_id !== ownerId || !Array.isArray(parsed.links)) {
+            return null;
+        }
+
+        return parsed.links.map(publicReviewLink);
+    } catch (error) {
+        return null;
+    }
+}
+
+function writeReviewLinksCache(ownerId, links) {
+    if (!ownerId) return;
+
+    localStorage.setItem(REVIEW_LINKS_CACHE_KEY, JSON.stringify({
+        owner_id: ownerId,
+        links: links.map(publicReviewLink)
+    }));
+}
+
+async function getValidAccessToken() {
+    const currentToken = localStorage.getItem("reviewrise_token");
+    const refreshToken = localStorage.getItem("reviewrise_refresh_token");
+
+    if (!refreshToken) {
+        return currentToken;
+    }
+
+    try {
+        const response = await fetch(
+            SUPABASE_URL + "/auth/v1/token?grant_type=refresh_token",
+            {
+                method: "POST",
+                headers: {
+                    "apikey": SUPABASE_KEY,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    refresh_token: refreshToken
+                })
+            }
+        );
+
+        if (!response.ok) {
+            return currentToken;
+        }
+
+        const data = await response.json();
+
+        localStorage.setItem("reviewrise_token", data.access_token);
+
+        if (data.refresh_token) {
+            localStorage.setItem("reviewrise_refresh_token", data.refresh_token);
+        }
+
+        return data.access_token;
+    } catch (error) {
+        console.error("Token refresh failed:", error);
+        return currentToken;
+    }
+}
+
+function loadQRReviewLinks(reviewLinks) {
     const container = document.getElementById("qrReviewLinksContainer");
     const emptyState = document.getElementById("qrEmptyState");
 
-    const cachedData = localStorage.getItem("reviewrise_reviewlinks_data");
-
-    if (!cachedData) {
+    if (!Array.isArray(reviewLinks) || reviewLinks.length === 0) {
+        if (container) container.innerHTML = "";
         emptyState.style.display = "flex";
         return;
     }
 
     try {
-        const reviewLinks = JSON.parse(cachedData);
-
-        if (!Array.isArray(reviewLinks) || reviewLinks.length === 0) {
-            emptyState.style.display = "flex";
-            return;
-        }
-
         emptyState.style.display = "none";
         container.innerHTML = "";
 
@@ -1975,6 +2057,21 @@ reviewLinks.forEach(function(link) {
     `;
 
  const generateBtn = item.querySelector(".qr-generate-btn");
+ const nfcBtn = item.querySelector(".qr-nfc-btn");
+
+nfcBtn.addEventListener("click", async function () {
+    try {
+        await navigator.clipboard.writeText(customerReviewUrl);
+        const label = nfcBtn.querySelector("span");
+        const original = label.textContent;
+        label.textContent = "Copied";
+        setTimeout(function () {
+            label.textContent = original;
+        }, 1800);
+    } catch (error) {
+        console.error("Could not copy NFC link:", error);
+    }
+});
     
 generateBtn.addEventListener("click", function () {
 
@@ -2869,7 +2966,65 @@ container.appendChild(createCard);
     }
 }
 
-loadQRReviewLinks();   
+async function refreshQRReviewLinks() {
+    if (
+        !localStorage.getItem("reviewrise_token") &&
+        !localStorage.getItem("reviewrise_refresh_token")
+    ) {
+        window.location.href = "dashboard.html";
+        return;
+    }
+
+    const token = await getValidAccessToken();
+
+    if (!token) {
+        window.location.href = "dashboard.html";
+        return;
+    }
+
+    const ownerId = reviewLinksOwnerId(token);
+    const cachedLinks = readReviewLinksCache(ownerId);
+
+    if (cachedLinks) {
+        loadQRReviewLinks(cachedLinks);
+    }
+
+    try {
+        const response = await fetch(
+            SUPABASE_URL + "/rest/v1/Reviewlinks?select=id,business_name,logo_url,google_review_link&order=created_at.desc",
+            {
+                headers: {
+                    "apikey": SUPABASE_KEY,
+                    "Authorization": "Bearer " + token
+                }
+            }
+        );
+
+        if (response.status === 401 || response.status === 403) {
+            window.location.href = "dashboard.html";
+            return;
+        }
+
+        if (!response.ok) {
+            return;
+        }
+
+        const rows = await response.json();
+
+        if (!Array.isArray(rows)) {
+            return;
+        }
+
+        const links = rows.map(publicReviewLink);
+
+        writeReviewLinksCache(ownerId, links);
+        loadQRReviewLinks(links);
+    } catch (error) {
+        console.error("QR Review Links error:", error);
+    }
+}
+
+refreshQRReviewLinks(); 
 
 function smoothNavigate(page) {
     document.body.classList.add("page-leaving");

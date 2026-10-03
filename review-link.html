@@ -1349,6 +1349,52 @@ function renderReviewLinks(reviewLinks) {
     }
 }
 
+const REVIEW_LINKS_CACHE_KEY = "reviewrise_reviewlinks_data";
+
+function reviewLinksOwnerId(token) {
+    try {
+        const payload = token.split(".")[1];
+        const json = JSON.parse(atob(payload.replace(/-/g, "+").replace(/_/g, "/")));
+        return json.sub || null;
+    } catch (error) {
+        return null;
+    }
+}
+
+function publicReviewLink(link) {
+    return {
+        id: link.id,
+        business_name: link.business_name,
+        logo_url: link.logo_url || null,
+        google_review_link: link.google_review_link || ""
+    };
+}
+
+function readReviewLinksCache(ownerId) {
+    if (!ownerId) return null;
+
+    try {
+        const parsed = JSON.parse(localStorage.getItem(REVIEW_LINKS_CACHE_KEY) || "null");
+
+        if (!parsed || parsed.owner_id !== ownerId || !Array.isArray(parsed.links)) {
+            return null;
+        }
+
+        return parsed.links.map(publicReviewLink);
+    } catch (error) {
+        return null;
+    }
+}
+
+function writeReviewLinksCache(ownerId, links) {
+    if (!ownerId) return;
+
+    localStorage.setItem(REVIEW_LINKS_CACHE_KEY, JSON.stringify({
+        owner_id: ownerId,
+        links: links.map(publicReviewLink)
+    }));
+}
+
 async function getValidAccessToken() {
     const currentToken = localStorage.getItem("reviewrise_token");
     const refreshToken = localStorage.getItem("reviewrise_refresh_token");
@@ -1408,10 +1454,13 @@ let reviewLinks = cachedReviewLinks;
 if (!reviewLinks) {
     const token = await getValidAccessToken();
 
-    if (!token) return;
+    if (!token) {
+        window.location.href = "dashboard.html";
+        return;
+    }
 
     const response = await fetch(
-        SUPABASE_URL + "/rest/v1/Reviewlinks?select=*&order=created_at.desc",
+        SUPABASE_URL + "/rest/v1/Reviewlinks?select=id,business_name,logo_url,google_review_link&order=created_at.desc",
         {
 headers: {
     "apikey": SUPABASE_KEY,
@@ -1427,11 +1476,13 @@ headers: {
     }
 
 reviewLinks = await response.json();
-    
-    localStorage.setItem(
-    "reviewrise_reviewlinks_data",
-    JSON.stringify(reviewLinks)
-);
+
+    if (!Array.isArray(reviewLinks)) {
+        return;
+    }
+
+    reviewLinks = reviewLinks.map(publicReviewLink);
+    writeReviewLinksCache(reviewLinksOwnerId(token), reviewLinks);
 }
     
 const emptyState = document.getElementById("emptyState");
@@ -1628,6 +1679,15 @@ if (deletedRows.length === 0) {
 
 // It was really deleted from Supabase
 item.remove();
+
+        const ownerId = reviewLinksOwnerId(token);
+        const cachedLinks = readReviewLinksCache(ownerId);
+
+        if (cachedLinks) {
+            writeReviewLinksCache(ownerId, cachedLinks.filter(function (row) {
+                return String(row.id) !== String(link.id);
+            }));
+        }
         
         const successToast = document.getElementById("successToast");
 const toastTitle = successToast.querySelector("strong");
@@ -1660,8 +1720,6 @@ actions.appendChild(menuBtn);
     container.appendChild(item);
 });
 document.querySelector(".review-links-card").style.visibility = "visible";
-
-saveReviewLinksCache();    
 }
 document.addEventListener("click", function () {
     document.querySelectorAll(".review-options-menu").forEach(function(menu) {
@@ -1786,20 +1844,30 @@ function showDeleteConfirmation(businessName) {
         });
     });
 } 
-const cachedReviewLinksData =
-    localStorage.getItem("reviewrise_reviewlinks_data");
-
-if (cachedReviewLinksData) {
-    try {
-        loadReviewLinks(
-            JSON.parse(cachedReviewLinksData)
-        );
-    } catch (error) {
-        console.error("Review Links data cache error:", error);
+(async function startReviewLinks() {
+    if (
+        !localStorage.getItem("reviewrise_token") &&
+        !localStorage.getItem("reviewrise_refresh_token")
+    ) {
+        window.location.href = "dashboard.html";
+        return;
     }
-}
 
-loadReviewLinks();
+    const token = await getValidAccessToken();
+
+    if (!token) {
+        window.location.href = "dashboard.html";
+        return;
+    }
+
+    const cachedLinks = readReviewLinksCache(reviewLinksOwnerId(token));
+
+    if (cachedLinks) {
+        loadReviewLinks(cachedLinks);
+    }
+
+    loadReviewLinks();
+})();
 const logoUploadBox = document.getElementById("logoUploadBox");
 const businessLogoInput = document.getElementById("businessLogoInput");
 const logoUploadPlaceholder = document.getElementById("logoUploadPlaceholder");
