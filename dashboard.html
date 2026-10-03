@@ -739,7 +739,7 @@ async function getValidAccessToken() {
     );
 
     if (!response.ok) {
-      return currentToken;
+      return null;
     }
 
     const data = await response.json();
@@ -877,9 +877,9 @@ localStorage.setItem(
 }
 
 
-async function loadFeedback() {
+async function loadFeedback(accessToken) {
 
-let token = await getValidAccessToken();
+let token = accessToken || await getValidAccessToken();
 
 if (!token) {
     logout();
@@ -903,11 +903,18 @@ if (!token) {
   );
   
 
+  if (response.status === 401 || response.status === 403) {
+    logout();
+    return;
+  }
+
   if (!response.ok) {
 
-    document.getElementById("feedbackList")
-      .textContent =
-      "Could not load feedback.";
+    if (!localStorage.getItem("reviewrise_dashboard_cache")) {
+      document.getElementById("feedbackList")
+        .textContent =
+        "Could not load feedback.";
+    }
 
     return;
   }
@@ -1085,15 +1092,31 @@ function logout() {
 document.getElementById("login")
     .addEventListener("click", login);
 
-(async function restoreSession() {
-    const token = await getValidAccessToken();
+(function restoreSession() {
+    const token = localStorage.getItem("reviewrise_token");
+    const refreshToken = localStorage.getItem("reviewrise_refresh_token");
 
-    if (token) {
-        showDashboard();
-    } else {
+    if (!token && !refreshToken) {
         loginSection.style.display = "flex";
         dashboard.style.display = "none";
+        return;
     }
+
+    restoreDashboardCache();
+    loginSection.style.display = "none";
+    dashboard.style.display = "block";
+    document.getElementById("mobileMenuBtn").style.display = "block";
+
+    (async function () {
+        const validToken = await getValidAccessToken();
+
+        if (!validToken) {
+            logout();
+            return;
+        }
+
+        loadFeedback(validToken);
+    })();
 })();
    
 function smoothNavigate(page) {
