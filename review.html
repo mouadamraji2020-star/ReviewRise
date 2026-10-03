@@ -689,6 +689,11 @@ submitFeedback.addEventListener("click", async function () {
     return;
   }
 
+  if (!currentBusiness.id || !currentBusiness.user_id) {
+    alert("This review link is incomplete, so your feedback could not be sent. Please ask the business for a new link.");
+    return;
+  }
+
   submitFeedback.disabled = true;
   submitFeedback.textContent = "Sending...";
 
@@ -705,7 +710,9 @@ submitFeedback.addEventListener("click", async function () {
         body: JSON.stringify({
           rating: selectedRating,
           feedback: feedback,
-          business: currentBusiness.business_name
+          business: currentBusiness.business_name,
+          review_link_id: currentBusiness.id,
+          user_id: currentBusiness.user_id
         })
       }
     );
