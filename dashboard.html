@@ -773,58 +773,81 @@ document.getElementById("dashboard");
 const feedbackMenu =
 document.getElementById("feedbackMenu");
 
-  function restoreDashboardCache() {
-    const cached = localStorage.getItem("reviewrise_dashboard_cache");
+const FEEDBACK_DATA_CACHE_KEY = "reviewrise_feedback_data_cache";
 
-    if (!cached) return;
+function readFeedbackDataCache() {
+    const cached = localStorage.getItem(FEEDBACK_DATA_CACHE_KEY);
+
+    if (!cached) return null;
 
     try {
         const data = JSON.parse(cached);
-
-        if (data.totalFeedback !== undefined) {
-            document.getElementById("totalFeedback").textContent =
-                data.totalFeedback;
-        }
-
-        if (data.averageRating !== undefined) {
-            document.getElementById("averageRating").textContent =
-                data.averageRating;
-        }
-
-        if (data.lowRatings !== undefined) {
-            document.getElementById("lowRatings").textContent =
-                data.lowRatings;
-        }
-
-        if (data.feedbackHTML) {
-            document.getElementById("feedbackList").innerHTML =
-                data.feedbackHTML;
-        }
-
+        return Array.isArray(data) ? data : null;
     } catch (error) {
-        console.error("Dashboard cache error:", error);
+        console.error("Feedback data cache error:", error);
+        return null;
     }
 }
 
-function saveDashboardCache() {
-    const data = {
-        totalFeedback:
-            document.getElementById("totalFeedback").textContent,
-
-        averageRating:
-            document.getElementById("averageRating").textContent,
-
-        lowRatings:
-            document.getElementById("lowRatings").textContent,
-
-        feedbackHTML:
-            document.getElementById("feedbackList").innerHTML
-    };
-
+function saveFeedbackDataCache(rows) {
     localStorage.setItem(
-        "reviewrise_dashboard_cache",
-        JSON.stringify(data)
+        FEEDBACK_DATA_CACHE_KEY,
+        JSON.stringify(rows)
     );
+}
+
+function renderDashboardFeedback(feedback) {
+    const total = feedback.length;
+    let ratingTotal = 0;
+    let lowRatings = 0;
+
+    feedback.forEach(item => {
+        const rating = Number(item.rating) || 0;
+        ratingTotal += rating;
+
+        if (rating <= 3) {
+            lowRatings++;
+        }
+    });
+
+    const average = total
+        ? (ratingTotal / total).toFixed(1)
+        : 0;
+
+    document.getElementById("totalFeedback").textContent = total;
+    document.getElementById("averageRating").textContent = average;
+    document.getElementById("lowRatings").textContent = lowRatings;
+
+    const list = document.getElementById("feedbackList");
+    list.innerHTML = "";
+
+    feedback.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "feedback-card";
+
+        const rating = Number(item.rating) || 0;
+        const stars =
+            "★".repeat(rating) +
+            "☆".repeat(Math.max(0, 5 - rating));
+
+        const date = new Date(item.created_at).toLocaleString();
+
+        card.innerHTML = `
+      <div class="stars">
+        ${stars}
+      </div>
+
+      <div class="feedback-text">
+        ${item.feedback}
+      </div>
+
+      <div class="feedback-meta">
+        ${item.business} • ${date}
+      </div>
+    `;
+
+        list.appendChild(card);
+    });
 }
   
 async function login() {
@@ -871,6 +894,8 @@ localStorage.setItem(
     "reviewrise_refresh_token",
     data.refresh_token
 );
+
+  localStorage.removeItem(FEEDBACK_DATA_CACHE_KEY);
   
   showDashboard();
 
@@ -910,7 +935,7 @@ if (!token) {
 
   if (!response.ok) {
 
-    if (!localStorage.getItem("reviewrise_dashboard_cache")) {
+    if (!readFeedbackDataCache()) {
       document.getElementById("feedbackList")
         .textContent =
         "Could not load feedback.";
@@ -920,88 +945,13 @@ if (!token) {
   }
 
 const feedback = await response.json();
-console.log(feedback);
 
-  document.getElementById("totalFeedback")
-    .textContent = feedback.length;
+  if (!Array.isArray(feedback)) {
+    return;
+  }
 
-
-  let ratingTotal = 0;
-  let lowRatings = 0;
-
-
-  feedback.forEach(item => {
-
-    ratingTotal += item.rating;
-
-    if (item.rating <= 3) {
-      lowRatings++;
-    }
-
-  });
-
-
-  const average =
-    feedback.length
-    ? (ratingTotal / feedback.length).toFixed(1)
-    : 0;
-
-
-  document.getElementById("averageRating")
-    .textContent = average;
-
-
-  document.getElementById("lowRatings")
-    .textContent = lowRatings;
-
-
-  const list =
-  document.getElementById("feedbackList");
-
-
-  list.innerHTML = "";
-
-
-  feedback.forEach(item => {
-
-    const card =
-    document.createElement("div");
-
-    card.className =
-    "feedback-card";
-
-
-    const stars =
-    "★".repeat(item.rating) +
-    "☆".repeat(5 - item.rating);
-
-
-    const date =
-    new Date(item.created_at)
-    .toLocaleString();
-
-
-    card.innerHTML = `
-
-      <div class="stars">
-        ${stars}
-      </div>
-
-      <div class="feedback-text">
-        ${item.feedback}
-      </div>
-
-      <div class="feedback-meta">
-        ${item.business} • ${date}
-      </div>
-
-    `;
-
-
-    list.appendChild(card);
-
-  });
-saveDashboardCache();
+  saveFeedbackDataCache(feedback);
+  renderDashboardFeedback(feedback);
 }
 
 
@@ -1015,7 +965,6 @@ function showDashboard() {
 
   document.getElementById("mobileMenuBtn").style.display = "block";
 
-  restoreDashboardCache();
   loadFeedback();
 
 }
@@ -1079,7 +1028,11 @@ function logout() {
   localStorage.removeItem(
     "reviewrise_refresh_token"
 );
-  
+  localStorage.removeItem("reviewrise_dashboard_cache");
+  localStorage.removeItem("reviewrise_feedback_cache");
+  localStorage.removeItem("reviewrise_analytics_cache");
+  localStorage.removeItem("reviewrise_reviewlinks_data");
+  localStorage.removeItem(FEEDBACK_DATA_CACHE_KEY);
 
   dashboard.style.display =
   "none";
@@ -1102,7 +1055,12 @@ document.getElementById("login")
         return;
     }
 
-    restoreDashboardCache();
+    const cachedFeedback = readFeedbackDataCache();
+
+    if (cachedFeedback) {
+        renderDashboardFeedback(cachedFeedback);
+    }
+
     loginSection.style.display = "none";
     dashboard.style.display = "block";
     document.getElementById("mobileMenuBtn").style.display = "block";

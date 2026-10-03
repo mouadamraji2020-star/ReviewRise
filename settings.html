@@ -896,6 +896,11 @@ function toggleAccountMenu() {
 function logout() {
     localStorage.removeItem("reviewrise_token");
     localStorage.removeItem("reviewrise_refresh_token");
+    localStorage.removeItem("reviewrise_dashboard_cache");
+    localStorage.removeItem("reviewrise_feedback_cache");
+    localStorage.removeItem("reviewrise_analytics_cache");
+    localStorage.removeItem("reviewrise_reviewlinks_data");
+    localStorage.removeItem("reviewrise_feedback_data_cache");
     window.location.href = "dashboard.html";
 }
 

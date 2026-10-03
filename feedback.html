@@ -418,59 +418,41 @@ async function getValidAccessToken() {
         return currentToken;
     }
 }
-   function restoreFeedbackCache() {
-    const cached = localStorage.getItem("reviewrise_feedback_cache");
+    const FEEDBACK_DATA_CACHE_KEY = "reviewrise_feedback_data_cache";
 
-    if (!cached) return;
+    function readFeedbackDataCache() {
+      const cached = localStorage.getItem(FEEDBACK_DATA_CACHE_KEY);
 
-    try {
-        document.getElementById("feedbackList").innerHTML = cached;
-    } catch (error) {
-        console.error("Feedback cache error:", error);
-    }
-}
+      if (!cached) return null;
 
-function saveFeedbackCache() {
-    const list = document.getElementById("feedbackList");
-
-    localStorage.setItem(
-        "reviewrise_feedback_cache",
-        list.innerHTML
-    );
-}
-    
-    async function loadFeedback() {
-
-      const token = await getValidAccessToken();
-
-      if (!token) {
-        window.location.href = "dashboard.html";
-        return;
+      try {
+        const data = JSON.parse(cached);
+        return Array.isArray(data) ? data : null;
+      } catch (error) {
+        console.error("Feedback data cache error:", error);
+        return null;
       }
+    }
 
-      const response = await fetch(
-        SUPABASE_URL + "/rest/v1/Feedback?select=*&order=created_at.desc",
-        {
-          headers: {
-            "apikey": SUPABASE_KEY,
-            "Authorization": "Bearer " + token
-          }
-        }
+    function saveFeedbackDataCache(rows) {
+      localStorage.setItem(
+        FEEDBACK_DATA_CACHE_KEY,
+        JSON.stringify(rows)
       );
+    }
 
-      const feedback = await response.json();
-
+    function renderFeedbackList(feedback) {
       const list = document.getElementById("feedbackList");
       list.innerHTML = "";
 
       feedback.forEach(item => {
-
         const card = document.createElement("div");
         card.className = "feedback-card";
 
+        const rating = Number(item.rating) || 0;
         const stars =
-          "★".repeat(item.rating) +
-          "☆".repeat(5 - item.rating);
+          "★".repeat(rating) +
+          "☆".repeat(Math.max(0, 5 - rating));
 
         card.innerHTML = `
           <div class="stars">${stars}</div>
@@ -483,12 +465,66 @@ function saveFeedbackCache() {
 
         list.appendChild(card);
       });
-      
-      saveFeedbackCache();
     }
 
-    restoreFeedbackCache();
-    loadFeedback();
+    async function loadFeedback() {
+      const token = await getValidAccessToken();
+
+      if (!token) {
+        window.location.href = "dashboard.html";
+        return;
+      }
+
+      let response;
+
+      try {
+        response = await fetch(
+          SUPABASE_URL + "/rest/v1/Feedback?select=*&order=created_at.desc",
+          {
+            headers: {
+              "apikey": SUPABASE_KEY,
+              "Authorization": "Bearer " + token
+            }
+          }
+        );
+      } catch (error) {
+        console.error("Feedback load error:", error);
+        return;
+      }
+
+      if (response.status === 401 || response.status === 403) {
+        window.location.href = "dashboard.html";
+        return;
+      }
+
+      if (!response.ok) {
+        return;
+      }
+
+      const feedback = await response.json();
+
+      if (!Array.isArray(feedback)) {
+        return;
+      }
+
+      saveFeedbackDataCache(feedback);
+      renderFeedbackList(feedback);
+    }
+
+    if (
+      !localStorage.getItem("reviewrise_token") &&
+      !localStorage.getItem("reviewrise_refresh_token")
+    ) {
+      window.location.href = "dashboard.html";
+    } else {
+      const cachedFeedback = readFeedbackDataCache();
+
+      if (cachedFeedback) {
+        renderFeedbackList(cachedFeedback);
+      }
+
+      loadFeedback();
+    }
 
   function smoothNavigate(page) {
     document.body.classList.add("page-leaving");
