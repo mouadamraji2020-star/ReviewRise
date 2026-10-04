@@ -3,371 +3,791 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>ReviewBoost</title>
-
+  <title>ReviewRise — Turn Happy Customers Into 5-Star Reviews</title>
+  <meta name="description" content="ReviewRise helps customer-facing businesses collect more positive reviews and keep private feedback in-house.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    * {
-      box-sizing: border-box;
+    :root {
+      --ink: #0c1424;
+      --navy: #10203f;
+      --muted: #5d6c84;
+      --soft: #8b97a8;
+      --line: #e6edf5;
+      --paper: #f4f7fb;
+      --white: #ffffff;
+      --blue: #2f7cf6;
+      --rise: #2ea7ff;
+      --gold: #f5b400;
     }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
 
     body {
       margin: 0;
-      min-height: 100vh;
-      font-family: Arial, sans-serif;
-      background: #f5f7fb;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      color: #172033;
+      overflow-x: hidden;
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+      color: var(--ink);
+      background: var(--paper);
+      line-height: 1.5;
     }
 
-    .card {
-      width: 100%;
-      max-width: 430px;
-      background: white;
-      border-radius: 24px;
-      padding: 35px 25px;
-      text-align: center;
-      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
-    }
+    img { max-width: 100%; }
 
-    .logo {
-      width: 65px;
-      height: 65px;
-      margin: 0 auto 20px;
-      border-radius: 18px;
-      background: #172033;
+    a { color: inherit; }
+
+    .skip {
+      position: absolute;
+      left: 16px;
+      top: -40px;
+      background: var(--ink);
       color: white;
+      padding: 8px 12px;
+      border-radius: 8px;
+      z-index: 20;
+    }
+
+    .skip:focus { top: 12px; }
+
+    .wrap {
+      width: min(1180px, calc(100% - 80px));
+      margin: 0 auto;
+    }
+
+    .site-header {
+      height: 84px;
       display: flex;
       align-items: center;
+    }
+
+    .header-inner {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      width: 100%;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      justify-self: start;
+    }
+
+    .logo-mark {
+      width: 50px;
+      height: 38px;
+      overflow: hidden;
+      flex: none;
+      position: relative;
+    }
+
+    .logo-mark img {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 118px;
+      height: 118px;
+      max-width: none;
+      transform: translate(-33px, -20px);
+      display: block;
+    }
+
+    .logo-name {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.9px;
+      color: #10284d;
+      line-height: 1;
+    }
+
+    .logo-name span {
+      background: linear-gradient(90deg, #1d4ed8 10%, #2f8bff 55%, #3ec6ff 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .nav-center {
+      display: flex;
+      align-items: center;
+      gap: 34px;
+    }
+
+    .nav-center a {
+      text-decoration: none;
+      color: #243044;
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    .nav-center a:hover { color: var(--blue); }
+
+    .header-actions {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
       justify-content: center;
-      font-size: 25px;
-      font-weight: bold;
+      gap: 8px;
+      height: 46px;
+      padding: 0 18px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-size: 14.5px;
+      font-weight: 600;
+      letter-spacing: -0.1px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .btn-login {
+      background: #fff;
+      color: var(--ink);
+      border-color: #e7edf4;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+      height: 42px;
+      padding: 0 18px;
+    }
+
+    .btn-dark {
+      background: #101828;
+      color: #fff;
+      height: 42px;
+      padding: 0 18px;
+      box-shadow: 0 8px 18px rgba(16, 24, 40, 0.12);
+    }
+
+    .btn-dark:hover { background: #0b1220; }
+
+    .btn-login:hover { background: #f8fafc; }
+
+    .btn-primary {
+      background: #101828;
+      color: #fff;
+      height: 52px;
+      padding: 0 22px;
+      border-radius: 12px;
+      font-size: 15px;
+      box-shadow: 0 10px 22px rgba(16, 24, 40, 0.14);
+    }
+
+    .btn-primary:hover { background: #0b1220; }
+
+    .btn-secondary {
+      background: #f7f9fc;
+      color: var(--ink);
+      border-color: #e6edf5;
+      height: 52px;
+      padding: 0 22px;
+      border-radius: 12px;
+      font-size: 15px;
+    }
+
+    .btn-secondary:hover { background: #fff; }
+
+    .btn:focus-visible,
+    .nav-center a:focus-visible,
+    .brand:focus-visible {
+      outline: 2px solid var(--blue);
+      outline-offset: 3px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);
+      align-items: center;
+      gap: 20px;
+      padding: 18px 0 36px;
+      min-height: calc(100vh - 84px);
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      margin: 0 0 22px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: #e8eef5;
+      color: #66758b;
+      font-size: 13px;
+      font-weight: 500;
     }
 
     h1 {
-      margin: 0 0 10px;
-      font-size: 28px;
+      margin: 0;
+      max-width: 640px;
+      font-size: 62px;
+      line-height: 1.02;
+      letter-spacing: -1.8px;
+      font-weight: 800;
+      color: #0b1220;
     }
 
-    .subtitle {
-      color: #697386;
-      margin-bottom: 30px;
-      line-height: 1.5;
+    .lede {
+      max-width: 460px;
+      margin: 20px 0 0;
+      color: #5c6b82;
+      font-size: 18px;
+      line-height: 1.55;
+      font-weight: 400;
     }
 
-    .stars {
+    .cta-row {
       display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .benefits {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 22px;
+      margin: 54px 0 0;
+      padding: 0;
+      list-style: none;
+      max-width: 640px;
+    }
+
+    .benefits li { min-width: 0; }
+
+    .benefits svg {
+      display: block;
+      width: 28px;
+      height: 28px;
+      margin-bottom: 14px;
+      stroke: #1c2840;
+      fill: none;
+      stroke-width: 1.7;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .benefits h2 {
+      margin: 0 0 6px;
+      font-size: 15px;
+      line-height: 1.3;
+      letter-spacing: -0.2px;
+      font-weight: 700;
+    }
+
+    .benefits p {
+      margin: 0;
+      color: #7b8798;
+      font-size: 13.5px;
+      line-height: 1.45;
+      max-width: 190px;
+    }
+
+    .hero-visual {
+      position: relative;
+      min-height: 640px;
+      display: flex;
+      align-items: center;
       justify-content: center;
-      gap: 7px;
-      margin-bottom: 25px;
     }
 
-    .star {
-      border: none;
-      background: none;
-      font-size: 42px;
-      cursor: pointer;
-      color: #d6d9df;
-      padding: 2px;
-      transition: transform 0.2s, color 0.2s;
+    .glow {
+      position: absolute;
+      width: 470px;
+      height: 470px;
+      right: 6%;
+      top: 8%;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(176, 208, 255, 0.95) 0%, rgba(190, 216, 255, 0.45) 46%, rgba(190, 216, 255, 0) 72%);
+      z-index: 0;
     }
 
-    .star:hover {
-      transform: scale(1.08);
+    .phone {
+      position: relative;
+      z-index: 1;
+      width: 300px;
+      height: 612px;
+      margin-right: 78px;
+      transform: rotate(8deg);
+      filter: drop-shadow(0 28px 40px rgba(30, 58, 110, 0.16));
     }
 
-    .star.active {
-      color: #ffc107;
-      transform: scale(1.08);
+    .phone-frame {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(160deg, #2a2f38 0%, #0c0e12 18%, #1a1d24 50%, #0a0c10 100%);
+      border-radius: 44px;
+      padding: 10px;
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.16),
+        0 1px 0 rgba(255, 255, 255, 0.2);
     }
 
-    .message {
-      display: none;
-      margin-top: 20px;
-      padding: 18px;
-      border-radius: 15px;
-      background: #f5f7fb;
+    .phone-side {
+      position: absolute;
+      background: #1b1e26;
+      border-radius: 2px;
+    }
+
+    .phone-silent { left: -2px; top: 108px; width: 3px; height: 22px; }
+    .phone-vol-1 { left: -2px; top: 148px; width: 3px; height: 42px; }
+    .phone-vol-2 { left: -2px; top: 198px; width: 3px; height: 42px; }
+    .phone-power { right: -2px; top: 168px; width: 3px; height: 64px; }
+
+    .phone-screen {
+      position: relative;
+      height: 100%;
+      background: #fff;
+      border-radius: 34px;
+      overflow: hidden;
+      text-align: center;
+      color: #1e293b;
+    }
+
+    .island {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      width: 92px;
+      height: 24px;
+      transform: translateX(-50%);
+      background: #0c0e12;
+      border-radius: 20px;
+    }
+
+    .island::after {
+      content: "";
+      position: absolute;
+      right: 12px;
+      top: 7px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #1c2430;
+      box-shadow: inset 0 0 0 2px #2a3544;
+    }
+
+    .phone-menu {
+      position: absolute;
+      top: 46px;
+      right: 16px;
+      width: 16px;
+      height: 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .phone-menu span {
+      display: block;
+      height: 1.5px;
+      background: #1e293b;
+      border-radius: 2px;
+    }
+
+    .phone-brand {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding-top: 78px;
+    }
+
+    .phone-brand .logo-mark {
+      width: 42px;
+      height: 32px;
+    }
+
+    .phone-brand .logo-mark img {
+      width: 100px;
+      height: 100px;
+      transform: translate(-28px, -17px);
+    }
+
+    .phone-brand .logo-name { font-size: 20px; }
+
+    .phone-question {
+      margin: 28px 24px 0;
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+      color: #1a2333;
+    }
+
+    .phone-stars {
+      margin: 16px 0 0;
+      color: var(--gold);
+      font-size: 30px;
+      letter-spacing: 4px;
+      line-height: 1;
+      text-shadow: 0 6px 10px rgba(245, 180, 0, 0.18);
+    }
+
+    .phone-hint {
+      margin: 12px 0 0;
+      color: #9aa6b5;
+      font-size: 12.5px;
+    }
+
+    .scribble {
+      position: absolute;
+      z-index: 2;
+      right: 0;
+      top: 46%;
+      width: 148px;
+      color: #1a2744;
+      transform: rotate(-2deg);
+    }
+
+    .scribble p {
+      margin: 0;
+      font-family: "Segoe Script", "Bradley Hand ITC", "Snell Roundhand", cursive;
+      font-size: 22px;
+      line-height: 1.15;
+      font-weight: 600;
+    }
+
+    .scribble-arrow {
+      position: absolute;
+      left: -62px;
+      top: -28px;
+      width: 74px;
+      height: 64px;
+    }
+
+    .band {
+      background: #fff;
+      border-top: 1px solid var(--line);
+      padding: 88px 0;
+    }
+
+    .band-soft { background: var(--paper); }
+
+    .band h2 {
+      margin: 0 0 10px;
+      font-size: 36px;
+      letter-spacing: -1px;
+      line-height: 1.1;
+    }
+
+    .band-intro {
+      margin: 0 0 36px;
+      max-width: 520px;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .feature-grid,
+    .steps {
+      display: grid;
+      gap: 28px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .feature-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+
+    .feature-grid h3,
+    .steps h3 {
+      margin: 12px 0 6px;
+      font-size: 16px;
+      letter-spacing: -0.2px;
+    }
+
+    .feature-grid p,
+    .steps p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14.5px;
       line-height: 1.5;
     }
 
-    .google-button {
-      display: none;
-      margin-top: 15px;
-      padding: 15px 20px;
-      border-radius: 12px;
-      background: #172033;
-      color: white;
-      text-decoration: none;
-      font-weight: bold;
+    .feature-grid svg,
+    .step-no {
+      color: var(--navy);
     }
 
-    .google-button:hover {
-      opacity: 0.9;
+    .feature-grid svg {
+      width: 28px;
+      height: 28px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.7;
+      stroke-linecap: round;
+      stroke-linejoin: round;
     }
 
-    #feedbackForm {
-      display: none;
-      margin-top: 20px;
+    .steps { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+    .step-no {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--blue);
     }
 
-    #feedbackText {
-      width: 100%;
-      min-height: 120px;
-      padding: 15px;
-      border: 1px solid #ddd;
-      border-radius: 12px;
-      resize: none;
-      font-family: Arial, sans-serif;
-      font-size: 15px;
+    .pricing-block,
+    .contact-block {
+      max-width: 640px;
     }
 
-    #submitFeedback {
-      margin-top: 12px;
-      width: 100%;
-      padding: 15px;
-      border: none;
-      border-radius: 12px;
-      background: #172033;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-      font-size: 15px;
+    .pricing-block p,
+    .contact-block p {
+      margin: 0 0 22px;
+      color: var(--muted);
+      font-size: 17px;
     }
 
-    #submitFeedback:hover {
-      opacity: 0.9;
+    .site-footer {
+      padding: 28px 0 36px;
+      color: var(--soft);
+      font-size: 13px;
     }
 
-    .footer {
-      margin-top: 30px;
-      font-size: 12px;
-      color: #9aa1ad;
+    .site-footer .wrap {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .site-footer a { color: var(--muted); text-decoration: none; }
+
+    @media (max-width: 1100px) {
+      h1 { font-size: 52px; }
+      .feature-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .phone { width: 270px; height: 552px; margin-right: 64px; }
+      .hero-visual { min-height: 580px; }
+    }
+
+    @media (max-height: 820px) and (min-width: 981px) {
+      h1 { font-size: 48px; }
+      .lede { font-size: 16px; }
+      .benefits { margin-top: 36px; }
+      .phone { width: 248px; height: 508px; }
+      .hero { min-height: 0; padding-top: 8px; }
+      .hero-visual { min-height: 530px; }
+    }
+
+    @media (max-width: 980px) {
+      .wrap { width: min(100% - 40px, 720px); }
+      .site-header { height: auto; padding: 14px 0; }
+      .header-inner { grid-template-columns: 1fr auto; gap: 12px 16px; }
+      .nav-center {
+        grid-column: 1 / -1;
+        gap: 18px;
+        overflow-x: auto;
+        padding-bottom: 2px;
+      }
+      .hero {
+        grid-template-columns: 1fr;
+        min-height: 0;
+        padding-top: 12px;
+      }
+      .hero-visual {
+        min-height: 560px;
+        margin-top: 12px;
+      }
+      .phone { margin-right: 36px; }
+      .feature-grid,
+      .steps { grid-template-columns: 1fr; }
+      .band { padding: 64px 0; }
+    }
+
+    @media (max-width: 640px) {
+      .wrap { width: calc(100% - 32px); }
+      .logo-name { font-size: 20px; }
+      .btn-login, .btn-dark { height: 38px; padding: 0 12px; font-size: 13px; }
+      h1 { font-size: 36px; letter-spacing: -1.1px; }
+      .lede { font-size: 16px; }
+      .cta-row .btn { width: 100%; }
+      .benefits { grid-template-columns: 1fr; gap: 22px; margin-top: 36px; }
+      .benefits p { max-width: none; }
+      .hero-visual { min-height: 520px; }
+      .phone { width: 230px; height: 470px; margin-right: 0; transform: rotate(5deg); }
+      .glow { width: 320px; height: 320px; right: 10%; top: 12%; }
+      .scribble { right: 0; top: auto; bottom: 18px; width: 120px; }
+      .scribble p { font-size: 18px; }
+      .scribble-arrow { left: -48px; width: 58px; }
+      .site-footer .wrap { flex-direction: column; align-items: flex-start; }
     }
   </style>
 </head>
-
 <body>
+  <a class="skip" href="#main">Skip to content</a>
 
-  <div class="card">
-
-    <div class="logo">R</div>
-
-    <h1>How was your experience?</h1>
-
-    <p class="subtitle">
-      Your feedback helps us improve and provide a better experience.
-    </p>
-
-    <div class="stars">
-
-      <button class="star" type="button" data-rating="1">★</button>
-      <button class="star" type="button" data-rating="2">★</button>
-      <button class="star" type="button" data-rating="3">★</button>
-      <button class="star" type="button" data-rating="4">★</button>
-      <button class="star" type="button" data-rating="5">★</button>
-
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="index.html">
+        <span class="logo-mark">
+          <img src="../../../../.cursor/projects/c-Users-Dima-D-origine-OneDrive-Desktop-git-huuub-ReviewRise/assets/c__Users_Dima_D_origine_AppData_Roaming_Cursor_User_workspaceStorage_d4266493b40e73b4a60b85c5f30c5fcb_images_WhatsApp_Image_2026-10-04_at_22.28.59-ba0e545f-3261-45f1-8544-9cfc0ce6454a.jpg" alt="">
+        </span>
+        <span class="logo-name">Review<span>Rise</span></span>
+      </a>
+      <nav class="nav-center" aria-label="Primary">
+        <a href="#features">Features</a>
+        <a href="#how-it-works">How It Works</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <div class="header-actions">
+        <a class="btn btn-login" href="dashboard.html">Login</a>
+        <a class="btn btn-dark" href="dashboard.html">Get Started</a>
+      </div>
     </div>
+  </header>
 
-    <div class="message" id="message"></div>
+  <main id="main">
+    <section class="hero wrap" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <p class="pill">More Positive Reviews. A Stronger Business.</p>
+        <h1 id="hero-title">Turn Happy Customers<br>Into 5-Star Reviews</h1>
+        <p class="lede">A simple way to get more reviews and capture private feedback before it becomes public.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="dashboard.html">Get Started Free →</a>
+          <a class="btn btn-secondary" href="#how-it-works">See How It Works</a>
+        </div>
+        <ul class="benefits">
+          <li>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.4 5.4L20 9.2l-4 4.1.9 5.7L12 16.3 7.1 19l.9-5.7-4-4.1 5.6-.8L12 3z"/></svg>
+            <h2>More 5-Star Reviews</h2>
+            <p>Send happy customers directly to their review destination.</p>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16.5 4 20l4.2-1.4A8 8 0 1 0 6 16.5z"/></svg>
+            <h2>Catch Private Feedback</h2>
+            <p>Keep lower-rated feedback private so businesses can learn and improve.</p>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19V10M12 19V5M19 19v-7"/></svg>
+            <h2>Grow Your Business</h2>
+            <p>Build trust and understand your customers better.</p>
+          </li>
+        </ul>
+      </div>
 
-    <a
-      id="googleButton"
-      class="google-button"
-      href="#"
-      target="_blank"
-      rel="noopener noreferrer">
-      Leave us a Google review
-    </a>
+      <div class="hero-visual">
+        <div class="glow" aria-hidden="true"></div>
+        <div class="phone">
+          <span class="phone-side phone-silent" aria-hidden="true"></span>
+          <span class="phone-side phone-vol-1" aria-hidden="true"></span>
+          <span class="phone-side phone-vol-2" aria-hidden="true"></span>
+          <span class="phone-side phone-power" aria-hidden="true"></span>
+          <div class="phone-frame">
+            <div class="phone-screen">
+              <div class="island" aria-hidden="true"></div>
+              <div class="phone-menu" aria-hidden="true"><span></span><span></span><span></span></div>
+              <div class="phone-brand">
+                <span class="logo-mark">
+                  <img src="../../../../.cursor/projects/c-Users-Dima-D-origine-OneDrive-Desktop-git-huuub-ReviewRise/assets/c__Users_Dima_D_origine_AppData_Roaming_Cursor_User_workspaceStorage_d4266493b40e73b4a60b85c5f30c5fcb_images_WhatsApp_Image_2026-10-04_at_22.28.59-ba0e545f-3261-45f1-8544-9cfc0ce6454a.jpg" alt="">
+                </span>
+                <span class="logo-name">Review<span>Rise</span></span>
+              </div>
+              <p class="phone-question">How was your experience?</p>
+              <p class="phone-stars" aria-label="Five stars">★★★★★</p>
+              <p class="phone-hint">Tap a star to continue.</p>
+            </div>
+          </div>
+        </div>
+        <div class="scribble">
+          <svg class="scribble-arrow" viewBox="0 0 80 70" aria-hidden="true">
+            <path d="M68 58C42 64 30 36 14 24" fill="none" stroke="#1a2744" stroke-width="1.6" stroke-linecap="round"/>
+            <path d="M22 30 12 20l12-2" fill="none" stroke="#1a2744" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <p>Happy<br>Customers.<br>Stronger<br>Business.</p>
+        </div>
+      </div>
+    </section>
 
-    <div id="feedbackForm">
+    <section class="band" id="features">
+      <div class="wrap">
+        <h2>Features</h2>
+        <p class="band-intro">Everything a customer-facing business needs to ask for reviews and learn from private feedback.</p>
+        <ul class="feature-grid">
+          <li>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.5.5l2-2a5 5 0 0 0-7-7l-1.2 1.2"/><path d="M14 11a5 5 0 0 0-7.5-.5l-2 2a5 5 0 0 0 7 7l1.2-1.2"/></svg>
+            <h3>Review Links</h3>
+            <p>Create a link for each business and share the customer rating page.</p>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h6v6H4zM14 4h6v6h-6zM14 14h6v6h-6zM7 14v3M4 17h6"/></svg>
+            <h3>QR &amp; NFC</h3>
+            <p>Put a code or a tap point where customers already are.</p>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v6c0 4.2 2.7 7 7 8 4.3-1 7-3.8 7-8V6l-7-3z"/></svg>
+            <h3>Private Feedback</h3>
+            <p>Lower ratings stay with the business instead of going public.</p>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 15v-3M12 15V9M16 15v-5"/></svg>
+            <h3>Dashboard</h3>
+            <p>Open one workspace for new feedback and your review links.</p>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19h16M6 16l4-5 3 3 5-7"/></svg>
+            <h3>Analytics</h3>
+            <p>See how ratings and comments change over time.</p>
+          </li>
+        </ul>
+      </div>
+    </section>
 
-      <textarea
-        id="feedbackText"
-        placeholder="Tell us what went wrong and how we can improve...">
-      </textarea>
+    <section class="band band-soft" id="how-it-works">
+      <div class="wrap">
+        <h2>How It Works</h2>
+        <p class="band-intro">From the first share to a clearer picture of the customer experience.</p>
+        <ol class="steps">
+          <li>
+            <div class="step-no">01</div>
+            <h3>Share</h3>
+            <p>Create a ReviewRise link, QR code or NFC touchpoint.</p>
+          </li>
+          <li>
+            <div class="step-no">02</div>
+            <h3>Collect</h3>
+            <p>Customers rate their experience.</p>
+          </li>
+          <li>
+            <div class="step-no">03</div>
+            <h3>Improve</h3>
+            <p>Review feedback and analytics to improve customer experience.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
 
-      <button
-        id="submitFeedback"
-        type="button">
-        Submit Feedback
-      </button>
+    <section class="band" id="pricing">
+      <div class="wrap pricing-block">
+        <h2>Pricing</h2>
+        <p>Simple plans are coming soon.</p>
+        <a class="btn btn-dark" href="dashboard.html">Get Started</a>
+      </div>
+    </section>
 
+    <section class="band band-soft" id="contact">
+      <div class="wrap contact-block">
+        <h2>Contact</h2>
+        <p>Questions about using ReviewRise for your business? Start with an account and we can take it from there.</p>
+        <a class="btn btn-primary" href="dashboard.html">Get Started</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <span>ReviewRise</span>
+      <a href="#main">Back to top</a>
     </div>
-
-    <div class="footer">
-      Powered by ReviewBoost
-    </div>
-
-  </div>
-
-
-  <script>
-const SUPABASE_URL = "https://intl...supabase.co";
-const SUPABASE_KEY = "YOUR_EXISTING_PUBLISHABLE_KEY";
-
-const params = new URLSearchParams(window.location.search);
-const reviewLinkId = params.get("id");
-
-async function loadBusiness() {
-
-  if (!reviewLinkId) {
-    console.error("No review link ID found.");
-    return;
-  }
-
-  const response = await fetch(
-    SUPABASE_URL +
-    "/rest/v1/Reviewlinks?id=eq." +
-    encodeURIComponent(reviewLinkId) +
-    "&select=business_name",
-    {
-      headers: {
-        "apikey": SUPABASE_KEY
-      }
-    }
-  );
-
-  if (!response.ok) {
-    console.error("Could not load business.");
-    return;
-  }
-
-  const data = await response.json();
-
-  if (!data.length) {
-    console.error("Business not found.");
-    return;
-  }
-
-  const businessName = data[0].business_name;
-
-  document.getElementById("businessName").textContent = businessName;
-
-  document.getElementById("businessLogo").textContent =
-    businessName.charAt(0).toUpperCase();
-}
-
-loadBusiness();
-    
-    const GOOGLE_REVIEW_URL =
-      "https://search.google.com/local/writereview?placeid=ChIJOdbspvWBCw0R2cVHjfyGvHk";
-    let selectedRating = 0;
-    const stars = document.querySelectorAll(".star");
-    const message = document.getElementById("message");
-    const googleButton = document.getElementById("googleButton");
-    const feedbackForm = document.getElementById("feedbackForm");
-    const feedbackText = document.getElementById("feedbackText");
-    const submitFeedback = document.getElementById("submitFeedback");
-
-
-    // STAR RATING
-
-    stars.forEach(function(star) {
-
-      star.addEventListener("click", function() {
-
-        const rating = Number(this.dataset.rating);
-        selectedRating = rating;
-
-        // Remove the active class from every star
-        stars.forEach(function(s) {
-          s.classList.remove("active");
-        });
-
-
-        // Add active class to the selected stars
-        for (let i = 0; i < rating; i++) {
-          stars[i].classList.add("active");
-        }
-
-
-        // Show message
-        message.style.display = "block";
-
-
-        // 4 or 5 stars
-if (rating >= 4) {
-
-  window.location.href = GOOGLE_REVIEW_URL;
-
-}
-
-
-        // 1, 2 or 3 stars
-        else {
-
-          message.innerHTML =
-            "We're sorry we didn't meet your expectations. Please tell us how we can improve.";
-
-          googleButton.style.display = "none";
-
-          feedbackForm.style.display = "block";
-
-        }
-
-      });
-
-    });
-
-
-    // SUBMIT FEEDBACK
-
-submitFeedback.addEventListener("click", async function() {
-
-  const feedback = feedbackText.value.trim();
-
-  if (feedback === "") {
-    alert("Please write your feedback first.");
-    return;
-  }
-
-const SUPABASE_URL = "https://intlhwmvldxdiytemjlr.supabase.co";
-const SUPABASE_KEY = "sb_publishable_0KjZZApJCuvTEJH3nNyLUg_aps6aXaA";
-
-const response = await fetch(
-  SUPABASE_URL + "/rest/v1/Feedback",
-  {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-"apikey": SUPABASE_KEY,
-"Prefer": "return=minimal"
-    },
-    body: JSON.stringify({
-      rating: selectedRating,
-      feedback: feedback,
-      business: "Appart-Hôtel Flamant Rose"
-    })
-  }
-);
-
-  if (response.ok) {
-
-    feedbackForm.style.display = "none";
-    googleButton.style.display = "none";
-
-    message.style.display = "block";
-
-    message.innerHTML = `
-      <strong>Thank you for your feedback!</strong><br><br>
-      We really appreciate you taking the time to share your experience.
-      Your feedback helps us improve our service.
-    `;
-
-    feedbackText.value = "";
-
-  } else {
-
-    alert("Something went wrong. Please try again.");
-
-  }
-
-});
-
-  </script>
-
+  </footer>
 </body>
 </html>
