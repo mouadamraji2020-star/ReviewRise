@@ -59,34 +59,52 @@
 
     .site-header {
       position: sticky;
-      top: 14px;
+      top: 0;
       z-index: 40;
-      height: auto;
-      margin: 16px 0 6px;
-      background: transparent;
+      height: 68px;
+      display: flex;
+      align-items: center;
+      margin: 0;
+      background: #fff;
+      border-bottom: 1px solid #e8edf3;
     }
 
     .nav-frame {
-      width: min(1450px, 94%);
+      width: min(1400px, calc(100% - 72px));
       margin: 0 auto;
       display: grid;
       grid-template-columns: auto 1fr auto;
       align-items: center;
-      gap: 22px;
-      padding: 12px 14px 12px 18px;
-      background: rgba(255, 255, 255, 0.84);
-      border: 1px solid rgba(226, 232, 240, 0.95);
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(15, 40, 80, 0.06);
-      backdrop-filter: blur(16px);
+      gap: 24px;
+      padding: 0;
+      background: transparent;
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       text-decoration: none;
       justify-self: start;
+    }
+
+    .brand .logo-mark {
+      width: 34px;
+      height: 26px;
+    }
+
+    .brand .logo-mark img {
+      width: 82px;
+      height: 82px;
+      transform: translate(-23px, -14px);
+    }
+
+    .brand .logo-name {
+      font-size: 20px;
+      letter-spacing: -0.6px;
     }
 
     .logo-mark {
@@ -127,23 +145,24 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
+      gap: 32px;
     }
 
     .nav-center a,
     .mobile-nav nav a {
       text-decoration: none;
-      color: #243044;
-      font-size: 14.5px;
+      color: #5c6b80;
+      font-size: 14px;
       font-weight: 500;
-      padding: 8px 12px;
-      border-radius: 10px;
+      padding: 0;
+      border-radius: 0;
+      background: none;
     }
 
     .nav-center a:hover,
     .mobile-nav nav a:hover {
-      color: var(--blue);
-      background: rgba(47, 124, 246, 0.08);
+      color: #123056;
+      background: none;
     }
 
     .mobile-nav { display: none; }
@@ -192,6 +211,30 @@
     .btn-dark:hover { background: #0b1220; }
 
     .btn-login:hover { background: #f8fafc; }
+
+    .header-actions .btn-login {
+      height: auto;
+      padding: 0 4px;
+      background: transparent;
+      border-color: transparent;
+      box-shadow: none;
+      color: #3d4c63;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .header-actions .btn-login:hover {
+      background: transparent;
+      color: #10203f;
+    }
+
+    .header-actions .btn-dark {
+      height: 36px;
+      padding: 0 14px;
+      border-radius: 8px;
+      font-size: 13.5px;
+      box-shadow: none;
+    }
 
     .btn-primary {
       background: #101828;
@@ -885,7 +928,8 @@
       .feature-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
       .phone { width: 270px; height: 552px; margin-right: 64px; }
       .hero-visual { min-height: 580px; }
-      .nav-center a { padding: 8px 8px; font-size: 13.5px; }
+      .nav-center { gap: 22px; }
+      .nav-center a { padding: 0; font-size: 13.5px; }
       .app-panels { grid-template-columns: 1fr; }
     }
 
@@ -900,11 +944,16 @@
 
     @media (max-width: 980px) {
       .wrap { width: min(100% - 40px, 720px); }
-      .site-header { margin-top: 12px; }
+      .site-header { height: 64px; margin: 0; }
       .nav-frame {
-        width: min(1450px, calc(100% - 24px));
+        width: min(1400px, calc(100% - 32px));
         grid-template-columns: 1fr auto;
         gap: 10px;
+        padding: 0;
+        background: transparent;
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
       }
       .nav-center { display: none; }
       .mobile-nav { display: block; position: relative; }
@@ -952,6 +1001,10 @@
         border: 1px solid var(--line);
         border-radius: 16px;
         box-shadow: 0 12px 30px rgba(15, 40, 80, 0.08);
+      }
+      .mobile-nav nav a {
+        padding: 10px 12px;
+        color: #243044;
       }
       .hero {
         grid-template-columns: 1fr;
@@ -1007,9 +1060,9 @@
         <span class="logo-name">Review<span>Rise</span></span>
       </a>
       <nav class="nav-center" aria-label="Primary">
+        <a href="#reviews">Reviews</a>
         <a href="#features">Features</a>
         <a href="#how-it-works">How It Works</a>
-        <a href="#reviews">Reviews</a>
         <a href="#pricing">Pricing</a>
         <a href="#contact">Contact</a>
       </nav>
@@ -1017,9 +1070,9 @@
         <details class="mobile-nav">
           <summary aria-label="Open menu"><span></span></summary>
           <nav aria-label="Mobile">
+            <a href="#reviews">Reviews</a>
             <a href="#features">Features</a>
             <a href="#how-it-works">How It Works</a>
-            <a href="#reviews">Reviews</a>
             <a href="#pricing">Pricing</a>
             <a href="#contact">Contact</a>
           </nav>
