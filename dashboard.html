@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ReviewRise Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script>
 if (!localStorage.getItem("reviewrise_token") && !localStorage.getItem("reviewrise_refresh_token")) {
     document.documentElement.classList.add("reviewrise-signed-out");
@@ -37,315 +40,319 @@ html.reviewrise-signed-out #loginSection {
     display: flex;
     flex-direction: column;
     padding: 0;
-    background: #f4f7fb;
-    color: #111827;
-    font-family: "Segoe UI", Arial, sans-serif;
+    overflow-x: hidden;
+    background:
+        radial-gradient(circle at 18% 78%, rgba(186, 220, 255, 0.55), transparent 28%),
+        radial-gradient(circle at 32% 42%, rgba(214, 232, 255, 0.7), transparent 26%),
+        #f5f8fd;
+    color: #0c1424;
+    font-family: Inter, "Segoe UI", Arial, sans-serif;
+}
+
+.auth-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: #fff;
+    border-bottom: 1px solid #e8edf3;
 }
 
 .auth-topnav {
-    height: 72px;
-    display: flex;
+    height: 68px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
     align-items: center;
-    justify-content: space-between;
     gap: 24px;
-    padding: 0 40px;
-    background: #ffffff;
-    border-bottom: 1px solid #e6ecf5;
+    width: min(1400px, calc(100% - 72px));
+    margin: 0 auto;
+    background: transparent;
 }
 
-.auth-wordmark {
-    margin: 0;
-    color: #111827;
-    font-size: 27px;
-    font-weight: 700;
-    letter-spacing: -0.4px;
-}
-
-.auth-topnav-links {
+.auth-brand {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
+    text-decoration: none;
+    color: inherit;
 }
 
-.auth-nav-link {
-    height: 36px;
-    padding: 0 12px;
+.auth-logo-mark {
+    width: 34px;
+    height: 26px;
+    overflow: hidden;
+    position: relative;
+    flex: none;
+}
+
+.auth-logo-mark img {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 82px;
+    height: 82px;
+    max-width: none;
+    transform: translate(-23px, -14px);
+}
+
+.auth-logo-name {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -0.6px;
+    color: #10284d;
+    line-height: 1;
+}
+
+.auth-logo-name span {
+    background: linear-gradient(90deg, #1d4ed8 10%, #2f8bff 55%, #3ec6ff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.auth-nav-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 32px;
+}
+
+.auth-nav-center a,
+.auth-mobile-nav nav a {
+    text-decoration: none;
+    color: #5c6b80;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.auth-nav-center a:hover,
+.auth-mobile-nav nav a:hover { color: #123056; }
+
+.auth-header-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 14px;
+}
+
+#authHeaderLogin {
+    height: auto;
+    margin: 0;
+    padding: 0;
     border: none;
-    border-radius: 10px;
+    border-radius: 0;
     background: transparent;
-    color: #475569;
+    color: #3d4c63;
     font-family: inherit;
     font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+#authHeaderLogin:hover { color: #10203f; }
+
+#authHeaderStart {
+    height: 36px;
+    padding: 0 14px;
+    border: none;
+    border-radius: 8px;
+    background: #101828;
+    color: #fff;
+    font-family: inherit;
+    font-size: 13.5px;
     font-weight: 600;
     cursor: pointer;
 }
 
-span.auth-nav-link {
-    display: inline-flex;
-    align-items: center;
-    cursor: default;
-}
+#authHeaderStart:hover { background: #0b1220; }
 
-span.auth-nav-link:hover { color: #0f172a; }
-
-#authHeaderLogin {
-    height: 36px;
-    margin-left: 8px;
-    padding: 0 16px;
-    border: 1px solid #c9d7f2;
-    border-radius: 999px;
-    background: #ffffff;
-    color: #1d4ed8;
-    font-size: 13px;
-    letter-spacing: 0.01em;
-}
-
-#authHeaderLogin:hover {
-    background: #f8fbff;
-    border-color: #93b4ef;
-}
+.auth-mobile-nav { display: none; }
 
 .auth-shell {
     flex: 1;
     display: grid;
-    grid-template-columns: minmax(0, 56%) minmax(340px, 44%);
+    grid-template-columns: minmax(0, 50%) minmax(0, 50%);
     min-height: 0;
 }
 
 .auth-hero {
     position: relative;
-    overflow: hidden;
-    min-height: 100%;
-    padding: 28px;
-    background: #0c1b33;
-    color: #ffffff;
-}
-
-.auth-mosaic {
-    position: absolute;
-    inset: 28px;
-    display: grid;
-    grid-template-columns: 1.45fr 0.9fr;
-    grid-template-rows: 1fr 1fr;
-    gap: 12px;
-}
-
-.auth-mosaic img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 18px;
-    box-shadow: 0 16px 36px rgba(8, 18, 40, 0.22);
-}
-
-.auth-mosaic-main { grid-row: 1 / span 2; }
-
-.auth-hero-shade {
-    position: absolute;
-    inset: 28px;
-    border-radius: 18px;
-    pointer-events: none;
-    background: linear-gradient(180deg, rgba(8, 18, 40, 0.05) 18%, rgba(8, 18, 40, 0.22) 48%, rgba(6, 14, 32, 0.82) 100%);
-}
-
-.auth-hero-footer {
-    position: absolute;
-    left: 48px;
-    right: 48px;
-    bottom: 40px;
-    z-index: 1;
-}
-
-.auth-hero-badges {
     display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 22px;
-}
-
-.auth-badge {
-    padding: 10px 14px;
-    background: rgba(255, 255, 255, 0.16);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 12px;
-    box-shadow: 0 10px 24px rgba(8, 18, 40, 0.16);
-    backdrop-filter: blur(12px);
-}
-
-.auth-badge strong {
-    display: block;
-    font-size: 15px;
-    letter-spacing: -0.2px;
-}
-
-.auth-badge span {
-    display: block;
-    margin-top: 2px;
-    color: rgba(255, 255, 255, 0.84);
-    font-size: 12px;
-    font-weight: 600;
+    flex-direction: column;
+    justify-content: flex-start;
+    min-height: 100%;
+    padding: 48px 28px 28px 72px;
 }
 
 .auth-hero-copy h2 {
     max-width: 520px;
-    margin: 0 0 10px;
-    font-size: 40px;
-    line-height: 1.12;
-    letter-spacing: -1px;
+    margin: 0;
+    color: #0b1730;
+    font-size: 54px;
+    line-height: 1.02;
+    letter-spacing: -1.8px;
+    font-weight: 800;
 }
+
+.auth-hero-copy h2 span { color: #2b7fff; }
 
 .auth-hero-copy p {
-    max-width: 460px;
-    margin: 0;
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 16px;
-    line-height: 1.5;
+    max-width: 360px;
+    margin: 18px 0 0;
+    color: #6d7c92;
+    font-size: 18px;
+    line-height: 1.45;
+    font-weight: 500;
 }
 
-.auth-hero-note {
-    margin-top: 10px !important;
-    color: rgba(255, 255, 255, 0.72) !important;
-    font-size: 13px !important;
-    font-weight: 600;
+.auth-art {
+    width: min(560px, 100%);
+    margin-top: 18px;
 }
+
+.auth-art svg { width: 100%; height: auto; display: block; }
 
 .auth-pane {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
+    align-items: flex-start;
+    justify-content: center;
     overflow: auto;
-    padding: max(16px, calc((100vh - 72px - 600px) / 2)) 48px 16px;
-    background:
-        radial-gradient(ellipse at 50% 38%, rgba(37, 99, 235, 0.09), transparent 58%),
-        #f3f6fb;
-    border-left: 1px solid #e6ecf5;
+    padding: 48px 40px 32px;
 }
 
 .auth-panel-wrap {
     width: 100%;
-    max-width: 540px;
-    padding: 32px 36px 22px;
-    background: rgba(255, 255, 255, 0.88);
-    border: 1px solid rgba(226, 232, 240, 0.9);
-    border-radius: 24px;
-    box-shadow:
-        0 1px 2px rgba(15, 23, 42, 0.04),
-        0 20px 50px rgba(15, 40, 80, 0.08);
-    backdrop-filter: blur(16px);
+    max-width: 460px;
+    margin-top: 8px;
+    padding: 28px 28px 22px;
+    background: #fff;
+    border: 1px solid #e7eef6;
+    border-radius: 22px;
+    box-shadow: 0 16px 40px rgba(30, 64, 120, 0.06);
 }
 
-.auth-stage {
-    min-height: 250px;
-}
-
-.auth-kicker {
-    margin: 0 0 14px;
-    color: #2563eb;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-}
-
-.auth-intro h2 {
-    margin: 0 0 14px;
-    color: #0b1730;
-    font-size: 34px;
-    font-weight: 700;
-    letter-spacing: -0.8px;
-}
-
-.auth-intro .login-subtitle {
-    margin: 0 0 32px;
-    color: #7b8798;
-    font-size: 15px;
-    font-weight: 400;
-    line-height: 1.55;
-}
+.auth-stage { min-height: 0; }
 
 .auth-panel .login-subtitle {
-    margin: 0 0 20px;
-    color: #7b8798;
-    font-size: 15px;
+    margin: 8px 0 0;
+    color: #8b97a8;
+    font-size: 14.5px;
     font-weight: 400;
-    line-height: 1.55;
+    line-height: 1.45;
 }
 
 .auth-tabs {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 4px;
-    margin-bottom: 36px;
+    gap: 0;
+    margin: 22px 0 20px;
     padding: 4px;
-    background: #eef3f9;
-    border-radius: 16px;
+    background: #f2f5f9;
+    border-radius: 12px;
 }
 
 .auth-tab {
+    position: relative;
     height: 42px;
     border: none;
-    border-radius: 12px;
+    border-radius: 10px;
     background: transparent;
-    color: #64748b;
+    color: #98a2b3;
     font-family: inherit;
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
 }
 
 .auth-tab.active {
-    background: #ffffff;
-    color: #0f2748;
-    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05), 0 8px 18px rgba(15, 23, 42, 0.06);
+    background: #fff;
+    color: #2b7fff;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+}
+
+.auth-tab.active::after {
+    content: "";
+    position: absolute;
+    left: 18px;
+    right: 18px;
+    bottom: 5px;
+    height: 2px;
+    border-radius: 2px;
+    background: #2b7fff;
 }
 
 .auth-panel h2 {
-    margin: 0 0 8px;
-    color: #0f172a;
+    margin: 0;
+    color: #0c1730;
     font-size: 28px;
-    letter-spacing: -0.6px;
+    font-weight: 800;
+    letter-spacing: -0.7px;
 }
 
-.login-field { margin-bottom: 28px; }
+.login-field { margin-bottom: 14px; }
 
 form .login-field:last-of-type { margin-bottom: 0; }
 
 .login-field label {
     display: block;
-    margin-bottom: 11px;
-    color: #0f2748;
-    font-size: 13px;
-    font-weight: 600;
+    margin-bottom: 7px;
+    color: #172033;
+    font-size: 13.5px;
+    font-weight: 700;
+}
+
+.input-wrap,
+.password-wrap { position: relative; }
+
+.field-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    z-index: 1;
+    display: flex;
+    transform: translateY(-50%);
+    color: #98a2b3;
+    pointer-events: none;
+}
+
+.field-icon svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
 
 .login-field input {
     display: block;
     width: 100%;
     height: 54px;
-    padding: 0 16px;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 14px;
+    padding: 0 16px 0 42px;
+    background: #fff;
+    border: 1px solid #e4ebf3;
+    border-radius: 12px;
     color: #0b1730;
     font-size: 15px;
     font-family: inherit;
     outline: none;
-    transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease;
 }
 
 .login-field input::placeholder { color: #94a3b8; }
 
 .login-field input:focus {
-    background: #ffffff;
-    border-color: #2563eb;
-    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.14);
+    border-color: #8eb6f5;
+    box-shadow: 0 0 0 4px rgba(43, 127, 255, 0.12);
 }
 
-.password-wrap { position: relative; }
+.password-wrap input { padding-right: 44px; }
 
-.password-wrap input { padding-right: 48px; }
+.forgot-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 8px;
+}
 
 .password-toggle {
     position: absolute;
@@ -384,33 +391,31 @@ form .login-field:last-of-type { margin-bottom: 0; }
 .auth-submit {
     display: block;
     width: 100%;
-    height: 54px;
-    margin-top: 32px;
+    height: 52px;
+    margin-top: 18px;
     border: none;
-    border-radius: 14px;
-    background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%);
-    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.26);
+    border-radius: 12px;
+    background: #101828;
+    box-shadow: none;
     color: #ffffff;
     font-family: inherit;
     font-size: 15px;
-    font-weight: 700;
+    font-weight: 600;
     letter-spacing: -0.2px;
     cursor: pointer;
-    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+#login:not(:disabled)::after,
+#signUpButton:not(:disabled)::after {
+    content: " →";
+    font-weight: 500;
 }
 
 #login:hover,
-.auth-submit:hover {
-    background: linear-gradient(180deg, #2563eb 0%, #1e40af 100%);
-    box-shadow: 0 12px 22px rgba(37, 99, 235, 0.3);
-    transform: translateY(-1px);
-}
+.auth-submit:hover { background: #0b1220; }
 
 #login:active,
-.auth-submit:active {
-    transform: translateY(0);
-    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.22);
-}
+.auth-submit:active { background: #0b1220; }
 
 #login:disabled,
 .auth-submit:disabled {
@@ -427,34 +432,32 @@ form .login-field:last-of-type { margin-bottom: 0; }
 
 #showForgotPassword:hover { text-decoration: underline; }
 
-.auth-secure {
+.auth-footnote {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin: 24px 0 0;
-    color: #94a3b8;
-    font-size: 12px;
-    line-height: 1.4;
-}
-
-.auth-secure svg {
-    width: 14px;
-    height: 14px;
-    flex-shrink: 0;
-    fill: none;
-    stroke: #64748b;
-    stroke-width: 1.8;
-}
-
-.login-label-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
     gap: 12px;
-    margin-bottom: 11px;
+    margin: 18px 0 0;
+    color: #8b97a8;
+    font-size: 13px;
 }
 
-.login-label-row label { margin-bottom: 0; }
+.auth-footnote::before,
+.auth-footnote::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: #e6edf5;
+}
+
+.auth-footnote button {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #2b7fff;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
 
 .auth-text-link,
 .auth-switch button {
@@ -469,16 +472,16 @@ form .login-field:last-of-type { margin-bottom: 0; }
 }
 
 .auth-switch {
-    margin: 18px 0 0;
+    margin: 14px 0 0;
     color: #64748b;
     font-size: 14px;
     text-align: left;
 }
 
 .auth-legal {
-    margin: 14px 0 0;
-    color: #94a3b8;
-    font-size: 12px;
+    margin: 12px 0 0;
+    color: #98a2b3;
+    font-size: 12.5px;
     line-height: 1.5;
 }
 
@@ -498,39 +501,80 @@ form .login-field:last-of-type { margin-bottom: 0; }
 .auth-panel[hidden] { display: none !important; }
 
 @media (max-width: 1100px) {
-    .auth-shell { grid-template-columns: minmax(0, 48%) minmax(320px, 52%); }
-    .auth-hero { padding: 20px; }
-    .auth-mosaic,
-    .auth-hero-shade { inset: 20px; }
-    .auth-hero-footer { left: 36px; right: 36px; bottom: 28px; }
-    .auth-hero-copy h2 { font-size: 32px; }
-    .auth-pane { padding-left: 28px; padding-right: 28px; }
+    .auth-hero { padding: 28px 20px 20px 36px; }
+    .auth-hero-copy h2 { font-size: 44px; }
+    .auth-nav-center { gap: 20px; }
+    .auth-pane { padding: 28px 24px; }
 }
 
 @media (max-width: 860px) {
-    .auth-topnav { height: 64px; padding: 0 20px; }
-    .auth-wordmark { font-size: 22px; }
-    .auth-hero { display: none; }
+    .auth-topbar { position: sticky; }
+    .auth-topnav {
+        height: 64px;
+        width: min(1400px, calc(100% - 32px));
+        grid-template-columns: 1fr auto;
+    }
+    .auth-nav-center { display: none; }
+    .auth-mobile-nav { display: block; position: relative; }
+    .auth-mobile-nav summary {
+        list-style: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 36px;
+        border: 1px solid #e7edf4;
+        border-radius: 10px;
+        background: #fff;
+        cursor: pointer;
+    }
+    .auth-mobile-nav summary::-webkit-details-marker { display: none; }
+    .auth-mobile-nav summary span,
+    .auth-mobile-nav summary span::before,
+    .auth-mobile-nav summary span::after {
+        display: block;
+        width: 14px;
+        height: 1.5px;
+        background: #10203f;
+        border-radius: 2px;
+        position: relative;
+    }
+    .auth-mobile-nav summary span::before,
+    .auth-mobile-nav summary span::after {
+        content: "";
+        position: absolute;
+        left: 0;
+    }
+    .auth-mobile-nav summary span::before { top: -5px; }
+    .auth-mobile-nav summary span::after { top: 5px; }
+    .auth-mobile-nav nav {
+        position: absolute;
+        top: calc(100% + 10px);
+        left: 0;
+        z-index: 5;
+        min-width: 200px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 12px;
+        background: #fff;
+        border: 1px solid #e8edf3;
+        border-radius: 14px;
+        box-shadow: 0 12px 28px rgba(15, 40, 80, 0.08);
+    }
     .auth-shell { display: block; }
-    .auth-pane {
-        align-items: flex-start;
-        padding: 28px 20px 40px;
-        border-left: none;
-    }
-    .auth-panel-wrap {
-        padding: 28px 22px 22px;
-        box-shadow: 0 8px 24px rgba(15, 40, 80, 0.06);
-    }
-    .auth-intro h2 { font-size: 28px; }
+    .auth-hero { padding: 28px 20px 0; }
+    .auth-hero-copy h2 { font-size: 36px; }
+    .auth-art { max-width: 420px; margin-top: 8px; }
+    .auth-pane { padding: 12px 20px 32px; }
 }
 
 @media (max-width: 480px) {
-    .auth-topnav-links span.auth-nav-link { display: none; }
-    .auth-pane { padding: 20px 16px 28px; }
-    .auth-panel-wrap {
-        border-radius: 18px;
-        box-shadow: none;
-    }
+    .auth-pane { padding: 8px 16px 28px; }
+    .auth-panel-wrap { padding: 22px 16px 18px; border-radius: 18px; }
+    .auth-hero-copy h2 { font-size: 32px; }
+    .auth-hero-copy p { font-size: 16px; }
+    #authHeaderStart { padding: 0 10px; }
 }
 
 /* DASHBOARD */
@@ -907,95 +951,151 @@ body.page-leaving {
 <body>
   
 <div id="loginSection" style="display:none;">
+    <div class="auth-topbar">
     <header class="auth-topnav">
-        <p class="auth-wordmark">ReviewRise</p>
-        <nav class="auth-topnav-links" aria-label="Account">
-            <span class="auth-nav-link">Product</span>
-            <span class="auth-nav-link">Pricing</span>
-            <button id="authHeaderLogin" class="auth-nav-link active" type="button">Log In</button>
+        <a class="auth-brand" href="index.html">
+            <span class="auth-logo-mark">
+                <img src="../../../../.cursor/projects/c-Users-Dima-D-origine-OneDrive-Desktop-git-huuub-ReviewRise/assets/c__Users_Dima_D_origine_AppData_Roaming_Cursor_User_workspaceStorage_d4266493b40e73b4a60b85c5f30c5fcb_images_WhatsApp_Image_2026-10-04_at_22.28.59-ba0e545f-3261-45f1-8544-9cfc0ce6454a.jpg" alt="">
+            </span>
+            <span class="auth-logo-name">Review<span>Rise</span></span>
+        </a>
+        <nav class="auth-nav-center" aria-label="Primary">
+            <a href="index.html#features">Features</a>
+            <a href="index.html#how-it-works">How It Works</a>
+            <a href="index.html#pricing">Pricing</a>
+            <a href="index.html#contact">Contact</a>
         </nav>
+        <div class="auth-header-actions">
+            <details class="auth-mobile-nav">
+                <summary aria-label="Open menu"><span></span></summary>
+                <nav aria-label="Mobile">
+                    <a href="index.html#features">Features</a>
+                    <a href="index.html#how-it-works">How It Works</a>
+                    <a href="index.html#pricing">Pricing</a>
+                    <a href="index.html#contact">Contact</a>
+                </nav>
+            </details>
+            <button id="authHeaderLogin" type="button">Login</button>
+            <button id="authHeaderStart" type="button">Get Started</button>
+        </div>
     </header>
+    </div>
 
     <div class="auth-shell">
         <section class="auth-hero">
-            <div class="auth-mosaic" aria-hidden="true">
-                <img class="auth-mosaic-main" src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&amp;fit=crop&amp;w=1400&amp;q=80" alt="">
-                <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&amp;fit=crop&amp;w=900&amp;q=80" alt="">
-                <img src="https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&amp;fit=crop&amp;w=900&amp;q=80" alt="">
-            </div>
-            <div class="auth-hero-shade"></div>
-            <div class="auth-hero-footer">
-            <div class="auth-hero-badges" aria-hidden="true">
-                <div class="auth-badge">
-                    <strong>★★★★★ 4.8</strong>
-                    <span>Average rating</span>
-                </div>
-                <div class="auth-badge">
-                    <strong>+32%</strong>
-                    <span>Positive review growth</span>
-                </div>
-                <div class="auth-badge">
-                    <strong>Private feedback</strong>
-                    <span>Captured quietly</span>
-                </div>
-            </div>
             <div class="auth-hero-copy">
-                <h2>Turn every customer experience into growth.</h2>
-                <p>Collect feedback, strengthen your reputation, and understand what your customers really think.</p>
-                <p class="auth-hero-note">Built for businesses that care about customer experience.</p>
+                <h2>Turn customer<br>experiences<br>into <span>growth.</span></h2>
+                <p>Understand your customers<br>and build a stronger business.</p>
             </div>
+            <div class="auth-art" aria-hidden="true">
+                <svg viewBox="0 0 560 340" fill="none">
+                    <ellipse cx="150" cy="210" rx="120" ry="70" fill="#d9ebff" opacity="0.7"/>
+                    <ellipse cx="360" cy="180" rx="150" ry="90" fill="#e7f3ff"/>
+                    <g filter="url(#cardShadow)">
+                        <rect x="78" y="58" width="214" height="132" rx="18" fill="#fff"/>
+                    </g>
+                    <path d="M108 92l6.2 12.6 13.8.8-10.6 8.4 3.4 13.4L108 120.6 95.2 127.2l3.4-13.4-10.6-8.4 13.8-.8L108 92z" fill="#f5b400"/>
+                    <path d="M138 92l6.2 12.6 13.8.8-10.6 8.4 3.4 13.4L138 120.6 125.2 127.2l3.4-13.4-10.6-8.4 13.8-.8L138 92z" fill="#f5b400"/>
+                    <path d="M168 92l6.2 12.6 13.8.8-10.6 8.4 3.4 13.4L168 120.6 155.2 127.2l3.4-13.4-10.6-8.4 13.8-.8L168 92z" fill="#f5b400"/>
+                    <path d="M198 92l6.2 12.6 13.8.8-10.6 8.4 3.4 13.4L198 120.6 185.2 127.2l3.4-13.4-10.6-8.4 13.8-.8L198 92z" fill="#f5b400"/>
+                    <path d="M228 92l6.2 12.6 13.8.8-10.6 8.4 3.4 13.4L228 120.6 215.2 127.2l3.4-13.4-10.6-8.4 13.8-.8L228 92z" fill="#f5b400"/>
+                    <rect x="104" y="142" width="150" height="8" rx="4" fill="#e7eef6"/>
+                    <rect x="104" y="158" width="118" height="8" rx="4" fill="#e7eef6"/>
+                    <rect x="104" y="174" width="86" height="8" rx="4" fill="#edf2f8"/>
+                    <g filter="url(#cardShadow)">
+                        <path d="M292 36h92a16 16 0 0 1 16 16v46a16 16 0 0 1-16 16h-58l-18 16v-16h-16a16 16 0 0 1-16-16V52a16 16 0 0 1 16-16z" fill="#2f8bff"/>
+                    </g>
+                    <rect x="314" y="58" width="62" height="6" rx="3" fill="#fff" opacity=".9"/>
+                    <rect x="314" y="72" width="44" height="6" rx="3" fill="#fff" opacity=".7"/>
+                    <g filter="url(#cardShadow)">
+                        <path d="M36 176h78a14 14 0 0 1 14 14v34a14 14 0 0 1-14 14H62l-14 12v-12H36a14 14 0 0 1-14-14v-34a14 14 0 0 1 14-14z" fill="#fff"/>
+                    </g>
+                    <circle cx="58" cy="207" r="4" fill="#9ec5ff"/>
+                    <circle cx="74" cy="207" r="4" fill="#7eb4ff"/>
+                    <circle cx="90" cy="207" r="4" fill="#5aa2ff"/>
+                    <path d="M86 292c62-8 108-46 168-112" stroke="url(#arrowGrad)" stroke-width="16" stroke-linecap="round"/>
+                    <path d="M236 168l28-8-6 26" stroke="url(#arrowGrad)" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+                    <rect x="318" y="248" width="28" height="46" rx="6" fill="#b9dcff"/>
+                    <rect x="354" y="220" width="28" height="74" rx="6" fill="#8ec4ff"/>
+                    <rect x="390" y="186" width="28" height="108" rx="6" fill="#5aa6ff"/>
+                    <rect x="426" y="146" width="28" height="148" rx="6" fill="#2f8bff"/>
+                    <rect x="462" y="108" width="28" height="186" rx="6" fill="#1d6fe8"/>
+                    <defs>
+                        <linearGradient id="arrowGrad" x1="86" y1="292" x2="250" y2="150" gradientUnits="userSpaceOnUse">
+                            <stop stop-color="#7ec8ff"/>
+                            <stop offset="1" stop-color="#2f7cf6"/>
+                        </linearGradient>
+                        <filter id="cardShadow" x="-25%" y="-25%" width="150%" height="160%">
+                            <feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#3b6cb5" flood-opacity="0.14"/>
+                        </filter>
+                    </defs>
+                </svg>
             </div>
         </section>
 
         <section class="auth-pane">
             <div class="auth-panel-wrap">
-                <div class="auth-intro">
-                    <p class="auth-kicker">Your review workspace</p>
-                    <h2>Welcome to ReviewRise</h2>
-                    <p class="login-subtitle">Manage your reputation and customer feedback in one place.</p>
-                </div>
-                <div class="auth-tabs">
-                    <button id="showSignInFromSignUp" class="auth-tab active" type="button">Sign In</button>
-                    <button id="showSignUp" class="auth-tab" type="button">Create Account</button>
-                </div>
-
                 <div class="auth-stage">
                 <div id="authSignIn" class="auth-panel">
+                    <h2>Welcome back</h2>
+                    <p class="login-subtitle">Sign in to your ReviewRise account.</p>
+                    <div class="auth-tabs">
+                        <button id="showSignInFromSignUp" class="auth-tab active" type="button">Sign In</button>
+                        <button id="showSignUp" class="auth-tab" type="button">Create Account</button>
+                    </div>
                     <form id="signInForm">
                         <div class="login-field">
-                            <label for="email">Email Address</label>
-                            <input id="email" type="email" placeholder="name@company.com" autocomplete="email">
+                            <label for="email">Email address</label>
+                            <div class="input-wrap">
+                                <span class="field-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg></span>
+                                <input id="email" type="email" placeholder="you@yourbusiness.com" autocomplete="email">
+                            </div>
                         </div>
                         <div class="login-field">
-                            <div class="login-label-row">
-                                <label for="password">Password</label>
-                                <button id="showForgotPassword" class="auth-text-link" type="button">Forgot password?</button>
-                            </div>
+                            <label for="password">Password</label>
                             <div class="password-wrap">
+                                <span class="field-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span>
                                 <input id="password" type="password" placeholder="Enter your password" autocomplete="current-password">
                                 <button class="password-toggle" type="button" aria-label="Show password">
                                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
                                 </button>
                             </div>
+                            <div class="forgot-row">
+                                <button id="showForgotPassword" class="auth-text-link" type="button">Forgot password?</button>
+                            </div>
                         </div>
                         <button id="login" class="auth-submit" type="submit">Sign In</button>
                         <p id="loginMessage" class="auth-message" role="status"></p>
                     </form>
+                    <p class="auth-footnote">New to ReviewRise? <button id="showCreateAccountLink" type="button">Create an account</button></p>
                 </div>
 
                 <div id="authSignUp" class="auth-panel" hidden>
+                    <h2>Get started with ReviewRise</h2>
+                    <p class="login-subtitle">Create your account and start turning feedback into growth.</p>
+                    <div class="auth-tabs">
+                        <button id="showSignInFromCard" class="auth-tab" type="button">Sign In</button>
+                        <button class="auth-tab active" type="button" tabindex="-1">Create Account</button>
+                    </div>
                     <form id="signUpForm">
                         <div class="login-field">
-                            <label for="signUpName">Full Name</label>
-                            <input id="signUpName" type="text" placeholder="Your full name" autocomplete="name">
+                            <label for="signUpName">Full name</label>
+                            <div class="input-wrap">
+                                <span class="field-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.2"/><path d="M6 19c1.2-3 3.2-4.5 6-4.5S16.8 16 18 19"/></svg></span>
+                                <input id="signUpName" type="text" placeholder="Your full name" autocomplete="name">
+                            </div>
                         </div>
                         <div class="login-field">
-                            <label for="signUpEmail">Email Address</label>
-                            <input id="signUpEmail" type="email" placeholder="name@company.com" autocomplete="email">
+                            <label for="signUpEmail">Work email</label>
+                            <div class="input-wrap">
+                                <span class="field-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg></span>
+                                <input id="signUpEmail" type="email" placeholder="you@yourbusiness.com" autocomplete="email">
+                            </div>
                         </div>
                         <div class="login-field">
                             <label for="signUpPassword">Password</label>
                             <div class="password-wrap">
+                                <span class="field-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span>
                                 <input id="signUpPassword" type="password" placeholder="At least 8 characters" autocomplete="new-password">
                                 <button class="password-toggle" type="button" aria-label="Show password">
                                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -1003,27 +1103,35 @@ body.page-leaving {
                             </div>
                         </div>
                         <div class="login-field">
-                            <label for="signUpPasswordConfirm">Confirm Password</label>
+                            <label for="signUpPasswordConfirm">Confirm password</label>
                             <div class="password-wrap">
+                                <span class="field-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span>
                                 <input id="signUpPasswordConfirm" type="password" placeholder="Re-enter your password" autocomplete="new-password">
                                 <button class="password-toggle" type="button" aria-label="Show password">
                                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
                                 </button>
                             </div>
                         </div>
+                        <p class="auth-legal">By creating an account, you agree to use ReviewRise responsibly.</p>
                         <button id="signUpButton" class="auth-submit" type="submit">Create Account</button>
                         <p id="signUpMessage" class="auth-message" role="status"></p>
                     </form>
-                    <p class="auth-legal">By creating an account, you agree to the ReviewRise Terms and Privacy Policy.</p>
                 </div>
 
                 <div id="authForgot" class="auth-panel" hidden>
                     <h2>Reset your password</h2>
                     <p class="login-subtitle">Enter the email address for your ReviewRise account.</p>
+                    <div class="auth-tabs">
+                        <button id="forgotTabSignIn" class="auth-tab active" type="button">Sign In</button>
+                        <button id="forgotTabSignUp" class="auth-tab" type="button">Create Account</button>
+                    </div>
                     <form id="forgotForm">
                         <div class="login-field">
-                            <label for="forgotEmail">Email Address</label>
-                            <input id="forgotEmail" type="email" placeholder="name@company.com" autocomplete="email">
+                            <label for="forgotEmail">Email address</label>
+                            <div class="input-wrap">
+                                <span class="field-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg></span>
+                                <input id="forgotEmail" type="email" placeholder="you@yourbusiness.com" autocomplete="email">
+                            </div>
                         </div>
                         <button id="forgotButton" class="auth-submit" type="submit">Send reset link</button>
                         <p id="forgotMessage" class="auth-message" role="status"></p>
@@ -1039,10 +1147,6 @@ body.page-leaving {
                     <button id="showSignInFromCheck" class="auth-submit" type="button">Back to Sign In</button>
                 </div>
                 </div>
-                <p class="auth-secure">
-                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v6c0 4.5 2.8 7.6 7 9 4.2-1.4 7-4.5 7-9V6l-7-3z"/><path d="m9 12 2 2 4-4"/></svg>
-                    Your account and business data stay protected.
-                </p>
             </div>
         </section>
     </div>
@@ -1843,6 +1947,21 @@ document.getElementById("showSignInFromCheck").addEventListener("click", functio
 });
 document.getElementById("authHeaderLogin").addEventListener("click", function () {
   showAuthPanel("authSignIn");
+});
+document.getElementById("authHeaderStart").addEventListener("click", function () {
+  showAuthPanel("authSignUp");
+});
+document.getElementById("showCreateAccountLink").addEventListener("click", function () {
+  showAuthPanel("authSignUp");
+});
+document.getElementById("showSignInFromCard").addEventListener("click", function () {
+  showAuthPanel("authSignIn");
+});
+document.getElementById("forgotTabSignIn").addEventListener("click", function () {
+  showAuthPanel("authSignIn");
+});
+document.getElementById("forgotTabSignUp").addEventListener("click", function () {
+  showAuthPanel("authSignUp");
 });
 document.querySelectorAll(".password-toggle").forEach(function (button) {
   button.addEventListener("click", function () {
