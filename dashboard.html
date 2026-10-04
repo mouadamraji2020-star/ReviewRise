@@ -94,87 +94,105 @@ span.auth-nav-link {
 .auth-shell {
     flex: 1;
     display: grid;
-    grid-template-columns: minmax(0, 58%) minmax(320px, 42%);
+    grid-template-columns: minmax(0, 56%) minmax(340px, 44%);
     min-height: 0;
 }
 
 .auth-hero {
     position: relative;
     overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
     min-height: 100%;
-    padding: 48px 52px 56px;
-    background: #0f2748;
+    padding: 28px;
+    background: #0c1b33;
     color: #ffffff;
 }
 
-.auth-hero-photo {
+.auth-mosaic {
     position: absolute;
-    inset: 0;
+    inset: 28px;
+    display: grid;
+    grid-template-columns: 1.45fr 0.9fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 12px;
+}
+
+.auth-mosaic img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: center;
+    border-radius: 18px;
+    box-shadow: 0 16px 36px rgba(8, 18, 40, 0.22);
 }
+
+.auth-mosaic-main { grid-row: 1 / span 2; }
 
 .auth-hero-shade {
     position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg, rgba(8, 18, 40, 0.18) 0%, rgba(8, 18, 40, 0.28) 42%, rgba(6, 14, 32, 0.86) 100%);
+    inset: 28px;
+    border-radius: 18px;
+    pointer-events: none;
+    background: linear-gradient(180deg, rgba(8, 18, 40, 0.05) 18%, rgba(8, 18, 40, 0.22) 48%, rgba(6, 14, 32, 0.82) 100%);
 }
 
-.auth-hero-copy,
-.auth-hero-badges {
-    position: relative;
+.auth-hero-footer {
+    position: absolute;
+    left: 48px;
+    right: 48px;
+    bottom: 40px;
     z-index: 1;
 }
 
 .auth-hero-badges {
     display: flex;
-    gap: 12px;
-    margin-bottom: 28px;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 22px;
 }
 
 .auth-badge {
-    min-width: 148px;
-    padding: 12px 16px;
+    padding: 10px 14px;
     background: rgba(255, 255, 255, 0.16);
-    border: 1px solid rgba(255, 255, 255, 0.28);
-    border-radius: 14px;
-    box-shadow: 0 10px 30px rgba(8, 18, 40, 0.18);
-    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    box-shadow: 0 10px 24px rgba(8, 18, 40, 0.16);
+    backdrop-filter: blur(12px);
 }
 
 .auth-badge strong {
     display: block;
-    font-size: 20px;
-    letter-spacing: -0.4px;
+    font-size: 15px;
+    letter-spacing: -0.2px;
 }
 
 .auth-badge span {
     display: block;
     margin-top: 2px;
-    color: rgba(255, 255, 255, 0.82);
+    color: rgba(255, 255, 255, 0.84);
     font-size: 12px;
     font-weight: 600;
 }
 
 .auth-hero-copy h2 {
-    max-width: 460px;
-    margin: 0 0 12px;
-    font-size: 42px;
+    max-width: 520px;
+    margin: 0 0 10px;
+    font-size: 40px;
     line-height: 1.12;
     letter-spacing: -1px;
 }
 
 .auth-hero-copy p {
-    max-width: 420px;
+    max-width: 460px;
     margin: 0;
-    color: rgba(255, 255, 255, 0.86);
+    color: rgba(255, 255, 255, 0.9);
     font-size: 16px;
-    line-height: 1.55;
+    line-height: 1.5;
+}
+
+.auth-hero-note {
+    margin-top: 10px !important;
+    color: rgba(255, 255, 255, 0.72) !important;
+    font-size: 13px !important;
+    font-weight: 600;
 }
 
 .auth-pane {
@@ -183,12 +201,17 @@ span.auth-nav-link {
     justify-content: center;
     overflow: auto;
     padding: 36px 48px;
-    background: #ffffff;
+    background: #f4f7fb;
+    border-left: 1px solid #e6ecf5;
 }
 
 .auth-panel-wrap {
     width: 100%;
-    max-width: 440px;
+    max-width: 420px;
+}
+
+.auth-stage {
+    min-height: 560px;
 }
 
 .auth-intro h2 {
@@ -365,7 +388,7 @@ span.auth-nav-link {
 }
 
 .auth-message {
-    min-height: 20px;
+    min-height: 44px;
     margin: 14px 0 0;
     color: #b91c1c;
     font-size: 14px;
@@ -377,17 +400,13 @@ span.auth-nav-link {
 
 .auth-panel[hidden] { display: none !important; }
 
-#loginSection:has(#authForgot:not([hidden])) .auth-intro,
-#loginSection:has(#authForgot:not([hidden])) .auth-tabs,
-#loginSection:has(#authCheckEmail:not([hidden])) .auth-intro,
-#loginSection:has(#authCheckEmail:not([hidden])) .auth-tabs {
-    display: none;
-}
-
 @media (max-width: 1100px) {
-    .auth-shell { grid-template-columns: minmax(0, 50%) minmax(300px, 50%); }
-    .auth-hero { padding: 36px; }
-    .auth-hero-copy h2 { font-size: 34px; }
+    .auth-shell { grid-template-columns: minmax(0, 48%) minmax(320px, 52%); }
+    .auth-hero { padding: 20px; }
+    .auth-mosaic,
+    .auth-hero-shade { inset: 20px; }
+    .auth-hero-footer { left: 36px; right: 36px; bottom: 28px; }
+    .auth-hero-copy h2 { font-size: 32px; }
     .auth-pane { padding: 32px 28px; }
 }
 
@@ -785,6 +804,7 @@ body.page-leaving {
     <header class="auth-topnav">
         <p class="auth-wordmark">ReviewRise</p>
         <nav class="auth-topnav-links" aria-label="Account">
+            <span class="auth-nav-link">Product</span>
             <span class="auth-nav-link">Pricing</span>
             <button id="authHeaderLogin" class="auth-nav-link active" type="button">Log In</button>
         </nav>
@@ -792,25 +812,32 @@ body.page-leaving {
 
     <div class="auth-shell">
         <section class="auth-hero">
-            <img
-                class="auth-hero-photo"
-                src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&amp;fit=crop&amp;w=1800&amp;q=80"
-                alt=""
-            >
+            <div class="auth-mosaic" aria-hidden="true">
+                <img class="auth-mosaic-main" src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&amp;fit=crop&amp;w=1400&amp;q=80" alt="">
+                <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&amp;fit=crop&amp;w=900&amp;q=80" alt="">
+                <img src="https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&amp;fit=crop&amp;w=900&amp;q=80" alt="">
+            </div>
             <div class="auth-hero-shade"></div>
+            <div class="auth-hero-footer">
             <div class="auth-hero-badges" aria-hidden="true">
                 <div class="auth-badge">
-                    <strong>4.8</strong>
+                    <strong>★★★★★ 4.8</strong>
                     <span>Average rating</span>
                 </div>
                 <div class="auth-badge">
                     <strong>+32%</strong>
-                    <span>More positive reviews</span>
+                    <span>Positive review growth</span>
+                </div>
+                <div class="auth-badge">
+                    <strong>Private feedback</strong>
+                    <span>Captured quietly</span>
                 </div>
             </div>
             <div class="auth-hero-copy">
-                <h2>Turn customer feedback into growth.</h2>
-                <p>Collect feedback, improve your reputation, and grow your business with ReviewRise.</p>
+                <h2>Turn every customer experience into growth.</h2>
+                <p>Collect feedback, strengthen your reputation, and understand what your customers really think.</p>
+                <p class="auth-hero-note">Built for businesses that care about customer experience.</p>
+            </div>
             </div>
         </section>
 
@@ -818,13 +845,14 @@ body.page-leaving {
             <div class="auth-panel-wrap">
                 <div class="auth-intro">
                     <h2>Welcome to ReviewRise</h2>
-                    <p class="login-subtitle">Manage your reputation and turn customer feedback into growth.</p>
+                    <p class="login-subtitle">Manage your reputation and customer feedback in one place.</p>
                 </div>
                 <div class="auth-tabs">
                     <button id="showSignInFromSignUp" class="auth-tab active" type="button">Sign In</button>
                     <button id="showSignUp" class="auth-tab" type="button">Create Account</button>
                 </div>
 
+                <div class="auth-stage">
                 <div id="authSignIn" class="auth-panel">
                     <form id="signInForm">
                         <div class="login-field">
@@ -902,6 +930,7 @@ body.page-leaving {
                     <h2 id="checkEmailTitle">Check your email</h2>
                     <p id="checkEmailText" class="login-subtitle"></p>
                     <button id="showSignInFromCheck" class="auth-submit" type="button">Back to Sign In</button>
+                </div>
                 </div>
             </div>
         </section>
