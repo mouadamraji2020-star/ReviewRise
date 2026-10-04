@@ -103,18 +103,66 @@ span.auth-nav-link {
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    gap: 28px;
-    padding: 48px 56px;
-    background:
-        radial-gradient(circle at 12% 18%, rgba(96, 165, 250, 0.28), transparent 32%),
-        radial-gradient(circle at 88% 80%, rgba(37, 99, 235, 0.22), transparent 28%),
-        linear-gradient(160deg, #0f2748 0%, #163e86 58%, #1d4ed8 100%);
+    justify-content: flex-end;
+    min-height: 100%;
+    padding: 48px 52px 56px;
+    background: #0f2748;
     color: #ffffff;
 }
 
+.auth-hero-photo {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.auth-hero-shade {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(8, 18, 40, 0.18) 0%, rgba(8, 18, 40, 0.28) 42%, rgba(6, 14, 32, 0.86) 100%);
+}
+
+.auth-hero-copy,
+.auth-hero-badges {
+    position: relative;
+    z-index: 1;
+}
+
+.auth-hero-badges {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 28px;
+}
+
+.auth-badge {
+    min-width: 148px;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(8, 18, 40, 0.18);
+    backdrop-filter: blur(10px);
+}
+
+.auth-badge strong {
+    display: block;
+    font-size: 20px;
+    letter-spacing: -0.4px;
+}
+
+.auth-badge span {
+    display: block;
+    margin-top: 2px;
+    color: rgba(255, 255, 255, 0.82);
+    font-size: 12px;
+    font-weight: 600;
+}
+
 .auth-hero-copy h2 {
-    max-width: 520px;
+    max-width: 460px;
     margin: 0 0 12px;
     font-size: 42px;
     line-height: 1.12;
@@ -122,86 +170,12 @@ span.auth-nav-link {
 }
 
 .auth-hero-copy p {
-    max-width: 460px;
+    max-width: 420px;
     margin: 0;
-    color: rgba(255, 255, 255, 0.82);
-    font-size: 17px;
+    color: rgba(255, 255, 255, 0.86);
+    font-size: 16px;
     line-height: 1.55;
 }
-
-.reputation-board {
-    display: grid;
-    grid-template-columns: 1.1fr 0.9fr;
-    gap: 14px;
-    max-width: 560px;
-}
-
-.rep-card,
-.rep-stat,
-.rep-growth {
-    background: rgba(255, 255, 255, 0.96);
-    color: #111827;
-    border-radius: 18px;
-    box-shadow: 0 16px 40px rgba(8, 20, 48, 0.18);
-}
-
-.rep-stat,
-.rep-growth,
-.rep-card {
-    padding: 18px 18px 16px;
-}
-
-.rep-stat strong,
-.rep-growth strong {
-    display: block;
-    margin-top: 6px;
-    font-size: 32px;
-    letter-spacing: -0.8px;
-}
-
-.rep-stat span,
-.rep-growth span,
-.rep-label {
-    color: #64748b;
-    font-size: 13px;
-    font-weight: 600;
-}
-
-.rep-stars {
-    color: #f5b400;
-    letter-spacing: 2px;
-    font-size: 16px;
-}
-
-.rep-bars {
-    display: flex;
-    align-items: flex-end;
-    gap: 6px;
-    height: 42px;
-    margin-top: 14px;
-}
-
-.rep-bars span {
-    display: block;
-    width: 12px;
-    border-radius: 6px 6px 3px 3px;
-    background: #bfdbfe;
-}
-
-.rep-bars span:nth-child(1) { height: 28%; }
-.rep-bars span:nth-child(2) { height: 46%; }
-.rep-bars span:nth-child(3) { height: 38%; }
-.rep-bars span:nth-child(4) { height: 70%; background: #60a5fa; }
-.rep-bars span:nth-child(5) { height: 100%; background: #2563eb; }
-
-.rep-card p {
-    margin: 10px 0 0;
-    color: #1f2937;
-    font-size: 15px;
-    line-height: 1.5;
-}
-
-.rep-private { grid-column: 1 / -1; }
 
 .auth-pane {
     display: flex;
@@ -209,7 +183,7 @@ span.auth-nav-link {
     justify-content: center;
     overflow: auto;
     padding: 36px 48px;
-    background: #f4f7fb;
+    background: #ffffff;
 }
 
 .auth-panel-wrap {
@@ -818,29 +792,25 @@ body.page-leaving {
 
     <div class="auth-shell">
         <section class="auth-hero">
-            <div class="auth-hero-copy">
-                <h2>Turn customer feedback into growth.</h2>
-                <p>Collect feedback, improve your reputation, and grow your business with ReviewRise.</p>
-            </div>
-            <div class="reputation-board" aria-hidden="true">
-                <div class="rep-stat">
-                    <div class="rep-stars">★★★★★</div>
+            <img
+                class="auth-hero-photo"
+                src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&amp;fit=crop&amp;w=1800&amp;q=80"
+                alt=""
+            >
+            <div class="auth-hero-shade"></div>
+            <div class="auth-hero-badges" aria-hidden="true">
+                <div class="auth-badge">
                     <strong>4.8</strong>
                     <span>Average rating</span>
                 </div>
-                <div class="rep-growth">
+                <div class="auth-badge">
                     <strong>+32%</strong>
                     <span>More positive reviews</span>
-                    <div class="rep-bars"><span></span><span></span><span></span><span></span><span></span></div>
                 </div>
-                <div class="rep-card">
-                    <div class="rep-stars">★★★★★</div>
-                    <p>“Excellent service and very friendly staff.”</p>
-                </div>
-                <div class="rep-card rep-private">
-                    <span class="rep-label">Private feedback</span>
-                    <p>“Everything was great, except the check-in took a little longer.”</p>
-                </div>
+            </div>
+            <div class="auth-hero-copy">
+                <h2>Turn customer feedback into growth.</h2>
+                <p>Collect feedback, improve your reputation, and grow your business with ReviewRise.</p>
             </div>
         </section>
 
