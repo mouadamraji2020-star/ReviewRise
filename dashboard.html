@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ReviewRise Dashboard</title>
+<script>
+if (!localStorage.getItem("reviewrise_token") && !localStorage.getItem("reviewrise_refresh_token")) {
+    document.documentElement.classList.add("reviewrise-signed-out");
+}
+</script>
 
 <style>
 * {
@@ -22,6 +27,10 @@ body {
 /* ===== REVIEWRISE PROFESSIONAL LOGIN ===== */
 
 /* ===== ReviewRise Login ===== */
+
+html.reviewrise-signed-out #loginSection {
+    display: flex !important;
+}
 
 #loginSection {
     min-height: 100vh;
@@ -127,31 +136,86 @@ body {
     box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.08);
 }
 
-#login {
+
+#login:active,
+.auth-submit:active {
+    transform: scale(0.99);
+}
+
+#login,
+.auth-submit {
     display: block;
     width: 100%;
     height: 54px;
     margin-top: 8px;
-
     border: none;
     border-radius: 12px;
     background: #111827;
     color: #ffffff;
-
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
-
-    transition: background 0.2s ease,
-                transform 0.15s ease;
+    transition: background 0.2s ease, transform 0.15s ease;
 }
 
-#login:hover {
+#login:hover,
+.auth-submit:hover {
     background: #1f2937;
 }
 
-#login:active {
-    transform: scale(0.99);
+#login:disabled,
+.auth-submit:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.login-label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.login-label-row label {
+    margin-bottom: 0;
+}
+
+.auth-text-link,
+.auth-switch button {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #2563eb;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.auth-switch {
+    margin: 18px 0 0;
+    color: #6b7280;
+    font-size: 14px;
+    text-align: center;
+}
+
+.auth-message {
+    min-height: 20px;
+    margin: 14px 0 0;
+    color: #b91c1c;
+    font-size: 14px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.auth-message.success {
+    color: #047857;
+}
+
+.auth-panel[hidden] {
+    display: none;
 }
 
 #loginMessage {
@@ -574,38 +638,108 @@ body.page-leaving {
             <h1>ReviewRise</h1>
         </div>
 
-        <h2>Welcome back</h2>
-        <p class="login-subtitle">
-            Sign in to manage your reviews and customer feedback.
-        </p>
+        <div id="authSignIn" class="auth-panel">
+            <h2>Welcome back</h2>
+            <p class="login-subtitle">
+                Sign in to manage your reviews and customer feedback.
+            </p>
 
-        <div class="login-field">
-            <label for="email">Email address</label>
-            <input
-                id="email"
-                type="email"
-                placeholder="name@company.com"
-                autocomplete="email"
-            >
+            <form id="signInForm">
+                <div class="login-field">
+                    <label for="email">Email address</label>
+                    <input
+                        id="email"
+                        type="email"
+                        placeholder="name@company.com"
+                        autocomplete="email"
+                    >
+                </div>
+
+                <div class="login-field">
+                    <div class="login-label-row">
+                        <label for="password">Password</label>
+                        <button id="showForgotPassword" class="auth-text-link" type="button">Forgot password?</button>
+                    </div>
+                    <input
+                        id="password"
+                        type="password"
+                        placeholder="Enter your password"
+                        autocomplete="current-password"
+                    >
+                </div>
+
+                <button id="login" class="auth-submit" type="submit">Sign In</button>
+                <p id="loginMessage" class="auth-message" role="status"></p>
+            </form>
+
+            <p class="auth-switch">
+                New to ReviewRise?
+                <button id="showSignUp" type="button">Create account</button>
+            </p>
+
+            <p class="login-security">
+                🔒 Secure sign in
+            </p>
         </div>
 
-        <div class="login-field">
-            <label for="password">Password</label>
-            <input
-                id="password"
-                type="password"
-                placeholder="Enter your password"
-                autocomplete="current-password"
-            >
+        <div id="authSignUp" class="auth-panel" hidden>
+            <h2>Create your account</h2>
+            <p class="login-subtitle">
+                Start collecting private feedback and Google reviews.
+            </p>
+
+            <form id="signUpForm">
+                <div class="login-field">
+                    <label for="signUpName">Full name</label>
+                    <input id="signUpName" type="text" placeholder="Your full name" autocomplete="name">
+                </div>
+                <div class="login-field">
+                    <label for="signUpEmail">Email address</label>
+                    <input id="signUpEmail" type="email" placeholder="name@company.com" autocomplete="email">
+                </div>
+                <div class="login-field">
+                    <label for="signUpPassword">Password</label>
+                    <input id="signUpPassword" type="password" placeholder="At least 8 characters" autocomplete="new-password">
+                </div>
+                <div class="login-field">
+                    <label for="signUpPasswordConfirm">Confirm password</label>
+                    <input id="signUpPasswordConfirm" type="password" placeholder="Re-enter your password" autocomplete="new-password">
+                </div>
+                <button id="signUpButton" class="auth-submit" type="submit">Create account</button>
+                <p id="signUpMessage" class="auth-message" role="status"></p>
+            </form>
+
+            <p class="auth-switch">
+                Already have an account?
+                <button id="showSignInFromSignUp" type="button">Sign in</button>
+            </p>
         </div>
 
-        <button id="login" type="button">Sign In</button>
+        <div id="authForgot" class="auth-panel" hidden>
+            <h2>Reset your password</h2>
+            <p class="login-subtitle">
+                Enter the email address for your ReviewRise account.
+            </p>
 
-        <p id="loginMessage"></p>
+            <form id="forgotForm">
+                <div class="login-field">
+                    <label for="forgotEmail">Email address</label>
+                    <input id="forgotEmail" type="email" placeholder="name@company.com" autocomplete="email">
+                </div>
+                <button id="forgotButton" class="auth-submit" type="submit">Send reset link</button>
+                <p id="forgotMessage" class="auth-message" role="status"></p>
+            </form>
 
-        <p class="login-security">
-            🔒 Secure sign in
-        </p>
+            <p class="auth-switch">
+                <button id="showSignInFromForgot" type="button">Back to sign in</button>
+            </p>
+        </div>
+
+        <div id="authCheckEmail" class="auth-panel" hidden>
+            <h2 id="checkEmailTitle">Check your email</h2>
+            <p id="checkEmailText" class="login-subtitle"></p>
+            <button id="showSignInFromCheck" class="auth-submit" type="button">Back to sign in</button>
+        </div>
 
     </div>
 </div>
@@ -850,55 +984,376 @@ function renderDashboardFeedback(feedback) {
     });
 }
   
-async function login() {
+function reviewRiseUserId(token) {
+  try {
+    const payload = token.split(".")[1];
+    const json = JSON.parse(atob(payload.replace(/-/g, "+").replace(/_/g, "/")));
+    return json.sub || null;
+  } catch (error) {
+    return null;
+  }
+}
 
-  const email =
-  document.getElementById("email").value;
+function isValidEmail(value) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
 
-  const password =
-  document.getElementById("password").value;
+function showAuthPanel(panelId) {
+  document.querySelectorAll(".auth-panel").forEach(function (panel) {
+    panel.hidden = panel.id !== panelId;
+  });
+}
+
+function setAuthMessage(elementId, text, isSuccess) {
+  const element = document.getElementById(elementId);
+  element.textContent = text || "";
+  element.classList.toggle("success", !!isSuccess);
+}
+
+function reviewRisePageUrl(fileName) {
+  return new URL(fileName, window.location.href).href;
+}
+
+function saveAuthSession(accessToken, refreshToken) {
+  localStorage.setItem("reviewrise_token", accessToken);
+
+  if (refreshToken) {
+    localStorage.setItem("reviewrise_refresh_token", refreshToken);
+  }
+
+  localStorage.removeItem(FEEDBACK_DATA_CACHE_KEY);
+}
+
+async function saveProfileNameIfEmpty(accessToken, fullName) {
+  const userId = reviewRiseUserId(accessToken);
+  const name = (fullName || "").trim();
+
+  if (!userId || !name) {
+    return;
+  }
 
   const response = await fetch(
-    SUPABASE_URL + "/auth/v1/token?grant_type=password",
+    SUPABASE_URL + "/rest/v1/profiles?id=eq." + encodeURIComponent(userId) + "&select=full_name",
     {
-      method: "POST",
-
       headers: {
         "apikey": SUPABASE_KEY,
-        "Content-Type": "application/json"
-      },
+        "Authorization": "Bearer " + accessToken
+      }
+    }
+  );
 
+  if (!response.ok) {
+    return;
+  }
+
+  const rows = await response.json();
+  const existingName = rows && rows[0] && rows[0].full_name;
+
+  if (existingName && String(existingName).trim()) {
+    return;
+  }
+
+  await saveProfileFullName(accessToken, name);
+}
+
+async function saveProfileFullName(accessToken, fullName) {
+  const userId = reviewRiseUserId(accessToken);
+  const name = (fullName || "").trim();
+
+  if (!userId || !name) {
+    return;
+  }
+
+  const headers = {
+    "apikey": SUPABASE_KEY,
+    "Authorization": "Bearer " + accessToken,
+    "Content-Type": "application/json",
+    "Prefer": "return=representation"
+  };
+
+  const response = await fetch(
+    SUPABASE_URL + "/rest/v1/profiles?id=eq." + encodeURIComponent(userId),
+    {
+      method: "PATCH",
+      headers: headers,
       body: JSON.stringify({
-        email: email,
-        password: password
+        full_name: name
       })
     }
   );
 
-  const data = await response.json();
-
   if (!response.ok) {
-
-    document.getElementById("loginMessage")
-      .textContent = "Incorrect email or password.";
-
     return;
   }
 
-  localStorage.setItem(
-    "reviewrise_token",
-    data.access_token
+  const rows = await response.json();
+
+  if (!Array.isArray(rows) || rows.length > 0) {
+    return;
+  }
+
+  await new Promise(function (resolve) {
+    setTimeout(resolve, 400);
+  });
+
+  const retryResponse = await fetch(
+    SUPABASE_URL + "/rest/v1/profiles?id=eq." + encodeURIComponent(userId),
+    {
+      method: "PATCH",
+      headers: headers,
+      body: JSON.stringify({
+        full_name: name
+      })
+    }
   );
-  
-localStorage.setItem(
-    "reviewrise_refresh_token",
-    data.refresh_token
-);
 
-  localStorage.removeItem(FEEDBACK_DATA_CACHE_KEY);
-  
-  showDashboard();
+  if (!retryResponse.ok) {
+    return;
+  }
 
+  const retryRows = await retryResponse.json();
+
+  if (Array.isArray(retryRows) && retryRows.length === 0) {
+    await fetch(SUPABASE_URL + "/rest/v1/profiles", {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify({
+        id: userId,
+        full_name: name
+      })
+    });
+  }
+}
+
+async function login(event) {
+  if (event) {
+    event.preventDefault();
+  }
+
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  const button = document.getElementById("login");
+
+  if (!email || !password) {
+    setAuthMessage("loginMessage", "Enter your email address and password.");
+    return;
+  }
+
+  if (!isValidEmail(email)) {
+    setAuthMessage("loginMessage", "Enter a valid email address.");
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = "Signing in...";
+  setAuthMessage("loginMessage", "");
+
+  try {
+    const response = await fetch(
+      SUPABASE_URL + "/auth/v1/token?grant_type=password",
+      {
+        method: "POST",
+        headers: {
+          "apikey": SUPABASE_KEY,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok || !data.access_token) {
+      setAuthMessage("loginMessage", "Incorrect email or password.");
+      return;
+    }
+
+    saveAuthSession(data.access_token, data.refresh_token);
+    showDashboard();
+
+    const signedInName = data.user && data.user.user_metadata && data.user.user_metadata.full_name;
+    saveProfileNameIfEmpty(data.access_token, signedInName).catch(function (profileError) {
+      console.error("Could not save profile name:", profileError);
+    });
+  } catch (error) {
+    console.error("Sign in failed:", error);
+    setAuthMessage("loginMessage", "We could not reach ReviewRise. Please try again.");
+  } finally {
+    button.disabled = false;
+    button.textContent = "Sign In";
+  }
+}
+
+async function signUp(event) {
+  event.preventDefault();
+
+  const fullName = document.getElementById("signUpName").value.trim();
+  const email = document.getElementById("signUpEmail").value.trim();
+  const password = document.getElementById("signUpPassword").value;
+  const confirmPassword = document.getElementById("signUpPasswordConfirm").value;
+  const button = document.getElementById("signUpButton");
+
+  if (!fullName || !email || !password || !confirmPassword) {
+    setAuthMessage("signUpMessage", "Fill in your name, email, and password.");
+    return;
+  }
+
+  if (!isValidEmail(email)) {
+    setAuthMessage("signUpMessage", "Enter a valid email address.");
+    return;
+  }
+
+  if (password.length < 8) {
+    setAuthMessage("signUpMessage", "Use a password with at least 8 characters.");
+    return;
+  }
+
+  if (password !== confirmPassword) {
+    setAuthMessage("signUpMessage", "Passwords do not match.");
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = "Creating account...";
+  setAuthMessage("signUpMessage", "");
+
+  try {
+    const response = await fetch(
+      SUPABASE_URL + "/auth/v1/signup?redirect_to=" + encodeURIComponent(reviewRisePageUrl("dashboard.html")),
+      {
+        method: "POST",
+        headers: {
+          "apikey": SUPABASE_KEY,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+          data: {
+            full_name: fullName
+          }
+        })
+      }
+    );
+
+    let data = null;
+
+    try {
+      data = await response.json();
+    } catch (parseError) {
+      data = null;
+    }
+
+    if (!response.ok) {
+      const rawMessage = data && (data.msg || data.error_description || data.message || data.error || "");
+      const alreadyRegistered = /already registered|already exists/i.test(rawMessage);
+      setAuthMessage(
+        "signUpMessage",
+        alreadyRegistered
+          ? "An account with this email already exists. Sign in instead."
+          : "We could not create your account. Please try again."
+      );
+      return;
+    }
+
+    const accessToken = data && (data.access_token || (data.session && data.session.access_token));
+    const refreshToken = data && (data.refresh_token || (data.session && data.session.refresh_token));
+
+    if (accessToken) {
+      saveAuthSession(accessToken, refreshToken);
+
+      try {
+        await saveProfileFullName(accessToken, fullName);
+      } catch (profileError) {
+        console.error("Could not save profile name:", profileError);
+      }
+
+      showDashboard();
+      return;
+    }
+
+    document.getElementById("checkEmailTitle").textContent = "Check your email";
+    document.getElementById("checkEmailText").textContent =
+      "Confirm your email before signing in. We sent a confirmation link to " + email + ".";
+    showAuthPanel("authCheckEmail");
+  } catch (error) {
+    console.error("Sign up failed:", error);
+    setAuthMessage("signUpMessage", "We could not reach ReviewRise. Please try again.");
+  } finally {
+    button.disabled = false;
+    button.textContent = "Create account";
+  }
+}
+
+async function requestPasswordReset(event) {
+  event.preventDefault();
+
+  const email = document.getElementById("forgotEmail").value.trim();
+  const button = document.getElementById("forgotButton");
+
+  if (!email) {
+    setAuthMessage("forgotMessage", "Enter your email address.");
+    return;
+  }
+
+  if (!isValidEmail(email)) {
+    setAuthMessage("forgotMessage", "Enter a valid email address.");
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = "Sending...";
+  setAuthMessage("forgotMessage", "");
+
+  try {
+    const response = await fetch(
+      SUPABASE_URL + "/auth/v1/recover?redirect_to=" + encodeURIComponent(reviewRisePageUrl("reset-password.html")),
+      {
+        method: "POST",
+        headers: {
+          "apikey": SUPABASE_KEY,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          email: email
+        })
+      }
+    );
+
+    let data = null;
+
+    try {
+      data = await response.json();
+    } catch (parseError) {
+      data = null;
+    }
+
+    const rawMessage = data && (data.msg || data.error_description || data.message || data.error || "");
+
+    if (response.status === 429) {
+      setAuthMessage("forgotMessage", "Please wait a moment, then request another reset link.");
+      return;
+    }
+
+    if (!response.ok && !/not found|no user/i.test(rawMessage)) {
+      setAuthMessage("forgotMessage", "We could not send a reset link. Please try again.");
+      return;
+    }
+
+    document.getElementById("checkEmailTitle").textContent = "Check your email";
+    document.getElementById("checkEmailText").textContent =
+      "Check your email for a password reset link.";
+    showAuthPanel("authCheckEmail");
+  } catch (error) {
+    console.error("Password reset request failed:", error);
+    setAuthMessage("forgotMessage", "We could not reach ReviewRise. Please try again.");
+  } finally {
+    button.disabled = false;
+    button.textContent = "Send reset link";
+  }
 }
 
 
@@ -956,6 +1411,8 @@ const feedback = await response.json();
 
 
 function showDashboard() {
+
+  document.documentElement.classList.remove("reviewrise-signed-out");
 
   loginSection.style.display =
   "none";
@@ -1037,13 +1494,33 @@ function logout() {
   dashboard.style.display =
   "none";
 
+  document.documentElement.classList.add("reviewrise-signed-out");
+
   loginSection.style.display =
   "flex";
 
+  showAuthPanel("authSignIn");
+
 }
 
-document.getElementById("login")
-    .addEventListener("click", login);
+document.getElementById("signInForm").addEventListener("submit", login);
+document.getElementById("signUpForm").addEventListener("submit", signUp);
+document.getElementById("forgotForm").addEventListener("submit", requestPasswordReset);
+document.getElementById("showSignUp").addEventListener("click", function () {
+  showAuthPanel("authSignUp");
+});
+document.getElementById("showSignInFromSignUp").addEventListener("click", function () {
+  showAuthPanel("authSignIn");
+});
+document.getElementById("showForgotPassword").addEventListener("click", function () {
+  showAuthPanel("authForgot");
+});
+document.getElementById("showSignInFromForgot").addEventListener("click", function () {
+  showAuthPanel("authSignIn");
+});
+document.getElementById("showSignInFromCheck").addEventListener("click", function () {
+  showAuthPanel("authSignIn");
+});
 
 (function restoreSession() {
     const token = localStorage.getItem("reviewrise_token");
@@ -1061,6 +1538,7 @@ document.getElementById("login")
         renderDashboardFeedback(cachedFeedback);
     }
 
+    document.documentElement.classList.remove("reviewrise-signed-out");
     loginSection.style.display = "none";
     dashboard.style.display = "block";
     document.getElementById("mobileMenuBtn").style.display = "block";

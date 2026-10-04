@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Settings - ReviewRise</title>
+<script>
+if (!localStorage.getItem("reviewrise_token") && !localStorage.getItem("reviewrise_refresh_token")) {
+    window.location.replace("dashboard.html");
+}
+</script>
 <style>
 * { box-sizing: border-box; }
 
@@ -462,6 +467,22 @@ body.page-leaving { opacity: 0; }
 .btn-danger:hover { background: #b91c1c; }
 .btn-ghost { border: 1px solid #fecaca; background: #ffffff; color: #b91c1c; }
 .btn-ghost:hover { background: #fef2f2; }
+.btn:disabled { opacity: 0.65; cursor: not-allowed; }
+
+.settings-status {
+    margin: 12px 0 0;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.settings-status.error { color: #b91c1c; }
+.settings-status.success { color: #047857; }
+
+.password-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
 
 .logo-row {
     display: flex;
@@ -780,7 +801,8 @@ body.page-leaving { opacity: 0; }
                         <label for="emailAddress">Email Address</label>
                         <input id="emailAddress" type="email" placeholder="name@company.com" autocomplete="email">
                     </div>
-                    <button class="btn btn-primary" type="button">Save Changes</button>
+                    <button class="btn btn-primary" type="button" id="saveAccountBtn" disabled>Save Changes</button>
+                    <p id="accountStatus" class="settings-status" role="status"></p>
                 </div>
             </section>
 
@@ -789,7 +811,22 @@ body.page-leaving { opacity: 0; }
                 <div class="card">
                     <h3>Password</h3>
                     <p class="field-hint" style="margin-top:0; margin-bottom:16px;">Choose a strong password that you do not use elsewhere.</p>
-                    <button class="btn btn-secondary" type="button">Change Password</button>
+                    <button class="btn btn-secondary" type="button" id="showPasswordForm">Change Password</button>
+                    <div id="passwordChangeForm" hidden>
+                        <div class="form-group">
+                            <label for="newPassword">New Password</label>
+                            <input id="newPassword" type="password" autocomplete="new-password" placeholder="At least 8 characters">
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmNewPassword">Confirm New Password</label>
+                            <input id="confirmNewPassword" type="password" autocomplete="new-password" placeholder="Re-enter your new password">
+                        </div>
+                        <div class="password-actions">
+                            <button class="btn btn-primary" type="button" id="updatePasswordBtn">Update Password</button>
+                            <button class="btn btn-secondary" type="button" id="cancelPasswordBtn">Cancel</button>
+                        </div>
+                    </div>
+                    <p id="passwordStatus" class="settings-status" role="status"></p>
                 </div>
                 <div class="card">
                     <h3>Current session</h3>
@@ -834,8 +871,9 @@ body.page-leaving { opacity: 0; }
                             <strong>Email me when new private feedback is received.</strong>
                             <span>Get an email whenever a customer leaves a private comment below your review threshold.</span>
                         </div>
-                        <button class="toggle" id="feedbackEmailToggle" type="button" aria-pressed="false" aria-label="Email me when new private feedback is received"><span class="toggle-knob"></span></button>
+                        <button class="toggle" id="feedbackEmailToggle" type="button" aria-pressed="false" aria-label="Email me when new private feedback is received" disabled><span class="toggle-knob"></span></button>
                     </div>
+                    <p id="notificationStatus" class="settings-status" role="status"></p>
                 </div>
             </section>
 
@@ -951,12 +989,413 @@ document.querySelectorAll(".threshold-btn").forEach(function (button) {
     });
 });
 
-["feedbackEmailToggle", "privateFeedbackToggle", "googleRedirectToggle"].forEach(function (id) {
+["privateFeedbackToggle", "googleRedirectToggle"].forEach(function (id) {
     document.getElementById(id).addEventListener("click", function () {
         const isOn = this.classList.toggle("on");
         this.setAttribute("aria-pressed", isOn ? "true" : "false");
     });
 });
+
+const SUPABASE_URL = "https://intlhwmvldxdiytemjlr.supabase.co";
+const SUPABASE_KEY = "sb_publishable_0KjZZApJCuvTEJH3nNyLUg_aps6aXaA";
+
+let accountUserId = null;
+let currentLoginEmail = "";
+
+function setSettingsStatus(elementId, text, type) {
+    const element = document.getElementById(elementId);
+    element.textContent = text || "";
+    element.classList.remove("error", "success");
+    if (type) {
+        element.classList.add(type);
+    }
+}
+
+function isValidEmail(value) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+function setNotificationToggle(isOn) {
+    const toggle = document.getElementById("feedbackEmailToggle");
+    toggle.classList.toggle("on", !!isOn);
+    toggle.setAttribute("aria-pressed", isOn ? "true" : "false");
+}
+
+async function getValidAccessToken() {
+    const currentToken = localStorage.getItem("reviewrise_token");
+    const refreshToken = localStorage.getItem("reviewrise_refresh_token");
+
+    if (!refreshToken) {
+        return currentToken;
+    }
+
+    try {
+        const response = await fetch(
+            SUPABASE_URL + "/auth/v1/token?grant_type=refresh_token",
+            {
+                method: "POST",
+                headers: {
+                    "apikey": SUPABASE_KEY,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    refresh_token: refreshToken
+                })
+            }
+        );
+
+        if (!response.ok) {
+            return null;
+        }
+
+        const data = await response.json();
+        localStorage.setItem("reviewrise_token", data.access_token);
+
+        if (data.refresh_token) {
+            localStorage.setItem("reviewrise_refresh_token", data.refresh_token);
+        }
+
+        return data.access_token;
+    } catch (error) {
+        console.error("Token refresh failed:", error);
+        return currentToken;
+    }
+}
+
+function authHeaders(token, json) {
+    const headers = {
+        "apikey": SUPABASE_KEY,
+        "Authorization": "Bearer " + token
+    };
+
+    if (json) {
+        headers["Content-Type"] = "application/json";
+        headers["Prefer"] = "return=representation";
+    }
+
+    return headers;
+}
+
+async function updateOwnProfile(token, changes) {
+    const response = await fetch(
+        SUPABASE_URL + "/rest/v1/profiles?id=eq." + encodeURIComponent(accountUserId),
+        {
+            method: "PATCH",
+            headers: authHeaders(token, true),
+            body: JSON.stringify(changes)
+        }
+    );
+
+    if (response.status === 401 || response.status === 403) {
+        logout();
+        return null;
+    }
+
+    if (!response.ok) {
+        return false;
+    }
+
+    const rows = await response.json();
+
+    if (Array.isArray(rows) && rows.length > 0) {
+        return true;
+    }
+
+    const createResponse = await fetch(SUPABASE_URL + "/rest/v1/profiles", {
+        method: "POST",
+        headers: authHeaders(token, true),
+        body: JSON.stringify(Object.assign({ id: accountUserId }, changes))
+    });
+
+    if (createResponse.status === 401 || createResponse.status === 403) {
+        logout();
+        return null;
+    }
+
+    return createResponse.ok;
+}
+
+async function loadAccountSettings() {
+    const token = await getValidAccessToken();
+
+    if (!token) {
+        logout();
+        return;
+    }
+
+    const userResponse = await fetch(SUPABASE_URL + "/auth/v1/user", {
+        headers: authHeaders(token)
+    });
+
+    if (userResponse.status === 401 || userResponse.status === 403) {
+        logout();
+        return;
+    }
+
+    if (!userResponse.ok) {
+        setSettingsStatus("accountStatus", "Your account details could not be loaded.", "error");
+        return;
+    }
+
+    const user = await userResponse.json();
+    accountUserId = user.id;
+    currentLoginEmail = user.email || "";
+    document.getElementById("emailAddress").value = currentLoginEmail;
+
+    const profileResponse = await fetch(
+        SUPABASE_URL + "/rest/v1/profiles?id=eq." + encodeURIComponent(accountUserId) + "&select=full_name,email_on_private_feedback",
+        {
+            headers: authHeaders(token)
+        }
+    );
+
+    if (profileResponse.status === 401 || profileResponse.status === 403) {
+        logout();
+        return;
+    }
+
+    if (!profileResponse.ok) {
+        setSettingsStatus("accountStatus", "Your profile could not be loaded.", "error");
+        document.getElementById("saveAccountBtn").disabled = false;
+        document.getElementById("feedbackEmailToggle").disabled = false;
+        return;
+    }
+
+    const profiles = await profileResponse.json();
+    const profile = Array.isArray(profiles) ? profiles[0] : null;
+
+    document.getElementById("fullName").value = profile && profile.full_name ? profile.full_name : "";
+    setNotificationToggle(!!(profile && profile.email_on_private_feedback));
+    document.getElementById("saveAccountBtn").disabled = false;
+    document.getElementById("feedbackEmailToggle").disabled = false;
+}
+
+document.getElementById("saveAccountBtn").addEventListener("click", async function () {
+    const button = this;
+    const fullName = document.getElementById("fullName").value.trim();
+    const email = document.getElementById("emailAddress").value.trim();
+
+    if (!fullName) {
+        setSettingsStatus("accountStatus", "Enter your full name.", "error");
+        return;
+    }
+
+    if (!email || !isValidEmail(email)) {
+        setSettingsStatus("accountStatus", "Enter a valid email address.", "error");
+        return;
+    }
+
+    button.disabled = true;
+    button.textContent = "Saving...";
+    setSettingsStatus("accountStatus", "");
+
+    try {
+        const token = await getValidAccessToken();
+
+        if (!token || !accountUserId) {
+            logout();
+            return;
+        }
+
+        const profileSaved = await updateOwnProfile(token, { full_name: fullName });
+
+        if (profileSaved === null) {
+            return;
+        }
+
+        if (!profileSaved) {
+            setSettingsStatus("accountStatus", "Your name could not be saved. Please try again.", "error");
+            return;
+        }
+
+        if (email === currentLoginEmail) {
+            setSettingsStatus("accountStatus", "Account details saved.", "success");
+            return;
+        }
+
+        const emailResponse = await fetch(SUPABASE_URL + "/auth/v1/user", {
+            method: "PUT",
+            headers: authHeaders(token, true),
+            body: JSON.stringify({ email: email })
+        });
+
+        let emailData = null;
+
+        try {
+            emailData = await emailResponse.json();
+        } catch (parseError) {
+            emailData = null;
+        }
+
+        if (emailResponse.status === 401 || emailResponse.status === 403) {
+            logout();
+            return;
+        }
+
+        if (!emailResponse.ok) {
+            setSettingsStatus("accountStatus", "Your name was saved, but the email address could not be changed.", "error");
+            document.getElementById("emailAddress").value = currentLoginEmail;
+            return;
+        }
+
+        const confirmedEmail = emailData && emailData.email ? emailData.email : currentLoginEmail;
+        const pendingEmail = emailData && emailData.new_email;
+        const confirmationRequired = confirmedEmail.toLowerCase() !== email.toLowerCase() || !!pendingEmail;
+
+        if (confirmationRequired) {
+            document.getElementById("emailAddress").value = confirmedEmail;
+            currentLoginEmail = confirmedEmail;
+            setSettingsStatus("accountStatus", "Your name was saved. Check your email to confirm the new login address. It will not change until you confirm it.", "success");
+            return;
+        }
+
+        currentLoginEmail = confirmedEmail;
+        document.getElementById("emailAddress").value = confirmedEmail;
+        setSettingsStatus("accountStatus", "Account details saved.", "success");
+    } catch (error) {
+        console.error("Account save failed:", error);
+        setSettingsStatus("accountStatus", "We could not reach ReviewRise. Please try again.", "error");
+    } finally {
+        button.disabled = false;
+        button.textContent = "Save Changes";
+    }
+});
+
+document.getElementById("feedbackEmailToggle").addEventListener("click", async function () {
+    const toggle = this;
+
+    if (toggle.disabled) {
+        return;
+    }
+
+    const nextValue = !toggle.classList.contains("on");
+    setNotificationToggle(nextValue);
+    toggle.disabled = true;
+    setSettingsStatus("notificationStatus", "");
+
+    try {
+        const token = await getValidAccessToken();
+
+        if (!token || !accountUserId) {
+            logout();
+            return;
+        }
+
+        const saved = await updateOwnProfile(token, {
+            email_on_private_feedback: nextValue
+        });
+
+        if (saved === null) {
+            return;
+        }
+
+        if (!saved) {
+            setNotificationToggle(!nextValue);
+            setSettingsStatus("notificationStatus", "This preference could not be saved. Please try again.", "error");
+            return;
+        }
+
+        setSettingsStatus("notificationStatus", nextValue ? "Email notifications are on." : "Email notifications are off.", "success");
+    } catch (error) {
+        console.error("Notification save failed:", error);
+        setNotificationToggle(!nextValue);
+        setSettingsStatus("notificationStatus", "We could not reach ReviewRise. Please try again.", "error");
+    } finally {
+        toggle.disabled = false;
+    }
+});
+
+document.getElementById("showPasswordForm").addEventListener("click", function () {
+    document.getElementById("passwordChangeForm").hidden = false;
+    this.hidden = true;
+    setSettingsStatus("passwordStatus", "");
+    document.getElementById("newPassword").focus();
+});
+
+document.getElementById("cancelPasswordBtn").addEventListener("click", function () {
+    document.getElementById("passwordChangeForm").hidden = true;
+    document.getElementById("showPasswordForm").hidden = false;
+    document.getElementById("newPassword").value = "";
+    document.getElementById("confirmNewPassword").value = "";
+    setSettingsStatus("passwordStatus", "");
+});
+
+document.getElementById("updatePasswordBtn").addEventListener("click", async function () {
+    const button = this;
+    const newPassword = document.getElementById("newPassword").value;
+    const confirmPassword = document.getElementById("confirmNewPassword").value;
+
+    if (newPassword.length < 8) {
+        setSettingsStatus("passwordStatus", "Use a password with at least 8 characters.", "error");
+        return;
+    }
+
+    if (newPassword !== confirmPassword) {
+        setSettingsStatus("passwordStatus", "Passwords do not match.", "error");
+        return;
+    }
+
+    button.disabled = true;
+    button.textContent = "Updating...";
+    setSettingsStatus("passwordStatus", "");
+
+    try {
+        const token = await getValidAccessToken();
+
+        if (!token) {
+            logout();
+            return;
+        }
+
+        const response = await fetch(SUPABASE_URL + "/auth/v1/user", {
+            method: "PUT",
+            headers: authHeaders(token, true),
+            body: JSON.stringify({
+                password: newPassword
+            })
+        });
+
+        let data = null;
+
+        try {
+            data = await response.json();
+        } catch (parseError) {
+            data = null;
+        }
+
+        if (response.status === 401 || response.status === 403) {
+            logout();
+            return;
+        }
+
+        if (!response.ok) {
+            setSettingsStatus("passwordStatus", "Your password could not be updated. Please try again.", "error");
+            return;
+        }
+
+        if (data && data.access_token) {
+            localStorage.setItem("reviewrise_token", data.access_token);
+        }
+
+        if (data && data.refresh_token) {
+            localStorage.setItem("reviewrise_refresh_token", data.refresh_token);
+        }
+
+        document.getElementById("newPassword").value = "";
+        document.getElementById("confirmNewPassword").value = "";
+        document.getElementById("passwordChangeForm").hidden = true;
+        document.getElementById("showPasswordForm").hidden = false;
+        setSettingsStatus("passwordStatus", "Password updated successfully.", "success");
+    } catch (error) {
+        console.error("Password update failed:", error);
+        setSettingsStatus("passwordStatus", "We could not reach ReviewRise. Please try again.", "error");
+    } finally {
+        button.disabled = false;
+        button.textContent = "Update Password";
+    }
+});
+
+loadAccountSettings();
 </script>
 </body>
 </html>
