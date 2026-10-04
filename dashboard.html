@@ -64,31 +64,45 @@ html.reviewrise-signed-out #loginSection {
 .auth-topnav-links {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
 }
 
 .auth-nav-link {
-    height: 40px;
-    padding: 0 16px;
+    height: 36px;
+    padding: 0 12px;
     border: none;
     border-radius: 10px;
     background: transparent;
-    color: #334155;
+    color: #475569;
     font-family: inherit;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 600;
     cursor: pointer;
-}
-
-.auth-nav-link.active {
-    background: #eff6ff;
-    color: #1d4ed8;
 }
 
 span.auth-nav-link {
     display: inline-flex;
     align-items: center;
     cursor: default;
+}
+
+span.auth-nav-link:hover { color: #0f172a; }
+
+#authHeaderLogin {
+    height: 36px;
+    margin-left: 8px;
+    padding: 0 16px;
+    border: 1px solid #c9d7f2;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #1d4ed8;
+    font-size: 13px;
+    letter-spacing: 0.01em;
+}
+
+#authHeaderLogin:hover {
+    background: #f8fbff;
+    border-color: #93b4ef;
 }
 
 .auth-shell {
@@ -201,60 +215,82 @@ span.auth-nav-link {
     justify-content: center;
     overflow: auto;
     padding: 36px 48px;
-    background: #f4f7fb;
+    background:
+        radial-gradient(ellipse at 50% 38%, rgba(37, 99, 235, 0.09), transparent 58%),
+        #f3f6fb;
     border-left: 1px solid #e6ecf5;
 }
 
 .auth-panel-wrap {
     width: 100%;
-    max-width: 420px;
+    max-width: 540px;
+    padding: 36px 36px 28px;
+    background: rgba(255, 255, 255, 0.88);
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    border-radius: 24px;
+    box-shadow:
+        0 1px 2px rgba(15, 23, 42, 0.04),
+        0 20px 50px rgba(15, 40, 80, 0.08);
+    backdrop-filter: blur(16px);
 }
 
 .auth-stage {
     min-height: 560px;
 }
 
+.auth-kicker {
+    margin: 0 0 10px;
+    color: #2563eb;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
 .auth-intro h2 {
     margin: 0 0 8px;
-    color: #0f172a;
-    font-size: 32px;
-    letter-spacing: -0.7px;
+    color: #0b1730;
+    font-size: 34px;
+    font-weight: 700;
+    letter-spacing: -0.8px;
 }
 
 .auth-intro .login-subtitle,
 .auth-panel .login-subtitle {
-    margin: 0 0 22px;
-    color: #64748b;
+    margin: 0 0 26px;
+    color: #7b8798;
     font-size: 15px;
-    line-height: 1.5;
+    font-weight: 400;
+    line-height: 1.55;
 }
 
 .auth-tabs {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 6px;
-    margin-bottom: 22px;
-    padding: 5px;
-    background: #e8eef8;
-    border-radius: 14px;
+    gap: 4px;
+    margin-bottom: 26px;
+    padding: 4px;
+    background: #eef3f9;
+    border-radius: 16px;
 }
 
 .auth-tab {
     height: 42px;
     border: none;
-    border-radius: 10px;
+    border-radius: 12px;
     background: transparent;
-    color: #475569;
+    color: #64748b;
     font-family: inherit;
     font-size: 14px;
-    font-weight: 700;
+    font-weight: 600;
     cursor: pointer;
+    transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
 }
 
 .auth-tab.active {
     background: #ffffff;
-    color: #1d4ed8;
-    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+    color: #0f2748;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05), 0 8px 18px rgba(15, 23, 42, 0.06);
 }
 
 .auth-panel h2 {
@@ -269,28 +305,30 @@ span.auth-nav-link {
 .login-field label {
     display: block;
     margin-bottom: 8px;
-    color: #334155;
-    font-size: 14px;
+    color: #0f2748;
+    font-size: 13px;
     font-weight: 600;
 }
 
 .login-field input {
     display: block;
     width: 100%;
-    height: 52px;
+    height: 54px;
     padding: 0 16px;
-    background: #ffffff;
-    border: 1px solid #d6deea;
-    border-radius: 12px;
-    color: #111827;
-    font-size: 16px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    color: #0b1730;
+    font-size: 15px;
     font-family: inherit;
     outline: none;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
 }
 
 .login-field input::placeholder { color: #94a3b8; }
 
 .login-field input:focus {
+    background: #ffffff;
     border-color: #2563eb;
     box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.14);
 }
@@ -314,6 +352,12 @@ span.auth-nav-link {
     background: transparent;
     color: #64748b;
     cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.password-toggle:hover {
+    background: #eef3f9;
+    color: #1d4ed8;
 }
 
 .password-toggle svg {
@@ -330,25 +374,66 @@ span.auth-nav-link {
 .auth-submit {
     display: block;
     width: 100%;
-    height: 52px;
+    height: 54px;
     margin-top: 8px;
     border: none;
-    border-radius: 12px;
-    background: #2563eb;
+    border-radius: 14px;
+    background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%);
+    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.26);
     color: #ffffff;
     font-family: inherit;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 700;
+    letter-spacing: -0.2px;
     cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
 }
 
 #login:hover,
-.auth-submit:hover { background: #1d4ed8; }
+.auth-submit:hover {
+    background: linear-gradient(180deg, #2563eb 0%, #1e40af 100%);
+    box-shadow: 0 12px 22px rgba(37, 99, 235, 0.3);
+    transform: translateY(-1px);
+}
+
+#login:active,
+.auth-submit:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.22);
+}
 
 #login:disabled,
 .auth-submit:disabled {
     opacity: 0.65;
     cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+#showForgotPassword {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+#showForgotPassword:hover { text-decoration: underline; }
+
+.auth-secure {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 8px 0 0;
+    color: #94a3b8;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.auth-secure svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    fill: none;
+    stroke: #64748b;
+    stroke-width: 1.8;
 }
 
 .login-label-row {
@@ -418,13 +503,22 @@ span.auth-nav-link {
     .auth-pane {
         align-items: flex-start;
         padding: 28px 20px 40px;
+        border-left: none;
+    }
+    .auth-panel-wrap {
+        padding: 28px 22px 22px;
+        box-shadow: 0 8px 24px rgba(15, 40, 80, 0.06);
     }
     .auth-intro h2 { font-size: 28px; }
 }
 
 @media (max-width: 480px) {
     .auth-topnav-links span.auth-nav-link { display: none; }
-    .auth-pane { padding: 24px 16px 32px; }
+    .auth-pane { padding: 20px 16px 28px; }
+    .auth-panel-wrap {
+        border-radius: 18px;
+        box-shadow: none;
+    }
 }
 
 /* DASHBOARD */
@@ -844,6 +938,7 @@ body.page-leaving {
         <section class="auth-pane">
             <div class="auth-panel-wrap">
                 <div class="auth-intro">
+                    <p class="auth-kicker">Your review workspace</p>
                     <h2>Welcome to ReviewRise</h2>
                     <p class="login-subtitle">Manage your reputation and customer feedback in one place.</p>
                 </div>
@@ -932,6 +1027,10 @@ body.page-leaving {
                     <button id="showSignInFromCheck" class="auth-submit" type="button">Back to Sign In</button>
                 </div>
                 </div>
+                <p class="auth-secure">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v6c0 4.5 2.8 7.6 7 9 4.2-1.4 7-4.5 7-9V6l-7-3z"/><path d="m9 12 2 2 4-4"/></svg>
+                    Your account and business data stay protected.
+                </p>
             </div>
         </section>
     </div>
