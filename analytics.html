@@ -250,7 +250,7 @@
       font-weight: 500;
     }
 
-    .top-navbar-actions { position: relative; margin-left: auto; display: flex; align-items: center; }
+    .top-navbar-actions { position: relative; margin-left: auto; display: flex; align-items: center; gap: 10px; }
 
     .navbar-icon {
       height: 40px;
@@ -461,9 +461,73 @@
       font-weight: 500;
     }
 
+    .tone-blue { background: linear-gradient(180deg, #f4f8ff 0%, #fff 70%); }
+    .tone-amber { background: linear-gradient(180deg, #fff8ee 0%, #fff 70%); }
+    .tone-rose { background: linear-gradient(180deg, #fff6f6 0%, #fff 70%); }
+    .tone-amber .stat-icon { background: #fff3dc; color: #d09212; }
+    .tone-rose .stat-icon { background: #ffecec; color: #e15b5b; }
+
+    .analytics-tools { display: flex; align-items: center; gap: 8px; }
+
+    .analytics-range,
+    .analytics-export {
+      height: 36px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid #e6edf5;
+      border-radius: 10px;
+      background: #fff;
+      color: #314158;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .analytics-range { padding: 0 10px; color: #7b8ba0; }
+    .analytics-range svg {
+      width: 15px;
+      height: 15px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .analytics-range select {
+      border: none;
+      outline: none;
+      background: transparent;
+      color: #0c1730;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .analytics-export {
+      padding: 0 12px;
+      color: #1d4ed8;
+      cursor: pointer;
+      transition: background 160ms cubic-bezier(0.22, 1, 0.36, 1), border-color 160ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .analytics-export:hover { background: #f5f9ff; border-color: #c5dbff; }
+    .analytics-export:disabled { opacity: 0.45; cursor: default; }
+
+    .analytics-middle,
+    .analytics-bottom {
+      display: grid;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .analytics-middle { grid-template-columns: minmax(0, 1.55fr) minmax(210px, 0.72fr) minmax(200px, 0.66fr); }
+    .analytics-bottom { grid-template-columns: minmax(0, 1.45fr) minmax(260px, 0.8fr); }
+    .analytics-bottom.is-solo { grid-template-columns: minmax(0, 1fr); }
+
     .dash-card {
-      margin-top: 22px;
-      padding: 20px 22px 18px;
+      margin-top: 0;
+      padding: 18px 18px 16px;
+      min-width: 0;
     }
 
     .dash-card h3 {
@@ -482,54 +546,110 @@
       line-height: 1.45;
     }
 
-    #ratingChart {
+    .dash-chart-wrap { position: relative; }
+    .dash-chart-canvas {
+      min-height: 250px;
+      margin-top: 14px;
+      padding: 8px 8px 0;
+      border: 1px solid #f0f4f8;
+      border-radius: 16px;
+      background:
+        radial-gradient(ellipse at 50% 100%, rgba(43, 127, 255, 0.07), transparent 62%),
+        #fbfcfe;
+    }
+    .dash-chart-canvas svg { display: block; width: 100%; height: 250px; }
+    .chart-dot { cursor: pointer; }
+    .chart-tooltip {
+      position: absolute;
+      z-index: 3;
+      padding: 6px 8px;
+      border-radius: 8px;
+      background: #0c1424;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1.3;
+      white-space: nowrap;
+      pointer-events: none;
+      box-shadow: 0 8px 18px rgba(16, 40, 80, 0.16);
+      transform: translate(-50%, -100%);
+    }
+    .chart-tooltip[hidden] { display: none; }
+
+    #ratingChart { min-height: 220px; margin-top: 16px; }
+    .vbars {
       display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 16px;
-      min-height: 220px;
-      margin-top: 18px;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 8px;
+      height: 210px;
     }
-
-    .rating-row {
-      display: grid;
-      grid-template-columns: 52px minmax(0, 1fr) 36px 42px;
-      align-items: center;
-      gap: 12px;
+    .vbar { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; min-width: 0; }
+    .vbar-pct { color: #314158; font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .vbar-track {
+      flex: 1;
+      width: 100%;
+      max-width: 36px;
+      margin: 8px 0;
+      display: flex;
+      align-items: flex-end;
+      border-radius: 8px 8px 4px 4px;
+      background: #f4f7fb;
     }
+    .vbar-fill { width: 100%; border-radius: 8px 8px 3px 3px; min-height: 0; }
+    .vbar-1 { background: #f09595; }
+    .vbar-2 { background: #f0a36a; }
+    .vbar-3 { background: #e7c15a; }
+    .vbar-4 { background: #7eb6ff; }
+    .vbar-5 { background: #2b7fff; }
+    .vbar-label { color: #5c6d84; font-size: 11px; font-weight: 600; white-space: nowrap; }
+    .vbar-label .dist-star { color: #f5b400; }
 
-    .rating-label {
-      color: #314158;
+    .sentiment-layout { display: flex; flex-direction: column; align-items: center; gap: 14px; margin-top: 8px; }
+    .donut { width: 168px; height: 168px; }
+    .donut text { font-family: Inter, Arial, sans-serif; }
+    .sentiment-legend { width: 100%; display: flex; flex-direction: column; gap: 8px; }
+    .legend-row { display: flex; align-items: center; gap: 8px; color: #314158; font-size: 13px; font-weight: 600; }
+    .legend-row span:last-child { margin-left: auto; color: #5c6d84; font-variant-numeric: tabular-nums; }
+    .swatch { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+    .swatch-positive { background: #22a06b; }
+    .swatch-neutral { background: #9aa8b8; }
+    .swatch-negative { background: #ef6b6b; }
+
+    .biz-table-wrap { margin-top: 12px; overflow-x: auto; }
+    .biz-table { width: 100%; border-collapse: collapse; }
+    .biz-table th {
+      padding: 8px 10px;
+      color: #8b97a8;
+      font-size: 11.5px;
+      font-weight: 600;
+      text-align: left;
+      border-bottom: 1px solid #eef2f6;
+    }
+    .biz-table td {
+      padding: 11px 10px;
+      color: #10284d;
       font-size: 13.5px;
       font-weight: 600;
+      border-bottom: 1px solid #f3f6fa;
     }
+    .biz-table tr:last-child td { border-bottom: none; }
+    .biz-table td:nth-child(2),
+    .biz-table td:nth-child(3),
+    .biz-table th:nth-child(2),
+    .biz-table th:nth-child(3) { text-align: right; font-variant-numeric: tabular-nums; }
+    .biz-name { max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-    .dist-star { color: #f5b400; }
-
-    .bar-background {
-      height: 8px;
-      overflow: hidden;
-      border-radius: 99px;
-      background: #eef2f6;
-    }
-
-    .bar {
-      display: block;
-      height: 100%;
-      border-radius: inherit;
-      background: linear-gradient(90deg, #2b7fff, #3ec6ff);
-    }
-
-    .dist-count,
-    .dist-percent {
-      color: #5c6d84;
-      font-size: 12.5px;
+    .insights-list { margin: 14px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .insights-list li {
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: #f7faff;
+      color: #1a2744;
+      font-size: 13.5px;
       font-weight: 600;
-      font-variant-numeric: tabular-nums;
-      text-align: right;
+      line-height: 1.45;
     }
-
-    .dist-percent { color: #8b97a8; font-weight: 500; }
 
     .analytics-empty { padding: 36px 12px 28px; text-align: center; }
     .analytics-empty strong { display: block; color: #0c1730; font-size: 15px; font-weight: 700; }
@@ -558,8 +678,11 @@
       }
     }
 
-    @media (max-width: 1100px) {
+    @media (max-width: 1180px) {
       .stats { grid-template-columns: 1fr 1fr; }
+      .analytics-middle { grid-template-columns: 1fr 1fr; }
+      .trend-card { grid-column: 1 / -1; }
+      .analytics-bottom { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 800px) {
@@ -584,12 +707,16 @@
       .sidebar-collapse { display: none; }
       .mobile-menu-btn { display: flex; }
       .app-workspace { margin-left: 0; }
-      .top-navbar { padding: 14px 16px; }
+      .top-navbar { padding: 14px 16px; flex-wrap: wrap; }
       .top-navbar-title p { display: none; }
+      .analytics-tools { width: 100%; }
+      .analytics-range { flex: 1; }
       .main { padding: 20px 16px 32px; }
-      .page-intro h2 { font-size: 24px; }
-      .stats { grid-template-columns: 1fr; }
-      .rating-row { grid-template-columns: 46px minmax(0, 1fr) 28px 36px; gap: 8px; }
+      .stats,
+      .analytics-middle,
+      .analytics-bottom { grid-template-columns: 1fr; }
+      .trend-card { grid-column: auto; }
+      .vbars { height: 180px; }
 
       #analyticsPage.sidebar-collapsed .sidebar { width: 240px; }
       #analyticsPage.sidebar-collapsed .sidebar-top { flex-direction: row; }
@@ -611,6 +738,7 @@
       .menu-item::after,
       .navbar-icon,
       .account-menu button,
+      .analytics-export,
       .stat-card { transition: none; }
       .stat-card:hover { transform: none; }
     }
@@ -670,10 +798,22 @@
         <button class="mobile-menu-btn" id="mobileMenuBtn" type="button" onclick="toggleSidebar()" aria-label="Open menu">☰</button>
         <div>
           <h1>Analytics</h1>
-          <p>Understand customer feedback trends and performance.</p>
+          <p>Track review performance and customer sentiment over time.</p>
         </div>
       </div>
       <div class="top-navbar-actions">
+        <div class="analytics-tools">
+          <label class="analytics-range">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg>
+            <select id="analyticsRange" aria-label="Date range">
+              <option value="all">All time</option>
+              <option value="7">Last 7 days</option>
+              <option value="30">Last 30 days</option>
+              <option value="90">Last 90 days</option>
+            </select>
+          </label>
+          <button class="analytics-export" id="analyticsExport" type="button">Export Report</button>
+        </div>
         <button class="navbar-icon" id="accountButton" type="button" onclick="toggleAccountMenu()" aria-label="Account">
           <span class="account-avatar"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.2"/><path d="M6 19c1.2-3 3.2-4.5 6-4.5S16.8 16 18 19"/></svg></span>
           <svg class="account-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
@@ -686,25 +826,20 @@
 
     <main class="main">
       <div class="analytics-content">
-        <section class="page-intro">
-          <h2>Feedback Analytics</h2>
-          <p>Track ratings, feedback volume and customer sentiment over time.</p>
-        </section>
-
         <div class="stats">
-          <div class="stat-card">
+          <div class="stat-card tone-blue">
             <div class="stat-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 6h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H9l-4 3v-3H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z"/></svg></div>
             <p>Total Feedback</p>
             <h2 id="totalFeedback">0</h2>
             <span class="stat-note">All private feedback received</span>
           </div>
-          <div class="stat-card">
+          <div class="stat-card tone-amber">
             <div class="stat-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m12 3 2.4 5.4L20 9.2l-4 3.8.9 5.8L12 16.2 7.1 18.8 8 13 4 9.2l5.6-.8L12 3z"/></svg></div>
             <p>Average Rating</p>
             <h2 id="averageRating">0.0</h2>
             <span class="stat-note">Across received feedback</span>
           </div>
-          <div class="stat-card">
+          <div class="stat-card tone-rose">
             <div class="stat-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 4 3.5 19h17L12 4z"/><path d="M12 10v4"/><path d="M12 16.5h.01"/></svg></div>
             <p>1–3 Star Feedback</p>
             <h2 id="lowRatings">0</h2>
@@ -712,12 +847,55 @@
           </div>
         </div>
 
-        <section class="dash-card">
-          <h3>Rating Distribution</h3>
-          <p class="dash-card-copy">How received ratings are spread from 5 to 1.</p>
-          <div id="ratingChart">
-            <p class="dash-loading">Loading feedback...</p>
-          </div>
+        <section class="analytics-middle">
+          <article class="dash-card trend-card">
+            <h3>Feedback Over Time</h3>
+            <p class="dash-card-copy">Private feedback received, grouped by day.</p>
+            <div class="dash-chart-wrap">
+              <div id="feedbackChart" class="dash-chart-canvas">
+                <p class="dash-loading">Loading feedback...</p>
+              </div>
+              <div id="chartTooltip" class="chart-tooltip" hidden></div>
+            </div>
+          </article>
+          <article class="dash-card">
+            <h3>Rating Distribution</h3>
+            <p class="dash-card-copy">Breakdown of customer ratings.</p>
+            <div id="ratingChart">
+              <p class="dash-loading">Loading feedback...</p>
+            </div>
+          </article>
+          <article class="dash-card">
+            <h3>Sentiment Split</h3>
+            <p class="dash-card-copy">From ratings already collected.</p>
+            <div id="sentimentChart">
+              <p class="dash-loading">Loading feedback...</p>
+            </div>
+          </article>
+        </section>
+
+        <section class="analytics-bottom" id="analyticsBottom">
+          <article class="dash-card" id="businessCard">
+            <h3>Business Performance</h3>
+            <p class="dash-card-copy">Feedback grouped by the business on each response.</p>
+            <div class="biz-table-wrap">
+              <table class="biz-table">
+                <thead>
+                  <tr>
+                    <th>Business</th>
+                    <th>Total Feedback</th>
+                    <th>Avg. Rating</th>
+                  </tr>
+                </thead>
+                <tbody id="businessBody"></tbody>
+              </table>
+            </div>
+          </article>
+          <article class="dash-card" id="insightsCard">
+            <h3>Insights</h3>
+            <p class="dash-card-copy">Calculated from the feedback in this view.</p>
+            <ul id="insightsList" class="insights-list"></ul>
+          </article>
         </section>
       </div>
     </main>
@@ -754,8 +932,42 @@ function saveFeedbackDataCache(rows) {
     );
 }
 
+var loadedFeedback = [];
+var analyticsView = [];
+
+function analyticsEmptyState() {
+    return '<div class="analytics-empty"><strong>Not enough feedback yet</strong><p>Analytics will become more useful as more customer feedback is collected.</p></div>';
+}
+
+function analyticsRangeRows() {
+    var select = document.getElementById("analyticsRange");
+    var range = select ? select.value : "all";
+
+    if (range === "all") {
+        return loadedFeedback.slice();
+    }
+
+    var days = Number(range);
+    var cutoff = Date.now() - days * 24 * 60 * 60 * 1000;
+
+    return loadedFeedback.filter(function (item) {
+        var time = new Date(item.created_at).getTime();
+        return !isNaN(time) && time >= cutoff;
+    });
+}
+
+function applyAnalyticsView() {
+    renderAnalytics(analyticsRangeRows());
+}
+
 function renderAnalytics(feedback) {
+    analyticsView = feedback;
     const total = feedback.length;
+    const exportButton = document.getElementById("analyticsExport");
+
+    if (exportButton) {
+        exportButton.disabled = !total;
+    }
 
     document.getElementById("totalFeedback").textContent = total;
 
@@ -778,34 +990,346 @@ function renderAnalytics(feedback) {
     document.getElementById("averageRating").textContent = average;
     document.getElementById("lowRatings").textContent = lowRatings;
 
+    const counts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+
+    for (let rating = 1; rating <= 5; rating++) {
+        counts[rating] = feedback.filter(item => Number(item.rating) === rating).length;
+    }
+
+    renderRatingBars(counts, total);
+    renderSentiment(feedback);
+    renderTrend(feedback);
+    renderBusinesses(feedback);
+    renderInsights(feedback, counts, total);
+}
+
+function renderRatingBars(counts, total) {
     const chart = document.getElementById("ratingChart");
     chart.innerHTML = "";
 
     if (!total) {
-        chart.innerHTML = '<div class="analytics-empty"><strong>Not enough feedback yet</strong><p>Analytics will become more useful as more customer feedback is collected.</p></div>';
+        chart.innerHTML = analyticsEmptyState();
         return;
     }
 
-    for (let rating = 5; rating >= 1; rating--) {
-        const count = feedback.filter(item => Number(item.rating) === rating).length;
-        const percentage = total ? (count / total) * 100 : 0;
+    var maxCount = 1;
 
-        chart.innerHTML += `
-            <div class="rating-row">
-                <div class="rating-label">
-                    ${rating} <span class="dist-star">★</span>
-                </div>
-                <div class="bar-background">
-                    <div
-                        class="bar"
-                        style="width:${percentage}%">
-                    </div>
-                </div>
-                <div class="dist-count">${count}</div>
-                <div class="dist-percent">${Math.round(percentage)}%</div>
-            </div>
-        `;
+    for (let rating = 1; rating <= 5; rating++) {
+        if (counts[rating] > maxCount) {
+            maxCount = counts[rating];
+        }
     }
+
+    var bars = "";
+
+    for (let rating = 1; rating <= 5; rating++) {
+        const count = counts[rating];
+        const percentage = total ? (count / total) * 100 : 0;
+        const height = count ? Math.max(8, Math.round((count / maxCount) * 100)) : 0;
+
+        bars += '<div class="vbar">' +
+            '<span class="vbar-pct">' + Math.round(percentage) + '%</span>' +
+            '<div class="vbar-track"><div class="vbar-fill vbar-' + rating + '" style="height:' + height + '%"></div></div>' +
+            '<span class="vbar-label">' + rating + ' <span class="dist-star">★</span></span>' +
+            '</div>';
+    }
+
+    chart.innerHTML = '<div class="vbars">' + bars + '</div>';
+}
+
+function renderSentiment(feedback) {
+    var chart = document.getElementById("sentimentChart");
+    var positive = 0;
+    var neutral = 0;
+    var negative = 0;
+
+    feedback.forEach(function (item) {
+        var rating = Number(item.rating);
+
+        if (rating === 4 || rating === 5) {
+            positive += 1;
+        } else if (rating === 3) {
+            neutral += 1;
+        } else if (rating === 1 || rating === 2) {
+            negative += 1;
+        }
+    });
+
+    var classified = positive + neutral + negative;
+
+    if (!classified) {
+        chart.innerHTML = analyticsEmptyState();
+        return;
+    }
+
+    var parts = [
+        { key: "positive", label: "Positive", count: positive, color: "#22a06b" },
+        { key: "neutral", label: "Neutral", count: neutral, color: "#9aa8b8" },
+        { key: "negative", label: "Negative", count: negative, color: "#ef6b6b" }
+    ];
+    var radius = 42;
+    var circ = 2 * Math.PI * radius;
+    var offset = 0;
+    var arcs = parts.map(function (part) {
+        var length = classified ? (part.count / classified) * circ : 0;
+        var dash = length.toFixed(2) + " " + (circ - length).toFixed(2);
+        var arc = '<circle cx="60" cy="60" r="' + radius + '" fill="none" stroke="' + part.color + '" stroke-width="14" stroke-linecap="butt" stroke-dasharray="' + dash + '" stroke-dashoffset="' + (-offset).toFixed(2) + '" transform="rotate(-90 60 60)"/>';
+        offset += length;
+        part.percent = Math.round((part.count / classified) * 100);
+        return arc;
+    }).join("");
+    var legend = parts.map(function (part) {
+        return '<div class="legend-row"><span class="swatch swatch-' + part.key + '"></span>' + part.label + '<span>' + part.percent + '%</span></div>';
+    }).join("");
+
+    chart.innerHTML = '<div class="sentiment-layout"><svg class="donut" viewBox="0 0 120 120" role="img" aria-label="Sentiment split">' +
+        arcs +
+        '<text x="60" y="56" text-anchor="middle" fill="#0c1730" font-size="22" font-weight="800">' + parts[0].percent + '%</text>' +
+        '<text x="60" y="74" text-anchor="middle" fill="#6d7c92" font-size="11" font-weight="600">Positive</text>' +
+        '</svg><div class="sentiment-legend">' + legend + '</div></div>';
+}
+
+function renderTrend(feedback) {
+    var chart = document.getElementById("feedbackChart");
+    var tip = document.getElementById("chartTooltip");
+
+    if (tip) {
+        tip.hidden = true;
+    }
+
+    var byDay = {};
+
+    feedback.forEach(function (item) {
+        var parsed = new Date(item.created_at);
+
+        if (isNaN(parsed.getTime())) {
+            return;
+        }
+
+        var key = parsed.getFullYear() + "-" +
+            String(parsed.getMonth() + 1).padStart(2, "0") + "-" +
+            String(parsed.getDate()).padStart(2, "0");
+
+        byDay[key] = (byDay[key] || 0) + 1;
+    });
+
+    var days = Object.keys(byDay).sort();
+
+    if (!days.length) {
+        chart.innerHTML = analyticsEmptyState();
+        return;
+    }
+
+    var width = 640;
+    var height = 230;
+    var padL = 36;
+    var padR = 12;
+    var padT = 16;
+    var padB = 32;
+    var innerW = width - padL - padR;
+    var innerH = height - padT - padB;
+    var maxDay = Math.max.apply(null, days.map(function (day) { return byDay[day]; }));
+    var points = days.map(function (day, index) {
+        var x = days.length === 1
+            ? padL + innerW / 2
+            : padL + (innerW * index) / (days.length - 1);
+        var y = padT + innerH - (byDay[day] / maxDay) * innerH;
+        return { x: x, y: y, day: day, count: byDay[day] };
+    });
+    var line = points.map(function (point) {
+        return point.x.toFixed(1) + "," + point.y.toFixed(1);
+    }).join(" ");
+    var area = "M" + points[0].x.toFixed(1) + "," + (padT + innerH) +
+        " L" + points.map(function (point) {
+            return point.x.toFixed(1) + "," + point.y.toFixed(1);
+        }).join(" L") +
+        " L" + points[points.length - 1].x.toFixed(1) + "," + (padT + innerH) + " Z";
+    var grid = [0, 0.5, 1].map(function (step) {
+        var y = padT + innerH - innerH * step;
+        var label = step === 0 ? "0" : String(Math.round(maxDay * step));
+        return '<line x1="' + padL + '" y1="' + y + '" x2="' + (width - padR) + '" y2="' + y + '" stroke="#e7eef5" stroke-width="1"/>' +
+            '<text x="4" y="' + (y + 4) + '" fill="#8b97a8" font-size="11" font-family="Inter, Arial, sans-serif">' + label + "</text>";
+    }).join("");
+    var labelIndexes = days.length <= 6
+        ? days.map(function (_, index) { return index; })
+        : [0, Math.floor((days.length - 1) / 2), days.length - 1];
+    var labels = labelIndexes.map(function (index) {
+        var point = points[index];
+        var parts = point.day.split("-");
+        var labelDate = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+        var text = labelDate.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+        return '<text x="' + point.x.toFixed(1) + '" y="' + (height - 8) + '" text-anchor="middle" fill="#8b97a8" font-size="11" font-family="Inter, Arial, sans-serif">' + text + "</text>";
+    }).join("");
+    var dots = points.map(function (point) {
+        var parts = point.day.split("-");
+        var labelDate = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+        var text = labelDate.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+        return '<circle class="chart-dot" cx="' + point.x.toFixed(1) + '" cy="' + point.y.toFixed(1) + '" r="3.5" fill="#fff" stroke="#2b7fff" stroke-width="2"><title>' + text + " · " + point.count + " feedback</title></circle>";
+    }).join("");
+
+    chart.innerHTML = '<svg viewBox="0 0 ' + width + " " + height + '" role="img" aria-label="Feedback received by day">' +
+        '<defs><linearGradient id="analyticsArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b7fff" stop-opacity="0.28"/><stop offset="1" stop-color="#3ec6ff" stop-opacity="0.03"/></linearGradient></defs>' +
+        grid +
+        '<path d="' + area + '" fill="url(#analyticsArea)"/>' +
+        '<polyline points="' + line + '" fill="none" stroke="#2b7fff" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>' +
+        dots + labels + "</svg>";
+    bindAnalyticsTooltip();
+}
+
+function bindAnalyticsTooltip() {
+    var chart = document.getElementById("feedbackChart");
+    var tip = document.getElementById("chartTooltip");
+
+    if (!chart || !tip) {
+        return;
+    }
+
+    tip.hidden = true;
+    chart.querySelectorAll(".chart-dot").forEach(function (dot) {
+        dot.addEventListener("mouseenter", function () {
+            var title = dot.querySelector("title");
+            var wrap = chart.parentElement;
+
+            if (!title || !wrap) {
+                return;
+            }
+
+            var dotBox = dot.getBoundingClientRect();
+            var wrapBox = wrap.getBoundingClientRect();
+            tip.textContent = title.textContent;
+            tip.style.left = (dotBox.left - wrapBox.left + dotBox.width / 2) + "px";
+            tip.style.top = (dotBox.top - wrapBox.top - 6) + "px";
+            tip.hidden = false;
+        });
+        dot.addEventListener("mouseleave", function () {
+            tip.hidden = true;
+        });
+    });
+}
+
+function businessGroups(feedback) {
+    var groups = {};
+
+    feedback.forEach(function (item) {
+        var name = item.business && String(item.business).trim();
+
+        if (!name) {
+            return;
+        }
+
+        if (!groups[name]) {
+            groups[name] = { name: name, count: 0, sum: 0 };
+        }
+
+        groups[name].count += 1;
+        groups[name].sum += Number(item.rating) || 0;
+    });
+
+    return Object.keys(groups).map(function (name) {
+        return groups[name];
+    }).sort(function (a, b) {
+        if (b.count !== a.count) {
+            return b.count - a.count;
+        }
+
+        return a.name.localeCompare(b.name);
+    });
+}
+
+function renderBusinesses(feedback) {
+    var card = document.getElementById("businessCard");
+    var body = document.getElementById("businessBody");
+    var bottom = document.getElementById("analyticsBottom");
+    var groups = businessGroups(feedback);
+
+    body.innerHTML = "";
+
+    if (!groups.length) {
+        card.hidden = true;
+        bottom.classList.add("is-solo");
+        return;
+    }
+
+    card.hidden = false;
+    bottom.classList.remove("is-solo");
+    body.innerHTML = groups.map(function (group) {
+        var average = group.count ? (group.sum / group.count).toFixed(1) : "0.0";
+        return "<tr><td class=\"biz-name\">" + group.name.replace(/&/g, "&amp;").replace(/</g, "&lt;") + "</td><td>" + group.count + "</td><td>" + average + "</td></tr>";
+    }).join("");
+}
+
+function renderInsights(feedback, counts, total) {
+    var list = document.getElementById("insightsList");
+    list.innerHTML = "";
+
+    if (!total) {
+        list.innerHTML = "<li>Not enough feedback yet.</li>";
+        return;
+    }
+
+    var lines = [];
+    var leader = 0;
+    var leaderCount = 0;
+    var tied = false;
+
+    for (var rating = 1; rating <= 5; rating++) {
+        if (counts[rating] > leaderCount) {
+            leader = rating;
+            leaderCount = counts[rating];
+            tied = false;
+        } else if (counts[rating] === leaderCount && leaderCount > 0) {
+            tied = true;
+        }
+    }
+
+    if (leaderCount > 0 && !tied) {
+        lines.push("Most feedback is " + leader + "-star.");
+    }
+
+    lines.push(Math.round(((counts[4] + counts[5]) / total) * 100) + "% of feedback is 4–5 stars.");
+
+    var groups = businessGroups(feedback);
+
+    if (groups.length === 1 || (groups.length > 1 && groups[0].count > groups[1].count)) {
+        lines.push(groups[0].name + " received the most feedback.");
+    }
+
+    list.innerHTML = lines.map(function (line) {
+        return "<li>" + line.replace(/&/g, "&amp;").replace(/</g, "&lt;") + "</li>";
+    }).join("");
+}
+
+function csvCell(value) {
+    var text = value == null ? "" : String(value);
+
+    if (/[",\n]/.test(text)) {
+        return '"' + text.replace(/"/g, '""') + '"';
+    }
+
+    return text;
+}
+
+function exportAnalyticsReport() {
+    if (!analyticsView.length) {
+        return;
+    }
+
+    var rows = ["business,rating,feedback,created_at"].concat(analyticsView.map(function (item) {
+        return [
+            csvCell(item.business || ""),
+            csvCell(item.rating),
+            csvCell(item.feedback || ""),
+            csvCell(item.created_at || "")
+        ].join(",");
+    }));
+    var blob = new Blob([rows.join("\n")], { type: "text/csv;charset=utf-8" });
+    var link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "reviewrise-analytics.csv";
+    link.click();
+    setTimeout(function () {
+        URL.revokeObjectURL(link.href);
+    }, 1000);
 }
 
 async function getValidAccessToken() {
@@ -898,7 +1422,8 @@ async function loadAnalytics() {
     }
 
     saveFeedbackDataCache(feedback);
-    renderAnalytics(feedback);
+    loadedFeedback = feedback.slice();
+    applyAnalyticsView();
 }
 
 if (
@@ -910,11 +1435,15 @@ if (
     const cachedFeedback = readFeedbackDataCache();
 
     if (cachedFeedback) {
-        renderAnalytics(cachedFeedback);
+        loadedFeedback = cachedFeedback.slice();
+        applyAnalyticsView();
     }
 
     loadAnalytics();
 }
+
+document.getElementById("analyticsRange").addEventListener("change", applyAnalyticsView);
+document.getElementById("analyticsExport").addEventListener("click", exportAnalyticsReport);
 
 function smoothNavigate(page) {
     document.body.classList.add("page-leaving");
