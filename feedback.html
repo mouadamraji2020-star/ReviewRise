@@ -366,52 +366,133 @@
       font-weight: 500;
     }
 
-    .feedback-panel {
-      margin-top: 22px;
-      padding: 20px;
+    .feedback-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin: 22px 0 14px;
+      flex-wrap: wrap;
+    }
+
+    .feedback-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      height: 34px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 12px;
+      border: 1px solid #e6edf5;
+      border-radius: 999px;
       background: #fff;
-      border: 1px solid #e7ecf2;
-      border-radius: 20px;
-      box-shadow: 0 10px 28px rgba(30, 64, 120, 0.045);
+      color: #314158;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 160ms cubic-bezier(0.22, 1, 0.36, 1), border-color 160ms cubic-bezier(0.22, 1, 0.36, 1), color 160ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .chip.active {
+      background: #2b7fff;
+      border-color: #2b7fff;
+      color: #fff;
+    }
+
+    .chip-star { font-size: 12px; line-height: 1; }
+    .chip-star-5 { color: #1c9a52; }
+    .chip-star-4 { color: #2b7fff; }
+    .chip-star-3 { color: #e0a106; }
+    .chip-star-2 { color: #f08a2a; }
+    .chip-star-1 { color: #ef5b5b; }
+    .chip.active .chip-star { color: #fff; }
+
+    .feedback-tools {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .feedback-search,
+    .feedback-sort {
+      height: 38px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 12px;
+      border: 1px solid #e6edf5;
+      border-radius: 12px;
+      background: #fff;
+      color: #7b8ba0;
+    }
+
+    .feedback-search { min-width: 210px; }
+    .feedback-search svg,
+    .feedback-sort svg {
+      width: 16px;
+      height: 16px;
+      flex: none;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .feedback-search input,
+    .feedback-sort select {
+      border: none;
+      outline: none;
+      background: transparent;
+      color: #0c1730;
+      font-family: inherit;
+      font-size: 13.5px;
+      font-weight: 500;
+    }
+
+    .feedback-search input { width: 150px; }
+    .feedback-search input::placeholder { color: #94a3b8; }
+    .feedback-sort select { cursor: pointer; }
+    .feedback-search:focus-within,
+    .feedback-sort:focus-within {
+      border-color: #b9d4ff;
+      box-shadow: 0 0 0 3px rgba(43, 127, 255, 0.12);
     }
 
     #feedbackList {
       min-width: 0;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
     }
 
     .feedback-card {
       display: grid;
-      grid-template-columns: 92px minmax(0, 1fr) 196px;
-      column-gap: 20px;
+      grid-template-columns: auto auto minmax(0, 1fr) auto;
+      column-gap: 14px;
       align-items: center;
       margin: 0;
-      padding: 18px 20px;
+      padding: 12px 16px;
       background: #fff;
-      border: 1px solid #e7edf4;
+      border: 1px solid #e7edf5;
       border-radius: 16px;
       box-shadow: 0 1px 2px rgba(16, 40, 80, 0.04);
       transition:
         background 180ms cubic-bezier(0.22, 1, 0.36, 1),
         border-color 180ms cubic-bezier(0.22, 1, 0.36, 1),
-        box-shadow 180ms cubic-bezier(0.22, 1, 0.36, 1),
-        transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+        box-shadow 180ms cubic-bezier(0.22, 1, 0.36, 1);
     }
 
     .feedback-card:hover {
       background: #f8fbff;
-      border-color: #d3e3f6;
+      border-color: #d5e4f7;
       box-shadow: 0 8px 18px rgba(30, 64, 120, 0.06);
-      transform: translateY(-1px);
-    }
-
-    .feedback-side {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
     }
 
     .sentiment {
@@ -436,38 +517,31 @@
     .sentiment .face-eye { fill: currentColor; stroke: none; }
 
     .sentiment-5 { color: #1c9a52; background: #e8f7ee; }
-    .sentiment-4 { color: #149a8c; background: #e7f6f3; }
-    .sentiment-3 { color: #d09a12; background: #fbf6e6; }
-    .sentiment-2 { color: #e07a28; background: #fdf1e7; }
-    .sentiment-1 { color: #d64545; background: #fdeeee; }
+    .sentiment-4 { color: #2b7fff; background: #e8f2ff; }
+    .sentiment-3 { color: #e0a106; background: #fff6dc; }
+    .sentiment-2 { color: #f08a2a; background: #fff1e6; }
+    .sentiment-1 { color: #ef5b5b; background: #ffecec; }
 
-    .feedback-rating {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 3px;
+    .stars {
+      margin: 0;
+      font-size: 15px;
+      letter-spacing: 1px;
+      line-height: 1;
+      white-space: nowrap;
     }
-
-    .stars { margin: 0; font-size: 12px; letter-spacing: 1px; line-height: 1; }
-    .star-on { color: #e2b100; }
-    .star-off { color: #e3e8ef; }
-
-    .rating-num {
-      color: #7b8ba0;
-      font-size: 11.5px;
-      font-weight: 600;
-      letter-spacing: 0.2px;
-      font-variant-numeric: tabular-nums;
-    }
+    .star-on { color: #f5b400; }
+    .star-off { color: #d5deea; }
 
     .feedback-text {
       margin: 0;
-      color: #0c1730;
-      font-size: 15px;
+      min-width: 0;
+      color: #1a2744;
+      font-size: 14.5px;
       font-weight: 500;
-      line-height: 1.55;
-      letter-spacing: -0.15px;
-      overflow-wrap: anywhere;
+      line-height: 1.4;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .feedback-text.is-empty {
@@ -478,23 +552,47 @@
     }
 
     .feedback-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
       min-width: 0;
-      padding-left: 18px;
-      border-left: 1px solid #eef2f6;
-      text-align: right;
+    }
+
+    .biz-badge {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: none;
+      border-radius: 50%;
+      background: #eef5ff;
+      color: #2b7fff;
+    }
+
+    .biz-badge svg {
+      width: 16px;
+      height: 16px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
     }
 
     .feedback-business {
+      display: block;
       color: #10284d;
       font-size: 13.5px;
       font-weight: 600;
       letter-spacing: -0.15px;
-      line-height: 1.35;
+      line-height: 1.3;
     }
 
     .date {
-      margin: 4px 0 0;
-      color: #94a3b8;
+      display: block;
+      margin: 2px 0 0;
+      color: #8b9bb0;
       font-size: 12px;
       font-weight: 500;
       line-height: 1.4;
@@ -553,22 +651,20 @@
       .top-navbar-title p { display: none; }
       .main { padding: 20px 16px 32px; }
       .page-intro h2 { font-size: 24px; }
+      .feedback-toolbar { align-items: stretch; }
+      .feedback-tools,
+      .feedback-search { width: 100%; }
+      .feedback-search input { width: 100%; }
       .feedback-card {
-        grid-template-columns: 1fr;
-        gap: 12px;
-        padding: 16px;
-        transform: none;
+        grid-template-columns: auto auto;
+        row-gap: 8px;
+        padding: 14px;
       }
-      .feedback-card:hover { transform: none; }
-      .feedback-side { flex-direction: row; justify-content: flex-start; gap: 12px; }
-      .feedback-rating { flex-direction: row; align-items: center; gap: 8px; }
-      .feedback-meta {
-        padding-left: 0;
-        padding-top: 12px;
-        border-left: none;
-        border-top: 1px solid #eef2f6;
-        text-align: left;
+      .feedback-text {
+        grid-column: 1 / -1;
+        white-space: normal;
       }
+      .feedback-meta { grid-column: 1 / -1; }
 
       #feedbackPage.sidebar-collapsed .sidebar { width: 240px; }
       #feedbackPage.sidebar-collapsed .sidebar-top { flex-direction: row; }
@@ -590,6 +686,7 @@
       .menu-item::after,
       .navbar-icon,
       .account-menu button,
+      .chip,
       .feedback-card { transition: none; }
       .feedback-card:hover { transform: none; }
     }
@@ -669,11 +766,25 @@
         <p>See what customers are saying and identify where your business can improve.</p>
       </section>
 
-      <section class="feedback-panel">
-        <div id="feedbackList">
-          <p class="dash-loading">Loading feedback...</p>
+      <div class="feedback-toolbar">
+        <div class="feedback-chips" id="feedbackChips"></div>
+        <div class="feedback-tools">
+          <label class="feedback-search">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg>
+            <input id="feedbackSearch" type="search" placeholder="Search feedback..." autocomplete="off">
+          </label>
+          <label class="feedback-sort">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg>
+            <select id="feedbackSort" aria-label="Sort feedback">
+              <option value="newest">Newest first</option>
+              <option value="oldest">Oldest first</option>
+            </select>
+          </label>
         </div>
-      </section>
+      </div>
+      <div id="feedbackList">
+        <p class="dash-loading">Loading feedback...</p>
+      </div>
     </main>
   </div>
 </div>
@@ -756,59 +867,135 @@ async function getValidAccessToken() {
       );
     }
 
+    var loadedFeedback = [];
+    var feedbackRatingFilter = 0;
+
+    function feedbackStarCount(item) {
+      var rating = Number(item.rating) || 0;
+      return Math.max(0, Math.min(5, Math.floor(rating)));
+    }
+
     function renderFeedbackList(feedback) {
-      const list = document.getElementById("feedbackList");
+      loadedFeedback = Array.isArray(feedback) ? feedback.slice() : [];
+      paintFeedbackView();
+    }
+
+    function paintFeedbackChips() {
+      var chips = document.getElementById("feedbackChips");
+      if (!chips) return;
+
+      var counts = [0, 0, 0, 0, 0, 0];
+      loadedFeedback.forEach(function (item) {
+        var stars = feedbackStarCount(item);
+        if (stars >= 1 && stars <= 5) counts[stars] += 1;
+      });
+
+      var options = [
+        [0, "All", ""],
+        [5, "5", "chip-star-5"],
+        [4, "4", "chip-star-4"],
+        [3, "3", "chip-star-3"],
+        [2, "2", "chip-star-2"],
+        [1, "1", "chip-star-1"]
+      ];
+
+      chips.innerHTML = options.map(function (option) {
+        var value = option[0];
+        var count = value === 0 ? loadedFeedback.length : counts[value];
+        var star = option[2] ? '<span class="chip-star ' + option[2] + '">★</span>' : "";
+        var label = value === 0 ? "All" : option[1] + " " + star;
+        var active = feedbackRatingFilter === value ? " active" : "";
+        return '<button class="chip' + active + '" type="button" data-rating="' + value + '">' + label + " (" + count + ")</button>";
+      }).join("");
+
+      chips.querySelectorAll(".chip").forEach(function (button) {
+        button.addEventListener("click", function () {
+          feedbackRatingFilter = Number(button.getAttribute("data-rating")) || 0;
+          paintFeedbackView();
+        });
+      });
+    }
+
+    function paintFeedbackView() {
+      paintFeedbackChips();
+
+      var list = document.getElementById("feedbackList");
+      var searchInput = document.getElementById("feedbackSearch");
+      var sortSelect = document.getElementById("feedbackSort");
+      var query = searchInput ? searchInput.value.trim().toLowerCase() : "";
+      var newestFirst = !sortSelect || sortSelect.value !== "oldest";
+      var rows = loadedFeedback.filter(function (item) {
+        var stars = feedbackStarCount(item);
+        if (feedbackRatingFilter && stars !== feedbackRatingFilter) return false;
+        if (!query) return true;
+        var text = String(item.feedback || "").toLowerCase();
+        var business = String(item.business || "").toLowerCase();
+        return text.indexOf(query) !== -1 || business.indexOf(query) !== -1;
+      });
+
+      rows.sort(function (a, b) {
+        var first = new Date(a.created_at).getTime() || 0;
+        var second = new Date(b.created_at).getTime() || 0;
+        return newestFirst ? second - first : first - second;
+      });
+
       list.innerHTML = "";
 
-      if (!feedback.length) {
+      if (!loadedFeedback.length) {
         list.innerHTML = '<div class="feedback-empty"><strong>No feedback yet</strong><p>Once customers leave private feedback, it will appear here.</p></div>';
         return;
       }
 
-      feedback.forEach(item => {
-        const card = document.createElement("div");
-        card.className = "feedback-card";
+      if (!rows.length) {
+        list.innerHTML = '<div class="feedback-empty"><strong>No matching feedback</strong><p>Try another rating or search.</p></div>';
+        return;
+      }
 
-        const rating = Number(item.rating) || 0;
-        const filled = Math.max(0, Math.min(5, Math.floor(rating)));
-        const moods = {
+      rows.forEach(function (item) {
+        var card = document.createElement("div");
+        card.className = "feedback-card";
+        var filled = feedbackStarCount(item);
+        var moods = {
           5: ["sentiment-5", "M8 13.2c1.15 2.5 6.85 2.5 8 0"],
           4: ["sentiment-4", "M8.5 13.7c.95 1.7 6.05 1.7 7 0"],
           3: ["sentiment-3", "M8.6 14.4h6.8"],
           2: ["sentiment-2", "M8.5 15.6c.95-1.6 6.05-1.6 7 0"],
           1: ["sentiment-1", "M8 16.2c1.15-2.5 6.85-2.5 8 0"]
         };
-        const mood = moods[filled];
-        const face = mood
+        var mood = moods[filled];
+        var face = mood
           ? '<div class="sentiment ' + mood[0] + '" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.2"/><circle class="face-eye" cx="9" cy="10" r="0.9"/><circle class="face-eye" cx="15" cy="10" r="0.9"/><path d="' + mood[1] + '"/></svg></div>'
           : "";
-        const when = new Date(item.created_at);
-        const whenLabel = isNaN(when.getTime())
+        var when = new Date(item.created_at);
+        var whenLabel = isNaN(when.getTime())
           ? ""
           : when.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" }) +
-            " · " +
+            " • " +
             when.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
-
         var comment = item.feedback && String(item.feedback).trim();
 
         card.innerHTML = `
-          <div class="feedback-side">
-            ${face}
-            <div class="feedback-rating">
-              <div class="stars"><span class="star-on">${"★".repeat(filled)}</span><span class="star-off">${"★".repeat(Math.max(0, 5 - filled))}</span></div>
-              ${rating ? '<span class="rating-num">' + rating.toFixed(1) + "</span>" : ""}
-            </div>
-          </div>
-          <div class="feedback-text${comment ? "" : " is-empty"}">${comment ? item.feedback : "No written comment"}</div>
+          ${face}
+          <div class="stars"><span class="star-on">${"★".repeat(filled)}</span><span class="star-off">${"★".repeat(Math.max(0, 5 - filled))}</span></div>
+          <div class="feedback-text${comment ? "" : " is-empty"}"></div>
           <div class="feedback-meta">
-            <div class="feedback-business">${item.business || ""}</div>
-            <div class="date">${whenLabel}</div>
+            <span class="biz-badge" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 20h16"/><path d="M6 20V7l6-3 6 3v13"/><path d="M10 20v-4h4v4"/><path d="M9 9h.01M9 12h.01M12 9h.01M12 12h.01M15 9h.01M15 12h.01"/></svg></span>
+            <span>
+              <span class="feedback-business"></span>
+              <span class="date">${whenLabel}</span>
+            </span>
           </div>
         `;
+        card.querySelector(".feedback-text").textContent = comment ? item.feedback : "No written comment";
+        if (comment) card.querySelector(".feedback-text").title = item.feedback;
+        card.querySelector(".feedback-business").textContent = item.business || "";
 
         list.appendChild(card);
       });
     }
+
+    document.getElementById("feedbackSearch").addEventListener("input", paintFeedbackView);
+    document.getElementById("feedbackSort").addEventListener("change", paintFeedbackView);
 
     async function loadFeedback() {
       const token = await getValidAccessToken();
