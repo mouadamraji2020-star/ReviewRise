@@ -20,13 +20,24 @@ body {
 
 #qrPage {
   --side: 240px;
+  position: relative;
   min-height: 100vh;
   overflow-x: hidden;
-  background:
-    radial-gradient(ellipse 560px 320px at 12% -4%, rgba(186, 220, 255, 0.34), transparent 70%),
-    radial-gradient(ellipse 420px 260px at 96% 8%, rgba(214, 232, 255, 0.28), transparent 72%),
-    #f3f6fb;
+  background: #f3f6fb;
   color: #0c1730;
+}
+
+#qrPage::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 240px;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 560px 320px at 18% 0%, rgba(186, 220, 255, 0.34), transparent 70%),
+    radial-gradient(ellipse 420px 260px at 92% 0%, rgba(214, 232, 255, 0.28), transparent 72%);
 }
 
 #qrPage.sidebar-collapsed { --side: 72px; }
@@ -313,7 +324,7 @@ body {
 .main { margin: 0; padding: 26px 28px 40px; }
 .qr-content { width: 100%; max-width: 1400px; }
 
-.biz-selector-wrap { margin-bottom: 18px; }
+.biz-selector-wrap { margin-bottom: 18px; min-width: 0; max-width: 100%; }
 
 .biz-selector-label {
   margin: 0 0 10px;
@@ -327,7 +338,9 @@ body {
 .biz-selector {
   display: flex;
   gap: 10px;
+  max-width: 100%;
   overflow-x: auto;
+  overflow-y: hidden;
   padding-bottom: 4px;
 }
 
@@ -394,20 +407,64 @@ body {
 
 .studio {
   display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(320px, 420px);
+  grid-template-columns: auto minmax(280px, 1fr);
   gap: 22px;
   align-items: start;
 }
 
 .preview-stage {
+  position: relative;
   display: flex;
   justify-content: center;
+  align-items: flex-start;
+  width: fit-content;
+  max-width: 100%;
   min-width: 0;
-  padding: 28px 24px;
+  padding: 16px;
+  overflow: hidden;
   background: #fff;
   border: 1px solid #e7ecf2;
   border-radius: 24px;
   box-shadow: 0 16px 40px rgba(30, 64, 120, 0.06);
+}
+
+.preview-fit {
+  container-type: inline-size;
+  position: relative;
+  width: min(100%, 314px);
+  aspect-ratio: 964 / 1536;
+  overflow: hidden;
+}
+
+.preview-fit .qr-poster {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 430px;
+  max-width: none;
+  min-height: 0;
+  height: auto;
+  margin: 0;
+  transform-origin: top left;
+  transform: scale(calc(100cqi / 430px));
+}
+
+.preview-fit.is-exporting {
+  overflow: visible;
+  width: 430px;
+  max-width: none;
+  height: auto;
+  aspect-ratio: auto;
+}
+
+.preview-fit.is-exporting .qr-poster {
+  position: relative;
+  top: auto;
+  left: auto;
+  width: 430px;
+  max-width: none;
+  min-height: 0;
+  transform: none;
 }
 
 .qr-poster { font-family: Arial, Helvetica, sans-serif; transition: opacity 240ms cubic-bezier(0.22, 1, 0.36, 1); }
@@ -560,7 +617,7 @@ body {
   grid-template-columns: auto minmax(0, 1fr);
   gap: 16px;
   align-items: center;
-  margin-top: 18px;
+  margin-top: 0;
   padding: 18px 20px;
   background: #fff;
   border: 1px solid #e7ecf2;
@@ -641,8 +698,7 @@ body {
 
 @media (max-width: 1100px) {
   .studio { grid-template-columns: 1fr; }
-  .preview-stage { padding: 22px 16px; }
-  .qr-poster { width: min(100%, 380px); }
+  .preview-stage { padding: 16px; }
 }
 
 @media (max-width: 800px) {
@@ -670,7 +726,6 @@ body {
   .top-navbar { padding: 14px 16px; }
   .top-navbar-title p { display: none; }
   .main { padding: 18px 16px 32px; }
-  .qr-poster { width: min(100%, 340px); }
   .nfc-card { grid-template-columns: 1fr; }
   .studio-panel .qr-theme-options { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 
@@ -791,6 +846,10 @@ body.page-leaving { opacity: 0; }
 .qr-poster > * {
     position: relative;
     z-index: 2;
+}
+
+.qr-poster > .qr-poster-review-content {
+    position: absolute;
 }
 
 
@@ -932,8 +991,8 @@ body.page-leaving { opacity: 0; }
 
 @media (max-width: 850px) {
     .qr-poster {
-        max-width: 430px;
-        min-height: 610px;
+        max-width: none;
+        min-height: 0;
     }
 }
 
@@ -1016,13 +1075,6 @@ body.page-leaving { opacity: 0; }
     color: #E8C77B !important;
 }
 
-@media (max-width: 1100px) {
-    .qr-poster { width: min(100%, 380px); }
-}
-
-@media (max-width: 800px) {
-    .qr-poster { width: min(100%, 340px); }
-}
 </style>
 </head>
 
@@ -1100,6 +1152,7 @@ body.page-leaving { opacity: 0; }
 
           <div class="studio" id="qrStudio">
             <div class="preview-stage">
+              <div class="preview-fit">
               <div class="qr-poster theme-cream" id="qrPoster">
                 <div class="qr-poster-logo">
                   <img alt="Business logo">
@@ -1112,6 +1165,7 @@ body.page-leaving { opacity: 0; }
                   <p class="qr-poster-review-title">Scan to leave us a review</p>
                   <p class="qr-poster-review-subtitle">Your feedback helps us improve ♡</p>
                 </div>
+              </div>
               </div>
             </div>
 
@@ -1170,22 +1224,22 @@ body.page-leaving { opacity: 0; }
                   <span>Print</span>
                 </button>
               </div>
+
+              <section class="nfc-card" aria-label="NFC">
+                <div class="nfc-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M8 8a6 6 0 0 1 8 0"/><path d="M6 6a9 9 0 0 1 12 0"/><path d="M10 10a3 3 0 0 1 4 0"/><circle cx="12" cy="16" r="1.2" fill="currentColor" stroke="none"/></svg>
+                </div>
+                <div>
+                  <h2>NFC cards and tags</h2>
+                  <p>Use an NFC card or tag so customers can open your ReviewRise page with one tap.</p>
+                  <div class="nfc-destination">
+                    <strong id="nfcBusinessName">Selected business</strong>
+                    <div id="nfcDestination"></div>
+                  </div>
+                </div>
+              </section>
             </div>
           </div>
-
-          <section class="nfc-card" aria-label="NFC">
-            <div class="nfc-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24"><path d="M8 8a6 6 0 0 1 8 0"/><path d="M6 6a9 9 0 0 1 12 0"/><path d="M10 10a3 3 0 0 1 4 0"/><circle cx="12" cy="16" r="1.2" fill="currentColor" stroke="none"/></svg>
-            </div>
-            <div>
-              <h2>NFC cards and tags</h2>
-              <p>Use an NFC card or tag so customers can open your ReviewRise page with one tap.</p>
-              <div class="nfc-destination">
-                <strong id="nfcBusinessName">Selected business</strong>
-                <div id="nfcDestination"></div>
-              </div>
-            </div>
-          </section>
         </div>
 
         <div class="empty-state" id="qrEmptyState" hidden>
@@ -1776,6 +1830,23 @@ async function buildExportCanvas() {
   return exportCanvas;
 }
 
+async function capturePoster(options) {
+  const fit = poster.parentElement;
+  if (fit) fit.classList.add("is-exporting");
+  poster.classList.add("is-exporting");
+  try {
+    await new Promise(function (resolve) {
+      requestAnimationFrame(function () {
+        requestAnimationFrame(resolve);
+      });
+    });
+    return await html2canvas(poster, options);
+  } finally {
+    poster.classList.remove("is-exporting");
+    if (fit) fit.classList.remove("is-exporting");
+  }
+}
+
 studio.querySelector('[data-action="png"]').addEventListener("click", async function () {
   if (!poster) {
     console.error("ReviewRise: QR poster not found.");
@@ -1804,7 +1875,7 @@ studio.querySelector('[data-action="png"]').addEventListener("click", async func
     });
 
     const EXPORT_SCALE = 6;
-    const canvas = await html2canvas(poster, {
+    const canvas = await capturePoster({
       scale: EXPORT_SCALE,
       useCORS: true,
       allowTaint: false,
@@ -1847,7 +1918,7 @@ studio.querySelector('[data-action="png"]').addEventListener("click", async func
 });
 
 studio.querySelector('[data-action="pdf"]').addEventListener("click", async function () {
-  const canvas = await html2canvas(poster, {
+  const canvas = await capturePoster({
     scale: 3,
     useCORS: true,
     backgroundColor: "#ffffff"
@@ -1884,7 +1955,7 @@ studio.querySelector('[data-action="pdf"]').addEventListener("click", async func
 
 studio.querySelector('[data-action="print"]').addEventListener("click", async function () {
   const printWindow = window.open("", "_blank");
-  const canvas = await html2canvas(poster, {
+  const canvas = await capturePoster({
     scale: 3,
     useCORS: true,
     backgroundColor: "#ffffff"
