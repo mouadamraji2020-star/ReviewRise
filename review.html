@@ -218,25 +218,9 @@
     .success-close { margin-top: 8px; color: #8b97a8; font-size: 13px; font-weight: 500; }
     .done-btn { max-width: 220px; }
 
-    #googleHandoff { display: none; margin-top: 28px; }
-    #googleHandoff p { margin-top: 8px; color: #6d7c92; font-size: 15px; font-weight: 500; }
-    .loader {
-      width: 28px;
-      height: 28px;
-      margin: 16px auto 0;
-      border: 2.5px solid #e4edf8;
-      border-top-color: #2b7fff;
-      border-radius: 50%;
-      animation: spin 700ms linear infinite;
-    }
-
     .review-card.is-success > h1,
     .review-card.is-success > .description,
-    .review-card.is-success > .rating-area,
-    .review-card.is-redirecting > h1,
-    .review-card.is-redirecting > .description,
-    .review-card.is-redirecting > .rating-area { display: none; }
-    .review-card.is-redirecting #googleHandoff { display: block; }
+    .review-card.is-success > .rating-area { display: none; }
 
     .divider { height: 1px; margin: 26px 0 16px; background: #eef2f6; }
     .trust { display: flex; justify-content: center; align-items: center; gap: 6px; color: #8b97a8; font-size: 12.5px; font-weight: 500; }
@@ -257,7 +241,6 @@
       to { opacity: 1; transform: scale(1); }
     }
     @keyframes draw { to { stroke-dashoffset: 0; } }
-    @keyframes spin { to { transform: rotate(360deg); } }
 
     @media (max-width: 600px) {
       .page { padding: 18px 14px 8px; align-items: center; }
@@ -304,12 +287,6 @@
         </div>
         <div class="rating-label" id="ratingLabel">Select your rating</div>
         <div class="hint" id="ratingHint">Tap a star to continue</div>
-      </div>
-
-      <div id="googleHandoff">
-        <h1>Thank you!</h1>
-        <p>Taking you to Google to share your experience…</p>
-        <div class="loader" aria-hidden="true"></div>
       </div>
 
       <div id="feedbackForm">
@@ -505,7 +482,7 @@ function resetReviewExperience() {
   ratingHint.style.display = "";
   ratingHint.textContent = "Tap a star to continue";
   ratingLabel.textContent = "Select your rating";
-  reviewCard.classList.remove("is-success", "is-redirecting");
+  reviewCard.classList.remove("is-success");
   stars.forEach(function (star) { star.classList.remove("selected", "active"); });
 }
 
@@ -526,8 +503,16 @@ function handleRating(rating) {
     }
     redirecting = true;
     feedbackForm.style.display = "none";
-    reviewCard.classList.add("is-redirecting");
-    window.setTimeout(function () { window.location.href = googleUrl; }, 650);
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      window.location.assign(currentBusiness.google_review_link);
+      return;
+    }
+    reviewCard.style.transition = "opacity 150ms cubic-bezier(0.22, 1, 0.36, 1), transform 150ms cubic-bezier(0.22, 1, 0.36, 1)";
+    reviewCard.style.opacity = "0.88";
+    reviewCard.style.transform = "translateY(-3px)";
+    window.setTimeout(function () {
+      window.location.assign(currentBusiness.google_review_link);
+    }, 150);
     return;
   }
 
