@@ -431,7 +431,7 @@ body {
 .preview-fit {
   container-type: inline-size;
   position: relative;
-  width: min(100%, 314px);
+  width: min(100%, 336px);
   aspect-ratio: 964 / 1536;
   overflow: hidden;
 }
@@ -675,6 +675,213 @@ body {
   cursor: pointer;
 }
 
+.links-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.links-head h2 {
+  margin: 0;
+  color: #0c1730;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.45px;
+}
+
+.links-head p {
+  margin: 6px 0 0;
+  max-width: 560px;
+  color: #6d7c92;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.qr-search {
+  width: min(280px, 100%);
+  height: 42px;
+  flex: none;
+  padding: 0 12px;
+  border: 1px solid #e7ecf2;
+  border-radius: 12px;
+  background: #fff;
+  color: #10284d;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.qr-search:focus {
+  outline: none;
+  border-color: #b9d4ff;
+  box-shadow: 0 0 0 3px rgba(43, 127, 255, 0.14);
+}
+
+.qr-link-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+.qr-link-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+  padding: 16px;
+  background: #fff;
+  border: 1px solid #e4ebf5;
+  border-radius: 18px;
+  box-shadow: 0 10px 28px rgba(30, 64, 120, 0.045);
+  transition: transform 200ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 200ms cubic-bezier(0.22, 1, 0.36, 1), border-color 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.qr-link-card:hover {
+  border-color: #d5e4f7;
+  box-shadow: 0 14px 30px rgba(30, 64, 120, 0.08);
+  transform: translateY(-2px);
+}
+
+.qr-link-card[hidden] { display: none !important; }
+
+.qr-link-top { display: flex; align-items: flex-start; gap: 12px; min-width: 0; }
+
+.qr-link-logo {
+  width: 52px;
+  height: 52px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #eef5ff;
+  color: #2b7fff;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.qr-link-logo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.qr-link-copy { min-width: 0; }
+.qr-link-name-row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.qr-link-name-row h3 { margin: 0; color: #0c1730; font-size: 16px; font-weight: 750; letter-spacing: -0.3px; }
+.qr-link-meta,
+.qr-link-url { margin: 4px 0 0; color: #6d7c92; font-size: 12.5px; font-weight: 600; line-height: 1.4; }
+.qr-link-url { word-break: break-all; }
+
+.qr-link-actions { display: flex; gap: 8px; }
+
+.qr-generate-btn,
+.qr-nfc-btn {
+  height: 40px;
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 180ms cubic-bezier(0.22, 1, 0.36, 1), background 180ms cubic-bezier(0.22, 1, 0.36, 1), border-color 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.qr-generate-btn {
+  border: 0;
+  background: #2b7fff;
+  color: #fff;
+  box-shadow: 0 8px 16px rgba(43, 127, 255, 0.18);
+}
+
+.qr-nfc-btn {
+  border: 1px solid #e7ecf2;
+  background: #fff;
+  color: #10284d;
+}
+
+.qr-generate-btn:hover,
+.qr-nfc-btn:hover { transform: translateY(-1px); }
+.qr-generate-btn:active,
+.qr-nfc-btn:active { transform: translateY(0); }
+.qr-generate-btn svg,
+.qr-nfc-btn svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1400;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 20px 16px;
+  overflow: auto;
+  background: rgba(10, 18, 32, 0.55);
+  backdrop-filter: blur(8px);
+}
+
+.modal-backdrop[hidden] { display: none !important; }
+
+.qr-dialog,
+.nfc-dialog {
+  width: min(1040px, 100%);
+  max-height: calc(100vh - 40px);
+  margin: auto;
+  overflow: auto;
+  background: #f6f8fb;
+  border-radius: 22px;
+  box-shadow: 0 24px 70px rgba(8, 16, 32, 0.28);
+}
+
+.nfc-dialog {
+  width: min(460px, 100%);
+  padding: 22px;
+  background: #fff;
+}
+
+.qr-modal-head,
+.nfc-modal-head {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 22px 12px;
+  background: #f6f8fb;
+}
+
+.nfc-modal-head { padding: 0 0 12px; background: #fff; }
+.qr-modal-head h2,
+.nfc-modal-head h2 { margin: 0; color: #0c1730; font-size: 22px; font-weight: 800; letter-spacing: -0.4px; }
+.qr-modal-head p,
+.nfc-modal-head p { margin: 6px 0 0; color: #6d7c92; font-size: 14px; line-height: 1.45; }
+
+.modal-close {
+  width: 36px;
+  height: 36px;
+  flex: none;
+  border: 1px solid #e7ecf2;
+  border-radius: 10px;
+  background: #fff;
+  color: #314158;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 180ms cubic-bezier(0.22, 1, 0.36, 1), color 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.modal-close:hover { background: #f3f7fd; color: #1d4ed8; }
+
+.qr-dialog .studio { padding: 4px 22px 22px; align-items: start; }
+.qr-dialog .preview-stage { box-shadow: none; }
+
+body.modal-open { overflow: hidden; }
+
 @media (min-width: 801px) {
   .app-workspace { margin-left: var(--side); }
   #mobileMenuBtn { display: none !important; }
@@ -696,9 +903,18 @@ body {
   }
 }
 
+@media (max-width: 1180px) {
+  .qr-link-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
 @media (max-width: 1100px) {
   .studio { grid-template-columns: 1fr; }
   .preview-stage { padding: 16px; }
+  .links-head { flex-direction: column; align-items: stretch; }
+}
+
+@media (max-width: 700px) {
+  .qr-link-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 800px) {
@@ -1144,13 +1360,35 @@ body.page-leaving { opacity: 0; }
 
     <main class="main">
       <div class="qr-content">
-        <div id="qrWorkspace" hidden>
-          <div class="biz-selector-wrap">
-            <p class="biz-selector-label">Review link</p>
-            <div class="biz-selector" id="businessSelector"></div>
+        <div id="qrWorkspace">
+          <div class="links-head">
+            <div>
+              <h2>Your Review Links</h2>
+              <p>Select one of your Review Links to generate a QR code or prepare an NFC touchpoint.</p>
+            </div>
+            <input class="qr-search" id="qrSearchInput" type="search" placeholder="Search your businesses..." aria-label="Search your businesses">
           </div>
+          <div class="qr-link-grid" id="qrReviewLinksContainer"></div>
+        </div>
 
-          <div class="studio" id="qrStudio">
+        <div class="empty-state" id="qrEmptyState" hidden>
+          <h2>No Review Links yet</h2>
+          <p>Create a Review Link first, then it will automatically appear here.</p>
+          <button class="empty-link" type="button" onclick="smoothNavigate('review-link.html')">Go to Review Links</button>
+        </div>
+      </div>
+    </main>
+
+    <div class="modal-backdrop" id="qrModal" hidden>
+      <div class="qr-dialog" role="dialog" aria-modal="true" aria-labelledby="qrModalTitle">
+        <div class="qr-modal-head">
+          <div>
+            <h2 id="qrModalTitle">Generate QR Code</h2>
+            <p>Download or print this QR code to let your customers leave a review.</p>
+          </div>
+          <button class="modal-close" id="qrModalClose" type="button" aria-label="Close">×</button>
+        </div>
+        <div class="studio" id="qrStudio">
             <div class="preview-stage">
               <div class="preview-fit">
               <div class="qr-poster theme-cream" id="qrPoster">
@@ -1171,7 +1409,7 @@ body.page-leaving { opacity: 0; }
 
             <div class="qr-generator-panel studio-panel">
               <div class="qr-generator-section">
-                <h3>Poster theme</h3>
+                <h3>Select design</h3>
                 <div class="qr-theme-options">
                   <button type="button" class="qr-theme-btn active" data-theme="theme-cream">
                     <span class="theme-thumb theme-thumb-elegant" aria-hidden="true"></span>
@@ -1201,6 +1439,10 @@ body.page-leaving { opacity: 0; }
                     <span>ReviewRise review page</span>
                   </div>
                 </div>
+              </div>
+
+              <div class="qr-generator-section">
+                <h3>Review link</h3>
                 <div class="review-url-row">
                   <span class="review-url" id="reviewUrlText"></span>
                   <button class="copy-link-btn" id="copyReviewLink" type="button">
@@ -1225,30 +1467,30 @@ body.page-leaving { opacity: 0; }
                 </button>
               </div>
 
-              <section class="nfc-card" aria-label="NFC">
-                <div class="nfc-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24"><path d="M8 8a6 6 0 0 1 8 0"/><path d="M6 6a9 9 0 0 1 12 0"/><path d="M10 10a3 3 0 0 1 4 0"/><circle cx="12" cy="16" r="1.2" fill="currentColor" stroke="none"/></svg>
-                </div>
-                <div>
-                  <h2>NFC cards and tags</h2>
-                  <p>Use an NFC card or tag so customers can open your ReviewRise page with one tap.</p>
-                  <div class="nfc-destination">
-                    <strong id="nfcBusinessName">Selected business</strong>
-                    <div id="nfcDestination"></div>
-                  </div>
-                </div>
-              </section>
             </div>
-          </div>
-        </div>
-
-        <div class="empty-state" id="qrEmptyState" hidden>
-          <h2>No Review Links yet</h2>
-          <p>Create a Review Link first, then it will automatically appear here.</p>
-          <button class="empty-link" type="button" onclick="smoothNavigate('review-link.html')">Go to Review Links</button>
         </div>
       </div>
-    </main>
+    </div>
+
+    <div class="modal-backdrop" id="nfcModal" hidden>
+      <div class="nfc-dialog" role="dialog" aria-modal="true" aria-labelledby="nfcModalTitle">
+        <div class="nfc-modal-head">
+          <div>
+            <h2 id="nfcModalTitle">NFC Review Link</h2>
+            <p>Write this URL to an NFC card or tag so customers can open your review page with one tap.</p>
+          </div>
+          <button class="modal-close" id="nfcModalClose" type="button" aria-label="Close">×</button>
+        </div>
+        <div class="nfc-destination">
+          <strong id="nfcBusinessName">Selected business</strong>
+          <div id="nfcDestination"></div>
+        </div>
+        <button class="copy-link-btn" id="copyNfcLink" type="button" style="margin-top: 14px;">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+          <span>Copy Link</span>
+        </button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1292,9 +1534,9 @@ body.page-leaving { opacity: 0; }
   }
 
   var links = parsed.links.map(publicReviewLink);
-  var workspace = document.getElementById("qrWorkspace");
-  var selector = document.getElementById("businessSelector");
-  if (!workspace || !selector) return;
+  var grid = document.getElementById("qrReviewLinksContainer");
+  var emptyState = document.getElementById("qrEmptyState");
+  if (!grid) return;
 
   function escapeHtml(value) {
     return String(value || "")
@@ -1304,54 +1546,27 @@ body.page-leaving { opacity: 0; }
       .replace(/"/g, "&quot;");
   }
 
-  var selected = links.filter(function (link) { return link.is_primary === true; })[0] || links[0];
-  selector.innerHTML = links.map(function (link) {
+  grid.innerHTML = links.map(function (link) {
     var name = link.business_name || "Business";
     var logo = link.logo_url
       ? '<img src="' + escapeHtml(link.logo_url) + '" alt="">'
       : "<span>" + escapeHtml(name.charAt(0).toUpperCase()) + "</span>";
-    return '<button type="button" class="biz-option' + (String(link.id) === String(selected.id) ? " active" : "") + '" data-link-id="' + escapeHtml(link.id) + '">' +
-      '<span class="biz-option-logo">' + logo + "</span>" +
-      '<span class="biz-option-copy"><span class="biz-option-name">' + escapeHtml(name) + "</span>" +
-      (link.is_primary === true ? '<span class="primary-badge">Primary</span>' : "") +
-      "</span></button>";
+    var place = [link.city, link.country].filter(Boolean).join(", ");
+    return '<article class="qr-link-card" data-link-id="' + escapeHtml(link.id) + '" data-name="' + escapeHtml(name) + '">' +
+      '<div class="qr-link-top"><div class="qr-link-logo">' + logo + '</div><div class="qr-link-copy">' +
+      '<div class="qr-link-name-row"><h3>' + escapeHtml(name) + '</h3>' +
+      (link.is_primary === true ? '<span class="primary-badge">Primary</span>' : '') +
+      '</div>' +
+      (place ? '<p class="qr-link-meta">' + escapeHtml(place) + '</p>' : '') +
+      '<p class="qr-link-url">review.html?id=' + escapeHtml(link.id) + '</p></div></div>' +
+      '<div class="qr-link-actions">' +
+      '<button type="button" class="qr-generate-btn" data-link-id="' + escapeHtml(link.id) + '"><span>Generate QR Code</span></button>' +
+      '<button type="button" class="qr-nfc-btn" data-link-id="' + escapeHtml(link.id) + '"><span>NFC</span></button>' +
+      '</div></article>';
   }).join("");
 
-  var posterName = document.querySelector(".qr-poster-business-name");
-  var posterLogo = document.querySelector(".qr-poster-logo img");
-  var logoFallback = document.querySelector(".qr-logo-fallback");
-  var previewName = document.querySelector(".qr-business-preview-name");
-  var previewLogo = document.querySelector(".qr-business-preview-logo");
-  var urlText = document.getElementById("reviewUrlText");
-  var nfcName = document.getElementById("nfcBusinessName");
-  var nfcDestination = document.getElementById("nfcDestination");
-  var primary = document.getElementById("previewPrimary");
-  var businessName = selected.business_name || "Your Business";
-  var visibleUrl = "review.html?id=" + selected.id;
-
-  if (posterName) posterName.textContent = businessName;
-  if (previewName) previewName.textContent = businessName;
-  if (nfcName) nfcName.textContent = businessName;
-  if (urlText) urlText.textContent = visibleUrl;
-  if (nfcDestination) nfcDestination.textContent = visibleUrl;
-  if (primary) primary.hidden = selected.is_primary !== true;
-
-  if (selected.logo_url && posterLogo) {
-    posterLogo.crossOrigin = "anonymous";
-    posterLogo.src = selected.logo_url;
-    posterLogo.style.display = "block";
-    if (logoFallback) logoFallback.style.display = "none";
-    if (previewLogo) previewLogo.innerHTML = '<img src="' + escapeHtml(selected.logo_url) + '" alt="">';
-  } else if (logoFallback) {
-    if (posterLogo) posterLogo.style.display = "none";
-    logoFallback.textContent = businessName.charAt(0).toUpperCase();
-    logoFallback.style.display = "";
-    if (previewLogo) previewLogo.textContent = businessName.charAt(0).toUpperCase();
-  }
-
-  workspace.hidden = false;
+  if (emptyState) emptyState.hidden = true;
   window.__qrPaintedReviewLinksKey = JSON.stringify(links.map(publicReviewLink));
-  window.__qrPaintedLinkId = selected.id;
 })();
 </script>
 
@@ -1366,9 +1581,11 @@ const REVIEW_LINKS_CACHE_KEY = "reviewrise_reviewlinks_data";
 
 const workspace = document.getElementById("qrWorkspace");
 const emptyState = document.getElementById("qrEmptyState");
-const selector = document.getElementById("businessSelector");
+const cardGrid = document.getElementById("qrReviewLinksContainer");
 const studio = document.getElementById("qrStudio");
 const poster = document.getElementById("qrPoster");
+const qrModal = document.getElementById("qrModal");
+const nfcModal = document.getElementById("nfcModal");
 
 let currentLinks = [];
 let activeLink = null;
@@ -1450,18 +1667,28 @@ function pickLink(links, preferredId) {
   return links.filter(function (link) { return link.is_primary === true; })[0] || links[0];
 }
 
-function renderSelector(links, selectedId) {
-  selector.innerHTML = links.map(function (link) {
+function renderCards(links) {
+  cardGrid.innerHTML = links.map(function (link) {
     const name = link.business_name || "Business";
     const logo = link.logo_url
       ? '<img src="' + escapeHtml(link.logo_url) + '" alt="">'
       : "<span>" + escapeHtml(name.charAt(0).toUpperCase()) + "</span>";
-    const active = String(link.id) === String(selectedId) ? " active" : "";
-    return '<button type="button" class="biz-option' + active + '" data-link-id="' + escapeHtml(link.id) + '" aria-pressed="' + (active ? "true" : "false") + '">' +
-      '<span class="biz-option-logo">' + logo + "</span>" +
-      '<span class="biz-option-copy"><span class="biz-option-name">' + escapeHtml(name) + "</span>" +
-      (link.is_primary === true ? '<span class="primary-badge">Primary</span>' : "") +
-      "</span></button>";
+    const place = [link.city, link.country].filter(Boolean).join(", ");
+    return '<article class="qr-link-card" data-link-id="' + escapeHtml(link.id) + '" data-name="' + escapeHtml(name) + '">' +
+      '<div class="qr-link-top"><div class="qr-link-logo">' + logo + '</div><div class="qr-link-copy">' +
+      '<div class="qr-link-name-row"><h3>' + escapeHtml(name) + '</h3>' +
+      (link.is_primary === true ? '<span class="primary-badge">Primary</span>' : '') +
+      '</div>' +
+      (place ? '<p class="qr-link-meta">' + escapeHtml(place) + '</p>' : '') +
+      '<p class="qr-link-url">review.html?id=' + escapeHtml(link.id) + '</p></div></div>' +
+      '<div class="qr-link-actions">' +
+      '<button type="button" class="qr-generate-btn" data-link-id="' + escapeHtml(link.id) + '">' +
+      '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><path d="M14 14h2v2h-2zM18 14h2v2h-2zM14 18h2v2h-2zM18 18h2v2h-2z"/></svg>' +
+      '<span>Generate QR Code</span></button>' +
+      '<button type="button" class="qr-nfc-btn" data-link-id="' + escapeHtml(link.id) + '">' +
+      '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8a6 6 0 0 1 8 0"/><path d="M6 6a9 9 0 0 1 12 0"/><path d="M10 10a3 3 0 0 1 4 0"/><circle cx="12" cy="16" r="1.2" fill="currentColor" stroke="none"/></svg>' +
+      '<span>NFC</span></button>' +
+      '</div></article>';
   }).join("");
 }
 
@@ -1511,12 +1738,6 @@ function applyBusiness(link, options) {
     previewLogo.textContent = initial;
   }
 
-  selector.querySelectorAll(".biz-option").forEach(function (button) {
-    const active = String(button.dataset.linkId) === String(link.id);
-    button.classList.toggle("active", active);
-    button.setAttribute("aria-pressed", active ? "true" : "false");
-  });
-
   if (!sameQr || options.forceQr) {
     const qrContainer = poster.querySelector(".qr-poster-code");
     qrContainer.innerHTML = "";
@@ -1533,7 +1754,7 @@ function loadQRReviewLinks(reviewLinks) {
   if (!Array.isArray(reviewLinks) || reviewLinks.length === 0) {
     currentLinks = [];
     activeLink = null;
-    if (selector) selector.innerHTML = "";
+    if (cardGrid) cardGrid.innerHTML = "";
     workspace.hidden = true;
     emptyState.hidden = false;
     return;
@@ -1544,17 +1765,14 @@ function loadQRReviewLinks(reviewLinks) {
   currentLinks = reviewLinks.map(publicReviewLink);
 
   const nextKey = reviewLinksRenderKey(currentLinks);
-  const preferredId = activeLink ? activeLink.id : window.__qrPaintedLinkId;
-  const selected = pickLink(currentLinks, preferredId);
   const reusePainted =
     window.__qrPaintedReviewLinksKey === nextKey &&
-    selector.querySelectorAll(".biz-option").length === currentLinks.length;
+    cardGrid.querySelectorAll(".qr-link-card").length === currentLinks.length;
 
   if (!reusePainted) {
-    renderSelector(currentLinks, selected.id);
+    renderCards(currentLinks);
   }
 
-  applyBusiness(selected);
   renderedReviewLinksKey = nextKey;
   window.__qrPaintedReviewLinksKey = null;
 }
@@ -1655,15 +1873,75 @@ async function refreshQRReviewLinks() {
   }
 }
 
-selector.addEventListener("click", function (event) {
-  const button = event.target.closest(".biz-option");
+function openModal(modal) {
+  modal.hidden = false;
+  document.body.classList.add("modal-open");
+}
+
+function closeModal(modal) {
+  modal.hidden = true;
+  if (qrModal.hidden && nfcModal.hidden) {
+    document.body.classList.remove("modal-open");
+  }
+}
+
+function findLink(id) {
+  return currentLinks.filter(function (item) {
+    return String(item.id) === String(id);
+  })[0];
+}
+
+cardGrid.addEventListener("click", function (event) {
+  const generate = event.target.closest(".qr-generate-btn");
+  const nfc = event.target.closest(".qr-nfc-btn");
+  const button = generate || nfc;
   if (!button) return;
 
-  const link = currentLinks.filter(function (item) {
-    return String(item.id) === String(button.dataset.linkId);
-  })[0];
+  const link = findLink(button.dataset.linkId);
+  if (!link) return;
 
-  if (link) applyBusiness(link);
+  if (generate) {
+    applyBusiness(link);
+    openModal(qrModal);
+    return;
+  }
+
+  document.getElementById("nfcBusinessName").textContent = link.business_name || "Your Business";
+  const destination = document.getElementById("nfcDestination");
+  destination.textContent = visibleReviewUrl(link);
+  destination.dataset.url = customerReviewUrl(link);
+  openModal(nfcModal);
+});
+
+document.getElementById("qrSearchInput").addEventListener("input", function () {
+  const query = this.value.trim().toLowerCase();
+  cardGrid.querySelectorAll(".qr-link-card").forEach(function (card) {
+    const name = (card.getAttribute("data-name") || "").toLowerCase();
+    card.hidden = query.length > 0 && name.indexOf(query) === -1;
+  });
+});
+
+document.getElementById("qrModalClose").addEventListener("click", function () { closeModal(qrModal); });
+document.getElementById("nfcModalClose").addEventListener("click", function () { closeModal(nfcModal); });
+qrModal.addEventListener("click", function (event) { if (event.target === qrModal) closeModal(qrModal); });
+nfcModal.addEventListener("click", function (event) { if (event.target === nfcModal) closeModal(nfcModal); });
+document.addEventListener("keydown", function (event) {
+  if (event.key !== "Escape") return;
+  if (!qrModal.hidden) closeModal(qrModal);
+  if (!nfcModal.hidden) closeModal(nfcModal);
+});
+
+document.getElementById("copyNfcLink").addEventListener("click", async function () {
+  const destination = document.getElementById("nfcDestination");
+  const label = this.querySelector("span");
+  const original = label.textContent;
+  try {
+    await navigator.clipboard.writeText(destination.dataset.url || destination.textContent);
+    label.textContent = "Copied";
+    window.setTimeout(function () { label.textContent = original; }, 1800);
+  } catch (error) {
+    console.error("Could not copy review link:", error);
+  }
 });
 
 studio.querySelectorAll(".qr-theme-btn").forEach(function (button) {
