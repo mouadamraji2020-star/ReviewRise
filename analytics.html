@@ -1,425 +1,730 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ReviewRise Analytics</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analytics - ReviewRise</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-<style>
-* {
-    box-sizing: border-box;
-}
+  <style>
+    * { box-sizing: border-box; }
 
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #f5f7f8;
-    color: #172033;
-}
+    body {
+      margin: 0;
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+      background: #f3f6fb;
+      color: #0c1730;
+    }
 
-.sidebar {
-  width: 240px;
-  height: 100vh;
-  background: #111827;
-  color: white;
-  position: fixed;
-  left: 0;
-  top: 0;
-  padding: 28px 20px;
-}
+    #analyticsPage {
+      --side: 240px;
+      min-height: 100vh;
+      background:
+        radial-gradient(ellipse 560px 320px at 12% -4%, rgba(186, 220, 255, 0.34), transparent 70%),
+        radial-gradient(ellipse 420px 260px at 96% 8%, rgba(214, 232, 255, 0.28), transparent 72%),
+        #f3f6fb;
+      color: #0c1730;
+    }
 
-.logo {
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 40px;
-}
+    #analyticsPage.sidebar-collapsed { --side: 72px; }
 
-.menu-item {
-  display: block;
-  text-decoration: none;
-  padding: 13px 15px;
-  margin-bottom: 8px;
-  border-radius: 9px;
-  cursor: pointer;
-  color: #d1d5db;
-}
-
-.menu-item:hover,
-.menu-item.active {
-  background: #1f2937;
-  color: white;
-}
-
-.main {
-  margin-left: 0px;
-  padding: 40px;
-}
-
-h1 {
-    font-size: 36px;
-    margin-bottom: 8px;
-}
-
-.subtitle {
-    color: #777;
-    margin-bottom: 40px;
-}
-
-.stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-}
-
-.stat-card {
-    background: white;
-    padding: 25px;
-    border-radius: 14px;
-}
-
-.stat-number {
-    font-size: 32px;
-    font-weight: bold;
-}
-
-.stat-label {
-    color: #777;
-    margin-top: 8px;
-}
-
-.chart-card {
-    background: white;
-    margin-top: 25px;
-    padding: 30px;
-    border-radius: 14px;
-}
-
-.rating-row {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    margin: 18px 0;
-}
-
-.rating-label {
-    width: 55px;
-}
-
-.bar-background {
-    flex: 1;
-    height: 14px;
-    background: #e7e9ed;
-    border-radius: 20px;
-    overflow: hidden;
-}
-
-.bar {
-    height: 100%;
-    background: #172033;
-    border-radius: 20px;
-}
-
-    .mobile-menu-btn {
-    display: none;
-}
-    .close-menu-btn {
-    display: none;
-}
-    
-@media (max-width: 800px) {
-
-.close-menu-btn {
-    display: block !important;
-    position: absolute !important;
-    top: 12px !important;
-    right: 12px !important;
-
-    width: auto !important;
-    height: auto !important;
-    padding: 0 !important;
-    margin: 0 !important;
-
-    background: transparent !important;
-    border: none !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
-
-    color: white !important;
-    font-size: 28px !important;
-    font-weight: normal !important;
-    line-height: 1 !important;
-
-    cursor: pointer;
-    appearance: none;
-    -webkit-appearance: none;
-}
-
-    .mobile-menu-btn {
-    display: block;
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    z-index: 1100;
-    background: #111827;
-    color: white;
-    border: none;
-    border-radius: 12px;
-    padding: 12px 16px;
-    font-size: 26px;
-    cursor: pointer;
-}
-    
     .sidebar {
-        transform: translateX(-100%);
-        transition: transform 0.45s ease;
-        z-index: 1000;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      width: var(--side);
+      height: 100vh;
+      padding: 18px 12px 16px;
+      background:
+        linear-gradient(180deg, rgba(62, 140, 255, 0.08), transparent 22%),
+        #0c1424;
+      color: #d5deea;
+      border-right: 1px solid rgba(255, 255, 255, 0.06);
+      transition: width 280ms cubic-bezier(0.22, 1, 0.36, 1);
     }
 
-    .sidebar.open {
-        transform: translateX(0);
+    .sidebar-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      min-height: 40px;
+      padding: 0 4px;
     }
 
-    .main {
-        margin-left: 0 !important;
-        width: 100% !important;
-        padding: 25px 20px 30px !important;
-        box-sizing: border-box;
+    .sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .sidebar-collapse {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: none;
+      padding: 0;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.04);
+      color: #c9d4e3;
+      cursor: pointer;
+      transition: background 180ms cubic-bezier(0.22, 1, 0.36, 1), color 180ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .sidebar-collapse svg,
+    .menu-item svg,
+    .account-avatar svg,
+    .account-chevron {
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .sidebar-collapse svg {
+      width: 16px;
+      height: 16px;
+      transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .sidebar-collapse:hover { background: rgba(255, 255, 255, 0.08); color: #fff; }
+
+    #analyticsPage.sidebar-collapsed .sidebar-top { flex-direction: column; gap: 12px; }
+    #analyticsPage.sidebar-collapsed .sidebar-collapse svg { transform: rotate(180deg); }
+
+    .dash-logo-mark {
+      width: 34px;
+      height: 26px;
+      position: relative;
+      overflow: hidden;
+      flex: none;
+    }
+
+    .dash-logo-mark img {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 82px;
+      height: 82px;
+      max-width: none;
+      transform: translate(-23px, -14px);
+    }
+
+    .dash-logo-name {
+      color: #fff;
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      line-height: 1;
+      max-width: 140px;
+    }
+
+    .dash-logo-name span {
+      background: linear-gradient(90deg, #7eb6ff 10%, #3ec6ff 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .dash-logo-name,
+    .menu-label {
+      overflow: hidden;
+      white-space: nowrap;
+      transition: opacity 220ms cubic-bezier(0.22, 1, 0.36, 1), max-width 280ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .menu-label { max-width: 150px; }
+
+    #analyticsPage.sidebar-collapsed .dash-logo-name,
+    #analyticsPage.sidebar-collapsed .menu-label {
+      max-width: 0;
+      opacity: 0;
+    }
+
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-top: 28px;
+    }
+
+    .menu-item {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 10px;
+      color: #c5d0de;
+      font-size: 13.5px;
+      font-weight: 500;
+      line-height: 1.2;
+      cursor: pointer;
+      transition: background 180ms cubic-bezier(0.22, 1, 0.36, 1), color 180ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 180ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .menu-item svg { width: 18px; height: 18px; flex: none; }
+    .menu-item:hover { background: rgba(255, 255, 255, 0.06); color: #fff; }
+
+    .menu-item.active {
+      background: linear-gradient(90deg, rgba(43, 127, 255, 0.22), rgba(16, 36, 68, 0.55));
+      color: #f5f8ff;
+      box-shadow: inset 2px 0 0 #67b7ff, inset 0 0 0 1px rgba(120, 176, 255, 0.22);
+    }
+
+    .menu-item.active svg { color: #8ec5ff; }
+
+    #analyticsPage.sidebar-collapsed .menu-item { justify-content: center; gap: 0; padding: 10px 0; }
+
+    #analyticsPage.sidebar-collapsed .menu-item::after {
+      content: attr(data-label);
+      position: absolute;
+      left: calc(100% + 12px);
+      top: 50%;
+      z-index: 5;
+      padding: 6px 8px;
+      border-radius: 8px;
+      background: #0c1424;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      box-shadow: 0 8px 20px rgba(8, 16, 32, 0.2);
+      transform: translateY(-50%);
+      transition: opacity 160ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    #analyticsPage.sidebar-collapsed .menu-item:hover::after { opacity: 1; }
+
+    .close-menu-btn { display: none; }
+
+    .app-workspace {
+      min-height: 100vh;
+      min-width: 0;
+      transition: margin-left 280ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .top-navbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      min-height: 68px;
+      padding: 12px 28px;
+      background: rgba(255, 255, 255, 0.78);
+      border-bottom: 1px solid rgba(226, 232, 240, 0.95);
+      backdrop-filter: blur(16px);
+    }
+
+    .top-navbar-title { display: flex; align-items: center; gap: 12px; min-width: 0; }
+
+    .top-navbar-title h1 {
+      margin: 0;
+      color: #0c1730;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.45px;
+      line-height: 1.15;
+    }
+
+    .top-navbar-title p {
+      margin: 2px 0 0;
+      color: #7b8ba0;
+      font-size: 12.5px;
+      font-weight: 500;
+    }
+
+    .top-navbar-actions { position: relative; margin-left: auto; display: flex; align-items: center; }
+
+    .navbar-icon {
+      height: 40px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 10px 4px 4px;
+      border: 1px solid #e7ecf2;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.9);
+      color: #10284d;
+      cursor: pointer;
+      transition: border-color 180ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 180ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .navbar-icon:hover { border-color: #b9d4ff; box-shadow: 0 6px 16px rgba(43, 127, 255, 0.12); }
+
+    .account-avatar {
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: linear-gradient(180deg, #f7faff, #e7f1ff);
+      color: #1d4ed8;
+    }
+
+    .account-avatar svg { width: 16px; height: 16px; }
+    .account-chevron { width: 14px; height: 14px; color: #8b97a8; }
+
+    .account-menu {
+      display: none;
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      min-width: 160px;
+      padding: 6px;
+      background: #fff;
+      border: 1px solid #e7ecf2;
+      border-radius: 12px;
+      box-shadow: 0 12px 28px rgba(16, 40, 80, 0.08);
+      z-index: 40;
+    }
+
+    .account-menu.open { display: block; }
+
+    .account-menu button {
+      width: 100%;
+      padding: 10px 12px;
+      border: none;
+      border-radius: 8px;
+      background: transparent;
+      color: #10284d;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      text-align: left;
+      cursor: pointer;
+      transition: background 160ms cubic-bezier(0.22, 1, 0.36, 1), color 160ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .account-menu button:hover { background: #f3f7fd; color: #1d4ed8; }
+
+    .mobile-menu-btn {
+      display: none;
+      width: 38px;
+      height: 38px;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #e7ecf2;
+      border-radius: 10px;
+      background: #fff;
+      color: #10284d;
+      font-size: 20px;
+      line-height: 36px;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .main { margin: 0; padding: 26px 28px 36px; }
+
+    .analytics-content { width: 100%; max-width: 1400px; }
+
+    .page-intro { position: relative; padding: 2px 0 0; }
+
+    .page-intro::before {
+      content: "";
+      position: absolute;
+      left: -24px;
+      top: -28px;
+      width: 280px;
+      height: 120px;
+      background: radial-gradient(circle, rgba(186, 220, 255, 0.42), transparent 70%);
+      pointer-events: none;
+    }
+
+    .page-intro h2,
+    .page-intro p { position: relative; }
+
+    .page-intro h2 {
+      margin: 0;
+      color: #0c1730;
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.7px;
+      line-height: 1.15;
+    }
+
+    .page-intro p {
+      margin: 6px 0 0;
+      color: #6d7c92;
+      font-size: 14.5px;
+      font-weight: 500;
     }
 
     .stats {
-        width: 100%;
-        grid-template-columns: 1fr;
-        gap: 15px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 22px;
+    }
+
+    .stat-card,
+    .dash-card {
+      background: #fff;
+      border: 1px solid #e7ecf2;
+      border-radius: 18px;
+      box-shadow: 0 10px 28px rgba(30, 64, 120, 0.045);
     }
 
     .stat-card {
-        width: 100%;
-        box-sizing: border-box;
+      position: relative;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      column-gap: 12px;
+      align-items: center;
+      padding: 16px 18px 14px;
+      transition:
+        box-shadow 200ms cubic-bezier(0.22, 1, 0.36, 1),
+        border-color 200ms cubic-bezier(0.22, 1, 0.36, 1),
+        transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
     }
-}
 
-    /* ReviewRise top navigation */
-.top-navbar {
-    width: 100%;
-    height: 72px;
-    display: flex;
-    align-items: center;
-    padding: 0 24px;
-    box-sizing: border-box;
-    background: #ffffff;
-    border-bottom: 1px solid #e5e7eb;
-    position: relative;
-    z-index: 900;
-}
+    .stat-card::before {
+      content: "";
+      position: absolute;
+      top: -36px;
+      right: -24px;
+      width: 96px;
+      height: 96px;
+      background: radial-gradient(circle, rgba(43, 127, 255, 0.14), transparent 70%);
+      pointer-events: none;
+    }
 
-.top-navbar-logo {
-    font-size: 27px;
-    font-weight: 700;
-    color: #111827;
-    margin-left: 18px;
-    position: absolute;
-    left: 50px;
-}
+    .stat-card:hover {
+      border-color: #d5e4f7;
+      box-shadow: 0 14px 30px rgba(30, 64, 120, 0.07);
+      transform: translateY(-1px);
+    }
 
-.top-navbar-actions {
-    margin-left: auto;
-    display: flex;
-    align-items: center;
-}
+    .stat-icon {
+      grid-row: 1 / span 2;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 11px;
+      background: #eef5ff;
+      color: #2b7fff;
+    }
 
-.navbar-icon {
-    background: transparent;
-    border: none;
-    color: #111827;
-    font-size: 28px;
-    cursor: pointer;
-}
+    .stat-icon svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
 
-/* Put the existing hamburger inside the navbar */
-.top-navbar .mobile-menu-btn {
-    position: static;
-    display: block;
-    background: transparent;
-    color: #111827;
-    border: none;
-    padding: 0;
-    margin: 0;
-    font-size: 30px;
-    line-height: 1;
-    cursor: pointer;
-}
+    .stat-card p {
+      margin: 0;
+      color: #6d7c92;
+      font-size: 12.5px;
+      font-weight: 600;
+      letter-spacing: -0.1px;
+    }
 
-/* LAPTOP ONLY */
-@media (min-width: 801px) {
+    .stat-card h2 {
+      margin: 2px 0 0;
+      color: #0c1730;
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.8px;
+      line-height: 1;
+    }
 
-    .mobile-menu-btn {
-        display: block !important;
-        position: static !important;
-        background: transparent !important;
-        color: #111827 !important;
-        border: none !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        font-size: 30px !important;
+    .stat-note {
+      grid-column: 1 / -1;
+      display: block;
+      margin-top: 10px;
+      color: #8b97a8;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .dash-card {
+      margin-top: 22px;
+      padding: 20px 22px 18px;
+    }
+
+    .dash-card h3 {
+      margin: 0;
+      color: #0c1730;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .dash-card-copy {
+      margin: 6px 0 0;
+      color: #6d7c92;
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 1.45;
+    }
+
+    #ratingChart {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 16px;
+      min-height: 220px;
+      margin-top: 18px;
+    }
+
+    .rating-row {
+      display: grid;
+      grid-template-columns: 52px minmax(0, 1fr) 36px 42px;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .rating-label {
+      color: #314158;
+      font-size: 13.5px;
+      font-weight: 600;
+    }
+
+    .dist-star { color: #f5b400; }
+
+    .bar-background {
+      height: 8px;
+      overflow: hidden;
+      border-radius: 99px;
+      background: #eef2f6;
+    }
+
+    .bar {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #2b7fff, #3ec6ff);
+    }
+
+    .dist-count,
+    .dist-percent {
+      color: #5c6d84;
+      font-size: 12.5px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+    }
+
+    .dist-percent { color: #8b97a8; font-weight: 500; }
+
+    .analytics-empty { padding: 36px 12px 28px; text-align: center; }
+    .analytics-empty strong { display: block; color: #0c1730; font-size: 15px; font-weight: 700; }
+    .analytics-empty p { margin: 6px auto 0; max-width: 380px; color: #6d7c92; font-size: 13.5px; line-height: 1.5; }
+
+    .dash-loading { margin: 28px 8px; color: #8b97a8; font-size: 13.5px; }
+
+    @media (min-width: 801px) {
+      .app-workspace { margin-left: var(--side); }
+      #mobileMenuBtn { display: none !important; }
+      .sidebar { display: flex !important; transform: none; }
+
+      .top-navbar,
+      .main {
+        padding-left: 28px;
+        padding-right: clamp(28px, calc(100% - 1428px), 2000px);
+        transition:
+          padding-left 280ms cubic-bezier(0.22, 1, 0.36, 1),
+          padding-right 280ms cubic-bezier(0.22, 1, 0.36, 1);
+      }
+
+      #analyticsPage.sidebar-collapsed .top-navbar,
+      #analyticsPage.sidebar-collapsed .main {
+        padding-left: clamp(28px, calc((100% - 1400px) / 2), 2000px);
+        padding-right: clamp(28px, calc((100% - 1400px) / 2), 2000px);
+      }
+    }
+
+    @media (max-width: 1100px) {
+      .stats { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 800px) {
+      .close-menu-btn {
+        display: none;
+        position: absolute;
+        top: 14px;
+        right: 12px;
+        width: 32px;
+        height: 32px;
+        border: none;
+        border-radius: 8px;
+        background: transparent;
+        color: #fff;
+        font-size: 24px;
         cursor: pointer;
+      }
+
+      .sidebar { display: none; width: 240px; }
+      .sidebar.open { display: flex; width: 240px; padding-top: 22px; }
+      .sidebar.open .close-menu-btn { display: block; }
+      .sidebar-collapse { display: none; }
+      .mobile-menu-btn { display: flex; }
+      .app-workspace { margin-left: 0; }
+      .top-navbar { padding: 14px 16px; }
+      .top-navbar-title p { display: none; }
+      .main { padding: 20px 16px 32px; }
+      .page-intro h2 { font-size: 24px; }
+      .stats { grid-template-columns: 1fr; }
+      .rating-row { grid-template-columns: 46px minmax(0, 1fr) 28px 36px; gap: 8px; }
+
+      #analyticsPage.sidebar-collapsed .sidebar { width: 240px; }
+      #analyticsPage.sidebar-collapsed .sidebar-top { flex-direction: row; }
+      #analyticsPage.sidebar-collapsed .dash-logo-name,
+      #analyticsPage.sidebar-collapsed .menu-label { max-width: 150px; opacity: 1; }
+      #analyticsPage.sidebar-collapsed .menu-item { justify-content: flex-start; gap: 10px; padding: 9px 12px; }
+      #analyticsPage.sidebar-collapsed .menu-item::after { display: none; }
     }
 
-    .sidebar {
-        display: block !important;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 240px;
-        height: 100vh;
-        background: #111827;
-        z-index: 1000;
-
-        transform: translateX(-100%);
-        transition: transform 0.45s ease;
+    @media (prefers-reduced-motion: reduce) {
+      .sidebar,
+      .app-workspace,
+      .top-navbar,
+      .main,
+      .dash-logo-name,
+      .menu-label,
+      .sidebar-collapse svg,
+      .menu-item,
+      .menu-item::after,
+      .navbar-icon,
+      .account-menu button,
+      .stat-card { transition: none; }
+      .stat-card:hover { transform: none; }
     }
 
-    .sidebar.open {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 240px;
-        height: 100vh;
-        background: #111827;
-        z-index: 1000;
-        padding: 24px 16px;
-        box-sizing: border-box;
-        transform: translateX(0);
-    }
-}
-
-.sidebar.open .logo {
-    display: block;
-    color: white;
-    font-size: 24px;
-    font-weight: 700;
-    margin-bottom: 30px;
-}
-
-.sidebar.open .close-menu-btn {
-    display: block;
-    position: absolute;
-    top: 18px;
-    right: 18px;
-    background: transparent;
-    border: none;
-    color: white;
-    font-size: 26px;
-    cursor: pointer;
-}
-
-.sidebar.open .menu-item {
-    display: block;
-    color: #e5e7eb;
-    text-decoration: none;
-    padding: 12px 14px;
-    margin-bottom: 6px;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 500;
-    transition: background 0.2s ease, color 0.2s ease;
-}
-
-.sidebar.open .menu-item:hover {
-    background: #1f2937;
-    color: #ffffff;
-}
-
-.sidebar.open .menu-item.active {
-    background: #2563eb;
-    color: #ffffff;
-    font-weight: 600;
-}
-
-/* Smooth page transition */
-body {
-    opacity: 1;
-    transition: opacity 0.25s ease;
-}
-
-body.page-leaving {
-    opacity: 0;
-}    
-</style>
+    body { opacity: 1; transition: opacity 0.25s ease; }
+    body.page-leaving { opacity: 0; }
+  </style>
 </head>
 
 <body>
 
-<div class="top-navbar">
-    <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="toggleSidebar()">☰</button>
+<div id="analyticsPage">
+  <aside class="sidebar">
+    <button class="close-menu-btn" type="button" onclick="toggleSidebar()" aria-label="Close menu">×</button>
+    <div class="sidebar-top">
+      <div class="sidebar-brand">
+        <span class="dash-logo-mark">
+          <img src="../../../../.cursor/projects/c-Users-Dima-D-origine-OneDrive-Desktop-git-huuub-ReviewRise/assets/c__Users_Dima_D_origine_AppData_Roaming_Cursor_User_workspaceStorage_d4266493b40e73b4a60b85c5f30c5fcb_images_WhatsApp_Image_2026-10-04_at_22.28.59-ba0e545f-3261-45f1-8544-9cfc0ce6454a.jpg" alt="">
+        </span>
+        <span class="dash-logo-name">Review<span>Rise</span></span>
+      </div>
+      <button class="sidebar-collapse" id="sidebarCollapse" type="button" aria-label="Collapse sidebar">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
+      </button>
+    </div>
+    <nav class="sidebar-nav" aria-label="Workspace">
+      <div class="menu-item" data-label="Dashboard" onclick="smoothNavigate('dashboard.html')">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        <span class="menu-label">Dashboard</span>
+      </div>
+      <div class="menu-item" data-label="Feedback" onclick="smoothNavigate('feedback.html')">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H9l-4 3v-3H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z"/></svg>
+        <span class="menu-label">Feedback</span>
+      </div>
+      <div class="menu-item active" data-label="Analytics">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19h16"/><path d="M7 16v-4"/><path d="M12 16V7"/><path d="M17 16v-6"/></svg>
+        <span class="menu-label">Analytics</span>
+      </div>
+      <div class="menu-item" data-label="Review Links" onclick="smoothNavigate('review-link.html')">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.1.1l1.4-1.4a5 5 0 0 0-7.1-7.1L10 5"/><path d="M14 11a5 5 0 0 0-7.1-.1L5.5 12.3a5 5 0 0 0 7.1 7.1L14 19"/></svg>
+        <span class="menu-label">Review Links</span>
+      </div>
+      <div class="menu-item" data-label="QR &amp; NFC" onclick="smoothNavigate('qr-nfc.html')">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><path d="M14 14h2v2h-2zM18 14h2v6h-6v-2h4z"/></svg>
+        <span class="menu-label">QR &amp; NFC</span>
+      </div>
+      <div class="menu-item" data-label="Settings" onclick="smoothNavigate('settings.html')">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 3.5v2.2M12 18.3v2.2M4.9 6.4l1.6 1.6M17.5 16l1.6 1.6M3.5 12h2.2M18.3 12h2.2M4.9 17.6l1.6-1.6M17.5 8l1.6-1.6"/></svg>
+        <span class="menu-label">Settings</span>
+      </div>
+    </nav>
+  </aside>
 
-    <div class="top-navbar-logo">ReviewRise</div>
-
-    <div class="top-navbar-actions">
-        <button class="navbar-icon" aria-label="Account">
-            ♙
+  <div class="app-workspace">
+    <header class="top-navbar">
+      <div class="top-navbar-title">
+        <button class="mobile-menu-btn" id="mobileMenuBtn" type="button" onclick="toggleSidebar()" aria-label="Open menu">☰</button>
+        <div>
+          <h1>Analytics</h1>
+          <p>Understand customer feedback trends and performance.</p>
+        </div>
+      </div>
+      <div class="top-navbar-actions">
+        <button class="navbar-icon" id="accountButton" type="button" onclick="toggleAccountMenu()" aria-label="Account">
+          <span class="account-avatar"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.2"/><path d="M6 19c1.2-3 3.2-4.5 6-4.5S16.8 16 18 19"/></svg></span>
+          <svg class="account-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
         </button>
-    </div>
+        <div class="account-menu" id="accountMenu">
+          <button type="button" onclick="logout()">Log Out</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="main">
+      <div class="analytics-content">
+        <section class="page-intro">
+          <h2>Feedback Analytics</h2>
+          <p>Track ratings, feedback volume and customer sentiment over time.</p>
+        </section>
+
+        <div class="stats">
+          <div class="stat-card">
+            <div class="stat-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 6h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H9l-4 3v-3H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z"/></svg></div>
+            <p>Total Feedback</p>
+            <h2 id="totalFeedback">0</h2>
+            <span class="stat-note">All private feedback received</span>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m12 3 2.4 5.4L20 9.2l-4 3.8.9 5.8L12 16.2 7.1 18.8 8 13 4 9.2l5.6-.8L12 3z"/></svg></div>
+            <p>Average Rating</p>
+            <h2 id="averageRating">0.0</h2>
+            <span class="stat-note">Across received feedback</span>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 4 3.5 19h17L12 4z"/><path d="M12 10v4"/><path d="M12 16.5h.01"/></svg></div>
+            <p>1–3 Star Feedback</p>
+            <h2 id="lowRatings">0</h2>
+            <span class="stat-note">Lower ratings to review</span>
+          </div>
+        </div>
+
+        <section class="dash-card">
+          <h3>Rating Distribution</h3>
+          <p class="dash-card-copy">How received ratings are spread from 5 to 1.</p>
+          <div id="ratingChart">
+            <p class="dash-loading">Loading feedback...</p>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
 </div>
-    
-<aside class="sidebar">
-    
-<button class="close-menu-btn" onclick="toggleSidebar()">×</button>
-    
-    <div class="logo">ReviewRise</div>
-
-    <div class="menu-item" onclick="smoothNavigate('dashboard.html')">Dashboard</div>
-
-<div class="menu-item" onclick="smoothNavigate('feedback.html')">Feedback</div>
-
-<div class="menu-item active" onclick="smoothNavigate('analytics.html')">Analytics</div>
-    
-<div class="menu-item" onclick="smoothNavigate('review-link.html')">Review Links</div>
-
-   <div class="menu-item" onclick="smoothNavigate('qr-nfc.html')">QR & NFC</div>
-
-<div class="menu-item" onclick="smoothNavigate('settings.html')">Settings</div>
-
-</aside>
-
-<main class="main">
-
-    <h1>Analytics</h1>
-
-    <div class="subtitle">
-        Understand your customer feedback and ratings.
-    </div>
-
-    <div class="stats">
-
-        <div class="stat-card">
-            <div class="stat-number" id="totalFeedback">0</div>
-            <div class="stat-label">Total Feedback</div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-number" id="averageRating">0.0</div>
-            <div class="stat-label">Average Rating</div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-number" id="lowRatings">0</div>
-            <div class="stat-label">1–3 Star Feedback</div>
-        </div>
-
-    </div>
-
-    <div class="chart-card">
-
-        <h2>Rating Distribution</h2>
-
-        <div id="ratingChart"></div>
-
-    </div>
-
-</main>
 
 <script>
-
 const SUPABASE_URL =
 "https://intlhwmvldxdiytemjlr.supabase.co";
 
@@ -476,31 +781,33 @@ function renderAnalytics(feedback) {
     const chart = document.getElementById("ratingChart");
     chart.innerHTML = "";
 
+    if (!total) {
+        chart.innerHTML = '<div class="analytics-empty"><strong>Not enough feedback yet</strong><p>Analytics will become more useful as more customer feedback is collected.</p></div>';
+        return;
+    }
+
     for (let rating = 5; rating >= 1; rating--) {
         const count = feedback.filter(item => Number(item.rating) === rating).length;
         const percentage = total ? (count / total) * 100 : 0;
 
         chart.innerHTML += `
             <div class="rating-row">
-
                 <div class="rating-label">
-                    ${rating} ★
+                    ${rating} <span class="dist-star">★</span>
                 </div>
-
                 <div class="bar-background">
                     <div
                         class="bar"
                         style="width:${percentage}%">
                     </div>
                 </div>
-
-                <div>${count}</div>
-
+                <div class="dist-count">${count}</div>
+                <div class="dist-percent">${Math.round(percentage)}%</div>
             </div>
         `;
     }
 }
-    
+
 async function getValidAccessToken() {
     const currentToken = localStorage.getItem("reviewrise_token");
     const refreshToken = localStorage.getItem("reviewrise_refresh_token");
@@ -549,7 +856,7 @@ async function getValidAccessToken() {
         return currentToken;
     }
 }
-    
+
 async function loadAnalytics() {
     const token = await getValidAccessToken();
 
@@ -609,10 +916,6 @@ if (
     loadAnalytics();
 }
 
-</script>
-
-<script>  
-
 function smoothNavigate(page) {
     document.body.classList.add("page-leaving");
 
@@ -620,28 +923,71 @@ function smoothNavigate(page) {
         window.location.href = page;
     }, 250);
 }
-    
+
 function toggleSidebar() {
     const sidebar = document.querySelector(".sidebar");
     const menuButton = document.getElementById("mobileMenuBtn");
 
-    // PHONE - keep existing behavior
     if (window.innerWidth <= 800) {
         sidebar.classList.toggle("open");
 
-        if (sidebar.classList.contains("open")) {
-            menuButton.style.display = "none";
-        } else {
-            menuButton.style.display = "block";
+        if (menuButton) {
+            menuButton.style.display = sidebar.classList.contains("open") ? "none" : "block";
         }
 
         return;
     }
 
-    // LAPTOP - smooth sidebar
     sidebar.classList.toggle("open");
 }
-    
+
+function toggleAccountMenu() {
+    const accountMenu = document.getElementById("accountMenu");
+    accountMenu.classList.toggle("open");
+}
+
+function logout() {
+    localStorage.removeItem("reviewrise_token");
+    localStorage.removeItem("reviewrise_refresh_token");
+    localStorage.removeItem("reviewrise_dashboard_cache");
+    localStorage.removeItem("reviewrise_feedback_cache");
+    localStorage.removeItem("reviewrise_analytics_cache");
+    localStorage.removeItem("reviewrise_reviewlinks_data");
+    localStorage.removeItem(FEEDBACK_DATA_CACHE_KEY);
+    window.location.href = "dashboard.html";
+}
+
+(function initSidebarCollapse() {
+    var button = document.getElementById("sidebarCollapse");
+    var page = document.getElementById("analyticsPage");
+
+    if (!button || !page) {
+        return;
+    }
+
+    function applyCollapsed(collapsed) {
+        if (window.innerWidth <= 800) {
+            return;
+        }
+
+        page.classList.toggle("sidebar-collapsed", collapsed);
+        button.setAttribute("aria-label", collapsed ? "Expand sidebar" : "Collapse sidebar");
+    }
+
+    button.addEventListener("click", function () {
+        if (window.innerWidth <= 800) {
+            return;
+        }
+
+        var collapsed = !page.classList.contains("sidebar-collapsed");
+        applyCollapsed(collapsed);
+        localStorage.setItem("reviewrise_sidebar_collapsed", collapsed ? "1" : "0");
+    });
+
+    var stored = localStorage.getItem("reviewrise_sidebar_collapsed");
+    var collapsed = stored === "1" || (stored !== "0" && window.innerWidth <= 1100);
+    applyCollapsed(collapsed);
+})();
 </script>
 
 </body>
