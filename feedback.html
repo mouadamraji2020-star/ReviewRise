@@ -409,21 +409,31 @@
 
     .sentiment {
       grid-area: badge;
-      width: 42px;
-      height: 42px;
+      width: 40px;
+      height: 40px;
       display: flex;
       align-items: center;
       justify-content: center;
       border-radius: 50%;
-      font-size: 18px;
-      line-height: 1;
     }
 
-    .sentiment-5 { background: #e7f6ee; }
-    .sentiment-4 { background: #e8f2ff; }
-    .sentiment-3 { background: #fbf4dc; }
-    .sentiment-2 { background: #fdeedd; }
-    .sentiment-1 { background: #fdecec; }
+    .sentiment svg {
+      width: 36px;
+      height: 36px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.7;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .sentiment .face-eye { fill: currentColor; stroke: none; }
+
+    .sentiment-5 { color: #1c9a52; background: #e8f7ee; }
+    .sentiment-4 { color: #149a8c; background: #e7f6f3; }
+    .sentiment-3 { color: #d09a12; background: #fbf6e6; }
+    .sentiment-2 { color: #e07a28; background: #fdf1e7; }
+    .sentiment-1 { color: #d64545; background: #fdeeee; }
 
     .feedback-rating {
       grid-area: rating;
@@ -741,13 +751,16 @@ async function getValidAccessToken() {
         const rating = Number(item.rating) || 0;
         const filled = Math.max(0, Math.min(5, Math.floor(rating)));
         const moods = {
-          5: ["😄", "sentiment-5"],
-          4: ["🙂", "sentiment-4"],
-          3: ["😐", "sentiment-3"],
-          2: ["🙁", "sentiment-2"],
-          1: ["😞", "sentiment-1"]
+          5: ["sentiment-5", "M8 13.2c1.15 2.5 6.85 2.5 8 0"],
+          4: ["sentiment-4", "M8.5 13.7c.95 1.7 6.05 1.7 7 0"],
+          3: ["sentiment-3", "M8.6 14.4h6.8"],
+          2: ["sentiment-2", "M8.5 15.6c.95-1.6 6.05-1.6 7 0"],
+          1: ["sentiment-1", "M8 16.2c1.15-2.5 6.85-2.5 8 0"]
         };
         const mood = moods[filled];
+        const face = mood
+          ? '<div class="sentiment ' + mood[0] + '" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.2"/><circle class="face-eye" cx="9" cy="10" r="0.9"/><circle class="face-eye" cx="15" cy="10" r="0.9"/><path d="' + mood[1] + '"/></svg></div>'
+          : "";
         const when = new Date(item.created_at);
         const whenLabel = isNaN(when.getTime())
           ? ""
@@ -756,7 +769,7 @@ async function getValidAccessToken() {
             when.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
 
         card.innerHTML = `
-          ${mood ? '<div class="sentiment ' + mood[1] + '" aria-hidden="true">' + mood[0] + "</div>" : ""}
+          ${face}
           <div class="feedback-rating">
             <div class="stars"><span class="star-on">${"★".repeat(filled)}</span><span class="star-off">${"★".repeat(Math.max(0, 5 - filled))}</span></div>
             ${rating ? '<span class="rating-num">' + rating.toFixed(1) + "</span>" : ""}
