@@ -933,12 +933,18 @@ form .login-field:last-of-type { margin-bottom: 0; }
 /* DASHBOARD */
 
 #dashboard {
+  --side: 240px;
   display: none;
   min-height: 100vh;
-  background: #f5f8fd;
+  background:
+    radial-gradient(ellipse 560px 320px at 12% -4%, rgba(186, 220, 255, 0.34), transparent 70%),
+    radial-gradient(ellipse 420px 260px at 96% 8%, rgba(214, 232, 255, 0.28), transparent 72%),
+    #f3f6fb;
   color: #0c1730;
   font-family: Inter, "Segoe UI", Arial, sans-serif;
 }
+
+#dashboard.sidebar-collapsed { --side: 72px; }
 
 .sidebar {
     position: fixed;
@@ -947,21 +953,75 @@ form .login-field:last-of-type { margin-bottom: 0; }
     z-index: 1000;
     display: flex;
     flex-direction: column;
-    width: 240px;
+    width: var(--side);
     height: 100vh;
-    padding: 22px 14px 18px;
-    background: #101828;
+    padding: 18px 12px 16px;
+    background:
+        linear-gradient(180deg, rgba(62, 140, 255, 0.08), transparent 22%),
+        #0c1424;
     color: #d5deea;
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
     box-sizing: border-box;
+    transition: width 280ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.sidebar-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    min-height: 40px;
+    padding: 0 4px;
 }
 
 .sidebar-brand {
     display: flex;
     align-items: center;
     gap: 8px;
+    min-width: 0;
     min-height: 36px;
-    padding: 0 8px;
 }
+
+.sidebar-collapse {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.04);
+    color: #c9d4e3;
+    cursor: pointer;
+    transition:
+        background 180ms cubic-bezier(0.22, 1, 0.36, 1),
+        color 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.sidebar-collapse svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.sidebar-collapse:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+}
+
+#dashboard.sidebar-collapsed .sidebar-top {
+    flex-direction: column;
+    gap: 12px;
+}
+
+#dashboard.sidebar-collapsed .sidebar-collapse svg { transform: rotate(180deg); }
 
 .dash-logo-mark {
     width: 34px;
@@ -989,6 +1049,25 @@ form .login-field:last-of-type { margin-bottom: 0; }
     line-height: 1;
 }
 
+.dash-logo-name,
+.menu-label {
+    overflow: hidden;
+    white-space: nowrap;
+    transition:
+        opacity 220ms cubic-bezier(0.22, 1, 0.36, 1),
+        max-width 280ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.dash-logo-name { max-width: 140px; }
+
+.menu-label { max-width: 150px; }
+
+#dashboard.sidebar-collapsed .dash-logo-name,
+#dashboard.sidebar-collapsed .menu-label {
+    max-width: 0;
+    opacity: 0;
+}
+
 .dash-logo-name span {
     background: linear-gradient(90deg, #7eb6ff 10%, #3ec6ff 100%);
     -webkit-background-clip: text;
@@ -1004,20 +1083,51 @@ form .login-field:last-of-type { margin-bottom: 0; }
 }
 
 .menu-item {
+    position: relative;
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 10px 12px;
+    padding: 9px 12px;
     border-radius: 10px;
     color: #c5d0de;
-    font-size: 14px;
+    font-size: 13.5px;
     font-weight: 500;
     line-height: 1.2;
     cursor: pointer;
     transition:
         background 180ms cubic-bezier(0.22, 1, 0.36, 1),
-        color 180ms cubic-bezier(0.22, 1, 0.36, 1);
+        color 180ms cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 180ms cubic-bezier(0.22, 1, 0.36, 1);
 }
+
+#dashboard.sidebar-collapsed .menu-item {
+    justify-content: center;
+    gap: 0;
+    padding: 10px 0;
+}
+
+#dashboard.sidebar-collapsed .menu-item::after {
+    content: attr(data-label);
+    position: absolute;
+    left: calc(100% + 12px);
+    top: 50%;
+    z-index: 5;
+    padding: 6px 8px;
+    border-radius: 8px;
+    background: #0c1424;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    box-shadow: 0 8px 20px rgba(8, 16, 32, 0.2);
+    transform: translateY(-50%);
+    transition: opacity 160ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+#dashboard.sidebar-collapsed .menu-item:hover::after { opacity: 1; }
 
 .menu-item svg {
     width: 18px;
@@ -1036,9 +1146,12 @@ form .login-field:last-of-type { margin-bottom: 0; }
 }
 
 .menu-item.active {
-    background: #2b7fff;
-    color: #fff;
+    background: linear-gradient(90deg, rgba(43, 127, 255, 0.22), rgba(16, 36, 68, 0.55));
+    color: #f5f8ff;
+    box-shadow: inset 2px 0 0 #67b7ff, inset 0 0 0 1px rgba(120, 176, 255, 0.22);
 }
+
+.menu-item.active svg { color: #8ec5ff; }
 
 a.menu-item,
 a.menu-item:visited {
@@ -1053,6 +1166,7 @@ a.menu-item:visited {
 .app-workspace {
     min-height: 100vh;
     min-width: 0;
+    transition: margin-left 280ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .top-navbar {
@@ -1063,11 +1177,11 @@ a.menu-item:visited {
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-    min-height: 74px;
-    padding: 14px 32px;
-    background: rgba(255, 255, 255, 0.92);
-    border-bottom: 1px solid #e7ecf2;
-    backdrop-filter: blur(12px);
+    min-height: 68px;
+    padding: 12px 28px;
+    background: rgba(255, 255, 255, 0.78);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.95);
+    backdrop-filter: blur(16px);
 }
 
 .top-navbar-title {
@@ -1080,16 +1194,18 @@ a.menu-item:visited {
 .top-navbar-title h1 {
     margin: 0;
     color: #0c1730;
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 700;
-    letter-spacing: -0.4px;
+    letter-spacing: -0.45px;
+    line-height: 1.15;
 }
 
 .top-navbar-title p {
-    margin: 3px 0 0;
-    color: #6d7c92;
-    font-size: 13px;
+    margin: 2px 0 0;
+    color: #7b8ba0;
+    font-size: 12.5px;
     font-weight: 500;
+    letter-spacing: -0.1px;
 }
 
 .top-navbar-actions {
@@ -1100,32 +1216,45 @@ a.menu-item:visited {
 }
 
 .navbar-icon {
-    width: 38px;
-    height: 38px;
+    height: 40px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    padding: 0;
+    gap: 8px;
+    padding: 4px 10px 4px 4px;
     border: 1px solid #e7ecf2;
-    border-radius: 50%;
-    background: #fff;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.9);
     color: #10284d;
     cursor: pointer;
     transition:
         border-color 180ms cubic-bezier(0.22, 1, 0.36, 1),
-        box-shadow 180ms cubic-bezier(0.22, 1, 0.36, 1),
-        transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+        box-shadow 180ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.navbar-icon svg {
-    width: 18px;
-    height: 18px;
+.account-avatar {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: linear-gradient(180deg, #f7faff, #e7f1ff);
+    color: #1d4ed8;
+}
+
+.navbar-icon svg,
+.account-avatar svg,
+.account-chevron {
     fill: none;
     stroke: currentColor;
     stroke-width: 1.8;
     stroke-linecap: round;
     stroke-linejoin: round;
 }
+
+.account-avatar svg { width: 16px; height: 16px; }
+
+.account-chevron { width: 14px; height: 14px; color: #8b97a8; }
 
 .navbar-icon:hover {
     border-color: #b9d4ff;
@@ -1186,63 +1315,104 @@ a.menu-item:visited {
 
 .main {
     margin: 0;
-    padding: 28px 32px 40px;
+    padding: 26px 28px 36px;
 }
 
 .dash-content {
-    width: min(1120px, 100%);
+    width: min(1280px, 100%);
 }
+
+.dash-welcome {
+    position: relative;
+    padding: 2px 0 0;
+}
+
+.dash-welcome::before {
+    content: "";
+    position: absolute;
+    left: -24px;
+    top: -28px;
+    z-index: 0;
+    width: 280px;
+    height: 120px;
+    background: radial-gradient(circle, rgba(186, 220, 255, 0.42), transparent 70%);
+    pointer-events: none;
+}
+
+.dash-welcome h2,
+.dash-welcome p { position: relative; }
 
 .dash-welcome h2 {
     margin: 0;
     color: #0c1730;
-    font-size: 28px;
+    font-size: 26px;
     font-weight: 800;
-    letter-spacing: -0.6px;
+    letter-spacing: -0.7px;
+    line-height: 1.15;
 }
 
 .dash-welcome p {
-    margin: 8px 0 0;
+    margin: 6px 0 0;
     color: #6d7c92;
-    font-size: 15px;
+    font-size: 14.5px;
     font-weight: 500;
+    letter-spacing: -0.1px;
 }
 
 .stats {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 16px;
-    margin-top: 24px;
+    margin-top: 22px;
 }
 
 .stat-card,
 .dash-card {
     background: #fff;
     border: 1px solid #e7ecf2;
-    border-radius: 20px;
-    box-shadow: 0 8px 24px rgba(30, 64, 120, 0.04);
+    border-radius: 18px;
+    box-shadow: 0 10px 28px rgba(30, 64, 120, 0.045);
 }
 
 .stat-card {
-    padding: 20px 22px 18px;
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: 12px;
+    align-items: center;
+    padding: 16px 18px 14px;
     transition:
         box-shadow 200ms cubic-bezier(0.22, 1, 0.36, 1),
+        border-color 200ms cubic-bezier(0.22, 1, 0.36, 1),
         transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+.stat-card::before {
+    content: "";
+    position: absolute;
+    top: -36px;
+    right: -24px;
+    width: 96px;
+    height: 96px;
+    background: radial-gradient(circle, rgba(43, 127, 255, 0.14), transparent 70%);
+    pointer-events: none;
+}
+
 .stat-card:hover {
-    box-shadow: 0 12px 28px rgba(30, 64, 120, 0.07);
+    border-color: #d5e4f7;
+    box-shadow: 0 14px 30px rgba(30, 64, 120, 0.07);
     transform: translateY(-1px);
 }
 
 .stat-icon {
-    width: 34px;
-    height: 34px;
+    grid-row: 1 / span 2;
+    width: 36px;
+    height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 14px;
-    border-radius: 10px;
+    border-radius: 11px;
     background: #eef5ff;
     color: #2b7fff;
 }
@@ -1260,35 +1430,44 @@ a.menu-item:visited {
 .stat-card p {
     margin: 0;
     color: #6d7c92;
-    font-size: 13px;
+    font-size: 12.5px;
     font-weight: 600;
+    letter-spacing: -0.1px;
 }
 
 .stat-card h2 {
-    margin: 6px 0 0;
+    margin: 2px 0 0;
     color: #0c1730;
-    font-size: 32px;
+    font-size: 28px;
     font-weight: 800;
     letter-spacing: -0.8px;
     line-height: 1;
 }
 
 .stat-note {
+    grid-column: 1 / -1;
     display: block;
-    margin-top: 8px;
+    margin-top: 10px;
     color: #8b97a8;
-    font-size: 12.5px;
+    font-size: 12px;
     font-weight: 500;
 }
 
 .dash-insights {
     display: grid;
-    grid-template-columns: minmax(0, 2fr) minmax(240px, 1fr);
-    gap: 16px;
-    margin-top: 16px;
+    grid-template-columns: minmax(0, 2.4fr) minmax(220px, 1fr);
+    gap: 22px;
+    align-items: stretch;
+    margin-top: 22px;
 }
 
-.dash-card { padding: 22px 22px 18px; }
+.dash-insights > .dash-card {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.dash-card { padding: 20px 22px 18px; }
 
 .dash-card h3,
 .dash-recent h3 {
@@ -1296,8 +1475,10 @@ a.menu-item:visited {
     color: #0c1730;
     font-size: 16px;
     font-weight: 700;
-    letter-spacing: -0.2px;
+    letter-spacing: -0.3px;
 }
+
+.dash-chart-card h3 { font-size: 18px; }
 
 .dash-card-copy {
     margin: 6px 0 0;
@@ -1307,10 +1488,43 @@ a.menu-item:visited {
     line-height: 1.45;
 }
 
-.dash-chart-canvas {
-    height: 250px;
-    margin-top: 16px;
+.dash-chart-wrap {
+    position: relative;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
 }
+
+.dash-chart-canvas {
+    flex: 1;
+    min-height: 280px;
+    margin-top: 16px;
+    padding: 8px 8px 0;
+    border: 1px solid #f0f4f8;
+    border-radius: 16px;
+    background:
+        radial-gradient(ellipse at 50% 100%, rgba(43, 127, 255, 0.07), transparent 62%),
+        #fbfcfe;
+}
+
+.chart-tooltip {
+    position: absolute;
+    z-index: 3;
+    padding: 6px 8px;
+    border-radius: 8px;
+    background: #0c1424;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+    pointer-events: none;
+    box-shadow: 0 8px 18px rgba(16, 40, 80, 0.16);
+    transform: translate(-50%, -100%);
+}
+
+.chart-tooltip[hidden] { display: none; }
 
 .dash-chart-canvas svg {
     display: block;
@@ -1318,16 +1532,20 @@ a.menu-item:visited {
     height: 100%;
 }
 
+.chart-dot { cursor: pointer; }
+
 .dist-list {
     display: flex;
+    flex: 1;
     flex-direction: column;
-    gap: 12px;
+    justify-content: center;
+    gap: 14px;
     margin-top: 18px;
 }
 
 .dist-row {
     display: grid;
-    grid-template-columns: 42px minmax(0, 1fr) 28px;
+    grid-template-columns: 46px minmax(0, 1fr) 28px 36px;
     align-items: center;
     gap: 10px;
 }
@@ -1341,10 +1559,10 @@ a.menu-item:visited {
 .dist-star { color: #f5b400; }
 
 .dist-track {
-    height: 8px;
+    height: 7px;
     overflow: hidden;
     border-radius: 99px;
-    background: #eef3f8;
+    background: #eef2f6;
 }
 
 .dist-bar {
@@ -1354,14 +1572,18 @@ a.menu-item:visited {
     background: linear-gradient(90deg, #2b7fff, #3ec6ff);
 }
 
-.dist-count {
+.dist-count,
+.dist-percent {
     color: #5c6d84;
-    font-size: 12.5px;
+    font-size: 12px;
     font-weight: 600;
+    font-variant-numeric: tabular-nums;
     text-align: right;
 }
 
-.dash-recent { margin-top: 16px; }
+.dist-percent { color: #8b97a8; font-weight: 500; }
+
+.dash-recent { margin-top: 22px; }
 
 .dash-section-head {
     display: flex;
@@ -1389,36 +1611,37 @@ a.menu-item:visited {
 
 .feedback-card {
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-columns: 92px minmax(0, 1.5fr) minmax(150px, 0.9fr);
     column-gap: 14px;
-    row-gap: 4px;
+    align-items: center;
     margin: 0;
-    padding: 16px 0;
+    padding: 12px 8px;
     background: transparent;
     border: none;
     border-bottom: 1px solid #eef2f6;
-    border-radius: 0;
+    border-radius: 10px;
     box-shadow: none;
+    transition: background 180ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.feedback-card:last-child { border-bottom: none; padding-bottom: 4px; }
+.feedback-card:hover { background: #f7faff; }
+
+.feedback-card:last-child { border-bottom: none; }
 
 .stars {
-    grid-row: 1 / span 2;
-    align-self: center;
     margin: 0;
     color: #f5b400;
-    font-size: 14px;
+    font-size: 13px;
     letter-spacing: 1px;
 }
 
 .feedback-text {
     margin: 0;
     color: #172033;
-    font-size: 14.5px;
-    line-height: 1.45;
+    font-size: 14px;
+    line-height: 1.4;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
@@ -1427,6 +1650,7 @@ a.menu-item:visited {
     color: #6d7c92;
     font-size: 12.5px;
     font-weight: 500;
+    text-align: right;
 }
 
 .dash-empty {
@@ -1484,7 +1708,7 @@ a.menu-item:visited {
 }
 
 @media (min-width: 801px) {
-    .app-workspace { margin-left: 240px; }
+    .app-workspace { margin-left: var(--side); }
     #mobileMenuBtn { display: none !important; }
     .sidebar {
         display: flex !important;
@@ -1495,7 +1719,7 @@ a.menu-item:visited {
 @media (max-width: 1100px) {
     .stats { grid-template-columns: 1fr 1fr; }
     .dash-insights { grid-template-columns: 1fr; }
-    .dash-chart-canvas { height: 220px; }
+    .dash-chart-canvas { min-height: 220px; }
 }
 
 @media (max-width: 800px) {
@@ -1523,6 +1747,26 @@ a.menu-item:visited {
         padding-top: 22px;
     }
 
+    #dashboard.sidebar-collapsed .sidebar { width: 240px; }
+
+    #dashboard.sidebar-collapsed .sidebar-top { flex-direction: row; }
+
+    #dashboard.sidebar-collapsed .dash-logo-name,
+    #dashboard.sidebar-collapsed .menu-label {
+        max-width: 150px;
+        opacity: 1;
+    }
+
+    #dashboard.sidebar-collapsed .menu-item {
+        justify-content: flex-start;
+        gap: 10px;
+        padding: 9px 12px;
+    }
+
+    #dashboard.sidebar-collapsed .menu-item::after { display: none; }
+
+    .sidebar-collapse { display: none; }
+
     .sidebar.open .close-menu-btn { display: block; }
 
     .mobile-menu-btn { display: flex; }
@@ -1541,16 +1785,23 @@ a.menu-item:visited {
     .dash-welcome h2 { font-size: 24px; }
 
     .feedback-card { grid-template-columns: 1fr; }
-    .stars { grid-row: auto; }
+    .feedback-meta { text-align: left; }
 }
 
 @media (prefers-reduced-motion: reduce) {
+    .sidebar,
+    .app-workspace,
+    .dash-logo-name,
+    .menu-label,
+    .sidebar-collapse svg,
     .menu-item,
+    .menu-item::after,
     .stat-card,
     .navbar-icon,
     .account-menu button,
     .dash-view-all,
-    .dash-empty-actions button {
+    .dash-empty-actions button,
+    .feedback-card {
         transition: none;
     }
 
@@ -1793,36 +2044,41 @@ body.page-leaving {
 
   <aside class="sidebar">
     <button class="close-menu-btn" type="button" onclick="toggleSidebar()" aria-label="Close menu">×</button>
-    <div class="sidebar-brand">
-      <span class="dash-logo-mark">
-        <img src="../../../../.cursor/projects/c-Users-Dima-D-origine-OneDrive-Desktop-git-huuub-ReviewRise/assets/c__Users_Dima_D_origine_AppData_Roaming_Cursor_User_workspaceStorage_d4266493b40e73b4a60b85c5f30c5fcb_images_WhatsApp_Image_2026-10-04_at_22.28.59-ba0e545f-3261-45f1-8544-9cfc0ce6454a.jpg" alt="">
-      </span>
-      <span class="dash-logo-name">Review<span>Rise</span></span>
+    <div class="sidebar-top">
+      <div class="sidebar-brand">
+        <span class="dash-logo-mark">
+          <img src="../../../../.cursor/projects/c-Users-Dima-D-origine-OneDrive-Desktop-git-huuub-ReviewRise/assets/c__Users_Dima_D_origine_AppData_Roaming_Cursor_User_workspaceStorage_d4266493b40e73b4a60b85c5f30c5fcb_images_WhatsApp_Image_2026-10-04_at_22.28.59-ba0e545f-3261-45f1-8544-9cfc0ce6454a.jpg" alt="">
+        </span>
+        <span class="dash-logo-name">Review<span>Rise</span></span>
+      </div>
+      <button class="sidebar-collapse" id="sidebarCollapse" type="button" aria-label="Collapse sidebar">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
+      </button>
     </div>
     <nav class="sidebar-nav" aria-label="Workspace">
-      <div class="menu-item active" onclick="smoothNavigate('dashboard.html')">
+      <div class="menu-item active" data-label="Dashboard" onclick="smoothNavigate('dashboard.html')">
         <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
-        Dashboard
+        <span class="menu-label">Dashboard</span>
       </div>
-      <div class="menu-item" onclick="smoothNavigate('feedback.html')">
+      <div class="menu-item" data-label="Feedback" onclick="smoothNavigate('feedback.html')">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H9l-4 3v-3H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z"/></svg>
-        Feedback
+        <span class="menu-label">Feedback</span>
       </div>
-      <div class="menu-item" onclick="smoothNavigate('analytics.html')">
+      <div class="menu-item" data-label="Analytics" onclick="smoothNavigate('analytics.html')">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19h16"/><path d="M7 16v-4"/><path d="M12 16V7"/><path d="M17 16v-6"/></svg>
-        Analytics
+        <span class="menu-label">Analytics</span>
       </div>
-      <div class="menu-item" onclick="smoothNavigate('review-link.html')">
+      <div class="menu-item" data-label="Review Links" onclick="smoothNavigate('review-link.html')">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.1.1l1.4-1.4a5 5 0 0 0-7.1-7.1L10 5"/><path d="M14 11a5 5 0 0 0-7.1-.1L5.5 12.3a5 5 0 0 0 7.1 7.1L14 19"/></svg>
-        Review Links
+        <span class="menu-label">Review Links</span>
       </div>
-      <div class="menu-item" onclick="smoothNavigate('qr-nfc.html')">
+      <div class="menu-item" data-label="QR &amp; NFC" onclick="smoothNavigate('qr-nfc.html')">
         <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><path d="M14 14h2v2h-2zM18 14h2v6h-6v-2h4z"/></svg>
-        QR &amp; NFC
+        <span class="menu-label">QR &amp; NFC</span>
       </div>
-      <div class="menu-item" onclick="smoothNavigate('settings.html')">
+      <div class="menu-item" data-label="Settings" onclick="smoothNavigate('settings.html')">
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 3.5v2.2M12 18.3v2.2M4.9 6.4l1.6 1.6M17.5 16l1.6 1.6M3.5 12h2.2M18.3 12h2.2M4.9 17.6l1.6-1.6M17.5 8l1.6-1.6"/></svg>
-        Settings
+        <span class="menu-label">Settings</span>
       </div>
     </nav>
   </aside>
@@ -1838,7 +2094,8 @@ body.page-leaving {
       </div>
       <div class="top-navbar-actions">
         <button class="navbar-icon" id="accountButton" type="button" onclick="toggleAccountMenu()" aria-label="Account">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.2"/><path d="M6 19c1.2-3 3.2-4.5 6-4.5S16.8 16 18 19"/></svg>
+          <span class="account-avatar"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.2"/><path d="M6 19c1.2-3 3.2-4.5 6-4.5S16.8 16 18 19"/></svg></span>
+          <svg class="account-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
         </button>
         <div class="account-menu" id="accountMenu">
           <button type="button" onclick="logout()">Log Out</button>
@@ -1875,11 +2132,14 @@ body.page-leaving {
         </div>
 
         <section class="dash-insights">
-          <article class="dash-card">
+          <article class="dash-card dash-chart-card">
             <h3>Feedback Over Time</h3>
             <p class="dash-card-copy">Private feedback received, grouped by day.</p>
-            <div id="feedbackChart" class="dash-chart-canvas">
-              <p class="dash-loading">Loading feedback...</p>
+            <div class="dash-chart-wrap">
+              <div id="feedbackChart" class="dash-chart-canvas">
+                <p class="dash-loading">Loading feedback...</p>
+              </div>
+              <div id="chartTooltip" class="chart-tooltip" hidden></div>
             </div>
           </article>
           <article class="dash-card">
@@ -2070,6 +2330,11 @@ function renderDashboardInsights(feedback) {
         return;
     }
 
+    var tip = document.getElementById("chartTooltip");
+    if (tip) {
+        tip.hidden = true;
+    }
+
     if (!feedback.length) {
         chart.innerHTML = dashboardEmptyState(false);
         distribution.innerHTML = dashboardEmptyState(false);
@@ -2100,10 +2365,12 @@ function renderDashboardInsights(feedback) {
     });
 
     var maxCount = Math.max.apply(null, counts.concat([1]));
+    var ratedTotal = counts[0] + counts[1] + counts[2] + counts[3] + counts[4];
     distribution.innerHTML = [5, 4, 3, 2, 1].map(function (star) {
         var count = counts[star - 1];
         var width = Math.round((count / maxCount) * 100);
-        return '<div class="dist-row"><span class="dist-label">' + star + ' <span class="dist-star">★</span></span><span class="dist-track"><span class="dist-bar" style="width:' + width + '%"></span></span><span class="dist-count">' + count + "</span></div>";
+        var percent = ratedTotal ? Math.round((count / ratedTotal) * 100) : 0;
+        return '<div class="dist-row"><span class="dist-label">' + star + ' <span class="dist-star">★</span></span><span class="dist-track"><span class="dist-bar" style="width:' + width + '%"></span></span><span class="dist-count">' + count + '</span><span class="dist-percent">' + percent + "%</span></div>";
     }).join("");
 
     var days = Object.keys(byDay).sort();
@@ -2140,7 +2407,7 @@ function renderDashboardInsights(feedback) {
     var grid = [0, 0.5, 1].map(function (step) {
         var y = padT + innerH - innerH * step;
         var label = step === 0 ? "0" : String(Math.round(maxDay * step));
-        return '<line x1="' + padL + '" y1="' + y + '" x2="' + (width - padR) + '" y2="' + y + '" stroke="#e7eef6" stroke-width="1"/>' +
+        return '<line x1="' + padL + '" y1="' + y + '" x2="' + (width - padR) + '" y2="' + y + '" stroke="#e7eef5" stroke-width="1"/>' +
             '<text x="4" y="' + (y + 4) + '" fill="#8b97a8" font-size="11" font-family="Inter, Arial, sans-serif">' + label + "</text>";
     }).join("");
     var labelIndexes = days.length <= 6
@@ -2154,15 +2421,47 @@ function renderDashboardInsights(feedback) {
         return '<text x="' + point.x.toFixed(1) + '" y="' + (height - 8) + '" text-anchor="middle" fill="#8b97a8" font-size="11" font-family="Inter, Arial, sans-serif">' + text + "</text>";
     }).join("");
     var dots = points.map(function (point) {
-        return '<circle cx="' + point.x.toFixed(1) + '" cy="' + point.y.toFixed(1) + '" r="3.5" fill="#fff" stroke="#2b7fff" stroke-width="2"><title>' + point.count + " on " + point.day + "</title></circle>";
+        return '<circle class="chart-dot" cx="' + point.x.toFixed(1) + '" cy="' + point.y.toFixed(1) + '" r="3.5" fill="#fff" stroke="#2b7fff" stroke-width="2"><title>' + point.count + " on " + point.day + "</title></circle>";
     }).join("");
 
     chart.innerHTML = '<svg viewBox="0 0 ' + width + " " + height + '" role="img" aria-label="Feedback received by day">' +
-        "<defs><linearGradient id=\"dashArea\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#2b7fff\" stop-opacity=\"0.22\"/><stop offset=\"1\" stop-color=\"#3ec6ff\" stop-opacity=\"0.02\"/></linearGradient></defs>" +
+        "<defs><linearGradient id=\"dashArea\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#2b7fff\" stop-opacity=\"0.28\"/><stop offset=\"1\" stop-color=\"#3ec6ff\" stop-opacity=\"0.03\"/></linearGradient></defs>" +
         grid +
         '<path d="' + area + '" fill="url(#dashArea)"/>' +
         '<polyline points="' + line + '" fill="none" stroke="#2b7fff" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>' +
         dots + labels + "</svg>";
+    bindChartTooltip();
+}
+
+function bindChartTooltip() {
+    var chart = document.getElementById("feedbackChart");
+    var tip = document.getElementById("chartTooltip");
+
+    if (!chart || !tip) {
+        return;
+    }
+
+    tip.hidden = true;
+    chart.querySelectorAll(".chart-dot").forEach(function (dot) {
+        dot.addEventListener("mouseenter", function () {
+            var title = dot.querySelector("title");
+            var wrap = chart.parentElement;
+
+            if (!title || !wrap) {
+                return;
+            }
+
+            var dotBox = dot.getBoundingClientRect();
+            var wrapBox = wrap.getBoundingClientRect();
+            tip.textContent = title.textContent;
+            tip.style.left = (dotBox.left - wrapBox.left + dotBox.width / 2) + "px";
+            tip.style.top = (dotBox.top - wrapBox.top - 6) + "px";
+            tip.hidden = false;
+        });
+        dot.addEventListener("mouseleave", function () {
+            tip.hidden = true;
+        });
+    });
 }
 
 function applyDashboardGreeting() {
@@ -2846,6 +3145,38 @@ function toggleAccountMenu() {
     const accountMenu = document.getElementById("accountMenu");
     accountMenu.classList.toggle("open");
 }
+
+(function initSidebarCollapse() {
+    var button = document.getElementById("sidebarCollapse");
+    var dash = document.getElementById("dashboard");
+
+    if (!button || !dash) {
+        return;
+    }
+
+    function applyCollapsed(collapsed) {
+        if (window.innerWidth <= 800) {
+            return;
+        }
+
+        dash.classList.toggle("sidebar-collapsed", collapsed);
+        button.setAttribute("aria-label", collapsed ? "Expand sidebar" : "Collapse sidebar");
+    }
+
+    button.addEventListener("click", function () {
+        if (window.innerWidth <= 800) {
+            return;
+        }
+
+        var collapsed = !dash.classList.contains("sidebar-collapsed");
+        applyCollapsed(collapsed);
+        localStorage.setItem("reviewrise_sidebar_collapsed", collapsed ? "1" : "0");
+    });
+
+    var stored = localStorage.getItem("reviewrise_sidebar_collapsed");
+    var collapsed = stored === "1" || (stored !== "0" && window.innerWidth <= 1100);
+    applyCollapsed(collapsed);
+})();
   
 </script>
 
