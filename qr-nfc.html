@@ -432,6 +432,8 @@ body {
   container-type: inline-size;
   position: relative;
   width: min(100%, 336px);
+  min-width: 0;
+  min-height: 0;
   aspect-ratio: 964 / 1536;
   overflow: hidden;
 }
@@ -1491,6 +1493,8 @@ body.page-leaving { opacity: 0; }
   --poster-max-h: min(620px, 68vh);
   container-type: size;
   width: min(100%, calc(var(--poster-max-h) * 964 / 1536));
+  min-width: 0;
+  min-height: 0;
   max-width: 100%;
   max-height: var(--poster-max-h);
   height: auto;
@@ -2356,8 +2360,9 @@ function themeAssetsReady(link, theme) {
 }
 
 const posterThemeNames = ["theme-cream", "theme-blue", "theme-dark", "theme-emerald", "theme-slate"];
-let posterScaleStage = null;
 let themeSwapToken = 0;
+let themeFadeHandler = null;
+let isThemeSwitching = false;
 let lastPreviewStageWidth = 0;
 
 function posterDialog() {
@@ -2400,6 +2405,7 @@ function clearPreviewLock(fit) {
 }
 
 function syncPreviewLock() {
+  if (isThemeSwitching) return;
   const fit = poster && poster.parentElement;
   const stage = fit && fit.parentElement;
   if (!fit || !stage || fit.classList.contains("is-exporting")) return;
@@ -2421,28 +2427,6 @@ function syncPreviewLock() {
 
   const scale = previewScale(fit);
   applyPreviewScale(poster, scale);
-  const buffer = fit.querySelector(".poster-buffer");
-  if (buffer) applyPreviewScale(buffer, scale);
-}
-
-function posterScaleHost() {
-  if (posterScaleStage) return posterScaleStage;
-  const host = document.createElement("div");
-  host.className = "poster-scale-stage";
-  host.setAttribute("aria-hidden", "true");
-  document.body.appendChild(host);
-  posterScaleStage = host;
-  return host;
-}
-
-function copyPosterCanvas(from, to) {
-  const sourceCanvas = from.querySelector("canvas");
-  const copyCanvas = to.querySelector("canvas");
-  if (!sourceCanvas || !copyCanvas) return;
-  copyCanvas.width = sourceCanvas.width;
-  copyCanvas.height = sourceCanvas.height;
-  const context = copyCanvas.getContext("2d");
-  if (context) context.drawImage(sourceCanvas, 0, 0);
 }
 
 function themeOn(el) {
@@ -2457,131 +2441,54 @@ function applyThemeClass(el, theme) {
   el.classList.add(theme);
 }
 
-function settlePosterBuffer(link) {
-  const fit = poster.parentElement;
-  if (!fit) return;
-  const scrollTop = rememberDialogScroll();
-  const buffer = fit.querySelector(".poster-buffer");
-  if (buffer) {
-    applyThemeClass(poster, themeOn(buffer));
-    buffer.remove();
-  }
-  poster.style.opacity = "";
-  poster.style.transition = "";
-  syncPreviewLock();
-  if (link) {
-    const key = posterCacheKey(link, themeOn(poster));
-    posterReadyKey = key;
-    posterPrepareKey = key;
-    readyPosterKeys.add(key);
-  }
-  restoreDialogScroll(scrollTop);
-}
-
 function stageThemeSwap(link, nextTheme) {
   const token = ++themeSwapToken;
   const fit = poster.parentElement;
   if (!fit) return;
 
-  settlePosterBuffer(link);
-  syncPreviewLock();
-  const scale = previewScale(fit);
-  applyPreviewScale(poster, scale);
+  const scrollTop = rememberDialogScroll();
+  isThemeSwitching = true;
+  if (!poster.style.transform) {
+    const scale = previewScale(fit);
+    if (scale) applyPreviewScale(poster, scale);
+  }
 
-  const staged = poster.cloneNode(true);
-  staged.removeAttribute("id");
-  staged.classList.remove("is-preparing");
-  staged.classList.add("is-ready", "poster-buffer");
-  staged.setAttribute("aria-hidden", "true");
-  applyThemeClass(staged, nextTheme);
-  applyPreviewScale(staged, scale);
-  staged.style.opacity = "0";
-  staged.style.visibility = "hidden";
-  copyPosterCanvas(poster, staged);
-  posterScaleHost().appendChild(staged);
+  applyThemeClass(poster, nextTheme);
+  const key = posterCacheKey(link, nextTheme);
+  posterReadyKey = key;
+  posterPrepareKey = key;
+  readyPosterKeys.add(key);
+  restoreDialogScroll(scrollTop);
 
-  const asset = themeAssets[nextTheme] || "";
-  preloadImage(asset).then(function () {
-    if (token !== themeSwapToken || !staged.parentNode) {
-      staged.remove();
-      return;
-    }
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reduced) {
+    isThemeSwitching = false;
+    return;
+  }
 
-    const scrollTop = rememberDialogScroll();
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const liveScale = previewScale(fit) || scale;
-    if (!liveScale) {
-      staged.remove();
-      restoreDialogScroll(scrollTop);
-      return;
-    }
-    staged.style.position = "absolute";
-    staged.style.top = "0";
-    staged.style.left = "0";
-    staged.style.width = "430px";
-    staged.style.maxWidth = "none";
-    staged.style.margin = "0";
-    applyPreviewScale(staged, liveScale);
+  if (themeFadeHandler) poster.removeEventListener("transitionend", themeFadeHandler);
+  poster.style.transition = "none";
+  poster.style.opacity = "1";
+  poster.offsetHeight;
+  poster.style.transition = "opacity 150ms cubic-bezier(0.22, 1, 0.36, 1)";
+  poster.style.opacity = "0.85";
 
-    if (reduced) {
-      applyThemeClass(poster, nextTheme);
-      applyPreviewScale(poster, liveScale);
-      staged.remove();
-      const key = posterCacheKey(link, nextTheme);
-      posterReadyKey = key;
-      posterPrepareKey = key;
-      readyPosterKeys.add(key);
-      restoreDialogScroll(scrollTop);
-      return;
-    }
-
-    fit.appendChild(staged);
-    staged.style.visibility = "visible";
-    staged.style.opacity = "0";
-    staged.style.transition = "opacity 150ms cubic-bezier(0.22, 1, 0.36, 1)";
-    poster.style.transition = "opacity 150ms cubic-bezier(0.22, 1, 0.36, 1)";
-    restoreDialogScroll(scrollTop);
-
-    requestAnimationFrame(function () {
-      if (token !== themeSwapToken) return;
-      staged.style.opacity = "1";
-      poster.style.opacity = "0";
-      restoreDialogScroll(scrollTop);
-    });
-
-    let settled = false;
-    function finishSwap() {
-      if (settled) return;
-      settled = true;
-      staged.removeEventListener("transitionend", onFade);
-      if (token !== themeSwapToken) {
-        if (staged.parentNode) staged.remove();
-        return;
-      }
-      const endScroll = rememberDialogScroll();
-      applyThemeClass(poster, nextTheme);
-      applyPreviewScale(poster, previewScale(fit) || liveScale);
-      poster.style.transition = "none";
+  themeFadeHandler = function (event) {
+    if (event.target !== poster || event.propertyName !== "opacity") return;
+    if (token !== themeSwapToken) return;
+    if (poster.style.opacity === "0.85") {
       poster.style.opacity = "1";
-      staged.remove();
-      const key = posterCacheKey(link, nextTheme);
-      posterReadyKey = key;
-      posterPrepareKey = key;
-      readyPosterKeys.add(key);
-      restoreDialogScroll(endScroll);
-      requestAnimationFrame(function () {
-        if (poster.style.transition === "none") poster.style.transition = "";
-      });
+      restoreDialogScroll(scrollTop);
+      return;
     }
-    function onFade(event) {
-      if (event.target === staged && event.propertyName === "opacity") finishSwap();
-    }
-    staged.addEventListener("transitionend", onFade);
-    window.setTimeout(finishSwap, 240);
-  }).catch(function (error) {
-    staged.remove();
-    console.error("ReviewRise: QR theme swap failed:", error);
-  });
+    poster.removeEventListener("transitionend", themeFadeHandler);
+    themeFadeHandler = null;
+    poster.style.transition = "";
+    poster.style.opacity = "";
+    isThemeSwitching = false;
+    restoreDialogScroll(scrollTop);
+  };
+  poster.addEventListener("transitionend", themeFadeHandler);
 }
 
 function openModal(modal) {
