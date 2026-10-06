@@ -1183,45 +1183,99 @@ function setNotificationToggle(isOn) {
     toggle.setAttribute("aria-pressed", isOn ? "true" : "false");
 }
 
+function accessTokenStillValid(token) {
+    if (!token) {
+        return false;
+    }
+
+    try {
+        const payload = token.split(".")[1];
+        const json = JSON.parse(atob(payload.replace(/-/g, "+").replace(/_/g, "/")));
+
+        if (typeof json.exp !== "number") {
+            return true;
+        }
+
+        return json.exp * 1000 > Date.now() + 60000;
+    } catch (error) {
+        return false;
+    }
+}
+
+let refreshInFlight = null;
+
+function refreshStoredSession() {
+    if (refreshInFlight) {
+        return refreshInFlight;
+    }
+
+    refreshInFlight = (async function () {
+        const currentToken = localStorage.getItem("reviewrise_token");
+        const refreshToken = localStorage.getItem("reviewrise_refresh_token");
+
+        if (!refreshToken) {
+            return accessTokenStillValid(currentToken) ? currentToken : null;
+        }
+
+        try {
+            const response = await fetch(
+                SUPABASE_URL + "/auth/v1/token?grant_type=refresh_token",
+                {
+                    method: "POST",
+                    headers: {
+                        "apikey": SUPABASE_KEY,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        refresh_token: refreshToken
+                    })
+                }
+            );
+
+            if (!response.ok) {
+                const latestToken = localStorage.getItem("reviewrise_token");
+                return accessTokenStillValid(latestToken) ? latestToken : null;
+            }
+
+            const data = await response.json();
+
+            if (!data.access_token) {
+                const latestToken = localStorage.getItem("reviewrise_token");
+                return accessTokenStillValid(latestToken) ? latestToken : null;
+            }
+
+            localStorage.setItem("reviewrise_token", data.access_token);
+
+            if (data.refresh_token) {
+                localStorage.setItem("reviewrise_refresh_token", data.refresh_token);
+            }
+
+            return data.access_token;
+        } catch (error) {
+            console.error("Token refresh failed:", error);
+            const latestToken = localStorage.getItem("reviewrise_token");
+            return latestToken || null;
+        } finally {
+            refreshInFlight = null;
+        }
+    })();
+
+    return refreshInFlight;
+}
+
 async function getValidAccessToken() {
     const currentToken = localStorage.getItem("reviewrise_token");
     const refreshToken = localStorage.getItem("reviewrise_refresh_token");
 
+    if (accessTokenStillValid(currentToken)) {
+        return currentToken;
+    }
+
     if (!refreshToken) {
-        return currentToken;
+        return null;
     }
 
-    try {
-        const response = await fetch(
-            SUPABASE_URL + "/auth/v1/token?grant_type=refresh_token",
-            {
-                method: "POST",
-                headers: {
-                    "apikey": SUPABASE_KEY,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    refresh_token: refreshToken
-                })
-            }
-        );
-
-        if (!response.ok) {
-            return null;
-        }
-
-        const data = await response.json();
-        localStorage.setItem("reviewrise_token", data.access_token);
-
-        if (data.refresh_token) {
-            localStorage.setItem("reviewrise_refresh_token", data.refresh_token);
-        }
-
-        return data.access_token;
-    } catch (error) {
-        console.error("Token refresh failed:", error);
-        return currentToken;
-    }
+    return refreshStoredSession();
 }
 
 function authHeaders(token, json) {
@@ -1278,20 +1332,33 @@ async function updateOwnProfile(token, changes) {
 }
 
 async function loadAccountSettings() {
-    const token = await getValidAccessToken();
+    let token = await getValidAccessToken();
 
     if (!token) {
         logout();
         return;
     }
 
-    const userResponse = await fetch(SUPABASE_URL + "/auth/v1/user", {
+    let userResponse = await fetch(SUPABASE_URL + "/auth/v1/user", {
         headers: authHeaders(token)
     });
 
     if (userResponse.status === 401 || userResponse.status === 403) {
-        logout();
-        return;
+        token = await refreshStoredSession();
+
+        if (!token) {
+            logout();
+            return;
+        }
+
+        userResponse = await fetch(SUPABASE_URL + "/auth/v1/user", {
+            headers: authHeaders(token)
+        });
+
+        if (userResponse.status === 401 || userResponse.status === 403) {
+            logout();
+            return;
+        }
     }
 
     if (!userResponse.ok) {
@@ -1304,14 +1371,30 @@ async function loadAccountSettings() {
     currentLoginEmail = user.email || "";
     document.getElementById("emailAddress").value = currentLoginEmail;
 
-    const profileResponse = await fetch(
+    let profileResponse = await fetch(
         SUPABASE_URL + "/rest/v1/profiles?id=eq." + encodeURIComponent(accountUserId) + "&select=full_name,email_on_private_feedback",
         {
             headers: authHeaders(token)
         }
     );
 
-    if (profileResponse.status === 401 || profileResponse.status === 403) {
+    if (profileResponse.status === 401) {
+        token = await refreshStoredSession();
+
+        if (!token) {
+            logout();
+            return;
+        }
+
+        profileResponse = await fetch(
+            SUPABASE_URL + "/rest/v1/profiles?id=eq." + encodeURIComponent(accountUserId) + "&select=full_name,email_on_private_feedback",
+            {
+                headers: authHeaders(token)
+            }
+        );
+    }
+
+    if (profileResponse.status === 401) {
         logout();
         return;
     }
