@@ -1568,12 +1568,37 @@ body.page-leaving { opacity: 0; }
   transform: none;
 }
 
+html.sidebar-boot .sidebar,
+html.sidebar-boot .app-workspace,
+html.sidebar-boot .sidebar-collapse svg,
+html.sidebar-boot .dash-logo-name,
+html.sidebar-boot .menu-label,
+html.sidebar-boot .top-navbar,
+html.sidebar-boot .main {
+  transition: none;
+}
+
 </style>
+<script>
+(function () {
+  document.documentElement.classList.add("sidebar-boot");
+})();
+</script>
 </head>
 
 <body>
 
 <div id="qrPage">
+<script>
+(function () {
+  var page = document.getElementById("qrPage");
+  if (!page || window.innerWidth <= 800) return;
+  var stored = null;
+  try { stored = localStorage.getItem("reviewrise_sidebar_collapsed"); } catch (error) {}
+  var collapsed = stored === "1" || (stored !== "0" && window.innerWidth <= 1100);
+  if (collapsed) page.classList.add("sidebar-collapsed");
+})();
+</script>
   <aside class="sidebar">
     <button class="close-menu-btn" type="button" onclick="toggleSidebar()" aria-label="Close menu">×</button>
     <div class="sidebar-top">
@@ -2966,7 +2991,18 @@ function logout() {
   var button = document.getElementById("sidebarCollapse");
   var page = document.getElementById("qrPage");
 
-  if (!button || !page) return;
+  function enableSidebarMotion() {
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        document.documentElement.classList.remove("sidebar-boot");
+      });
+    });
+  }
+
+  if (!button || !page) {
+    enableSidebarMotion();
+    return;
+  }
 
   function applyCollapsed(collapsed) {
     if (window.innerWidth <= 800) return;
@@ -2984,6 +3020,7 @@ function logout() {
   var stored = localStorage.getItem("reviewrise_sidebar_collapsed");
   var collapsed = stored === "1" || (stored !== "0" && window.innerWidth <= 1100);
   applyCollapsed(collapsed);
+  enableSidebarMotion();
 })();
 </script>
 
