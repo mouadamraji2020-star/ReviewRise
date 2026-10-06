@@ -2566,6 +2566,60 @@ function saveAuthSession(accessToken, refreshToken) {
   localStorage.removeItem(FEEDBACK_DATA_CACHE_KEY);
 }
 
+async function routeAuthenticatedUser(accessToken) {
+  const userId = reviewRiseUserId(accessToken);
+
+  if (!accessToken || !userId) {
+    return "error";
+  }
+
+  let response;
+
+  try {
+    response = await fetch(
+      SUPABASE_URL + "/rest/v1/profiles?id=eq." + encodeURIComponent(userId) + "&select=onboarding_completed",
+      {
+        headers: {
+          "apikey": SUPABASE_KEY,
+          "Authorization": "Bearer " + accessToken
+        }
+      }
+    );
+  } catch (error) {
+    console.error("Onboarding check failed:", error);
+    return "error";
+  }
+
+  if (response.status === 401) {
+    return "unauthorized";
+  }
+
+  if (!response.ok) {
+    console.error("Onboarding check failed:", response.status);
+    return "error";
+  }
+
+  let rows;
+
+  try {
+    rows = await response.json();
+  } catch (error) {
+    console.error("Onboarding check failed:", error);
+    return "error";
+  }
+
+  if (!Array.isArray(rows)) {
+    return "error";
+  }
+
+  if (rows.length === 0 || rows[0].onboarding_completed !== true) {
+    window.location.replace("onboarding.html");
+    return "onboarding";
+  }
+
+  return "dashboard";
+}
+
 async function saveProfileNameIfEmpty(accessToken, fullName) {
   const userId = reviewRiseUserId(accessToken);
   const name = (fullName || "").trim();
@@ -2714,12 +2768,29 @@ async function login(event) {
     }
 
     saveAuthSession(data.access_token, data.refresh_token);
-    showDashboard();
 
     const signedInName = data.user && data.user.user_metadata && data.user.user_metadata.full_name;
     saveProfileNameIfEmpty(data.access_token, signedInName).catch(function (profileError) {
       console.error("Could not save profile name:", profileError);
     });
+
+    const route = await routeAuthenticatedUser(data.access_token);
+
+    if (route === "onboarding") {
+      return;
+    }
+
+    if (route === "unauthorized") {
+      logout();
+      return;
+    }
+
+    if (route === "error") {
+      setAuthMessage("loginMessage", "We could not reach ReviewRise. Please try again.");
+      return;
+    }
+
+    showDashboard();
   } catch (error) {
     console.error("Sign in failed:", error);
     setAuthMessage("loginMessage", "We could not reach ReviewRise. Please try again.");
@@ -2811,6 +2882,22 @@ async function signUp(event) {
         await saveProfileFullName(accessToken, fullName);
       } catch (profileError) {
         console.error("Could not save profile name:", profileError);
+      }
+
+      const route = await routeAuthenticatedUser(accessToken);
+
+      if (route === "onboarding") {
+        return;
+      }
+
+      if (route === "unauthorized") {
+        logout();
+        return;
+      }
+
+      if (route === "error") {
+        setAuthMessage("signUpMessage", "We could not reach ReviewRise. Please try again.");
+        return;
       }
 
       showDashboard();
@@ -3105,17 +3192,8 @@ document.querySelectorAll(".password-toggle").forEach(function (button) {
         return;
     }
 
-    const cachedFeedback = readFeedbackDataCache();
-
-    if (cachedFeedback) {
-        renderDashboardFeedback(cachedFeedback);
-    }
-
-    document.documentElement.classList.remove("reviewrise-signed-out");
     loginSection.style.display = "none";
-    dashboard.style.display = "block";
-    document.getElementById("mobileMenuBtn").style.display = "block";
-    applyDashboardGreeting();
+    dashboard.style.display = "none";
 
     (async function () {
         const validToken = await getValidAccessToken();
@@ -3125,6 +3203,35 @@ document.querySelectorAll(".password-toggle").forEach(function (button) {
             return;
         }
 
+        const route = await routeAuthenticatedUser(validToken);
+
+        if (route === "onboarding") {
+            return;
+        }
+
+        if (route === "unauthorized") {
+            logout();
+            return;
+        }
+
+        if (route === "error") {
+            loginSection.style.display = "flex";
+            dashboard.style.display = "none";
+            setAuthMessage("loginMessage", "We could not reach ReviewRise. Please try again.");
+            return;
+        }
+
+        const cachedFeedback = readFeedbackDataCache();
+
+        if (cachedFeedback) {
+            renderDashboardFeedback(cachedFeedback);
+        }
+
+        document.documentElement.classList.remove("reviewrise-signed-out");
+        loginSection.style.display = "none";
+        dashboard.style.display = "block";
+        document.getElementById("mobileMenuBtn").style.display = "block";
+        applyDashboardGreeting();
         loadFeedback(validToken);
     })();
 })();

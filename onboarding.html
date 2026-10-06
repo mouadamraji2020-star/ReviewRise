@@ -1,0 +1,1405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Set up your business | ReviewRise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; }
+
+html, body { margin: 0; min-height: 100%; }
+
+body {
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+  color: #0c1730;
+  background:
+    radial-gradient(ellipse 720px 420px at 8% -10%, rgba(186, 220, 255, 0.55), transparent 70%),
+    radial-gradient(ellipse 540px 380px at 92% 0%, rgba(214, 232, 255, 0.45), transparent 72%),
+    linear-gradient(180deg, #f7fbff 0%, #eef4fb 48%, #f8fafc 100%);
+}
+
+button, input, select { font-family: inherit; }
+
+.boot {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  color: #5c6b82;
+}
+
+.boot p { margin: 0; font-size: 14px; font-weight: 600; }
+
+.boot-logo, .brand-mark {
+  width: 34px;
+  height: 26px;
+  position: relative;
+  overflow: hidden;
+  flex: none;
+}
+
+.boot-logo img, .brand-mark img {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 82px;
+  height: 82px;
+  max-width: none;
+  transform: translate(-23px, -14px);
+}
+
+.wordmark {
+  color: #0c1730;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.6px;
+  line-height: 1;
+}
+
+.wordmark span {
+  background: linear-gradient(90deg, #2f6bff 10%, #3ec6ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.onboarding { min-height: 100vh; }
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  height: 72px;
+  padding: 0 28px;
+}
+
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+
+.secure-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #6d7c92;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.secure-note svg { width: 16px; height: 16px; flex: none; }
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(380px, 520px);
+  gap: 28px;
+  align-items: start;
+  width: min(1180px, calc(100% - 56px));
+  margin: 8px auto 40px;
+}
+
+.story { padding: 12px 8px 0 12px; }
+
+.steps {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 28px;
+}
+
+.step-item { display: flex; align-items: center; gap: 8px; color: #8b97a8; font-size: 14px; font-weight: 650; }
+
+.step-index {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #e7eef6;
+  color: #7b8ba0;
+  font-size: 13px;
+  font-weight: 700;
+  transition: background 200ms cubic-bezier(0.22, 1, 0.36, 1), color 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.step-item.is-active { color: #1d4ed8; }
+.step-item.is-active .step-index,
+.step-item.is-done .step-index { background: #2f6bff; color: #fff; }
+.step-item.is-done { color: #2457d6; }
+.step-check { display: none; }
+.step-item.is-done .step-num { display: none; }
+.step-item.is-done .step-check { display: block; }
+
+.step-line {
+  width: 42px;
+  height: 1px;
+  margin: 0 10px;
+  background: #d5deea;
+}
+
+.story h1 {
+  margin: 0;
+  max-width: 520px;
+  font-size: 58px;
+  line-height: 0.98;
+  letter-spacing: -1.8px;
+  font-weight: 800;
+}
+
+.story-lead {
+  max-width: 440px;
+  margin: 16px 0 0;
+  color: #5c6b82;
+  font-size: 18px;
+  line-height: 1.45;
+}
+
+.benefits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px 22px;
+  margin: 22px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.benefits li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #314158;
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.benefit-icon {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  background: #eaf2ff;
+  color: #2f6bff;
+}
+
+.benefit-icon svg { width: 16px; height: 16px; }
+
+.stage {
+  position: relative;
+  height: 390px;
+  margin-top: 18px;
+}
+
+.ledge {
+  position: absolute;
+  left: 0;
+  right: 18px;
+  bottom: 18px;
+  height: 74px;
+  border-radius: 18px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.55), rgba(255,255,255,0.2)),
+    linear-gradient(90deg, #f7f4ef, #ece7df 40%, #f4f1ea);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
+}
+
+.stand {
+  position: absolute;
+  bottom: 36px;
+  width: 168px;
+  filter: drop-shadow(0 16px 24px rgba(16, 40, 80, 0.12));
+}
+
+.stand-qr { left: 8px; z-index: 2; }
+.stand-nfc { left: 168px; z-index: 3; }
+
+.card-face {
+  border-radius: 16px 16px 8px 8px;
+  background: #fff;
+  padding: 14px 12px 12px;
+  text-align: center;
+}
+
+.stand-nfc .card-face {
+  background: linear-gradient(180deg, #3d8bff 0%, #2463eb 100%);
+  color: #fff;
+}
+
+.card-kicker { margin: 0; font-size: 13px; font-weight: 800; letter-spacing: -0.2px; }
+.card-sub { margin: 3px 0 8px; color: #6d7c92; font-size: 10px; font-weight: 600; }
+.stand-nfc .card-sub { color: rgba(255,255,255,0.82); }
+
+.qr-svg, .nfc-mark { width: 86px; height: 86px; margin: 0 auto; }
+.google-row { display: flex; align-items: center; justify-content: center; gap: 4px; margin-top: 6px; color: #314158; font-size: 10px; font-weight: 700; }
+.stars { color: #f5b400; letter-spacing: 1px; font-size: 11px; }
+.thanks { margin: 4px 0 0; color: #1d4ed8; font-size: 11px; font-weight: 700; }
+
+.wood {
+  height: 16px;
+  margin: 0 18px;
+  border-radius: 0 0 8px 8px;
+  background: linear-gradient(180deg, #e7c89a, #c8925a);
+}
+
+.wood-base {
+  height: 10px;
+  margin: 0 8px;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #f0d7b0, #d7ae78);
+  box-shadow: 0 8px 10px rgba(90, 60, 20, 0.12);
+}
+
+.nfc-badge {
+  width: 74px;
+  height: 74px;
+  margin: 8px auto 4px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.14);
+}
+
+.phone {
+  position: absolute;
+  left: 318px;
+  bottom: 48px;
+  width: 168px;
+  height: 280px;
+  padding: 10px;
+  border-radius: 28px;
+  background: #0f1728;
+  box-shadow: 0 18px 40px rgba(16, 40, 80, 0.18);
+  z-index: 4;
+}
+
+.phone-screen {
+  height: 100%;
+  border-radius: 20px;
+  background: linear-gradient(180deg, #f8fbff, #fff);
+  padding: 22px 12px 12px;
+  text-align: center;
+}
+
+.phone-screen strong { display: block; font-size: 13px; letter-spacing: -0.2px; }
+.phone-screen p { margin: 6px 0 8px; color: #6d7c92; font-size: 11px; }
+.phone-stars { color: #f5b400; font-size: 18px; letter-spacing: 2px; }
+.write-review {
+  margin-top: 12px;
+  height: 32px;
+  border: none;
+  border-radius: 999px;
+  background: #2f6bff;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.float-note {
+  position: absolute;
+  left: 286px;
+  top: 18px;
+  z-index: 5;
+  width: 180px;
+  padding: 10px 12px;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 12px 30px rgba(16, 40, 80, 0.1);
+}
+
+.float-note p { margin: 4px 0 0; color: #314158; font-size: 11px; font-weight: 650; line-height: 1.35; }
+
+.setup-card {
+  background: #fff;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 28px;
+  box-shadow: 0 24px 60px rgba(16, 40, 80, 0.08);
+  padding: 28px 28px 22px;
+}
+
+.card-head { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 22px; }
+
+.card-badge {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  flex: none;
+  border-radius: 50%;
+  background: #eaf2ff;
+  color: #2f6bff;
+}
+
+.card-badge svg { width: 22px; height: 22px; }
+
+.setup-card h2 { margin: 2px 0 0; font-size: 28px; letter-spacing: -0.6px; }
+.card-head p, .panel-copy { margin: 4px 0 0; color: #6d7c92; font-size: 14px; line-height: 1.45; }
+
+.step-panel { display: none; }
+.step-panel.active { display: block; animation: rise 220ms cubic-bezier(0.22, 1, 0.36, 1); }
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+.field { margin-bottom: 14px; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+label { display: block; margin-bottom: 6px; font-size: 13px; font-weight: 700; }
+.req { color: #2f6bff; }
+
+.control { position: relative; }
+
+.control svg {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  color: #8b97a8;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+input, select {
+  width: 100%;
+  height: 52px;
+  padding: 0 14px;
+  border: 1px solid #e3eaf3;
+  border-radius: 12px;
+  background: #fff;
+  color: #0c1730;
+  font-size: 14.5px;
+  outline: none;
+  transition: border-color 180ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.control input, .control select { padding-left: 40px; }
+
+input:focus, select:focus {
+  border-color: #8eb7ff;
+  box-shadow: 0 0 0 4px rgba(47, 107, 255, 0.12);
+}
+
+.hint { margin: 6px 0 0; color: #7b8ba0; font-size: 12.5px; line-height: 1.4; }
+.field-error { min-height: 0; margin: 6px 0 0; color: #b42318; font-size: 12.5px; font-weight: 650; }
+.field-error:empty { display: none; }
+
+.logo-grid { display: grid; grid-template-columns: 1fr 1.15fr; gap: 12px; margin-top: 6px; }
+
+.logo-drop, .live-preview {
+  min-height: 148px;
+  border: 1px dashed #d5e2f2;
+  border-radius: 16px;
+  background: #f8fbff;
+}
+
+.logo-drop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: #1d4ed8;
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 180ms cubic-bezier(0.22, 1, 0.36, 1), background 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.logo-drop:hover { border-color: #8eb7ff; background: #f3f8ff; }
+.logo-drop strong { font-size: 14px; }
+.logo-drop span { color: #7b8ba0; font-size: 12px; font-weight: 600; }
+
+.upload-icon {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #e7f0ff;
+  color: #2f6bff;
+}
+
+.live-preview { padding: 12px; border-style: solid; }
+.preview-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.preview-top span { color: #6d7c92; font-size: 12px; font-weight: 700; }
+.preview-top button {
+  border: none;
+  background: transparent;
+  color: #1d4ed8;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.preview-stage { display: flex; gap: 8px; align-items: flex-end; justify-content: center; min-height: 96px; }
+.mini-card, .mini-qr {
+  width: 92px;
+  border-radius: 10px;
+  background: #fff;
+  border: 1px solid #e7eef6;
+  box-shadow: 0 8px 16px rgba(16, 40, 80, 0.06);
+  text-align: center;
+  padding: 8px 6px;
+}
+
+.mini-logo, .summary-logo {
+  width: 28px;
+  height: 28px;
+  margin: 0 auto 4px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: #eaf2ff;
+  color: #2f6bff;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.mini-logo img, .summary-logo img { width: 100%; height: 100%; object-fit: cover; display: none; }
+.mini-card strong, .mini-qr strong { display: block; font-size: 9px; line-height: 1.2; }
+.mini-card .stars, .mini-qr .stars { font-size: 8px; }
+.mini-qr svg { width: 42px; height: 42px; }
+
+.primary-btn, .ghost-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 52px;
+  margin-top: 8px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 750;
+  cursor: pointer;
+  transition: background 180ms cubic-bezier(0.22, 1, 0.36, 1), border-color 180ms cubic-bezier(0.22, 1, 0.36, 1), transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.primary-btn { border: none; background: #2f6bff; color: #fff; box-shadow: 0 10px 18px rgba(47, 107, 255, 0.22); }
+.primary-btn:hover { background: #1d5ef0; }
+.primary-btn:disabled { opacity: 0.6; cursor: default; box-shadow: none; }
+.ghost-btn { border: 1px solid #e3eaf3; background: #fff; color: #314158; }
+.ghost-btn:hover { border-color: #b9d4ff; }
+
+.summary {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 14px;
+  border: 1px solid #e7eef6;
+  border-radius: 16px;
+  background: #f8fbff;
+}
+
+.summary-logo { width: 56px; height: 56px; border-radius: 14px; font-size: 18px; }
+.summary h3 { margin: 0; font-size: 18px; }
+.summary p { margin: 3px 0 0; color: #6d7c92; font-size: 13px; }
+.summary a { color: #1d4ed8; font-size: 13px; font-weight: 650; word-break: break-all; }
+
+.creates { margin: 16px 0; padding: 0; list-style: none; }
+.creates li {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-bottom: 10px;
+  color: #314158;
+  font-size: 14px;
+  line-height: 1.4;
+}
+.creates svg { width: 18px; height: 18px; flex: none; color: #2f6bff; margin-top: 1px; }
+
+.form-error {
+  min-height: 20px;
+  margin: 8px 0 0;
+  color: #b42318;
+  font-size: 13px;
+  font-weight: 650;
+}
+.form-error:empty { display: none; }
+
+.preview-modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(15, 23, 42, 0.45);
+  z-index: 20;
+}
+.preview-modal.open { display: flex; }
+.preview-dialog {
+  width: min(420px, 100%);
+  padding: 22px;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.18);
+}
+.preview-dialog h3 { margin: 0 0 12px; }
+.preview-close {
+  margin-top: 14px;
+  border: none;
+  background: #eef4ff;
+  color: #1d4ed8;
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@media (max-width: 1080px) {
+  .layout { grid-template-columns: 1fr; width: min(720px, calc(100% - 32px)); }
+  .story h1 { font-size: 44px; }
+  .stage { height: 320px; }
+  .phone { left: auto; right: 0; transform: scale(0.86); transform-origin: bottom right; }
+  .float-note { left: auto; right: 120px; }
+  .stand-nfc { left: 150px; }
+}
+
+@media (max-width: 800px) {
+  .topbar { height: 64px; padding: 0 16px; }
+  .secure-note span { display: none; }
+  .layout { width: min(100% - 28px, 460px); gap: 8px; margin-top: 0; }
+  .story { padding: 0; }
+  .story h1 { font-size: 34px; letter-spacing: -1px; }
+  .story-lead { font-size: 15px; }
+  .benefits { gap: 10px 14px; }
+  .benefits li { font-size: 12.5px; }
+  .stage { height: 250px; margin-top: 8px; }
+  .stand { width: 112px; bottom: 18px; }
+  .stand-qr { left: 0; }
+  .stand-nfc { left: 102px; }
+  .card-kicker { font-size: 10px; }
+  .qr-svg, .nfc-mark { width: 54px; height: 54px; }
+  .nfc-badge { width: 52px; height: 52px; }
+  .phone { width: 112px; height: 188px; right: -6px; bottom: 24px; border-radius: 20px; }
+  .phone-screen { padding-top: 16px; }
+  .phone-screen strong { font-size: 10px; }
+  .float-note { display: none; }
+  .setup-card { padding: 20px 16px 16px; border-radius: 22px; }
+  .setup-card h2 { font-size: 24px; }
+  .field-row, .logo-grid { grid-template-columns: 1fr; }
+  .step-line { width: 22px; margin: 0 6px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .step-index, .primary-btn, .ghost-btn, .logo-drop, input, select { transition: none; }
+  .step-panel.active { animation: none; }
+}
+</style>
+</head>
+<body>
+  <div class="boot" id="boot">
+    <span class="boot-logo">
+      <img src="../../../../.cursor/projects/c-Users-Dima-D-origine-OneDrive-Desktop-git-huuub-ReviewRise/assets/c__Users_Dima_D_origine_AppData_Roaming_Cursor_User_workspaceStorage_d4266493b40e73b4a60b85c5f30c5fcb_images_WhatsApp_Image_2026-10-04_at_22.28.59-ba0e545f-3261-45f1-8544-9cfc0ce6454a.jpg" alt="">
+    </span>
+    <div class="wordmark">Review<span>Rise</span></div>
+    <p>Preparing your setup</p>
+  </div>
+
+  <div class="onboarding" id="onboardingApp" hidden>
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark">
+          <img src="../../../../.cursor/projects/c-Users-Dima-D-origine-OneDrive-Desktop-git-huuub-ReviewRise/assets/c__Users_Dima_D_origine_AppData_Roaming_Cursor_User_workspaceStorage_d4266493b40e73b4a60b85c5f30c5fcb_images_WhatsApp_Image_2026-10-04_at_22.28.59-ba0e545f-3261-45f1-8544-9cfc0ce6454a.jpg" alt="">
+        </span>
+        <span class="wordmark">Review<span>Rise</span></span>
+      </div>
+      <div class="secure-note">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+        <span>Secure setup — your information is always protected.</span>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="story">
+        <div class="steps" aria-label="Setup progress">
+          <div class="step-item is-active" data-step-indicator="1"><span class="step-index"><span class="step-num">1</span><span class="step-check">✓</span></span> Business</div>
+          <span class="step-line"></span>
+          <div class="step-item" data-step-indicator="2"><span class="step-index"><span class="step-num">2</span><span class="step-check">✓</span></span> Details</div>
+          <span class="step-line"></span>
+          <div class="step-item" data-step-indicator="3"><span class="step-index"><span class="step-num">3</span><span class="step-check">✓</span></span> Launch</div>
+        </div>
+        <h1>Welcome to ReviewRise</h1>
+        <p class="story-lead">Let's set up your business and launch your first review experience.</p>
+        <ul class="benefits">
+          <li><span class="benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m12 3 2.2 5.2L20 9.2l-4 3.6 1.2 5.7L12 15.8 6.8 18.5 8 12.8 4 9.2l5.8-1z"/></svg></span> Get more 5-star reviews</li>
+          <li><span class="benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V9"/><path d="M10 19V5"/><path d="M16 19v-7"/><path d="M4 19h16"/></svg></span> Build trust and credibility</li>
+          <li><span class="benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/><path d="M14 19a4 4 0 0 1 6.5-3"/></svg></span> Grow your business</li>
+        </ul>
+        <div class="stage" aria-hidden="true">
+          <div class="ledge"></div>
+          <div class="stand stand-qr">
+            <div class="card-face">
+              <p class="card-kicker">Share your experience</p>
+              <p class="card-sub">Scan to leave a review</p>
+              <svg class="qr-svg" viewBox="0 0 64 64" aria-hidden="true">
+                <rect width="64" height="64" rx="6" fill="#fff"/>
+                <rect x="4" y="4" width="18" height="18" fill="#0c1730"/>
+                <rect x="8" y="8" width="10" height="10" fill="#fff"/>
+                <rect x="11" y="11" width="4" height="4" fill="#0c1730"/>
+                <rect x="42" y="4" width="18" height="18" fill="#0c1730"/>
+                <rect x="46" y="8" width="10" height="10" fill="#fff"/>
+                <rect x="49" y="11" width="4" height="4" fill="#0c1730"/>
+                <rect x="4" y="42" width="18" height="18" fill="#0c1730"/>
+                <rect x="8" y="46" width="10" height="10" fill="#fff"/>
+                <rect x="11" y="49" width="4" height="4" fill="#0c1730"/>
+                <rect x="28" y="6" width="6" height="6" fill="#0c1730"/>
+                <rect x="28" y="16" width="6" height="4" fill="#0c1730"/>
+                <rect x="36" y="28" width="6" height="6" fill="#0c1730"/>
+                <rect x="46" y="28" width="12" height="6" fill="#0c1730"/>
+                <rect x="28" y="36" width="8" height="6" fill="#0c1730"/>
+                <rect x="40" y="40" width="6" height="8" fill="#0c1730"/>
+                <rect x="50" y="46" width="8" height="12" fill="#0c1730"/>
+                <rect x="28" y="50" width="14" height="6" fill="#0c1730"/>
+              </svg>
+              <div class="google-row"><span style="color:#4285F4;font-weight:800;">G</span> Review us on Google</div>
+              <div class="stars">★★★★★</div>
+              <p class="thanks">Thank you!</p>
+            </div>
+            <div class="wood"></div>
+            <div class="wood-base"></div>
+          </div>
+          <div class="stand stand-nfc">
+            <div class="card-face">
+              <p class="card-kicker">We would appreciate your Google review</p>
+              <div class="nfc-badge">
+                <svg class="nfc-mark" viewBox="0 0 64 64" fill="none" stroke="#fff" stroke-width="3">
+                  <path d="M20 40a16 16 0 0 1 0-16"/>
+                  <path d="M28 44a24 24 0 0 1 0-24"/>
+                  <path d="M36 48a32 32 0 0 1 0-32"/>
+                  <circle cx="16" cy="32" r="3" fill="#fff" stroke="none"/>
+                </svg>
+              </div>
+              <p class="card-sub">Tap to rate your experience</p>
+            </div>
+            <div class="wood"></div>
+            <div class="wood-base"></div>
+          </div>
+          <div class="phone">
+            <div class="phone-screen">
+              <strong>How was your experience?</strong>
+              <p>Tap a star to share your feedback</p>
+              <div class="phone-stars">★★★★★</div>
+              <button class="write-review" type="button" tabindex="-1">Write a review</button>
+            </div>
+          </div>
+          <div class="float-note">
+            <div class="stars">★★★★★</div>
+            <p>Customers can rate you from the QR code or a tap.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="setup-card">
+        <div class="card-head">
+          <span class="card-badge" id="cardBadge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20V9l8-5 8 5v11"/><path d="M9 20v-6h6v6"/></svg>
+          </span>
+          <div>
+            <h2 id="cardTitle">Set up your business</h2>
+            <p id="cardCopy">This information will be used to create your review page, QR code and customer experience.</p>
+          </div>
+        </div>
+
+        <form id="setupForm">
+          <div class="step-panel active" data-step="1">
+            <div class="field">
+              <label for="businessName">Business name <span class="req">*</span></label>
+              <input id="businessName" type="text" autocomplete="organization" placeholder="Lakeside Dental Care">
+              <p class="field-error" id="businessNameError"></p>
+            </div>
+            <div class="field">
+              <label for="businessType">Business category <span class="req">*</span></label>
+              <div class="control">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20h16"/><path d="M6 20V7l6-3 6 3v13"/></svg>
+                <select id="businessType">
+                  <option value="">Select a category</option>
+                  <option>Hotel</option>
+                  <option>Restaurant</option>
+                  <option>Cafe</option>
+                  <option>Salon</option>
+                  <option>Clinic</option>
+                  <option>Retail</option>
+                  <option>Gym</option>
+                  <option>Professional Service</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <p class="field-error" id="businessTypeError"></p>
+            </div>
+            <div class="field" id="otherTypeWrap" hidden>
+              <label for="businessTypeOther">Describe your business</label>
+              <input id="businessTypeOther" type="text" placeholder="Your business type">
+            </div>
+            <div class="field">
+              <label for="googleReviewLink">Google review link <span class="req">*</span></label>
+              <div class="control">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 13a5 5 0 0 0 7.1.1l1.4-1.4a5 5 0 0 0-7.1-7.1L10 5"/><path d="M14 11a5 5 0 0 0-7.1-.1L5.5 12.3a5 5 0 0 0 7.1 7.1L14 19"/></svg>
+                <input id="googleReviewLink" type="url" placeholder="https://g.page/r/YOUR-BUSINESS-ID/review" inputmode="url">
+              </div>
+              <p class="hint">Paste your Google Business review link.</p>
+              <p class="field-error" id="googleReviewLinkError"></p>
+            </div>
+            <div class="field">
+              <label>Business logo</label>
+              <div class="logo-grid">
+                <label class="logo-drop" for="businessLogoInput">
+                  <span class="upload-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 16V6"/><path d="m8 9 4-4 4 4"/><path d="M5 19h14"/></svg>
+                  </span>
+                  <strong id="logoActionLabel">Upload your logo</strong>
+                  <span>PNG, JPG or WebP</span>
+                </label>
+                <div class="live-preview">
+                  <div class="preview-top">
+                    <span>Preview</span>
+                    <button type="button" id="largerPreviewBtn">See larger preview</button>
+                  </div>
+                  <div class="preview-stage">
+                    <div class="mini-card">
+                      <div class="mini-logo" id="miniLogo"><span id="miniInitial">R</span><img id="miniLogoImg" alt=""></div>
+                      <strong id="miniName">Your business</strong>
+                      <div class="stars">★★★★★</div>
+                    </div>
+                    <div class="mini-qr">
+                      <svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" fill="#fff"/><rect x="6" y="6" width="16" height="16"/><rect x="42" y="6" width="16" height="16"/><rect x="6" y="42" width="16" height="16"/><rect x="30" y="30" width="8" height="8"/><rect x="44" y="44" width="12" height="12"/></svg>
+                      <strong>QR ready</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <input id="businessLogoInput" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+              <p class="field-error" id="logoError"></p>
+            </div>
+            <button class="primary-btn" type="button" id="continueBtn">Continue →</button>
+          </div>
+
+          <div class="step-panel" data-step="2">
+            <p class="panel-copy">Add contact details for your review experience. You can leave any of these blank.</p>
+            <div class="field-row">
+              <div class="field">
+                <label for="businessPhone">Phone</label>
+                <input id="businessPhone" type="tel" autocomplete="tel">
+              </div>
+              <div class="field">
+                <label for="businessEmail">Business email</label>
+                <input id="businessEmail" type="email" autocomplete="email">
+                <p class="field-error" id="businessEmailError"></p>
+              </div>
+            </div>
+            <div class="field">
+              <label for="businessWebsite">Website</label>
+              <input id="businessWebsite" type="url" placeholder="https://" inputmode="url">
+              <p class="field-error" id="businessWebsiteError"></p>
+            </div>
+            <div class="field">
+              <label for="businessAddress">Address</label>
+              <input id="businessAddress" type="text" autocomplete="street-address">
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label for="businessCity">City</label>
+                <input id="businessCity" type="text" autocomplete="address-level2">
+              </div>
+              <div class="field">
+                <label for="businessCountry">Country</label>
+                <input id="businessCountry" type="text" autocomplete="country-name">
+              </div>
+            </div>
+            <div class="field">
+              <label for="businessPostal">Postal code</label>
+              <input id="businessPostal" type="text" autocomplete="postal-code">
+            </div>
+            <button class="primary-btn" type="button" id="detailsContinueBtn">Continue →</button>
+            <button class="ghost-btn" type="button" id="detailsBackBtn">Back</button>
+          </div>
+
+          <div class="step-panel" data-step="3">
+            <p class="panel-copy">Review your business, then launch your ReviewRise dashboard.</p>
+            <div class="summary">
+              <div class="summary-logo" id="summaryLogo"><span id="summaryInitial">R</span><img id="summaryLogoImg" alt=""></div>
+              <div>
+                <h3 id="summaryName">Your business</h3>
+                <p id="summaryMeta"></p>
+                <a id="summaryGoogle" href="#" target="_blank" rel="noopener"></a>
+              </div>
+            </div>
+            <ul class="creates">
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 6 9 17l-5-5"/></svg><span>Primary Review Link for this business</span></li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 6 9 17l-5-5"/></svg><span>QR and NFC-ready review destination</span></li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 6 9 17l-5-5"/></svg><span>Dashboard ready for customer feedback</span></li>
+            </ul>
+            <button class="primary-btn" type="button" id="launchBtn">Launch ReviewRise</button>
+            <button class="ghost-btn" type="button" id="launchBackBtn">Back</button>
+            <p class="form-error" id="launchError" role="alert"></p>
+          </div>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <div class="preview-modal" id="previewModal">
+    <div class="preview-dialog" role="dialog" aria-modal="true" aria-labelledby="previewTitle">
+      <h3 id="previewTitle">Preview</h3>
+      <div class="summary">
+        <div class="summary-logo" id="dialogLogo"><span id="dialogInitial">R</span><img id="dialogLogoImg" alt=""></div>
+        <div>
+          <h3 id="dialogName">Your business</h3>
+          <p>Sample review touchpoint</p>
+          <div class="stars">★★★★★</div>
+        </div>
+      </div>
+      <button class="preview-close" type="button" id="previewClose">Close</button>
+    </div>
+  </div>
+
+<script>
+const SUPABASE_URL = "https://intlhwmvldxdiytemjlr.supabase.co";
+const SUPABASE_KEY = "sb_publishable_0KjZZApJCuvTEJH3nNyLUg_aps6aXaA";
+const DRAFT_KEY = "reviewrise_onboarding_draft";
+
+let accountUserId = null;
+let profileFullName = "";
+let logoFile = null;
+let logoObjectUrl = "";
+let currentStep = 1;
+let launching = false;
+
+function accessTokenStillValid(token) {
+  if (!token) return false;
+  try {
+    const payload = token.split(".")[1];
+    const json = JSON.parse(atob(payload.replace(/-/g, "+").replace(/_/g, "/")));
+    if (typeof json.exp !== "number") return true;
+    return json.exp * 1000 > Date.now() + 60000;
+  } catch (error) {
+    return false;
+  }
+}
+
+function userIdFromToken(token) {
+  try {
+    const payload = token.split(".")[1];
+    const json = JSON.parse(atob(payload.replace(/-/g, "+").replace(/_/g, "/")));
+    return json.sub || null;
+  } catch (error) {
+    return null;
+  }
+}
+
+let refreshInFlight = null;
+
+function refreshStoredSession() {
+  if (refreshInFlight) return refreshInFlight;
+  refreshInFlight = (async function () {
+    const currentToken = localStorage.getItem("reviewrise_token");
+    const refreshToken = localStorage.getItem("reviewrise_refresh_token");
+    if (!refreshToken) return accessTokenStillValid(currentToken) ? currentToken : null;
+    try {
+      const response = await fetch(SUPABASE_URL + "/auth/v1/token?grant_type=refresh_token", {
+        method: "POST",
+        headers: { "apikey": SUPABASE_KEY, "Content-Type": "application/json" },
+        body: JSON.stringify({ refresh_token: refreshToken })
+      });
+      if (!response.ok) {
+        const latestToken = localStorage.getItem("reviewrise_token");
+        return accessTokenStillValid(latestToken) ? latestToken : null;
+      }
+      const data = await response.json();
+      if (!data.access_token) {
+        const latestToken = localStorage.getItem("reviewrise_token");
+        return accessTokenStillValid(latestToken) ? latestToken : null;
+      }
+      localStorage.setItem("reviewrise_token", data.access_token);
+      if (data.refresh_token) localStorage.setItem("reviewrise_refresh_token", data.refresh_token);
+      return data.access_token;
+    } catch (error) {
+      console.error("Token refresh failed:", error);
+      return localStorage.getItem("reviewrise_token") || null;
+    } finally {
+      refreshInFlight = null;
+    }
+  })();
+  return refreshInFlight;
+}
+
+async function getValidAccessToken() {
+  const currentToken = localStorage.getItem("reviewrise_token");
+  const refreshToken = localStorage.getItem("reviewrise_refresh_token");
+  if (accessTokenStillValid(currentToken)) return currentToken;
+  if (!refreshToken) return null;
+  return refreshStoredSession();
+}
+
+function authHeaders(token, json) {
+  const headers = { "apikey": SUPABASE_KEY, "Authorization": "Bearer " + token };
+  if (json) {
+    headers["Content-Type"] = "application/json";
+    headers["Prefer"] = "return=representation";
+  }
+  return headers;
+}
+
+function endSession() {
+  localStorage.removeItem("reviewrise_token");
+  localStorage.removeItem("reviewrise_refresh_token");
+  localStorage.removeItem("reviewrise_dashboard_cache");
+  localStorage.removeItem("reviewrise_feedback_cache");
+  localStorage.removeItem("reviewrise_analytics_cache");
+  localStorage.removeItem("reviewrise_reviewlinks_data");
+  localStorage.removeItem("reviewrise_feedback_data_cache");
+  window.location.replace("dashboard.html");
+}
+
+function goToDashboard() {
+  sessionStorage.removeItem(DRAFT_KEY);
+  window.location.replace("dashboard.html");
+}
+
+function setFieldError(id, message) {
+  const element = document.getElementById(id);
+  if (element) element.textContent = message || "";
+}
+
+function isValidHttpUrl(value) {
+  try {
+    const url = new URL(value);
+    return (url.protocol === "https:" || url.protocol === "http:") && !!url.hostname && url.hostname.indexOf(".") !== -1;
+  } catch (error) {
+    return false;
+  }
+}
+
+function selectedBusinessType() {
+  const type = document.getElementById("businessType").value;
+  if (type !== "Other") return type;
+  const custom = document.getElementById("businessTypeOther").value.trim();
+  return custom || "Other";
+}
+
+function readDraftFields() {
+  return {
+    owner_id: accountUserId,
+    businessName: document.getElementById("businessName").value,
+    businessType: document.getElementById("businessType").value,
+    businessTypeOther: document.getElementById("businessTypeOther").value,
+    googleReviewLink: document.getElementById("googleReviewLink").value,
+    businessPhone: document.getElementById("businessPhone").value,
+    businessEmail: document.getElementById("businessEmail").value,
+    businessWebsite: document.getElementById("businessWebsite").value,
+    businessAddress: document.getElementById("businessAddress").value,
+    businessCity: document.getElementById("businessCity").value,
+    businessCountry: document.getElementById("businessCountry").value,
+    businessPostal: document.getElementById("businessPostal").value
+  };
+}
+
+function saveDraft() {
+  if (!accountUserId) return;
+  sessionStorage.setItem(DRAFT_KEY, JSON.stringify(readDraftFields()));
+}
+
+function restoreDraft() {
+  let draft = null;
+  try { draft = JSON.parse(sessionStorage.getItem(DRAFT_KEY) || "null"); } catch (error) { draft = null; }
+  if (!draft || draft.owner_id !== accountUserId) return;
+  ["businessName", "businessType", "businessTypeOther", "googleReviewLink", "businessPhone", "businessEmail", "businessWebsite", "businessAddress", "businessCity", "businessCountry", "businessPostal"].forEach(function (id) {
+    if (typeof draft[id] === "string") document.getElementById(id).value = draft[id];
+  });
+  document.getElementById("otherTypeWrap").hidden = document.getElementById("businessType").value !== "Other";
+  refreshPreview();
+}
+
+function refreshPreview() {
+  const name = document.getElementById("businessName").value.trim() || "Your business";
+  const initial = name.charAt(0).toUpperCase() || "R";
+  ["miniName", "summaryName", "dialogName"].forEach(function (id) {
+    document.getElementById(id).textContent = name;
+  });
+  ["miniInitial", "summaryInitial", "dialogInitial"].forEach(function (id) {
+    document.getElementById(id).textContent = initial;
+    document.getElementById(id).style.display = logoObjectUrl ? "none" : "grid";
+  });
+  ["miniLogoImg", "summaryLogoImg", "dialogLogoImg"].forEach(function (id) {
+    const image = document.getElementById(id);
+    if (logoObjectUrl) {
+      image.src = logoObjectUrl;
+      image.style.display = "block";
+    } else {
+      image.removeAttribute("src");
+      image.style.display = "none";
+    }
+  });
+  const type = selectedBusinessType();
+  const city = document.getElementById("businessCity").value.trim();
+  const country = document.getElementById("businessCountry").value.trim();
+  const place = [city, country].filter(Boolean).join(", ");
+  const meta = [type, place].filter(Boolean).join(" · ");
+  document.getElementById("summaryMeta").textContent = meta;
+  const link = document.getElementById("googleReviewLink").value.trim();
+  const google = document.getElementById("summaryGoogle");
+  google.textContent = link;
+  google.href = isValidHttpUrl(link) ? link : "#";
+}
+
+function showStep(step) {
+  currentStep = step;
+  document.querySelectorAll(".step-panel").forEach(function (panel) {
+    panel.classList.toggle("active", Number(panel.getAttribute("data-step")) === step);
+  });
+  document.querySelectorAll(".step-item").forEach(function (item) {
+    const value = Number(item.getAttribute("data-step-indicator"));
+    item.classList.toggle("is-active", value === step);
+    item.classList.toggle("is-done", value < step);
+  });
+  const titles = {
+    1: ["Set up your business", "This information will be used to create your review page, QR code and customer experience."],
+    2: ["Business details", "These details stay with your primary Review Link. None of them are required."],
+    3: ["Launch ReviewRise", "Your dashboard, review page, and QR or NFC destination are ready to be created."]
+  };
+  document.getElementById("cardTitle").textContent = titles[step][0];
+  document.getElementById("cardCopy").textContent = titles[step][1];
+  refreshPreview();
+  saveDraft();
+}
+
+function validateStepOne() {
+  const name = document.getElementById("businessName").value.trim();
+  const type = document.getElementById("businessType").value;
+  const link = document.getElementById("googleReviewLink").value.trim();
+  let valid = true;
+  setFieldError("businessNameError", name ? "" : "Please enter your business name.");
+  setFieldError("businessTypeError", type ? "" : "Please choose a business category.");
+  setFieldError("googleReviewLinkError", isValidHttpUrl(link) ? "" : "Please enter a valid Google review link.");
+  if (!name || !type || !isValidHttpUrl(link)) valid = false;
+  return valid;
+}
+
+function validateOptionalDetails() {
+  const email = document.getElementById("businessEmail").value.trim();
+  const website = document.getElementById("businessWebsite").value.trim();
+  const emailOk = !email || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const websiteOk = !website || isValidHttpUrl(website.indexOf("://") === -1 ? "https://" + website : website);
+  setFieldError("businessEmailError", emailOk ? "" : "Enter a valid email address, or leave it blank.");
+  setFieldError("businessWebsiteError", websiteOk ? "" : "Enter a valid website, or leave it blank.");
+  return emailOk && websiteOk;
+}
+
+function emptyToNull(value) {
+  const trimmed = (value || "").trim();
+  return trimmed ? trimmed : null;
+}
+
+async function fetchUser(token) {
+  const response = await fetch(SUPABASE_URL + "/auth/v1/user", { headers: authHeaders(token) });
+  if (response.status === 401 || response.status === 403) return null;
+  if (!response.ok) return false;
+  return response.json();
+}
+
+async function fetchProfile(token) {
+  const response = await fetch(
+    SUPABASE_URL + "/rest/v1/profiles?id=eq." + encodeURIComponent(accountUserId) + "&select=full_name,onboarding_completed",
+    { headers: authHeaders(token) }
+  );
+  if (response.status === 401) return null;
+  if (!response.ok) return false;
+  const rows = await response.json();
+  return Array.isArray(rows) && rows.length ? rows[0] : {};
+}
+
+async function fetchOwnLinks(token) {
+  const response = await fetch(
+    SUPABASE_URL + "/rest/v1/Reviewlinks?user_id=eq." + encodeURIComponent(accountUserId) + "&select=id,business_name,logo_url,google_review_link,is_primary&limit=1",
+    { headers: authHeaders(token) }
+  );
+  if (!response.ok) return null;
+  const rows = await response.json();
+  return Array.isArray(rows) ? rows : [];
+}
+
+async function markOnboardingComplete(token) {
+  const changes = { onboarding_completed: true };
+  if (!profileFullName) {
+    const metadataName = (window.__reviewriseName || "").trim();
+    if (metadataName) changes.full_name = metadataName;
+  }
+  const headers = authHeaders(token, true);
+  const patch = await fetch(
+    SUPABASE_URL + "/rest/v1/profiles?id=eq." + encodeURIComponent(accountUserId),
+    { method: "PATCH", headers: headers, body: JSON.stringify(changes) }
+  );
+  if (patch.status === 401 || patch.status === 403) return false;
+  if (patch.ok) {
+    const rows = await patch.json();
+    if (Array.isArray(rows) && rows.length) return true;
+  }
+  const createBody = Object.assign({ id: accountUserId }, changes);
+  if (!createBody.full_name && profileFullName) createBody.full_name = profileFullName;
+  const created = await fetch(SUPABASE_URL + "/rest/v1/profiles", {
+    method: "POST",
+    headers: headers,
+    body: JSON.stringify(createBody)
+  });
+  return created.ok;
+}
+
+function writeLinksCache(row) {
+  localStorage.setItem("reviewrise_reviewlinks_data", JSON.stringify({
+    owner_id: accountUserId,
+    links: [{
+      id: row.id,
+      business_name: row.business_name,
+      logo_url: row.logo_url || null,
+      google_review_link: row.google_review_link || "",
+      is_primary: row.is_primary === true
+    }]
+  }));
+}
+
+async function uploadLogo(token) {
+  if (!logoFile) return null;
+  const ext = (logoFile.name.split(".").pop() || "png").toLowerCase().replace(/[^a-z0-9]/g, "") || "png";
+  const fileName = accountUserId + "-onboarding-" + Date.now() + "." + ext;
+  const response = await fetch(SUPABASE_URL + "/storage/v1/object/business-logos/" + fileName, {
+    method: "POST",
+    headers: {
+      "apikey": SUPABASE_KEY,
+      "Authorization": "Bearer " + token,
+      "Content-Type": logoFile.type || "image/png"
+    },
+    body: logoFile
+  });
+  if (!response.ok) return false;
+  return SUPABASE_URL + "/storage/v1/object/public/business-logos/" + fileName;
+}
+
+async function launchReviewRise() {
+  if (launching) return;
+  if (!validateStepOne() || !validateOptionalDetails()) {
+    showStep(validateStepOne() ? 2 : 1);
+    return;
+  }
+  launching = true;
+  const button = document.getElementById("launchBtn");
+  button.disabled = true;
+  button.textContent = "Launching…";
+  document.getElementById("launchError").textContent = "";
+
+  try {
+    let token = await getValidAccessToken();
+    if (!token) {
+      endSession();
+      return;
+    }
+
+    const existing = await fetchOwnLinks(token);
+    if (existing && existing.length) {
+      const markedExisting = await markOnboardingComplete(token);
+      if (!markedExisting) {
+        document.getElementById("launchError").textContent = "We couldn't finish your setup. Please try again.";
+        return;
+      }
+      writeLinksCache(existing[0]);
+      goToDashboard();
+      return;
+    }
+
+    const logoUrl = await uploadLogo(token);
+    if (logoUrl === false) {
+      document.getElementById("launchError").textContent = "We couldn't upload your logo. Please try again.";
+      return;
+    }
+
+    token = await getValidAccessToken();
+    if (!token) {
+      endSession();
+      return;
+    }
+
+    let website = document.getElementById("businessWebsite").value.trim();
+    if (website && website.indexOf("://") === -1) website = "https://" + website;
+
+    const payload = {
+      user_id: accountUserId,
+      business_name: document.getElementById("businessName").value.trim(),
+      business_type: selectedBusinessType(),
+      phone: emptyToNull(document.getElementById("businessPhone").value),
+      business_email: emptyToNull(document.getElementById("businessEmail").value),
+      website: emptyToNull(website),
+      address: emptyToNull(document.getElementById("businessAddress").value),
+      city: emptyToNull(document.getElementById("businessCity").value),
+      country: emptyToNull(document.getElementById("businessCountry").value),
+      postal_code: emptyToNull(document.getElementById("businessPostal").value),
+      logo_url: logoUrl,
+      google_review_link: document.getElementById("googleReviewLink").value.trim(),
+      is_primary: true,
+      positive_threshold: 4,
+      private_feedback_enabled: true,
+      google_redirect_enabled: true
+    };
+
+    const insertResponse = await fetch(SUPABASE_URL + "/rest/v1/Reviewlinks", {
+      method: "POST",
+      headers: authHeaders(token, true),
+      body: JSON.stringify(payload)
+    });
+
+    if (!insertResponse.ok) {
+      document.getElementById("launchError").textContent = "We couldn't finish your setup. Please try again.";
+      return;
+    }
+
+    const createdRows = await insertResponse.json();
+    const created = Array.isArray(createdRows) ? createdRows[0] : null;
+    if (!created) {
+      document.getElementById("launchError").textContent = "We couldn't finish your setup. Please try again.";
+      return;
+    }
+
+    const marked = await markOnboardingComplete(token);
+    if (!marked) {
+      document.getElementById("launchError").textContent = "We couldn't finish your setup. Please try again.";
+      return;
+    }
+
+    writeLinksCache(created);
+    goToDashboard();
+  } catch (error) {
+    console.error("Onboarding launch failed:", error);
+    document.getElementById("launchError").textContent = "We couldn't finish your setup. Please try again.";
+  } finally {
+    if (document.getElementById("launchError").textContent) {
+      launching = false;
+      button.disabled = false;
+      button.textContent = "Launch ReviewRise";
+    }
+  }
+}
+
+document.getElementById("setupForm").addEventListener("submit", function (event) { event.preventDefault(); });
+document.getElementById("continueBtn").addEventListener("click", function () {
+  if (validateStepOne()) showStep(2);
+});
+document.getElementById("detailsContinueBtn").addEventListener("click", function () {
+  if (validateOptionalDetails()) showStep(3);
+});
+document.getElementById("detailsBackBtn").addEventListener("click", function () { showStep(1); });
+document.getElementById("launchBackBtn").addEventListener("click", function () { showStep(2); });
+document.getElementById("launchBtn").addEventListener("click", launchReviewRise);
+document.getElementById("businessType").addEventListener("change", function () {
+  document.getElementById("otherTypeWrap").hidden = this.value !== "Other";
+  saveDraft();
+  refreshPreview();
+});
+document.getElementById("businessLogoInput").addEventListener("change", function () {
+  const file = this.files && this.files[0];
+  setFieldError("logoError", "");
+  if (!file) return;
+  const allowed = ["image/png", "image/jpeg", "image/webp"];
+  if (allowed.indexOf(file.type) === -1) {
+    setFieldError("logoError", "Please choose a PNG, JPG, or WebP image.");
+    this.value = "";
+    return;
+  }
+  if (file.size > 5 * 1024 * 1024) {
+    setFieldError("logoError", "Please choose an image under 5MB.");
+    this.value = "";
+    return;
+  }
+  if (logoObjectUrl) URL.revokeObjectURL(logoObjectUrl);
+  logoFile = file;
+  logoObjectUrl = URL.createObjectURL(file);
+  document.getElementById("logoActionLabel").textContent = "Replace logo";
+  refreshPreview();
+});
+["businessName", "businessTypeOther", "googleReviewLink", "businessPhone", "businessEmail", "businessWebsite", "businessAddress", "businessCity", "businessCountry", "businessPostal"].forEach(function (id) {
+  document.getElementById(id).addEventListener("input", function () {
+    refreshPreview();
+    saveDraft();
+  });
+});
+document.getElementById("largerPreviewBtn").addEventListener("click", function () {
+  refreshPreview();
+  document.getElementById("previewModal").classList.add("open");
+});
+document.getElementById("previewClose").addEventListener("click", function () {
+  document.getElementById("previewModal").classList.remove("open");
+});
+
+async function boot() {
+  if (!localStorage.getItem("reviewrise_token") && !localStorage.getItem("reviewrise_refresh_token")) {
+    window.location.replace("dashboard.html");
+    return;
+  }
+
+  let token = await getValidAccessToken();
+  if (!token) {
+    endSession();
+    return;
+  }
+
+  let user = await fetchUser(token);
+  if (user === null) {
+    token = await refreshStoredSession();
+    if (!token) {
+      endSession();
+      return;
+    }
+    user = await fetchUser(token);
+  }
+  if (!user || !user.id) {
+    if (user === null) endSession();
+    else document.querySelector(".boot p").textContent = "We couldn't open setup. Refresh the page to try again.";
+    return;
+  }
+
+  accountUserId = user.id;
+  window.__reviewriseName = user.user_metadata && user.user_metadata.full_name ? user.user_metadata.full_name : "";
+
+  let profile = await fetchProfile(token);
+  if (profile === null) {
+    token = await refreshStoredSession();
+    if (!token) {
+      endSession();
+      return;
+    }
+    profile = await fetchProfile(token);
+  }
+  if (profile === null) {
+    endSession();
+    return;
+  }
+  if (profile === false) {
+    document.querySelector(".boot p").textContent = "We couldn't open setup. Refresh the page to try again.";
+    return;
+  }
+  if (profile.onboarding_completed === true) {
+    goToDashboard();
+    return;
+  }
+  profileFullName = profile.full_name ? profile.full_name : "";
+
+  const links = await fetchOwnLinks(await getValidAccessToken());
+  if (links && links.length) {
+    await markOnboardingComplete(await getValidAccessToken());
+    writeLinksCache(links[0]);
+    goToDashboard();
+    return;
+  }
+
+  restoreDraft();
+  document.getElementById("boot").hidden = true;
+  document.getElementById("onboardingApp").hidden = false;
+}
+
+boot();
+</script>
+</body>
+</html>
