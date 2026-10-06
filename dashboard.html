@@ -2566,18 +2566,79 @@ function saveAuthSession(accessToken, refreshToken) {
   localStorage.removeItem(FEEDBACK_DATA_CACHE_KEY);
 }
 
-async function routeAuthenticatedUser(accessToken) {
-  const userId = reviewRiseUserId(accessToken);
+function onboardingRouteFromProfile(body) {
+  if (Array.isArray(body)) {
+    if (body.length === 0) {
+      return "onboarding";
+    }
 
-  if (!accessToken || !userId) {
-    return "error";
+    if (!body[0] || typeof body[0] !== "object") {
+      return "error";
+    }
+
+    return body[0].onboarding_completed === true ? "dashboard" : "onboarding";
   }
 
+  if (body && typeof body === "object") {
+    return body.onboarding_completed === true ? "dashboard" : "onboarding";
+  }
+
+  return "error";
+}
+
+function logOnboardingRoute(userId, profileStatus, result) {
+  console.info("Onboarding route", {
+    userId: userId || null,
+    profileStatus: profileStatus,
+    result: result
+  });
+}
+
+async function refreshForOnboarding(previousToken) {
+  if (!localStorage.getItem("reviewrise_refresh_token")) {
+    return "failed";
+  }
+
+  const refreshed = await getValidAccessToken();
+
+  if (!refreshed) {
+    return "failed";
+  }
+
+  if (refreshed === previousToken) {
+    return null;
+  }
+
+  return refreshed;
+}
+
+async function fetchAuthUserId(accessToken) {
+  try {
+    const response = await fetch(SUPABASE_URL + "/auth/v1/user", {
+      headers: {
+        "apikey": SUPABASE_KEY,
+        "Authorization": "Bearer " + accessToken
+      }
+    });
+
+    if (!response.ok) {
+      return { status: response.status, id: null };
+    }
+
+    const user = await response.json();
+    return { status: response.status, id: user && user.id ? user.id : null };
+  } catch (error) {
+    console.error("Onboarding user lookup failed:", error);
+    return { status: 0, id: null };
+  }
+}
+
+async function requestOwnProfile(accessToken, userId) {
   let response;
 
   try {
     response = await fetch(
-      SUPABASE_URL + "/rest/v1/profiles?id=eq." + encodeURIComponent(userId) + "&select=onboarding_completed",
+      SUPABASE_URL + "/rest/v1/profiles?id=eq." + encodeURIComponent(userId) + "&select=id,onboarding_completed",
       {
         headers: {
           "apikey": SUPABASE_KEY,
@@ -2587,37 +2648,90 @@ async function routeAuthenticatedUser(accessToken) {
     );
   } catch (error) {
     console.error("Onboarding check failed:", error);
-    return "error";
-  }
-
-  if (response.status === 401) {
-    return "unauthorized";
+    return { status: 0, body: null };
   }
 
   if (!response.ok) {
-    console.error("Onboarding check failed:", response.status);
-    return "error";
+    return { status: response.status, body: null };
   }
-
-  let rows;
 
   try {
-    rows = await response.json();
+    return { status: response.status, body: await response.json() };
   } catch (error) {
     console.error("Onboarding check failed:", error);
+    return { status: response.status, body: null, malformed: true };
+  }
+}
+
+async function routeAuthenticatedUser(accessToken, userId) {
+  let token = accessToken;
+  let id = userId || null;
+
+  if (!token) {
+    logOnboardingRoute(null, null, "error");
     return "error";
   }
 
-  if (!Array.isArray(rows)) {
+  if (!id) {
+    let lookedUp = await fetchAuthUserId(token);
+
+    if (lookedUp.status === 401) {
+      const refreshed = await refreshForOnboarding(token);
+
+      if (refreshed === "failed") {
+        logOnboardingRoute(null, 401, "unauthorized");
+        return "unauthorized";
+      }
+
+      if (!refreshed) {
+        logOnboardingRoute(null, lookedUp.status, "error");
+        return "error";
+      }
+
+      token = refreshed;
+      lookedUp = await fetchAuthUserId(token);
+    }
+
+    id = lookedUp.id || reviewRiseUserId(token);
+  }
+
+  if (!id) {
+    logOnboardingRoute(null, null, "error");
     return "error";
   }
 
-  if (rows.length === 0 || rows[0].onboarding_completed !== true) {
+  let profile = await requestOwnProfile(token, id);
+
+  if (profile.status === 401) {
+    const refreshed = await refreshForOnboarding(token);
+
+    if (refreshed === "failed") {
+      logOnboardingRoute(id, 401, "unauthorized");
+      return "unauthorized";
+    }
+
+    if (!refreshed) {
+      logOnboardingRoute(id, 401, "error");
+      return "error";
+    }
+
+    token = refreshed;
+    profile = await requestOwnProfile(token, id);
+  }
+
+  if (profile.status === 0 || profile.malformed || profile.status < 200 || profile.status >= 300) {
+    logOnboardingRoute(id, profile.status, "error");
+    return "error";
+  }
+
+  const route = onboardingRouteFromProfile(profile.body);
+  logOnboardingRoute(id, profile.status, route);
+
+  if (route === "onboarding") {
     window.location.replace("onboarding.html");
-    return "onboarding";
   }
 
-  return "dashboard";
+  return route;
 }
 
 async function saveProfileNameIfEmpty(accessToken, fullName) {
@@ -2774,7 +2888,7 @@ async function login(event) {
       console.error("Could not save profile name:", profileError);
     });
 
-    const route = await routeAuthenticatedUser(data.access_token);
+    const route = await routeAuthenticatedUser(data.access_token, data.user && data.user.id);
 
     if (route === "onboarding") {
       return;
@@ -2786,7 +2900,7 @@ async function login(event) {
     }
 
     if (route === "error") {
-      setAuthMessage("loginMessage", "We could not reach ReviewRise. Please try again.");
+      setAuthMessage("loginMessage", "We couldn't load your account setup. Please try again.");
       return;
     }
 
@@ -2884,7 +2998,8 @@ async function signUp(event) {
         console.error("Could not save profile name:", profileError);
       }
 
-      const route = await routeAuthenticatedUser(accessToken);
+      const signedUpUser = data && (data.user || (data.session && data.session.user));
+      const route = await routeAuthenticatedUser(accessToken, signedUpUser && signedUpUser.id);
 
       if (route === "onboarding") {
         return;
@@ -2896,7 +3011,7 @@ async function signUp(event) {
       }
 
       if (route === "error") {
-        setAuthMessage("signUpMessage", "We could not reach ReviewRise. Please try again.");
+        setAuthMessage("signUpMessage", "We couldn't load your account setup. Please try again.");
         return;
       }
 
@@ -3217,7 +3332,7 @@ document.querySelectorAll(".password-toggle").forEach(function (button) {
         if (route === "error") {
             loginSection.style.display = "flex";
             dashboard.style.display = "none";
-            setAuthMessage("loginMessage", "We could not reach ReviewRise. Please try again.");
+            setAuthMessage("loginMessage", "We couldn't load your account setup. Please try again.");
             return;
         }
 
