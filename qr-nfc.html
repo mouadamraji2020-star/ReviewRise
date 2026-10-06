@@ -467,8 +467,49 @@ body {
   transform: none;
 }
 
-.qr-poster { font-family: Arial, Helvetica, sans-serif; transition: opacity 240ms cubic-bezier(0.22, 1, 0.36, 1); }
-.qr-poster.is-fading { opacity: 0.4; }
+.qr-poster { font-family: Arial, Helvetica, sans-serif; }
+.qr-poster.is-preparing { opacity: 0; visibility: hidden; }
+.qr-poster.is-ready {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.preview-stage.is-preparing .poster-loading { display: flex; }
+.poster-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border-radius: 26px;
+  background: #f4f7fb;
+  color: #6d7c92;
+  font-size: 13px;
+  font-weight: 650;
+  pointer-events: none;
+}
+.preview-fit .qr-poster.theme-snapshot {
+  z-index: 4;
+  pointer-events: none;
+  opacity: 1;
+  visibility: visible;
+}
+.poster-spinner {
+  width: 22px;
+  height: 22px;
+  border: 2px solid #d5e4f7;
+  border-top-color: #2b7fff;
+  border-radius: 50%;
+  animation: poster-spin 700ms linear infinite;
+}
+@keyframes poster-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .qr-poster.is-ready { transition: none; }
+  .poster-spinner { animation: none; }
+}
 
 .studio-panel { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
 
@@ -1615,7 +1656,11 @@ body.page-leaving { opacity: 0; }
         <div class="studio" id="qrStudio">
             <div class="preview-stage">
               <div class="preview-fit">
-              <div class="qr-poster theme-cream" id="qrPoster">
+              <div class="poster-loading" role="status" aria-live="polite">
+                <span class="poster-spinner" aria-hidden="true"></span>
+                <span>Preparing your QR design…</span>
+              </div>
+              <div class="qr-poster theme-cream is-preparing" id="qrPoster">
                 <div class="qr-poster-logo">
                   <img alt="Business logo">
                   <span class="qr-logo-fallback"></span>
@@ -1801,6 +1846,17 @@ body.page-leaving { opacity: 0; }
 
   if (emptyState) emptyState.hidden = true;
   window.__qrPaintedReviewLinksKey = JSON.stringify(links.map(publicReviewLink));
+
+  ["Image2.png", "imagesqr-bg-modern.jpeg", "imagesqr-bg-luxury.jpeg"].forEach(function (src) {
+    var themeImage = new Image();
+    themeImage.src = src;
+  });
+  links.forEach(function (link) {
+    if (!link.logo_url) return;
+    var logoImage = new Image();
+    logoImage.crossOrigin = "anonymous";
+    logoImage.src = link.logo_url;
+  });
 })();
 </script>
 
@@ -1951,18 +2007,21 @@ function applyBusiness(link, options) {
   const previewLogo = studio.querySelector(".qr-business-preview-logo");
 
   if (link.logo_url) {
-    if (posterLogo.crossOrigin !== "anonymous" || posterLogo.getAttribute("src") !== link.logo_url) {
+    if (posterLogo.getAttribute("src") !== link.logo_url) {
       posterLogo.crossOrigin = "anonymous";
       posterLogo.src = link.logo_url;
     }
     posterLogo.style.display = "block";
     logoFallback.style.display = "none";
-    previewLogo.innerHTML = "";
-    const previewImage = document.createElement("img");
-    previewImage.crossOrigin = "anonymous";
-    previewImage.src = link.logo_url;
-    previewImage.alt = businessName;
-    previewLogo.appendChild(previewImage);
+    const existingPreview = previewLogo.querySelector("img");
+    if (!existingPreview || existingPreview.getAttribute("src") !== link.logo_url) {
+      previewLogo.innerHTML = "";
+      const previewImage = document.createElement("img");
+      previewImage.crossOrigin = "anonymous";
+      previewImage.src = link.logo_url;
+      previewImage.alt = businessName;
+      previewLogo.appendChild(previewImage);
+    }
   } else {
     posterLogo.style.display = "none";
     posterLogo.removeAttribute("src");
@@ -2009,6 +2068,7 @@ function loadQRReviewLinks(reviewLinks) {
 
   renderedReviewLinksKey = nextKey;
   window.__qrPaintedReviewLinksKey = null;
+  warmPoster(currentLinks);
 }
 
 async function getValidAccessToken() {
@@ -2107,6 +2167,228 @@ async function refreshQRReviewLinks() {
   }
 }
 
+const themeAssets = {
+  "theme-cream": "Image2.png",
+  "theme-blue": "imagesqr-bg-modern.jpeg",
+  "theme-dark": "imagesqr-bg-luxury.jpeg"
+};
+const decodedImages = new Map();
+const decodedReady = new Set();
+const readyPosterKeys = new Set();
+let posterReadyKey = "";
+let posterPrepare = null;
+let posterPrepareKey = "";
+let pendingPosterLink = null;
+
+function currentPosterTheme() {
+  const names = ["theme-cream", "theme-blue", "theme-dark", "theme-emerald", "theme-slate"];
+  for (let i = 0; i < names.length; i++) {
+    if (poster.classList.contains(names[i])) return names[i];
+  }
+  return "theme-cream";
+}
+
+function posterCacheKey(link, theme) {
+  return [link.id, theme, link.logo_url || "", link.business_name || ""].join(":");
+}
+
+function preloadImage(src) {
+  if (!src) return Promise.resolve();
+  if (decodedImages.has(src)) return decodedImages.get(src);
+
+  const pending = new Promise(function (resolve) {
+    const img = new Image();
+    let settled = false;
+    function finish(ok) {
+      if (settled) return;
+      settled = true;
+      if (ok) decodedReady.add(src);
+      resolve();
+    }
+    img.onload = function () {
+      if (img.decode) {
+        img.decode().then(function () { finish(true); }).catch(function () { finish(true); });
+      } else {
+        finish(true);
+      }
+    };
+    img.onerror = function () { finish(false); };
+    if (/^https?:/i.test(src)) img.crossOrigin = "anonymous";
+    img.src = src;
+  });
+
+  decodedImages.set(src, pending);
+  return pending;
+}
+
+function preloadPosterAssets(links) {
+  Object.keys(themeAssets).forEach(function (theme) {
+    preloadImage(themeAssets[theme]);
+  });
+  (links || []).forEach(function (link) {
+    if (link.logo_url) preloadImage(link.logo_url);
+  });
+}
+
+function markPosterReady(key) {
+  posterReadyKey = key;
+  readyPosterKeys.add(key);
+  const stage = poster.closest(".preview-stage");
+  if (stage) stage.classList.remove("is-preparing");
+  poster.classList.remove("is-preparing");
+  poster.classList.add("is-ready");
+}
+
+function markPosterPreparing() {
+  const stage = poster.closest(".preview-stage");
+  if (stage) stage.classList.add("is-preparing");
+  poster.classList.add("is-preparing");
+  poster.classList.remove("is-ready");
+}
+
+function preparePoster(link, options) {
+  options = options || {};
+  const theme = options.theme || currentPosterTheme();
+  const key = posterCacheKey(link, theme);
+
+  if (!posterPrepare && posterPrepareKey === key && posterReadyKey === key && poster.querySelector(".qr-poster-code canvas")) {
+    return Promise.resolve(key);
+  }
+
+  if (posterPrepare && posterPrepareKey === key) return posterPrepare;
+
+  posterPrepareKey = key;
+  if (!qrModal.hidden && posterReadyKey !== key) markPosterPreparing();
+  if (activeLink && String(activeLink.id) !== String(link.id)) {
+    const previewLogo = studio.querySelector(".qr-business-preview-logo");
+    if (previewLogo) previewLogo.style.visibility = "hidden";
+    const previewName = studio.querySelector(".qr-business-preview-name");
+    if (previewName) previewName.textContent = link.business_name || "Your Business";
+  }
+  posterPrepare = Promise.all([
+    preloadImage(themeAssets[theme] || ""),
+    link.logo_url ? preloadImage(link.logo_url) : Promise.resolve()
+  ]).then(function () {
+    if (posterPrepareKey !== key) return null;
+
+    poster.classList.remove("theme-cream", "theme-blue", "theme-dark", "theme-emerald", "theme-slate");
+    poster.classList.add(theme);
+    applyBusiness(link, {
+      forceQr: !poster.querySelector(".qr-poster-code canvas") || !activeLink || String(activeLink.id) !== String(link.id)
+    });
+
+    const posterLogo = poster.querySelector(".qr-poster-logo img");
+    const logoReady = !link.logo_url || !posterLogo
+      ? Promise.resolve()
+      : posterLogo.decode
+        ? posterLogo.decode().catch(function () {})
+        : Promise.resolve();
+
+    return logoReady.then(function () {
+      if (posterPrepareKey === key) {
+        const previewLogo = studio.querySelector(".qr-business-preview-logo");
+        if (previewLogo) previewLogo.style.visibility = "";
+      }
+      return new Promise(function (resolve) {
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () {
+            if (posterPrepareKey !== key || !poster.querySelector(".qr-poster-code canvas")) {
+              resolve(null);
+              return;
+            }
+            posterReadyKey = key;
+            readyPosterKeys.add(key);
+            resolve(key);
+          });
+        });
+      });
+    });
+  }).finally(function () {
+    if (posterPrepareKey === key) posterPrepare = null;
+  });
+
+  return posterPrepare;
+}
+
+function warmPoster(links) {
+  preloadPosterAssets(links);
+  const link = pickLink(links, activeLink && activeLink.id);
+  if (!link) return;
+  preparePoster(link).then(function (key) {
+    if (key && posterPrepareKey === key) markPosterReady(key);
+  }).catch(function (error) {
+    console.error("ReviewRise: QR poster prepare failed:", error);
+  });
+}
+
+function openPreparedPoster(link) {
+  pendingPosterLink = link;
+  const theme = currentPosterTheme();
+  const key = posterCacheKey(link, theme);
+  const alreadyReady = !posterPrepare &&
+    posterPrepareKey === key &&
+    posterReadyKey === key &&
+    poster.classList.contains("is-ready") &&
+    poster.querySelector(".qr-poster-code canvas");
+  if (!alreadyReady) markPosterPreparing();
+  openModal(qrModal);
+  preparePoster(link, { theme: theme }).then(function (done) {
+    if (done && posterPrepareKey === done) markPosterReady(done);
+  }).catch(function (error) {
+    console.error("ReviewRise: QR poster prepare failed:", error);
+  });
+}
+
+function themeAssetsReady(link, theme) {
+  const asset = themeAssets[theme] || "";
+  if (asset && !decodedReady.has(asset)) return false;
+  if (link && link.logo_url && !decodedReady.has(link.logo_url)) return false;
+  return true;
+}
+
+function crossfadeTheme(link, nextTheme) {
+  const fit = poster.parentElement;
+  const previous = fit.querySelector(".theme-snapshot");
+  if (previous) previous.remove();
+
+  const snapshot = poster.cloneNode(true);
+  snapshot.removeAttribute("id");
+  snapshot.classList.add("theme-snapshot");
+  snapshot.setAttribute("aria-hidden", "true");
+  const sourceCanvas = poster.querySelector("canvas");
+  const copyCanvas = snapshot.querySelector("canvas");
+  if (sourceCanvas && copyCanvas) {
+    copyCanvas.width = sourceCanvas.width;
+    copyCanvas.height = sourceCanvas.height;
+    const context = copyCanvas.getContext("2d");
+    if (context) context.drawImage(sourceCanvas, 0, 0);
+  }
+  fit.appendChild(snapshot);
+
+  poster.classList.remove("theme-cream", "theme-blue", "theme-dark", "theme-emerald", "theme-slate");
+  poster.classList.add(nextTheme);
+  const key = posterCacheKey(link, nextTheme);
+  posterReadyKey = key;
+  posterPrepareKey = key;
+  readyPosterKeys.add(key);
+
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reduced) {
+    snapshot.remove();
+    return;
+  }
+
+  snapshot.style.transition = "opacity 180ms cubic-bezier(0.22, 1, 0.36, 1)";
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      snapshot.style.opacity = "0";
+    });
+  });
+  window.setTimeout(function () {
+    if (snapshot.parentNode) snapshot.remove();
+  }, 230);
+}
+
 function openModal(modal) {
   modal.hidden = false;
   document.body.classList.add("modal-open");
@@ -2135,8 +2417,7 @@ cardGrid.addEventListener("click", function (event) {
   if (!link) return;
 
   if (generate) {
-    applyBusiness(link);
-    openModal(qrModal);
+    openPreparedPoster(link);
     return;
   }
 
@@ -2188,23 +2469,38 @@ studio.querySelectorAll(".qr-theme-btn").forEach(function (button) {
     button.classList.add("active");
 
     const nextTheme = button.dataset.theme;
+    const link = pendingPosterLink || activeLink;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const canSwitchNow = link &&
+      poster.classList.contains("is-ready") &&
+      poster.querySelector(".qr-poster-code canvas") &&
+      themeAssetsReady(link, nextTheme);
 
-    function swapTheme() {
-      poster.classList.remove("theme-cream", "theme-blue", "theme-dark", "theme-emerald", "theme-slate");
-      poster.classList.add(nextTheme);
-    }
-
-    if (reduced) {
-      swapTheme();
+    if (canSwitchNow) {
+      if (reduced) {
+        poster.classList.remove("theme-cream", "theme-blue", "theme-dark", "theme-emerald", "theme-slate");
+        poster.classList.add(nextTheme);
+        posterReadyKey = posterCacheKey(link, nextTheme);
+        posterPrepareKey = posterReadyKey;
+        readyPosterKeys.add(posterReadyKey);
+        return;
+      }
+      crossfadeTheme(link, nextTheme);
       return;
     }
 
-    poster.classList.add("is-fading");
-    window.setTimeout(function () {
-      swapTheme();
-      poster.classList.remove("is-fading");
-    }, 140);
+    if (!link) {
+      poster.classList.remove("theme-cream", "theme-blue", "theme-dark", "theme-emerald", "theme-slate");
+      poster.classList.add(nextTheme);
+      return;
+    }
+
+    markPosterPreparing();
+    preparePoster(link, { theme: nextTheme }).then(function (done) {
+      if (done && posterPrepareKey === done) markPosterReady(done);
+    }).catch(function (error) {
+      console.error("ReviewRise: QR poster prepare failed:", error);
+    });
   });
 });
 
@@ -2343,8 +2639,14 @@ async function buildExportCanvas() {
 }
 
 async function capturePoster(options) {
+  if (posterPrepare) {
+    try { await posterPrepare; } catch (error) {}
+  }
   const fit = poster.parentElement;
-  if (fit) fit.classList.add("is-exporting");
+  if (fit) {
+    fit.querySelectorAll(".theme-snapshot").forEach(function (node) { node.remove(); });
+    fit.classList.add("is-exporting");
+  }
   poster.classList.add("is-exporting");
   try {
     await new Promise(function (resolve) {
