@@ -491,11 +491,19 @@ body {
   font-weight: 650;
   pointer-events: none;
 }
-.preview-fit .qr-poster.theme-snapshot {
-  z-index: 4;
+.preview-fit .qr-poster.poster-buffer {
+  z-index: 2;
   pointer-events: none;
-  opacity: 1;
-  visibility: visible;
+}
+.poster-scale-stage {
+  position: fixed;
+  left: -100000px;
+  top: 0;
+  width: 430px;
+  height: 686px;
+  overflow: hidden;
+  visibility: hidden;
+  pointer-events: none;
 }
 .poster-spinner {
   width: 22px;
@@ -1873,7 +1881,7 @@ const workspace = document.getElementById("qrWorkspace");
 const emptyState = document.getElementById("qrEmptyState");
 const cardGrid = document.getElementById("qrReviewLinksContainer");
 const studio = document.getElementById("qrStudio");
-const poster = document.getElementById("qrPoster");
+let poster = document.getElementById("qrPoster");
 const qrModal = document.getElementById("qrModal");
 const nfcModal = document.getElementById("nfcModal");
 
@@ -2233,6 +2241,7 @@ function preloadPosterAssets(links) {
 function markPosterReady(key) {
   posterReadyKey = key;
   readyPosterKeys.add(key);
+  if (!qrModal.hidden) syncPreviewLock();
   const stage = poster.closest(".preview-stage");
   if (stage) stage.classList.remove("is-preparing");
   poster.classList.remove("is-preparing");
@@ -2346,53 +2355,251 @@ function themeAssetsReady(link, theme) {
   return true;
 }
 
-function crossfadeTheme(link, nextTheme) {
-  const fit = poster.parentElement;
-  const previous = fit.querySelector(".theme-snapshot");
-  if (previous) previous.remove();
+const posterThemeNames = ["theme-cream", "theme-blue", "theme-dark", "theme-emerald", "theme-slate"];
+let posterScaleStage = null;
+let themeSwapToken = 0;
+let lastPreviewStageWidth = 0;
 
-  const snapshot = poster.cloneNode(true);
-  snapshot.removeAttribute("id");
-  snapshot.classList.add("theme-snapshot");
-  snapshot.setAttribute("aria-hidden", "true");
-  const sourceCanvas = poster.querySelector("canvas");
-  const copyCanvas = snapshot.querySelector("canvas");
-  if (sourceCanvas && copyCanvas) {
-    copyCanvas.width = sourceCanvas.width;
-    copyCanvas.height = sourceCanvas.height;
-    const context = copyCanvas.getContext("2d");
-    if (context) context.drawImage(sourceCanvas, 0, 0);
-  }
-  fit.appendChild(snapshot);
+function posterDialog() {
+  return poster.closest(".qr-dialog");
+}
 
-  poster.classList.remove("theme-cream", "theme-blue", "theme-dark", "theme-emerald", "theme-slate");
-  poster.classList.add(nextTheme);
-  const key = posterCacheKey(link, nextTheme);
-  posterReadyKey = key;
-  posterPrepareKey = key;
-  readyPosterKeys.add(key);
+function rememberDialogScroll() {
+  const dialog = posterDialog();
+  return dialog ? dialog.scrollTop : 0;
+}
 
-  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (reduced) {
-    snapshot.remove();
-    return;
-  }
-
-  snapshot.style.transition = "opacity 180ms cubic-bezier(0.22, 1, 0.36, 1)";
+function restoreDialogScroll(scrollTop) {
+  const dialog = posterDialog();
+  if (!dialog) return;
+  dialog.scrollTop = scrollTop;
   requestAnimationFrame(function () {
-    requestAnimationFrame(function () {
-      snapshot.style.opacity = "0";
-    });
+    dialog.scrollTop = scrollTop;
   });
-  window.setTimeout(function () {
-    if (snapshot.parentNode) snapshot.remove();
-  }, 230);
+}
+
+function previewScale(fit) {
+  const width = fit.clientWidth;
+  const height = fit.clientHeight;
+  if (width < 8 || height < 8) return 0;
+  return Math.min(width / 430, height / 685.145);
+}
+
+function applyPreviewScale(el, scale) {
+  if (!el || !scale) return;
+  el.style.transformOrigin = "top left";
+  el.style.transform = "scale(" + scale + ")";
+}
+
+function clearPreviewLock(fit) {
+  if (!fit) return;
+  fit.style.width = "";
+  fit.style.height = "";
+  fit.style.maxWidth = "";
+  fit.style.maxHeight = "";
+}
+
+function syncPreviewLock() {
+  const fit = poster && poster.parentElement;
+  const stage = fit && fit.parentElement;
+  if (!fit || !stage || fit.classList.contains("is-exporting")) return;
+  const stageWidth = stage.clientWidth;
+  if (!stageWidth) return;
+
+  if (!(fit.style.width && Math.abs(stageWidth - lastPreviewStageWidth) < 1)) {
+    lastPreviewStageWidth = stageWidth;
+    const scrollTop = rememberDialogScroll();
+    clearPreviewLock(fit);
+    const rect = fit.getBoundingClientRect();
+    if (rect.width < 8 || rect.height < 8) return;
+    fit.style.width = rect.width + "px";
+    fit.style.height = rect.height + "px";
+    fit.style.maxWidth = rect.width + "px";
+    fit.style.maxHeight = rect.height + "px";
+    restoreDialogScroll(scrollTop);
+  }
+
+  const scale = previewScale(fit);
+  applyPreviewScale(poster, scale);
+  const buffer = fit.querySelector(".poster-buffer");
+  if (buffer) applyPreviewScale(buffer, scale);
+}
+
+function posterScaleHost() {
+  if (posterScaleStage) return posterScaleStage;
+  const host = document.createElement("div");
+  host.className = "poster-scale-stage";
+  host.setAttribute("aria-hidden", "true");
+  document.body.appendChild(host);
+  posterScaleStage = host;
+  return host;
+}
+
+function copyPosterCanvas(from, to) {
+  const sourceCanvas = from.querySelector("canvas");
+  const copyCanvas = to.querySelector("canvas");
+  if (!sourceCanvas || !copyCanvas) return;
+  copyCanvas.width = sourceCanvas.width;
+  copyCanvas.height = sourceCanvas.height;
+  const context = copyCanvas.getContext("2d");
+  if (context) context.drawImage(sourceCanvas, 0, 0);
+}
+
+function themeOn(el) {
+  for (let i = 0; i < posterThemeNames.length; i++) {
+    if (el.classList.contains(posterThemeNames[i])) return posterThemeNames[i];
+  }
+  return "theme-cream";
+}
+
+function applyThemeClass(el, theme) {
+  posterThemeNames.forEach(function (name) { el.classList.remove(name); });
+  el.classList.add(theme);
+}
+
+function settlePosterBuffer(link) {
+  const fit = poster.parentElement;
+  if (!fit) return;
+  const scrollTop = rememberDialogScroll();
+  const buffer = fit.querySelector(".poster-buffer");
+  if (buffer) {
+    applyThemeClass(poster, themeOn(buffer));
+    buffer.remove();
+  }
+  poster.style.opacity = "";
+  poster.style.transition = "";
+  syncPreviewLock();
+  if (link) {
+    const key = posterCacheKey(link, themeOn(poster));
+    posterReadyKey = key;
+    posterPrepareKey = key;
+    readyPosterKeys.add(key);
+  }
+  restoreDialogScroll(scrollTop);
+}
+
+function stageThemeSwap(link, nextTheme) {
+  const token = ++themeSwapToken;
+  const fit = poster.parentElement;
+  if (!fit) return;
+
+  settlePosterBuffer(link);
+  syncPreviewLock();
+  const scale = previewScale(fit);
+  applyPreviewScale(poster, scale);
+
+  const staged = poster.cloneNode(true);
+  staged.removeAttribute("id");
+  staged.classList.remove("is-preparing");
+  staged.classList.add("is-ready", "poster-buffer");
+  staged.setAttribute("aria-hidden", "true");
+  applyThemeClass(staged, nextTheme);
+  applyPreviewScale(staged, scale);
+  staged.style.opacity = "0";
+  staged.style.visibility = "hidden";
+  copyPosterCanvas(poster, staged);
+  posterScaleHost().appendChild(staged);
+
+  const asset = themeAssets[nextTheme] || "";
+  preloadImage(asset).then(function () {
+    if (token !== themeSwapToken || !staged.parentNode) {
+      staged.remove();
+      return;
+    }
+
+    const scrollTop = rememberDialogScroll();
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const liveScale = previewScale(fit) || scale;
+    if (!liveScale) {
+      staged.remove();
+      restoreDialogScroll(scrollTop);
+      return;
+    }
+    staged.style.position = "absolute";
+    staged.style.top = "0";
+    staged.style.left = "0";
+    staged.style.width = "430px";
+    staged.style.maxWidth = "none";
+    staged.style.margin = "0";
+    applyPreviewScale(staged, liveScale);
+
+    if (reduced) {
+      applyThemeClass(poster, nextTheme);
+      applyPreviewScale(poster, liveScale);
+      staged.remove();
+      const key = posterCacheKey(link, nextTheme);
+      posterReadyKey = key;
+      posterPrepareKey = key;
+      readyPosterKeys.add(key);
+      restoreDialogScroll(scrollTop);
+      return;
+    }
+
+    fit.appendChild(staged);
+    staged.style.visibility = "visible";
+    staged.style.opacity = "0";
+    staged.style.transition = "opacity 150ms cubic-bezier(0.22, 1, 0.36, 1)";
+    poster.style.transition = "opacity 150ms cubic-bezier(0.22, 1, 0.36, 1)";
+    restoreDialogScroll(scrollTop);
+
+    requestAnimationFrame(function () {
+      if (token !== themeSwapToken) return;
+      staged.style.opacity = "1";
+      poster.style.opacity = "0";
+      restoreDialogScroll(scrollTop);
+    });
+
+    let settled = false;
+    function finishSwap() {
+      if (settled) return;
+      settled = true;
+      staged.removeEventListener("transitionend", onFade);
+      if (token !== themeSwapToken) {
+        if (staged.parentNode) staged.remove();
+        return;
+      }
+      const endScroll = rememberDialogScroll();
+      applyThemeClass(poster, nextTheme);
+      applyPreviewScale(poster, previewScale(fit) || liveScale);
+      poster.style.transition = "none";
+      poster.style.opacity = "1";
+      staged.remove();
+      const key = posterCacheKey(link, nextTheme);
+      posterReadyKey = key;
+      posterPrepareKey = key;
+      readyPosterKeys.add(key);
+      restoreDialogScroll(endScroll);
+      requestAnimationFrame(function () {
+        if (poster.style.transition === "none") poster.style.transition = "";
+      });
+    }
+    function onFade(event) {
+      if (event.target === staged && event.propertyName === "opacity") finishSwap();
+    }
+    staged.addEventListener("transitionend", onFade);
+    window.setTimeout(finishSwap, 240);
+  }).catch(function (error) {
+    staged.remove();
+    console.error("ReviewRise: QR theme swap failed:", error);
+  });
 }
 
 function openModal(modal) {
   modal.hidden = false;
   document.body.classList.add("modal-open");
+  if (modal === qrModal) {
+    requestAnimationFrame(function () { syncPreviewLock(); });
+  }
 }
+
+(function watchPreviewStage() {
+  const stage = document.querySelector("#qrModal .preview-stage");
+  if (!stage || typeof ResizeObserver !== "function") return;
+  new ResizeObserver(function () {
+    if (qrModal.hidden) return;
+    syncPreviewLock();
+  }).observe(stage);
+})();
 
 function closeModal(modal) {
   modal.hidden = true;
@@ -2470,22 +2677,13 @@ studio.querySelectorAll(".qr-theme-btn").forEach(function (button) {
 
     const nextTheme = button.dataset.theme;
     const link = pendingPosterLink || activeLink;
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const canSwitchNow = link &&
       poster.classList.contains("is-ready") &&
       poster.querySelector(".qr-poster-code canvas") &&
       themeAssetsReady(link, nextTheme);
 
     if (canSwitchNow) {
-      if (reduced) {
-        poster.classList.remove("theme-cream", "theme-blue", "theme-dark", "theme-emerald", "theme-slate");
-        poster.classList.add(nextTheme);
-        posterReadyKey = posterCacheKey(link, nextTheme);
-        posterPrepareKey = posterReadyKey;
-        readyPosterKeys.add(posterReadyKey);
-        return;
-      }
-      crossfadeTheme(link, nextTheme);
+      stageThemeSwap(link, nextTheme);
       return;
     }
 
@@ -2644,9 +2842,18 @@ async function capturePoster(options) {
   }
   const fit = poster.parentElement;
   if (fit) {
-    fit.querySelectorAll(".theme-snapshot").forEach(function (node) { node.remove(); });
+    const buffer = fit.querySelector(".poster-buffer");
+    if (buffer) {
+      applyThemeClass(poster, themeOn(buffer));
+      buffer.remove();
+    }
+    poster.style.transition = "none";
+    poster.style.opacity = "1";
+    clearPreviewLock(fit);
+    lastPreviewStageWidth = 0;
     fit.classList.add("is-exporting");
   }
+  poster.style.transform = "";
   poster.classList.add("is-exporting");
   try {
     await new Promise(function (resolve) {
@@ -2657,7 +2864,9 @@ async function capturePoster(options) {
     return await html2canvas(poster, options);
   } finally {
     poster.classList.remove("is-exporting");
+    poster.style.transform = "";
     if (fit) fit.classList.remove("is-exporting");
+    requestAnimationFrame(function () { syncPreviewLock(); });
   }
 }
 
