@@ -1589,7 +1589,7 @@ a.menu-item:visited {
 .customer-intel {
     margin-top: 22px;
     min-width: 0;
-    padding: 22px 24px 16px;
+    padding: 22px 24px 20px;
 }
 
 .customer-intel h3 {
@@ -1601,7 +1601,7 @@ a.menu-item:visited {
 
 .customer-intel-hero {
     margin-top: 18px;
-    padding: 18px 20px 16px;
+    padding: 20px 22px 18px;
     border: 1px solid transparent;
     border-radius: 18px;
 }
@@ -1617,7 +1617,7 @@ a.menu-item:visited {
     min-height: 24px;
     padding: 0 9px;
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.72);
+    background: rgba(255, 255, 255, 0.78);
     color: #8a5a12;
     font-size: 12px;
     font-weight: 700;
@@ -1628,39 +1628,42 @@ a.menu-item:visited {
 .customer-intel-hero.is-mixed .customer-intel-badge { color: #9a6700; }
 
 .customer-intel-hero h4 {
-    margin: 8px 0 0;
+    margin: 10px 0 0;
+    max-width: 16em;
     color: #0c1730;
     font-size: 28px;
     font-weight: 800;
     letter-spacing: -0.8px;
-    line-height: 1.15;
+    line-height: 1.12;
 }
 
 .customer-intel-meta {
-    margin: 8px 0 0;
+    margin: 12px 0 0;
     color: #5c6d84;
     font-size: 14px;
     font-weight: 600;
+    line-height: 1.45;
 }
+
+.customer-intel-meta span { display: block; }
 
 .customer-intel-metrics {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0;
-    margin-top: 8px;
+    gap: 14px;
+    margin-top: 24px;
 }
 
 .customer-intel-metric {
     display: flex;
+    flex-direction: column;
     align-items: flex-start;
-    gap: 12px;
     min-width: 0;
-    padding: 16px 16px 14px 0;
-}
-
-.customer-intel-metric + .customer-intel-metric {
-    padding-left: 16px;
-    border-left: 1px solid #eef2f6;
+    padding: 16px 16px 14px;
+    border: 1px solid #e7ecf2;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 8px 22px rgba(30, 64, 120, 0.045);
 }
 
 .customer-intel-icon {
@@ -1687,46 +1690,57 @@ a.menu-item:visited {
     stroke-linejoin: round;
 }
 
-.customer-intel-metric p { margin: 0; min-width: 0; }
-
 .customer-intel-label {
+    display: block;
+    margin-top: 12px;
     color: #8b97a8;
-    font-size: 12.5px;
+    font-size: 13px;
     font-weight: 650;
 }
 
-.customer-intel-value {
-    margin-top: 3px;
+.customer-intel-figure {
+    display: block;
+    margin-top: 8px;
     color: #0c1730;
-    font-size: 15px;
-    font-weight: 650;
-    letter-spacing: -0.2px;
-    line-height: 1.35;
-    overflow-wrap: anywhere;
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -0.9px;
+    line-height: 1;
 }
 
-.customer-intel-value b {
-    margin-right: 4px;
+.customer-intel-figure.is-word {
     font-size: 22px;
-    font-weight: 800;
-    letter-spacing: -0.6px;
+    letter-spacing: -0.4px;
+    line-height: 1.15;
+}
+
+.customer-intel-caption {
+    display: block;
+    margin-top: 6px;
+    color: #5c6d84;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.35;
 }
 
 .customer-intel-themes {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-top: 2px;
-    padding-top: 14px;
-    border-top: 1px solid #eef2f6;
+    gap: 12px;
+    margin-top: 20px;
+    padding: 14px 16px;
+    border: 1px solid #eef2f6;
+    border-radius: 16px;
+    background: #f7f9fc;
 }
 
 .customer-intel-themes .customer-intel-icon {
-    width: 28px;
-    height: 28px;
-    border-radius: 9px;
-    background: #f4f7fb;
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    background: #fff;
     color: #7b8ba0;
+    box-shadow: 0 0 0 1px #e7ecf2;
 }
 
 .customer-intel-themes .customer-intel-icon svg { width: 14px; height: 14px; }
@@ -1742,14 +1756,14 @@ a.menu-item:visited {
 
 .customer-intel-themes strong {
     display: block;
-    margin-bottom: 1px;
+    margin-bottom: 2px;
     color: #314158;
     font-size: 13px;
     font-weight: 700;
 }
 
 .customer-intel-empty {
-    margin: 16px 0 6px;
+    margin: 18px 0 4px;
     color: #5c6d84;
     font-size: 15px;
     font-weight: 600;
@@ -1905,6 +1919,8 @@ a.menu-item:visited {
     .stats { grid-template-columns: 1fr 1fr; }
     .dash-insights { grid-template-columns: 1fr; }
     .dash-chart-canvas { min-height: 220px; }
+    .customer-intel-metrics { grid-template-columns: 1fr 1fr; }
+    .customer-intel-metric:last-child { grid-column: 1 / -1; }
 }
 
 @media (max-width: 800px) {
@@ -1968,17 +1984,11 @@ a.menu-item:visited {
     .dash-insights,
     .customer-intel-metrics { grid-template-columns: 1fr; }
 
-    .customer-intel { padding: 18px 16px 12px; }
+    .customer-intel { padding: 18px 16px 16px; }
 
     .customer-intel-hero h4 { font-size: 24px; }
 
-    .customer-intel-metric,
-    .customer-intel-metric + .customer-intel-metric {
-        padding: 12px 0;
-        border-left: none;
-    }
-
-    .customer-intel-metric + .customer-intel-metric { border-top: 1px solid #eef2f6; }
+    .customer-intel-metric:last-child { grid-column: auto; }
 
     .customer-intel-themes { align-items: flex-start; }
 
@@ -2646,14 +2656,19 @@ function renderCustomerIntelligence(feedback) {
         : written
             ? "More written feedback is needed to identify recurring customer themes."
             : "Not enough written feedback yet to identify recurring themes.";
-    var support = total + " feedback response" + (total === 1 ? "" : "s") + " · Average rating " + average;
+    var supportCount = total + " feedback response" + (total === 1 ? "" : "s");
+    var supportAverage = "Average rating " + average;
+    var attentionCard = customerIntelCount(attention, "Low-rating response", "Low-rating responses");
+    var positiveCard = customerIntelCount(positive, "4–5 star response", "4–5 star responses");
+    var trendFigure = trend.label === "Not enough history" ? "—" : trend.label;
+    var trendCaption = trend.label === "Not enough history" ? "Not enough history" : "vs previous 30 days";
 
     body.innerHTML =
-        '<div class="customer-intel-hero ' + tone + '"><span class="customer-intel-badge">' + customerIntelEscape(badge) + "</span><h4>" + customerIntelEscape(headline) + "</h4><p class=\"customer-intel-meta\">" + customerIntelEscape(support) + "</p></div>" +
+        '<div class="customer-intel-hero ' + tone + '"><span class="customer-intel-badge">' + customerIntelEscape(badge) + "</span><h4>" + customerIntelEscape(headline) + '</h4><p class="customer-intel-meta"><span>' + customerIntelEscape(supportCount) + "</span><span>" + customerIntelEscape(supportAverage) + "</span></p></div>" +
         '<div class="customer-intel-metrics">' +
-        customerIntelMetric("is-attention", customerIntelIcon("alert"), "Attention", customerIntelCount(attention, "low-rating response", "low-rating responses", "No low-rating responses")) +
-        customerIntelMetric("is-positive", customerIntelIcon("star"), "Positive signals", customerIntelCount(positive, "high-rating response", "high-rating responses", "No 4–5 star feedback yet")) +
-        customerIntelMetric("is-trend", customerIntelIcon("trend"), "Trend", customerIntelEscape(trend.label)) +
+        customerIntelMetric("is-attention", customerIntelIcon("alert"), "Attention", attentionCard.figure, attentionCard.caption) +
+        customerIntelMetric("is-positive", customerIntelIcon("star"), "Positive signals", positiveCard.figure, positiveCard.caption) +
+        customerIntelMetric("is-trend", customerIntelIcon("trend"), "Trend", trendFigure, trendCaption) +
         "</div>" +
         '<div class="customer-intel-themes">' + customerIntelIcon("themes") + "<p><strong>Customer themes</strong>" + customerIntelEscape(themes) + "</p></div>";
 }
@@ -2705,16 +2720,22 @@ function customerIntelAverage(ratings) {
     return ratings.length ? total / ratings.length : 0;
 }
 
-function customerIntelCount(count, singular, plural, empty) {
-    if (!count) {
-        return customerIntelEscape(empty);
-    }
-
-    return "<b>" + count + "</b> " + customerIntelEscape(count === 1 ? singular : plural);
+function customerIntelCount(count, singular, plural) {
+    return {
+        figure: String(count),
+        caption: count === 1 ? singular : plural
+    };
 }
 
-function customerIntelMetric(tone, icon, label, valueHtml) {
-    return '<article class="customer-intel-metric ' + tone + '">' + icon + '<p><span class="customer-intel-label">' + customerIntelEscape(label) + '</span><span class="customer-intel-value">' + valueHtml + "</span></p></article>";
+function customerIntelMetric(tone, icon, label, figure, caption) {
+    var figureClass = /^-?\d+$/.test(figure) || figure === "—" ? "" : " is-word";
+
+    return '<article class="customer-intel-metric ' + tone + '">' +
+        icon +
+        '<span class="customer-intel-label">' + customerIntelEscape(label) + "</span>" +
+        '<span class="customer-intel-figure' + figureClass + '">' + customerIntelEscape(figure) + "</span>" +
+        '<span class="customer-intel-caption">' + customerIntelEscape(caption) + "</span>" +
+        "</article>";
 }
 
 function customerIntelIcon(name) {
