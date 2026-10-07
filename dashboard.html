@@ -1589,96 +1589,171 @@ a.menu-item:visited {
 .customer-intel {
     margin-top: 22px;
     min-width: 0;
+    padding: 22px 24px 16px;
 }
 
-.customer-intel .dash-section-head { align-items: flex-start; }
-
-.customer-intel-summary {
-    margin-top: 16px;
-    padding: 16px 18px;
-    border: 1px solid #e7eef8;
-    border-radius: 16px;
-    background:
-        radial-gradient(ellipse at 0% 0%, rgba(43, 127, 255, 0.08), transparent 55%),
-        #f8fbff;
+.customer-intel h3 {
+    font-size: 20px;
+    letter-spacing: -0.45px;
 }
 
-.customer-intel-kicker {
-    margin: 0;
-    color: #2b7fff;
+.customer-intel .dash-section-head { margin-bottom: 0; }
+
+.customer-intel-hero {
+    margin-top: 18px;
+    padding: 18px 20px 16px;
+    border: 1px solid transparent;
+    border-radius: 18px;
+}
+
+.customer-intel-hero.is-positive { background: #f3faf6; border-color: #d9f0e4; }
+.customer-intel-hero.is-mixed,
+.customer-intel-hero.is-early { background: #fff8ee; border-color: #f3e7d2; }
+.customer-intel-hero.is-negative { background: #fff6f6; border-color: #f6dede; }
+
+.customer-intel-badge {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+    padding: 0 9px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.72);
+    color: #8a5a12;
     font-size: 12px;
     font-weight: 700;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
 }
 
-.customer-intel-summary p,
-.customer-intel-block p,
-.customer-intel-empty p {
-    margin: 6px 0 0;
-    color: #314158;
-    font-size: 15px;
-    font-weight: 500;
-    line-height: 1.5;
-    overflow-wrap: anywhere;
-}
+.customer-intel-hero.is-positive .customer-intel-badge { color: #067647; }
+.customer-intel-hero.is-negative .customer-intel-badge { color: #b42318; }
+.customer-intel-hero.is-mixed .customer-intel-badge { color: #9a6700; }
 
-.customer-intel-summary p {
+.customer-intel-hero h4 {
+    margin: 8px 0 0;
     color: #0c1730;
-    font-size: 16px;
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.8px;
+    line-height: 1.15;
+}
+
+.customer-intel-meta {
+    margin: 8px 0 0;
+    color: #5c6d84;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.customer-intel-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+    margin-top: 8px;
+}
+
+.customer-intel-metric {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    min-width: 0;
+    padding: 16px 16px 14px 0;
+}
+
+.customer-intel-metric + .customer-intel-metric {
+    padding-left: 16px;
+    border-left: 1px solid #eef2f6;
+}
+
+.customer-intel-icon {
+    width: 36px;
+    height: 36px;
+    display: grid;
+    place-items: center;
+    flex: none;
+    border-radius: 12px;
+    background: #eef5ff;
+    color: #2b7fff;
+}
+
+.customer-intel-metric.is-attention .customer-intel-icon { background: #fff1f1; color: #d92d20; }
+.customer-intel-metric.is-positive .customer-intel-icon { background: #eaf8f0; color: #067647; }
+
+.customer-intel-icon svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.customer-intel-metric p { margin: 0; min-width: 0; }
+
+.customer-intel-label {
+    color: #8b97a8;
+    font-size: 12.5px;
     font-weight: 650;
 }
 
-.customer-intel-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-top: 12px;
+.customer-intel-value {
+    margin-top: 3px;
+    color: #0c1730;
+    font-size: 15px;
+    font-weight: 650;
+    letter-spacing: -0.2px;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
 }
 
-.customer-intel-block {
-    min-width: 0;
-    padding: 14px 16px;
-    border: 1px solid #f0f4f8;
-    border-radius: 14px;
-    background: #fbfcfe;
+.customer-intel-value b {
+    margin-right: 4px;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.6px;
 }
 
-.customer-intel-block h4 {
+.customer-intel-themes {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 2px;
+    padding-top: 14px;
+    border-top: 1px solid #eef2f6;
+}
+
+.customer-intel-themes .customer-intel-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 9px;
+    background: #f4f7fb;
+    color: #7b8ba0;
+}
+
+.customer-intel-themes .customer-intel-icon svg { width: 14px; height: 14px; }
+
+.customer-intel-themes p {
     margin: 0;
+    min-width: 0;
+    color: #6d7c92;
+    font-size: 13.5px;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.customer-intel-themes strong {
+    display: block;
+    margin-bottom: 1px;
     color: #314158;
     font-size: 13px;
     font-weight: 700;
-    letter-spacing: -0.1px;
 }
-
-.customer-intel-themes { grid-column: 1 / -1; }
-
-.customer-intel-status {
-    display: inline-block;
-    margin: 0 0 6px;
-    padding: 3px 8px;
-    border-radius: 999px;
-    background: #eef2f6;
-    color: #5c6d84;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.01em;
-}
-
-.customer-intel-status.is-up { background: #e8f7ef; color: #067647; }
-.customer-intel-status.is-down { background: #fdecec; color: #b42318; }
-.customer-intel-status.is-flat { background: #eef5ff; color: #1d4ed8; }
 
 .customer-intel-empty {
-    margin-top: 16px;
-    padding: 18px;
-    border: 1px solid #f0f4f8;
-    border-radius: 14px;
-    background: #fbfcfe;
+    margin: 16px 0 6px;
+    color: #5c6d84;
+    font-size: 15px;
+    font-weight: 600;
 }
-
-.customer-intel-empty p { margin: 0; }
 
 .dash-section-head {
     display: flex;
@@ -1891,7 +1966,21 @@ a.menu-item:visited {
 
     .stats,
     .dash-insights,
-    .customer-intel-grid { grid-template-columns: 1fr; }
+    .customer-intel-metrics { grid-template-columns: 1fr; }
+
+    .customer-intel { padding: 18px 16px 12px; }
+
+    .customer-intel-hero h4 { font-size: 24px; }
+
+    .customer-intel-metric,
+    .customer-intel-metric + .customer-intel-metric {
+        padding: 12px 0;
+        border-left: none;
+    }
+
+    .customer-intel-metric + .customer-intel-metric { border-top: 1px solid #eef2f6; }
+
+    .customer-intel-themes { align-items: flex-start; }
 
     .customer-intel .dash-section-head {
         flex-direction: column;
@@ -2482,7 +2571,7 @@ function renderCustomerIntelligence(feedback) {
     var rows = feedbackForCurrentAccount(feedback);
 
     if (!rows.length) {
-        body.innerHTML = '<div class="customer-intel-empty"><p>Customer Intelligence will appear once you start receiving feedback.</p></div>';
+        body.innerHTML = '<p class="customer-intel-empty">Customer Intelligence will appear once you start receiving feedback.</p>';
         return;
     }
 
@@ -2533,31 +2622,23 @@ function renderCustomerIntelligence(feedback) {
 
     var average = total ? (ratingTotal / total).toFixed(1) : "0.0";
     var early = total < 5;
-    var summary = "Across " + total + " feedback response" + (total === 1 ? "" : "s") + ", the average rating is " + average + ".";
+    var tone = "is-early";
+    var badge = "Early snapshot";
+    var headline = "Too early for a firm conclusion";
 
-    if (early) {
-        summary += " This is an early snapshot, not a firm conclusion.";
-    } else if (positive > negative && positive > neutral) {
-        summary += " Most rated feedback is 4 or 5 stars.";
-    } else if (negative > positive && negative > neutral) {
-        summary += " More rated feedback is 1 or 2 stars than 4 or 5 stars.";
-    } else {
-        summary += " Ratings are mixed, so this stays a cautious summary.";
+    if (!early && positive > negative && positive > neutral) {
+        tone = "is-positive";
+        badge = "Positive";
+        headline = "Customer sentiment is currently strong";
+    } else if (!early && negative > positive && negative > neutral) {
+        tone = "is-negative";
+        badge = "Needs attention";
+        headline = "Customer sentiment is currently weak";
+    } else if (!early) {
+        tone = "is-mixed";
+        badge = "Mixed";
+        headline = "Customer sentiment is mixed";
     }
-
-    var attentionText = !attention
-        ? "None of these responses are 1–3 star ratings."
-        : attention === 1
-            ? "1 of " + total + " responses is a 1–3 star rating."
-            : attention + " of " + total + " responses are 1–3 star ratings.";
-
-    if (early) {
-        attentionText += " More feedback is needed before treating this as a pattern.";
-    }
-
-    var positiveText = positive
-        ? positive + " response" + (positive === 1 ? " is" : "s are") + " 4 or 5 stars."
-        : "None of the received ratings are 4 or 5 stars yet.";
 
     var trend = customerIntelTrend(recent, previous, early);
     var themes = written >= 5
@@ -2565,15 +2646,16 @@ function renderCustomerIntelligence(feedback) {
         : written
             ? "More written feedback is needed to identify recurring customer themes."
             : "Not enough written feedback yet to identify recurring themes.";
+    var support = total + " feedback response" + (total === 1 ? "" : "s") + " · Average rating " + average;
 
     body.innerHTML =
-        '<div class="customer-intel-summary"><p class="customer-intel-kicker">Overall</p><p>' + customerIntelEscape(summary) + "</p></div>" +
-        '<div class="customer-intel-grid">' +
-        customerIntelBlock("What needs your attention", attentionText) +
-        customerIntelBlock("Positive signals", positiveText) +
-        '<article class="customer-intel-block"><h4>Trend</h4><p class="customer-intel-status ' + trend.statusClass + '">' + customerIntelEscape(trend.label) + "</p><p>" + customerIntelEscape(trend.text) + "</p></article>" +
-        '<article class="customer-intel-block customer-intel-themes"><h4>Customer themes</h4><p>' + customerIntelEscape(themes) + "</p></article>" +
-        "</div>";
+        '<div class="customer-intel-hero ' + tone + '"><span class="customer-intel-badge">' + customerIntelEscape(badge) + "</span><h4>" + customerIntelEscape(headline) + "</h4><p class=\"customer-intel-meta\">" + customerIntelEscape(support) + "</p></div>" +
+        '<div class="customer-intel-metrics">' +
+        customerIntelMetric("is-attention", customerIntelIcon("alert"), "Attention", customerIntelCount(attention, "low-rating response", "low-rating responses", "No low-rating responses")) +
+        customerIntelMetric("is-positive", customerIntelIcon("star"), "Positive signals", customerIntelCount(positive, "high-rating response", "high-rating responses", "No 4–5 star feedback yet")) +
+        customerIntelMetric("is-trend", customerIntelIcon("trend"), "Trend", customerIntelEscape(trend.label)) +
+        "</div>" +
+        '<div class="customer-intel-themes">' + customerIntelIcon("themes") + "<p><strong>Customer themes</strong>" + customerIntelEscape(themes) + "</p></div>";
 }
 
 function customerIntelTrend(recent, previous, early) {
@@ -2623,8 +2705,27 @@ function customerIntelAverage(ratings) {
     return ratings.length ? total / ratings.length : 0;
 }
 
-function customerIntelBlock(title, text) {
-    return '<article class="customer-intel-block"><h4>' + customerIntelEscape(title) + "</h4><p>" + customerIntelEscape(text) + "</p></article>";
+function customerIntelCount(count, singular, plural, empty) {
+    if (!count) {
+        return customerIntelEscape(empty);
+    }
+
+    return "<b>" + count + "</b> " + customerIntelEscape(count === 1 ? singular : plural);
+}
+
+function customerIntelMetric(tone, icon, label, valueHtml) {
+    return '<article class="customer-intel-metric ' + tone + '">' + icon + '<p><span class="customer-intel-label">' + customerIntelEscape(label) + '</span><span class="customer-intel-value">' + valueHtml + "</span></p></article>";
+}
+
+function customerIntelIcon(name) {
+    var paths = {
+        alert: '<path d="M12 4 3.5 19h17L12 4z"/><path d="M12 10v4"/><path d="M12 16.5h.01"/>',
+        star: '<path d="m12 3 2.4 5.4L20 9.2l-4 3.8.9 5.8L12 16.2 7.1 18.8 8 13 4 9.2l5.6-.8L12 3z"/>',
+        trend: '<path d="M4 16l5-5 3.5 3.5L20 7"/><path d="M14 7h6v6"/>',
+        themes: '<path d="M5 6h14"/><path d="M5 12h14"/><path d="M5 18h9"/>'
+    };
+
+    return '<span class="customer-intel-icon" aria-hidden="true"><svg viewBox="0 0 24 24">' + paths[name] + "</svg></span>";
 }
 
 function customerIntelEscape(value) {
