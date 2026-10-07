@@ -33,6 +33,10 @@ button, input, select { font-family: inherit; }
   color: #5c6b82;
 }
 
+#boot[hidden] {
+  display: none !important;
+}
+
 .boot p { margin: 0; font-size: 14px; font-weight: 600; }
 
 .boot-logo, .brand-mark {
@@ -1375,23 +1379,43 @@ async function boot() {
     document.querySelector(".boot p").textContent = "We couldn't open setup. Refresh the page to try again.";
     return;
   }
-  if (profile.onboarding_completed === true) {
-    goToDashboard();
-    return;
-  }
   profileFullName = profile.full_name ? profile.full_name : "";
 
   const links = await fetchOwnLinks(await getValidAccessToken());
-  if (links && links.length) {
-    await markOnboardingComplete(await getValidAccessToken());
-    writeLinksCache(links[0]);
+  const reviewLinkCount = Array.isArray(links) ? links.length : 0;
+  const hasReviewLink = reviewLinkCount > 0;
+  const completed = profile.onboarding_completed === true;
+  const decision = completed || hasReviewLink ? "redirect dashboard" : "show onboarding";
+  console.info("Onboarding boot", {
+    profile: profile,
+    onboarding_completed: profile.onboarding_completed,
+    reviewLinkCount: reviewLinkCount,
+    decision: decision
+  });
+
+  if (decision === "redirect dashboard") {
+    if (hasReviewLink && !completed) {
+      await markOnboardingComplete(await getValidAccessToken());
+      writeLinksCache(links[0]);
+    }
     goToDashboard();
     return;
   }
 
-  restoreDraft();
-  document.getElementById("boot").hidden = true;
-  document.getElementById("onboardingApp").hidden = false;
+  try {
+    restoreDraft();
+  } catch (error) {
+    console.error("Onboarding draft restore failed:", error);
+  }
+  showOnboarding();
+}
+
+function showOnboarding() {
+  const bootScreen = document.getElementById("boot");
+  const app = document.getElementById("onboardingApp");
+  bootScreen.hidden = true;
+  bootScreen.style.display = "none";
+  app.hidden = false;
 }
 
 boot();
