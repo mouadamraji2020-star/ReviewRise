@@ -36,21 +36,16 @@ button, input, select { font-family: inherit; }
 .boot p { margin: 0; font-size: 14px; font-weight: 600; }
 
 .boot-logo, .brand-mark {
-  width: 34px;
-  height: 26px;
-  position: relative;
-  overflow: hidden;
+  width: 28px;
+  height: 28px;
+  display: block;
   flex: none;
 }
 
-.boot-logo img, .brand-mark img {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 82px;
-  height: 82px;
-  max-width: none;
-  transform: translate(-23px, -14px);
+.boot-logo svg, .brand-mark svg {
+  width: 28px;
+  height: 28px;
+  display: block;
 }
 
 .wordmark {
@@ -595,8 +590,8 @@ input:focus, select:focus {
 </head>
 <body>
   <div class="boot" id="boot">
-    <span class="boot-logo">
-      <img src="../../../../.cursor/projects/c-Users-Dima-D-origine-OneDrive-Desktop-git-huuub-ReviewRise/assets/c__Users_Dima_D_origine_AppData_Roaming_Cursor_User_workspaceStorage_d4266493b40e73b4a60b85c5f30c5fcb_images_WhatsApp_Image_2026-10-04_at_22.28.59-ba0e545f-3261-45f1-8544-9cfc0ce6454a.jpg" alt="">
+    <span class="boot-logo" aria-hidden="true">
+      <svg viewBox="0 0 32 32"><path fill="#2f6bff" d="M3 27 14 6l4 8h-4l8 13z"/><path fill="#3ec6ff" d="M14 27 22 11l8 16z"/></svg>
     </span>
     <div class="wordmark">Review<span>Rise</span></div>
     <p>Preparing your setup</p>
@@ -605,8 +600,8 @@ input:focus, select:focus {
   <div class="onboarding" id="onboardingApp" hidden>
     <header class="topbar">
       <div class="brand">
-        <span class="brand-mark">
-          <img src="../../../../.cursor/projects/c-Users-Dima-D-origine-OneDrive-Desktop-git-huuub-ReviewRise/assets/c__Users_Dima_D_origine_AppData_Roaming_Cursor_User_workspaceStorage_d4266493b40e73b4a60b85c5f30c5fcb_images_WhatsApp_Image_2026-10-04_at_22.28.59-ba0e545f-3261-45f1-8544-9cfc0ce6454a.jpg" alt="">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32"><path fill="#2f6bff" d="M3 27 14 6l4 8h-4l8 13z"/><path fill="#3ec6ff" d="M14 27 22 11l8 16z"/></svg>
         </span>
         <span class="wordmark">Review<span>Rise</span></span>
       </div>
