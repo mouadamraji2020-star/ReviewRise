@@ -10,7 +10,7 @@
 <style>
 * { box-sizing: border-box; }
 
-html, body { margin: 0; min-height: 100%; }
+html, body { margin: 0; min-height: 100%; overflow-x: hidden; }
 
 body {
   font-family: Inter, "Segoe UI", Arial, sans-serif;
@@ -90,6 +90,23 @@ button, input, select { font-family: inherit; }
 }
 
 .secure-note svg { width: 16px; height: 16px; flex: none; }
+
+.topbar-side { display: flex; align-items: center; gap: 22px; }
+
+.help-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #5c6b82;
+  font-size: 14px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.help-link svg { width: 16px; height: 16px; }
 
 .layout {
   display: grid;
@@ -186,129 +203,16 @@ button, input, select { font-family: inherit; }
 
 .benefit-icon svg { width: 16px; height: 16px; }
 
-.stage {
-  position: relative;
-  height: 390px;
-  margin-top: 18px;
+.stage { margin-top: 8px; }
+
+.stage img {
+  display: block;
+  width: 100%;
+  max-width: 640px;
+  height: auto;
 }
 
-.ledge {
-  position: absolute;
-  left: 0;
-  right: 18px;
-  bottom: 18px;
-  height: 74px;
-  border-radius: 18px;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.55), rgba(255,255,255,0.2)),
-    linear-gradient(90deg, #f7f4ef, #ece7df 40%, #f4f1ea);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
-}
-
-.stand {
-  position: absolute;
-  bottom: 36px;
-  width: 168px;
-  filter: drop-shadow(0 16px 24px rgba(16, 40, 80, 0.12));
-}
-
-.stand-qr { left: 8px; z-index: 2; }
-.stand-nfc { left: 168px; z-index: 3; }
-
-.card-face {
-  border-radius: 16px 16px 8px 8px;
-  background: #fff;
-  padding: 14px 12px 12px;
-  text-align: center;
-}
-
-.stand-nfc .card-face {
-  background: linear-gradient(180deg, #3d8bff 0%, #2463eb 100%);
-  color: #fff;
-}
-
-.card-kicker { margin: 0; font-size: 13px; font-weight: 800; letter-spacing: -0.2px; }
-.card-sub { margin: 3px 0 8px; color: #6d7c92; font-size: 10px; font-weight: 600; }
-.stand-nfc .card-sub { color: rgba(255,255,255,0.82); }
-
-.qr-svg, .nfc-mark { width: 86px; height: 86px; margin: 0 auto; }
-.google-row { display: flex; align-items: center; justify-content: center; gap: 4px; margin-top: 6px; color: #314158; font-size: 10px; font-weight: 700; }
-.stars { color: #f5b400; letter-spacing: 1px; font-size: 11px; }
-.thanks { margin: 4px 0 0; color: #1d4ed8; font-size: 11px; font-weight: 700; }
-
-.wood {
-  height: 16px;
-  margin: 0 18px;
-  border-radius: 0 0 8px 8px;
-  background: linear-gradient(180deg, #e7c89a, #c8925a);
-}
-
-.wood-base {
-  height: 10px;
-  margin: 0 8px;
-  border-radius: 6px;
-  background: linear-gradient(180deg, #f0d7b0, #d7ae78);
-  box-shadow: 0 8px 10px rgba(90, 60, 20, 0.12);
-}
-
-.nfc-badge {
-  width: 74px;
-  height: 74px;
-  margin: 8px auto 4px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.14);
-}
-
-.phone {
-  position: absolute;
-  left: 318px;
-  bottom: 48px;
-  width: 168px;
-  height: 280px;
-  padding: 10px;
-  border-radius: 28px;
-  background: #0f1728;
-  box-shadow: 0 18px 40px rgba(16, 40, 80, 0.18);
-  z-index: 4;
-}
-
-.phone-screen {
-  height: 100%;
-  border-radius: 20px;
-  background: linear-gradient(180deg, #f8fbff, #fff);
-  padding: 22px 12px 12px;
-  text-align: center;
-}
-
-.phone-screen strong { display: block; font-size: 13px; letter-spacing: -0.2px; }
-.phone-screen p { margin: 6px 0 8px; color: #6d7c92; font-size: 11px; }
-.phone-stars { color: #f5b400; font-size: 18px; letter-spacing: 2px; }
-.write-review {
-  margin-top: 12px;
-  height: 32px;
-  border: none;
-  border-radius: 999px;
-  background: #2f6bff;
-  color: #fff;
-  font-size: 11px;
-  font-weight: 700;
-}
-
-.float-note {
-  position: absolute;
-  left: 286px;
-  top: 18px;
-  z-index: 5;
-  width: 180px;
-  padding: 10px 12px;
-  border-radius: 16px;
-  background: #fff;
-  box-shadow: 0 12px 30px rgba(16, 40, 80, 0.1);
-}
-
-.float-note p { margin: 4px 0 0; color: #314158; font-size: 11px; font-weight: 650; line-height: 1.35; }
+.visual-mobile { display: none; }
 
 .setup-card {
   background: #fff;
@@ -461,7 +365,32 @@ input:focus, select:focus {
 
 .mini-logo img, .summary-logo img { width: 100%; height: 100%; object-fit: cover; display: none; }
 .mini-card strong, .mini-qr strong { display: block; font-size: 9px; line-height: 1.2; }
+.stars { color: #f5b400; letter-spacing: 1px; font-size: 11px; }
 .mini-card .stars, .mini-qr .stars { font-size: 8px; }
+
+.later-btn {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #2f6bff;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+}
+
+.later-note {
+  min-height: 0;
+  margin: 8px 0 0;
+  color: #067647;
+  font-size: 13px;
+  font-weight: 650;
+  text-align: center;
+}
+.later-note:empty { display: none; }
 .mini-qr svg { width: 42px; height: 42px; }
 
 .primary-btn, .ghost-btn {
@@ -554,32 +483,20 @@ input:focus, select:focus {
 @media (max-width: 1080px) {
   .layout { grid-template-columns: 1fr; width: min(720px, calc(100% - 32px)); }
   .story h1 { font-size: 44px; }
-  .stage { height: 320px; }
-  .phone { left: auto; right: 0; transform: scale(0.86); transform-origin: bottom right; }
-  .float-note { left: auto; right: 120px; }
-  .stand-nfc { left: 150px; }
+  .stage img { max-width: 100%; }
 }
 
 @media (max-width: 800px) {
   .topbar { height: 64px; padding: 0 16px; }
-  .secure-note span { display: none; }
-  .layout { width: min(100% - 28px, 460px); gap: 8px; margin-top: 0; }
+  .secure-note { display: none; }
+  .layout { width: min(100% - 32px, 480px); gap: 8px; margin-top: 0; }
   .story { padding: 0; }
   .story h1 { font-size: 34px; letter-spacing: -1px; }
   .story-lead { font-size: 15px; }
   .benefits { gap: 10px 14px; }
   .benefits li { font-size: 12.5px; }
-  .stage { height: 250px; margin-top: 8px; }
-  .stand { width: 112px; bottom: 18px; }
-  .stand-qr { left: 0; }
-  .stand-nfc { left: 102px; }
-  .card-kicker { font-size: 10px; }
-  .qr-svg, .nfc-mark { width: 54px; height: 54px; }
-  .nfc-badge { width: 52px; height: 52px; }
-  .phone { width: 112px; height: 188px; right: -6px; bottom: 24px; border-radius: 20px; }
-  .phone-screen { padding-top: 16px; }
-  .phone-screen strong { font-size: 10px; }
-  .float-note { display: none; }
+  .visual-desktop { display: none; }
+  .visual-mobile { display: block; width: 100%; max-width: none; }
   .setup-card { padding: 20px 16px 16px; border-radius: 22px; }
   .setup-card h2 { font-size: 24px; }
   .field-row, .logo-grid { grid-template-columns: 1fr; }
@@ -609,9 +526,15 @@ input:focus, select:focus {
         </span>
         <span class="wordmark">Review<span>Rise</span></span>
       </div>
-      <div class="secure-note">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
-        <span>Secure setup — your information is always protected.</span>
+      <div class="topbar-side">
+        <div class="secure-note">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+          <span>Secure setup — your information is always protected.</span>
+        </div>
+        <button class="help-link" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.8.4-1 .9-1 1.7"/><path d="M12 17h.01"/></svg>
+          Need help?
+        </button>
       </div>
     </header>
 
@@ -631,67 +554,9 @@ input:focus, select:focus {
           <li><span class="benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V9"/><path d="M10 19V5"/><path d="M16 19v-7"/><path d="M4 19h16"/></svg></span> Build trust and credibility</li>
           <li><span class="benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/><path d="M14 19a4 4 0 0 1 6.5-3"/></svg></span> Grow your business</li>
         </ul>
-        <div class="stage" aria-hidden="true">
-          <div class="ledge"></div>
-          <div class="stand stand-qr">
-            <div class="card-face">
-              <p class="card-kicker">Share your experience</p>
-              <p class="card-sub">Scan to leave a review</p>
-              <svg class="qr-svg" viewBox="0 0 64 64" aria-hidden="true">
-                <rect width="64" height="64" rx="6" fill="#fff"/>
-                <rect x="4" y="4" width="18" height="18" fill="#0c1730"/>
-                <rect x="8" y="8" width="10" height="10" fill="#fff"/>
-                <rect x="11" y="11" width="4" height="4" fill="#0c1730"/>
-                <rect x="42" y="4" width="18" height="18" fill="#0c1730"/>
-                <rect x="46" y="8" width="10" height="10" fill="#fff"/>
-                <rect x="49" y="11" width="4" height="4" fill="#0c1730"/>
-                <rect x="4" y="42" width="18" height="18" fill="#0c1730"/>
-                <rect x="8" y="46" width="10" height="10" fill="#fff"/>
-                <rect x="11" y="49" width="4" height="4" fill="#0c1730"/>
-                <rect x="28" y="6" width="6" height="6" fill="#0c1730"/>
-                <rect x="28" y="16" width="6" height="4" fill="#0c1730"/>
-                <rect x="36" y="28" width="6" height="6" fill="#0c1730"/>
-                <rect x="46" y="28" width="12" height="6" fill="#0c1730"/>
-                <rect x="28" y="36" width="8" height="6" fill="#0c1730"/>
-                <rect x="40" y="40" width="6" height="8" fill="#0c1730"/>
-                <rect x="50" y="46" width="8" height="12" fill="#0c1730"/>
-                <rect x="28" y="50" width="14" height="6" fill="#0c1730"/>
-              </svg>
-              <div class="google-row"><span style="color:#4285F4;font-weight:800;">G</span> Review us on Google</div>
-              <div class="stars">★★★★★</div>
-              <p class="thanks">Thank you!</p>
-            </div>
-            <div class="wood"></div>
-            <div class="wood-base"></div>
-          </div>
-          <div class="stand stand-nfc">
-            <div class="card-face">
-              <p class="card-kicker">We would appreciate your Google review</p>
-              <div class="nfc-badge">
-                <svg class="nfc-mark" viewBox="0 0 64 64" fill="none" stroke="#fff" stroke-width="3">
-                  <path d="M20 40a16 16 0 0 1 0-16"/>
-                  <path d="M28 44a24 24 0 0 1 0-24"/>
-                  <path d="M36 48a32 32 0 0 1 0-32"/>
-                  <circle cx="16" cy="32" r="3" fill="#fff" stroke="none"/>
-                </svg>
-              </div>
-              <p class="card-sub">Tap to rate your experience</p>
-            </div>
-            <div class="wood"></div>
-            <div class="wood-base"></div>
-          </div>
-          <div class="phone">
-            <div class="phone-screen">
-              <strong>How was your experience?</strong>
-              <p>Tap a star to share your feedback</p>
-              <div class="phone-stars">★★★★★</div>
-              <button class="write-review" type="button" tabindex="-1">Write a review</button>
-            </div>
-          </div>
-          <div class="float-note">
-            <div class="stars">★★★★★</div>
-            <p>Customers can rate you from the QR code or a tap.</p>
-          </div>
+        <div class="stage">
+          <img class="visual-desktop" src="assets/onboarding-visual-desktop.png" alt="QR stand, NFC card, and phone review preview">
+          <img class="visual-mobile" src="assets/onboarding-visual-mobile.png" alt="QR stand, NFC card, and phone review preview">
         </div>
       </section>
 
@@ -713,24 +578,31 @@ input:focus, select:focus {
               <input id="businessName" type="text" autocomplete="organization" placeholder="Lakeside Dental Care">
               <p class="field-error" id="businessNameError"></p>
             </div>
-            <div class="field">
-              <label for="businessType">Business category <span class="req">*</span></label>
-              <div class="control">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20h16"/><path d="M6 20V7l6-3 6 3v13"/></svg>
-                <select id="businessType">
-                  <option value="">Select a category</option>
-                  <option>Hotel</option>
-                  <option>Restaurant</option>
-                  <option>Cafe</option>
-                  <option>Salon</option>
-                  <option>Clinic</option>
-                  <option>Retail</option>
-                  <option>Gym</option>
-                  <option>Professional Service</option>
-                  <option value="Other">Other</option>
-                </select>
+            <div class="field-row">
+              <div class="field">
+                <label for="businessType">Business category <span class="req">*</span></label>
+                <div class="control">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20h16"/><path d="M6 20V7l6-3 6 3v13"/></svg>
+                  <select id="businessType">
+                    <option value="">Select a category</option>
+                    <option>Hotel</option>
+                    <option>Restaurant</option>
+                    <option>Cafe</option>
+                    <option>Salon</option>
+                    <option>Clinic</option>
+                    <option>Retail</option>
+                    <option>Gym</option>
+                    <option>Professional Service</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <p class="field-error" id="businessTypeError"></p>
               </div>
-              <p class="field-error" id="businessTypeError"></p>
+              <div class="field">
+                <label for="businessCity">City <span class="req">*</span></label>
+                <input id="businessCity" type="text" autocomplete="address-level2" placeholder="Austin, TX">
+                <p class="field-error" id="businessCityError"></p>
+              </div>
             </div>
             <div class="field" id="otherTypeWrap" hidden>
               <label for="businessTypeOther">Describe your business</label>
@@ -753,7 +625,7 @@ input:focus, select:focus {
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 16V6"/><path d="m8 9 4-4 4 4"/><path d="M5 19h14"/></svg>
                   </span>
                   <strong id="logoActionLabel">Upload your logo</strong>
-                  <span>PNG, JPG or WebP</span>
+                  <span>PNG, JPG or WebP · max 5MB</span>
                 </label>
                 <div class="live-preview">
                   <div class="preview-top">
@@ -777,6 +649,8 @@ input:focus, select:focus {
               <p class="field-error" id="logoError"></p>
             </div>
             <button class="primary-btn" type="button" id="continueBtn">Continue →</button>
+            <button class="later-btn" type="button" id="saveLaterBtn">Save and finish later</button>
+            <p class="later-note" id="saveLaterNote"></p>
           </div>
 
           <div class="step-panel" data-step="2">
@@ -803,17 +677,13 @@ input:focus, select:focus {
             </div>
             <div class="field-row">
               <div class="field">
-                <label for="businessCity">City</label>
-                <input id="businessCity" type="text" autocomplete="address-level2">
-              </div>
-              <div class="field">
                 <label for="businessCountry">Country</label>
                 <input id="businessCountry" type="text" autocomplete="country-name">
               </div>
-            </div>
-            <div class="field">
-              <label for="businessPostal">Postal code</label>
-              <input id="businessPostal" type="text" autocomplete="postal-code">
+              <div class="field">
+                <label for="businessPostal">Postal code</label>
+                <input id="businessPostal" type="text" autocomplete="postal-code">
+              </div>
             </div>
             <button class="primary-btn" type="button" id="detailsContinueBtn">Continue →</button>
             <button class="ghost-btn" type="button" id="detailsBackBtn">Back</button>
@@ -1071,12 +941,14 @@ function showStep(step) {
 function validateStepOne() {
   const name = document.getElementById("businessName").value.trim();
   const type = document.getElementById("businessType").value;
+  const city = document.getElementById("businessCity").value.trim();
   const link = document.getElementById("googleReviewLink").value.trim();
   let valid = true;
   setFieldError("businessNameError", name ? "" : "Please enter your business name.");
   setFieldError("businessTypeError", type ? "" : "Please choose a business category.");
+  setFieldError("businessCityError", city ? "" : "Please enter your city.");
   setFieldError("googleReviewLinkError", isValidHttpUrl(link) ? "" : "Please enter a valid Google review link.");
-  if (!name || !type || !isValidHttpUrl(link)) valid = false;
+  if (!name || !type || !city || !isValidHttpUrl(link)) valid = false;
   return valid;
 }
 
@@ -1286,6 +1158,32 @@ document.getElementById("setupForm").addEventListener("submit", function (event)
 document.getElementById("continueBtn").addEventListener("click", function () {
   if (validateStepOne()) showStep(2);
 });
+document.getElementById("saveLaterBtn").addEventListener("click", function () {
+  saveDraft();
+  document.getElementById("saveLaterNote").textContent = "Your progress is saved on this device.";
+});
+[
+  ["businessName", "businessNameError", function () { return document.getElementById("businessName").value.trim() ? "" : "Please enter your business name."; }],
+  ["businessCity", "businessCityError", function () { return document.getElementById("businessCity").value.trim() ? "" : "Please enter your city."; }],
+  ["googleReviewLink", "googleReviewLinkError", function () { return isValidHttpUrl(document.getElementById("googleReviewLink").value.trim()) ? "" : "Please enter a valid Google review link."; }]
+].forEach(function (entry) {
+  document.getElementById(entry[0]).addEventListener("blur", function () {
+    setFieldError(entry[1], entry[2]());
+  });
+});
+document.getElementById("businessType").addEventListener("blur", function () {
+  setFieldError("businessTypeError", this.value ? "" : "Please choose a business category.");
+});
+document.getElementById("businessEmail").addEventListener("blur", function () {
+  const email = this.value.trim();
+  const emailOk = !email || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  setFieldError("businessEmailError", emailOk ? "" : "Enter a valid email address, or leave it blank.");
+});
+document.getElementById("businessWebsite").addEventListener("blur", function () {
+  const website = this.value.trim();
+  const websiteOk = !website || isValidHttpUrl(website.indexOf("://") === -1 ? "https://" + website : website);
+  setFieldError("businessWebsiteError", websiteOk ? "" : "Enter a valid website, or leave it blank.");
+});
 document.getElementById("detailsContinueBtn").addEventListener("click", function () {
   if (validateOptionalDetails()) showStep(3);
 });
@@ -1294,6 +1192,7 @@ document.getElementById("launchBackBtn").addEventListener("click", function () {
 document.getElementById("launchBtn").addEventListener("click", launchReviewRise);
 document.getElementById("businessType").addEventListener("change", function () {
   document.getElementById("otherTypeWrap").hidden = this.value !== "Other";
+  if (this.value) setFieldError("businessTypeError", "");
   saveDraft();
   refreshPreview();
 });
@@ -1322,6 +1221,17 @@ document.getElementById("businessLogoInput").addEventListener("change", function
   document.getElementById(id).addEventListener("input", function () {
     refreshPreview();
     saveDraft();
+    if (id === "businessName" && this.value.trim()) setFieldError("businessNameError", "");
+    if (id === "businessCity" && this.value.trim()) setFieldError("businessCityError", "");
+    if (id === "googleReviewLink" && isValidHttpUrl(this.value.trim())) setFieldError("googleReviewLinkError", "");
+    if (id === "businessEmail") {
+      const email = this.value.trim();
+      if (!email || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) setFieldError("businessEmailError", "");
+    }
+    if (id === "businessWebsite") {
+      const website = this.value.trim();
+      if (!website || isValidHttpUrl(website.indexOf("://") === -1 ? "https://" + website : website)) setFieldError("businessWebsiteError", "");
+    }
   });
 });
 document.getElementById("largerPreviewBtn").addEventListener("click", function () {
