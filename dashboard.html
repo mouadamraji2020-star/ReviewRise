@@ -1647,6 +1647,50 @@ a.menu-item:visited {
 
 .customer-intel-meta span { display: block; }
 
+.customer-intel-alert {
+    margin-top: 24px;
+    padding: 14px 16px 13px;
+    border: 1px solid #f3d6d6;
+    border-radius: 16px;
+    background: #fff7f7;
+}
+
+.customer-intel-alert-kicker {
+    margin: 0;
+    color: #b42318;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.customer-intel-alert-title {
+    margin: 4px 0 0;
+    color: #0c1730;
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.35px;
+    line-height: 1.25;
+}
+
+.customer-intel-alert-trend {
+    display: inline-flex;
+    align-items: center;
+    margin: 8px 0 0;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: #fdecec;
+    color: #b42318;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.customer-intel-alert-meta {
+    margin: 6px 0 0;
+    color: #7a4a4a;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
 .customer-intel-metrics {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -2662,9 +2706,11 @@ function renderCustomerIntelligence(feedback) {
     var positiveCard = customerIntelCount(positive, "4–5 star response", "4–5 star responses");
     var trendFigure = trend.label === "Not enough history" ? "—" : trend.label;
     var trendCaption = trend.label === "Not enough history" ? "Not enough history" : "vs previous 30 days";
+    var recurring = detectRecurringIssue(rows);
 
     body.innerHTML =
         '<div class="customer-intel-hero ' + tone + '"><span class="customer-intel-badge">' + customerIntelEscape(badge) + "</span><h4>" + customerIntelEscape(headline) + '</h4><p class="customer-intel-meta"><span>' + customerIntelEscape(supportCount) + "</span><span>" + customerIntelEscape(supportAverage) + "</span></p></div>" +
+        customerIntelAlert(recurring) +
         '<div class="customer-intel-metrics">' +
         customerIntelMetric("is-attention", customerIntelIcon("alert"), "Attention", attentionCard.figure, attentionCard.caption) +
         customerIntelMetric("is-positive", customerIntelIcon("star"), "Positive signals", positiveCard.figure, positiveCard.caption) +
@@ -2755,6 +2801,128 @@ function customerIntelEscape(value) {
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;");
+}
+
+var customerIntelSkipWords = {
+    the: 1, and: 1, for: 1, with: 1, that: 1, this: 1, from: 1, was: 1, were: 1, are: 1, been: 1,
+    have: 1, has: 1, had: 1, but: 1, not: 1, you: 1, your: 1, our: 1, they: 1, them: 1, their: 1,
+    she: 1, her: 1, his: 1, its: 1, just: 1, very: 1, really: 1, too: 1, also: 1, there: 1, here: 1,
+    when: 1, what: 1, which: 1, who: 1, how: 1, about: 1, into: 1, over: 1, after: 1, before: 1,
+    than: 1, then: 1, out: 1, did: 1, does: 1, would: 1, could: 1, should: 1, because: 1, while: 1,
+    got: 1, get: 1, getting: 1, one: 1, all: 1, any: 1, some: 1, more: 1, most: 1, much: 1, like: 1,
+    even: 1, still: 1, only: 1, again: 1, bad: 1, poor: 1, terrible: 1,
+    awful: 1, horrible: 1, worst: 1, worse: 1, good: 1, great: 1, nice: 1, okay: 1, ok: 1
+};
+
+function customerIntelPhrases(text) {
+    var tokens = String(text).toLowerCase().replace(/[^a-z0-9\s']/g, " ").split(/\s+/).filter(function (token) {
+        return token.length >= 3 && !customerIntelSkipWords[token];
+    });
+    var phrases = [];
+    var seen = {};
+
+    tokens.forEach(function (token, index) {
+        if (!seen[token]) {
+            seen[token] = true;
+            phrases.push(token);
+        }
+
+        if (index > 0) {
+            var pair = tokens[index - 1] + " " + token;
+
+            if (!seen[pair]) {
+                seen[pair] = true;
+                phrases.push(pair);
+            }
+        }
+    });
+
+    return phrases;
+}
+
+function customerIntelPhraseLabel(phrase) {
+    return phrase.charAt(0).toUpperCase() + phrase.slice(1);
+}
+
+function detectRecurringIssue(rows) {
+    var day = 24 * 60 * 60 * 1000;
+    var now = Date.now();
+    var recentStart = now - 30 * day;
+    var previousStart = now - 60 * day;
+    var entries = [];
+
+    rows.forEach(function (item) {
+        var rating = Number(item.rating);
+        var text = item && typeof item.feedback === "string" ? item.feedback.trim() : "";
+        var time = new Date(item && item.created_at).getTime();
+
+        if ((rating !== 1 && rating !== 2) || !text || isNaN(time) || time > now || time < previousStart) {
+            return;
+        }
+
+        entries.push({
+            text: text,
+            period: time >= recentStart ? "recent" : "previous"
+        });
+    });
+
+    var phrases = {};
+
+    entries.forEach(function (entry, index) {
+        customerIntelPhrases(entry.text).forEach(function (phrase) {
+            if (!phrases[phrase]) {
+                phrases[phrase] = { recent: {}, previous: {} };
+            }
+
+            phrases[phrase][entry.period][index] = true;
+        });
+    });
+
+    var best = null;
+
+    Object.keys(phrases).forEach(function (phrase) {
+        var recentCount = Object.keys(phrases[phrase].recent).length;
+        var previousCount = Object.keys(phrases[phrase].previous).length;
+
+        if (recentCount < 3 || phrase.indexOf(" ") === -1) {
+            return;
+        }
+
+        var candidate = {
+            phrase: phrase,
+            recent: recentCount,
+            previous: previousCount,
+            words: phrase.indexOf(" ") === -1 ? 1 : 2
+        };
+
+        if (!best || candidate.words > best.words || (candidate.words === best.words && candidate.recent > best.recent) || (candidate.words === best.words && candidate.recent === best.recent && candidate.phrase < best.phrase)) {
+            best = candidate;
+        }
+    });
+
+    if (!best) {
+        return null;
+    }
+
+    return {
+        name: customerIntelPhraseLabel(best.phrase),
+        recent: best.recent,
+        previous: best.previous,
+        increasing: best.recent > best.previous
+    };
+}
+
+function customerIntelAlert(issue) {
+    if (!issue) {
+        return "";
+    }
+
+    var detail = issue.increasing
+        ? "Mentioned " + issue.recent + " times recently, up from " + issue.previous + " previously."
+        : "Mentioned " + issue.recent + " times recently.";
+    var trend = issue.increasing ? '<p class="customer-intel-alert-trend">Increasing concern</p>' : "";
+
+    return '<aside class="customer-intel-alert"><p class="customer-intel-alert-kicker">Recurring issue detected</p><p class="customer-intel-alert-title">' + customerIntelEscape(issue.name) + "</p>" + trend + '<p class="customer-intel-alert-meta">' + customerIntelEscape(detail) + "</p></aside>";
 }
 
 function dashboardEmptyState(withLinks) {
