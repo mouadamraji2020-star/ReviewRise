@@ -203,16 +203,25 @@ button, input, select { font-family: inherit; }
 
 .benefit-icon svg { width: 16px; height: 16px; }
 
-.stage { margin-top: 8px; }
-
-.stage img {
-  display: block;
-  width: 100%;
-  max-width: 640px;
-  height: auto;
+.stage {
+  margin-top: 8px;
+  max-width: 520px;
 }
 
-.visual-mobile { display: none; }
+.desktop-onboarding-visual,
+.mobile-onboarding-visual {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.desktop-onboarding-visual {
+  display: block;
+}
+
+.mobile-onboarding-visual {
+  display: none;
+}
 
 .setup-card {
   background: #fff;
@@ -483,7 +492,6 @@ input:focus, select:focus {
 @media (max-width: 1080px) {
   .layout { grid-template-columns: 1fr; width: min(720px, calc(100% - 32px)); }
   .story h1 { font-size: 44px; }
-  .stage img { max-width: 100%; }
 }
 
 @media (max-width: 800px) {
@@ -495,12 +503,20 @@ input:focus, select:focus {
   .story-lead { font-size: 15px; }
   .benefits { gap: 10px 14px; }
   .benefits li { font-size: 12.5px; }
-  .visual-desktop { display: none; }
-  .visual-mobile { display: block; width: 100%; max-width: none; }
   .setup-card { padding: 20px 16px 16px; border-radius: 22px; }
   .setup-card h2 { font-size: 24px; }
   .field-row, .logo-grid { grid-template-columns: 1fr; }
   .step-line { width: 22px; margin: 0 6px; }
+}
+
+@media (max-width: 768px) {
+  .desktop-onboarding-visual {
+    display: none;
+  }
+
+  .mobile-onboarding-visual {
+    display: block;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -555,8 +571,8 @@ input:focus, select:focus {
           <li><span class="benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/><path d="M14 19a4 4 0 0 1 6.5-3"/></svg></span> Grow your business</li>
         </ul>
         <div class="stage">
-          <img class="visual-desktop" src="assets/onboarding-visual-desktop.png" alt="QR stand, NFC card, and phone review preview">
-          <img class="visual-mobile" src="assets/onboarding-visual-mobile.png" alt="QR stand, NFC card, and phone review preview">
+          <img class="desktop-onboarding-visual" src="assets/onboarding-visual-desktop-hd.png" alt="QR stand, NFC card, and phone review preview">
+          <img class="mobile-onboarding-visual" src="assets/onboarding-visual-mobile-hd.png" alt="QR stand, NFC card, and phone review preview">
         </div>
       </section>
 
