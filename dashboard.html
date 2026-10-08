@@ -1599,11 +1599,14 @@ a.menu-item:visited {
 
 .customer-intel .dash-section-head { margin-bottom: 0; }
 
+.customer-intel .dash-section-head { align-items: flex-start; }
+
 .customer-intel-hero {
     margin-top: 18px;
     padding: 20px 22px 18px;
     border: 1px solid transparent;
     border-radius: 18px;
+    box-shadow: 0 8px 22px rgba(30, 64, 120, 0.035);
 }
 
 .customer-intel-hero.is-positive { background: #f3faf6; border-color: #d9f0e4; }
@@ -1647,109 +1650,178 @@ a.menu-item:visited {
 
 .customer-intel-meta span { display: block; }
 
-.customer-intel-alert {
-    margin-top: 24px;
-    padding: 14px 16px 13px;
-    border: 1px solid #f3d6d6;
-    border-radius: 16px;
-    background: #fff7f7;
-}
-
-.customer-intel-alert-kicker {
-    margin: 0;
-    color: #b42318;
-    font-size: 12px;
-    font-weight: 700;
-}
-
-.customer-intel-alert-title {
-    margin: 4px 0 0;
-    color: #0c1730;
-    font-size: 18px;
-    font-weight: 800;
-    letter-spacing: -0.35px;
-    line-height: 1.25;
-}
-
-.customer-intel-alert-trend {
-    display: inline-flex;
-    align-items: center;
-    margin: 8px 0 0;
-    padding: 2px 8px;
-    border-radius: 999px;
-    background: #fdecec;
-    color: #b42318;
-    font-size: 12px;
-    font-weight: 700;
-}
-
-.customer-intel-alert-meta {
-    margin: 6px 0 0;
-    color: #7a4a4a;
-    font-size: 13px;
-    font-weight: 600;
-    line-height: 1.4;
-}
-
-.customer-intel-issues {
-    margin-top: 24px;
-    padding: 14px 16px 6px;
-    border: 1px solid #f3d6d6;
-    border-radius: 16px;
-    background: #fff7f7;
-}
-
-.customer-intel-issues-kicker {
-    margin: 0;
-    color: #b42318;
-    font-size: 12px;
-    font-weight: 700;
-}
-
-.customer-intel-issues ol {
-    list-style: none;
-    margin: 8px 0 0;
-    padding: 0;
-}
-
-.customer-intel-issues li {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    padding: 9px 0;
-    border-top: 1px solid #f6e4e4;
-}
-
-.customer-intel-issues li:first-child { border-top: 0; padding-top: 2px; }
-
-.customer-intel-issue-rank {
-    flex: 0 0 16px;
-    color: #b42318;
-    font-size: 13px;
-    font-weight: 800;
-    line-height: 1.35;
-}
-
-.customer-intel-issue-copy {
-    display: flex;
-    flex-direction: column;
+.problem-panel {
+    margin-top: 22px;
     min-width: 0;
 }
 
-.customer-intel-issue-name {
+.problem-head h4 {
+    margin: 0;
     color: #0c1730;
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 800;
-    letter-spacing: -0.25px;
-    line-height: 1.3;
+    letter-spacing: -0.35px;
 }
 
-.customer-intel-issue-heading {
+.problem-head p {
+    margin: 4px 0 0;
+    color: #8b97a8;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.problem-list {
+    display: grid;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.problem-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    min-width: 0;
+    padding: 14px 16px;
+    border: 1px solid #e7ecf2;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 8px 22px rgba(30, 64, 120, 0.04);
+    transition: border-color 160ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 160ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.problem-card:hover {
+    border-color: #d5e4f7;
+    box-shadow: 0 10px 24px rgba(30, 64, 120, 0.07);
+}
+
+.problem-rank {
+    flex: 0 0 auto;
+    color: #8ea0b8;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    line-height: 1.4;
+}
+
+.problem-card-main { min-width: 0; flex: 1; }
+
+.problem-card-top {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 8px;
 }
+
+.problem-card-top h5 {
+    margin: 0;
+    min-width: 0;
+    color: #0c1730;
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+}
+
+.problem-count {
+    margin: 4px 0 0;
+    color: #5c6d84;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.problem-trend {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin: 8px 0 0;
+    color: #b42318;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.problem-trend-detail {
+    margin: 2px 0 0;
+    color: #8b97a8;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.problem-open {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+    margin-top: 8px;
+    padding: 0;
+    border: none;
+    background: none;
+    color: #2b7fff;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.problem-open:hover { color: #1d4ed8; }
+
+.problem-status {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-top: 14px;
+    padding: 16px;
+    border: 1px solid #e7ecf2;
+    border-radius: 16px;
+    background: #fbfcfe;
+}
+
+.problem-status strong {
+    display: block;
+    color: #314158;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.problem-status p {
+    margin: 2px 0 0;
+    color: #6d7c92;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.45;
+}
+
+.problem-panel.is-quiet .problem-status {
+    background: #f7f9fc;
+}
+
+.problem-spinner {
+    width: 16px;
+    height: 16px;
+    margin-top: 2px;
+    flex: none;
+    border: 2px solid #d7e3f4;
+    border-top-color: #2b7fff;
+    border-radius: 50%;
+    animation: problem-spin 0.8s linear infinite;
+}
+
+.problem-skeleton,
+.problem-skeleton.is-short {
+    display: block;
+    height: 8px;
+    margin-top: 10px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #eef2f6 0%, #f7f9fc 50%, #eef2f6 100%);
+    background-size: 200% 100%;
+    animation: problem-shimmer 1.4s ease infinite;
+}
+
+.problem-skeleton { width: min(240px, 70%); }
+.problem-skeleton.is-short { width: min(140px, 42%); }
+
+@keyframes problem-spin { to { transform: rotate(360deg); } }
+@keyframes problem-shimmer { to { background-position: -200% 0; } }
 
 .customer-intel-priority {
     display: inline-flex;
@@ -1766,20 +1838,6 @@ a.menu-item:visited {
 .customer-intel-priority.is-medium { background: #fff4e0; color: #9a6700; }
 .customer-intel-priority.is-low { background: #eef2f6; color: #5c6d84; }
 
-.customer-intel-issue-count {
-    margin-top: 2px;
-    color: #7a4a4a;
-    font-size: 13px;
-    font-weight: 600;
-}
-
-.customer-intel-issue-trend {
-    display: inline-flex;
-    margin-top: 4px;
-    color: #b42318;
-    font-size: 12px;
-    font-weight: 700;
-}
 
 .customer-intel-metrics {
     display: grid;
@@ -1798,6 +1856,12 @@ a.menu-item:visited {
     border-radius: 16px;
     background: #fff;
     box-shadow: 0 8px 22px rgba(30, 64, 120, 0.045);
+    transition: border-color 160ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 160ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.customer-intel-metric:hover {
+    border-color: #d5e4f7;
+    box-shadow: 0 10px 24px rgba(30, 64, 120, 0.07);
 }
 
 .customer-intel-icon {
@@ -1857,44 +1921,128 @@ a.menu-item:visited {
     line-height: 1.35;
 }
 
-.customer-intel-themes {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-top: 20px;
-    padding: 14px 16px;
-    border: 1px solid #eef2f6;
-    border-radius: 16px;
-    background: #f7f9fc;
+.problem-drawer {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    visibility: hidden;
+    pointer-events: none;
 }
 
-.customer-intel-themes .customer-intel-icon {
-    width: 32px;
-    height: 32px;
+.problem-drawer.is-open {
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.problem-drawer-backdrop {
+    position: absolute;
+    inset: 0;
+    border: none;
+    background: rgba(12, 23, 48, 0.38);
+    opacity: 0;
+    transition: opacity 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.problem-drawer.is-open .problem-drawer-backdrop { opacity: 1; }
+
+.problem-drawer-panel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    width: min(440px, 100%);
+    height: 100%;
+    padding: 22px 22px 28px;
+    border-left: 1px solid #e7ecf2;
+    background: #fff;
+    box-shadow: -16px 0 40px rgba(16, 36, 72, 0.12);
+    transform: translateX(24px);
+    transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+    overflow: auto;
+}
+
+.problem-drawer.is-open .problem-drawer-panel { transform: translateX(0); }
+
+.problem-drawer-close {
+    align-self: flex-end;
+    width: 36px;
+    height: 36px;
+    border: 1px solid #e7ecf2;
     border-radius: 10px;
     background: #fff;
-    color: #7b8ba0;
-    box-shadow: 0 0 0 1px #e7ecf2;
-}
-
-.customer-intel-themes .customer-intel-icon svg { width: 14px; height: 14px; }
-
-.customer-intel-themes p {
-    margin: 0;
-    min-width: 0;
-    color: #6d7c92;
-    font-size: 13.5px;
-    font-weight: 500;
-    line-height: 1.4;
-}
-
-.customer-intel-themes strong {
-    display: block;
-    margin-bottom: 2px;
     color: #314158;
-    font-size: 13px;
-    font-weight: 700;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
 }
+
+.problem-drawer-close:hover { background: #f5f8fc; }
+
+.problem-drawer-kicker {
+    margin: 8px 0 0;
+    color: #8b97a8;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.problem-drawer-panel h3 {
+    margin: 8px 0 0;
+    color: #0c1730;
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+}
+
+.problem-drawer-count {
+    margin: 6px 0 0;
+    color: #5c6d84;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.problem-drawer-list {
+    display: grid;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.problem-report {
+    min-width: 0;
+    padding: 12px 14px;
+    border: 1px solid #e7ecf2;
+    border-radius: 14px;
+    background: #fff;
+}
+
+.problem-report.is-low { background: #fff8f8; border-color: #f3dede; }
+.problem-report.is-mid { background: #fffaf3; border-color: #f3e7d2; }
+
+.problem-report-stars {
+    color: #f5b400;
+    font-size: 13px;
+    letter-spacing: 1px;
+}
+
+.problem-report p {
+    margin: 8px 0 0;
+    color: #172033;
+    font-size: 14px;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+}
+
+.problem-report-meta {
+    margin-top: 8px;
+    color: #6d7c92;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+body.problem-drawer-open { overflow: hidden; }
 
 .customer-intel-empty {
     margin: 18px 0 4px;
@@ -2124,7 +2272,27 @@ a.menu-item:visited {
 
     .customer-intel-metric:last-child { grid-column: auto; }
 
-    .customer-intel-themes { align-items: flex-start; }
+    .problem-card { padding: 14px; }
+
+    .problem-open { min-height: 44px; }
+
+    .problem-drawer-panel {
+        top: auto;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: auto;
+        max-height: min(88vh, 100%);
+        padding: 16px 16px 24px;
+        border-left: none;
+        border-top: 1px solid #e7ecf2;
+        border-radius: 20px 20px 0 0;
+        box-shadow: 0 -12px 32px rgba(16, 36, 72, 0.12);
+        transform: translateY(24px);
+    }
+
+    .problem-drawer.is-open .problem-drawer-panel { transform: translateY(0); }
 
     .customer-intel .dash-section-head {
         flex-direction: column;
@@ -2157,9 +2325,16 @@ a.menu-item:visited {
     .account-menu button,
     .dash-view-all,
     .dash-empty-actions button,
-    .feedback-card {
+    .feedback-card,
+    .problem-card,
+    .problem-drawer-backdrop,
+    .problem-drawer-panel {
         transition: none;
     }
+
+    .problem-spinner,
+    .problem-skeleton,
+    .problem-skeleton.is-short { animation: none; }
 
     .stat-card:hover { transform: none; }
 }
@@ -2500,6 +2675,17 @@ body.page-leaving {
           </div>
         </section>
 
+        <div id="customerProblemDrawer" class="problem-drawer" aria-hidden="true">
+          <button class="problem-drawer-backdrop" type="button" aria-label="Close related feedback"></button>
+          <div class="problem-drawer-panel" role="dialog" aria-modal="true" aria-labelledby="problemDrawerTitle">
+            <button class="problem-drawer-close" type="button" aria-label="Close">×</button>
+            <p class="problem-drawer-kicker">Recurring problem</p>
+            <h3 id="problemDrawerTitle"></h3>
+            <p class="problem-drawer-count"></p>
+            <div class="problem-drawer-list"></div>
+          </div>
+        </div>
+
         <section class="dash-insights">
           <article class="dash-card dash-chart-card">
             <h3>Feedback Over Time</h3>
@@ -2713,6 +2899,8 @@ function renderCustomerIntelligence(feedback) {
         return;
     }
 
+    customerProblemCloseDrawer();
+
     var rows = feedbackForCurrentAccount(feedback);
 
     if (!rows.length) {
@@ -2787,26 +2975,21 @@ function renderCustomerIntelligence(feedback) {
 
     var trend = customerIntelTrend(recent, previous, early);
     var insightCopy = customerIntelThemeCopy(rows);
-    var issueList = customerIntelIssueList(insightCopy.issues);
     var supportCount = total + " feedback response" + (total === 1 ? "" : "s");
     var supportAverage = "Average rating " + average;
     var attentionCard = customerIntelCount(attention, "Low-rating response", "Low-rating responses");
     var positiveCard = customerIntelCount(positive, "4–5 star response", "4–5 star responses");
     var trendFigure = trend.label === "Not enough history" ? "—" : trend.label;
     var trendCaption = trend.label === "Not enough history" ? "Not enough history" : "vs previous 30 days";
-    var themesRow = issueList
-        ? ""
-        : '<div class="customer-intel-themes">' + customerIntelIcon("themes") + "<p><strong>Customer themes</strong>" + customerIntelEscape(insightCopy.message) + "</p></div>";
 
     body.innerHTML =
         '<div class="customer-intel-hero ' + tone + '"><span class="customer-intel-badge">' + customerIntelEscape(badge) + "</span><h4>" + customerIntelEscape(headline) + '</h4><p class="customer-intel-meta"><span>' + customerIntelEscape(supportCount) + "</span><span>" + customerIntelEscape(supportAverage) + "</span></p></div>" +
-        issueList +
+        customerIntelProblemArea(insightCopy) +
         '<div class="customer-intel-metrics">' +
         customerIntelMetric("is-attention", customerIntelIcon("alert"), "Attention", attentionCard.figure, attentionCard.caption) +
         customerIntelMetric("is-positive", customerIntelIcon("star"), "Positive signals", positiveCard.figure, positiveCard.caption) +
         customerIntelMetric("is-trend", customerIntelIcon("trend"), "Trend", trendFigure, trendCaption) +
-        "</div>" +
-        themesRow;
+        "</div>";
 }
 
 function customerIntelTrend(recent, previous, early) {
@@ -2879,7 +3062,6 @@ function customerIntelIcon(name) {
         alert: '<path d="M12 4 3.5 19h17L12 4z"/><path d="M12 10v4"/><path d="M12 16.5h.01"/>',
         star: '<path d="m12 3 2.4 5.4L20 9.2l-4 3.8.9 5.8L12 16.2 7.1 18.8 8 13 4 9.2l5.6-.8L12 3z"/>',
         trend: '<path d="M4 16l5-5 3.5 3.5L20 7"/><path d="M14 7h6v6"/>',
-        themes: '<path d="M5 6h14"/><path d="M5 12h14"/><path d="M5 18h9"/>'
     };
 
     return '<span class="customer-intel-icon" aria-hidden="true"><svg viewBox="0 0 24 24">' + paths[name] + "</svg></span>";
@@ -2939,7 +3121,9 @@ function customerProblemComplaints(rows) {
 
         complaints.push({
             text: text,
-            time: new Date(item.created_at).getTime()
+            time: new Date(item.created_at).getTime(),
+            rating: rating,
+            business: item && typeof item.business === "string" ? item.business.trim() : ""
         });
     });
 
@@ -2978,6 +3162,10 @@ function customerProblemReadCache(fingerprint) {
         var parsed = JSON.parse(localStorage.getItem(customerProblemCacheKey) || "null");
 
         if (!parsed || parsed.fingerprint !== fingerprint || !Array.isArray(parsed.issues)) {
+            return null;
+        }
+
+        if (parsed.issues.some(function (issue) { return !issue || !Array.isArray(issue.reports); })) {
             return null;
         }
 
@@ -3229,13 +3417,27 @@ function customerProblemCluster(complaints, vectors) {
             return;
         }
 
+        var reports = members.map(function (member) {
+            var complaint = complaints[member];
+
+            return {
+                rating: complaint.rating,
+                text: complaint.text,
+                business: complaint.business || "",
+                time: isFinite(complaint.time) ? complaint.time : null
+            };
+        }).sort(function (first, second) {
+            return (second.time || 0) - (first.time || 0);
+        });
+
         issues.push({
             name: name,
             mentions: members.length,
             recent: recent,
             previous: previous,
             increasing: previous > 0 && recent > previous,
-            latest: latest
+            latest: latest,
+            reports: reports
         });
     });
 
@@ -3253,7 +3455,8 @@ function customerProblemCluster(complaints, vectors) {
             mentions: issue.mentions,
             recent: issue.recent,
             previous: issue.previous,
-            increasing: issue.increasing
+            increasing: issue.increasing,
+            reports: issue.reports
         };
     });
 }
@@ -3475,6 +3678,9 @@ function customerProblemStart(complaints, fingerprint) {
         }
 
         var issues = customerProblemCluster(ready, vectors);
+        try {
+            localStorage.setItem("reviewrise_problem_model_seen", "1");
+        } catch (error) {}
         customerProblemState = { fingerprint: fingerprint, phase: "ready", issues: issues };
         customerProblemWriteCache(fingerprint, issues);
         renderCustomerIntelligence(customerProblemSource);
@@ -3492,18 +3698,8 @@ function customerProblemStart(complaints, fingerprint) {
 function customerIntelThemeCopy(rows) {
     var complaints = customerProblemComplaints(rows);
 
-    if (complaints.length < 3) {
-        return {
-            message: "More written feedback is needed to identify recurring themes.",
-            issues: []
-        };
-    }
-
-    if (customerProblemReady(complaints).length < 3) {
-        return {
-            message: "No recurring customer problem detected yet.",
-            issues: []
-        };
+    if (complaints.length < 3 || customerProblemReady(complaints).length < 3) {
+        return { phase: "empty", issues: [] };
     }
 
     var fingerprint = customerProblemFingerprint(complaints);
@@ -3511,24 +3707,18 @@ function customerIntelThemeCopy(rows) {
 
     if (cached) {
         customerProblemState = { fingerprint: fingerprint, phase: "ready", issues: cached };
-        return {
-            message: cached.length ? "" : "No recurring customer problem detected yet.",
-            issues: cached
-        };
+        return { phase: cached.length ? "ready" : "none", issues: cached };
     }
 
     if (customerProblemState.fingerprint === fingerprint && customerProblemState.phase === "ready") {
         return {
-            message: customerProblemState.issues.length ? "" : "No recurring customer problem detected yet.",
+            phase: customerProblemState.issues.length ? "ready" : "none",
             issues: customerProblemState.issues
         };
     }
 
     if (customerProblemState.fingerprint === fingerprint && customerProblemState.phase === "error") {
-        return {
-            message: "Recurring problem analysis is unavailable right now.",
-            issues: []
-        };
+        return { phase: "error", issues: [] };
     }
 
     if (!(customerProblemState.fingerprint === fingerprint && customerProblemState.phase === "loading")) {
@@ -3536,10 +3726,15 @@ function customerIntelThemeCopy(rows) {
         customerProblemStart(complaints, fingerprint);
     }
 
-    return {
-        message: "Analyzing recurring customer problems…",
-        issues: []
-    };
+    var seen = false;
+
+    try {
+        seen = localStorage.getItem("reviewrise_problem_model_seen") === "1";
+    } catch (error) {
+        seen = false;
+    }
+
+    return { phase: seen ? "loading" : "preparing", issues: [] };
 }
 
 function customerIntelPriority(issue) {
@@ -3561,24 +3756,183 @@ function customerIntelPriority(issue) {
     return { label: "Low priority", tone: "is-low" };
 }
 
-function customerIntelIssueList(issues) {
-    if (!issues || !issues.length) {
-        return "";
+function customerIntelProblemHead() {
+    return '<div class="problem-head"><h4>Recurring customer problems</h4><p>Patterns detected across recent customer feedback.</p></div>';
+}
+
+function customerIntelProblemStatus(title, detail, busy) {
+    var spinner = busy ? '<span class="problem-spinner" aria-hidden="true"></span>' : "";
+    var skeleton = busy ? '<span class="problem-skeleton"></span><span class="problem-skeleton is-short"></span>' : "";
+
+    return '<section class="problem-panel' + (busy ? "" : " is-quiet") + '">' + customerIntelProblemHead() +
+        '<div class="problem-status" role="status">' + spinner + "<div><strong>" + customerIntelEscape(title) + "</strong><p>" + customerIntelEscape(detail) + "</p>" + skeleton + "</div></div></section>";
+}
+
+function customerIntelProblemArea(copy) {
+    if (!copy || copy.phase === "empty") {
+        return customerIntelProblemStatus("No recurring problems yet", "ReviewRise will identify repeated customer issues as more feedback is collected.", false);
     }
 
-    var items = issues.map(function (issue, index) {
+    if (copy.phase === "none") {
+        return customerIntelProblemStatus("No recurring customer problem detected", "Customer feedback does not currently show a strong repeated issue.", false);
+    }
+
+    if (copy.phase === "error") {
+        return customerIntelProblemStatus("Recurring problem analysis is temporarily unavailable.", "Your rating summary is still available.", false);
+    }
+
+    if (copy.phase === "preparing") {
+        return customerIntelProblemStatus("Preparing customer intelligence for the first time…", "The first analysis downloads a local model and can take a moment.", true);
+    }
+
+    if (copy.phase !== "ready") {
+        return customerIntelProblemStatus("Analyzing recurring customer problems…", "Rating cards stay available while this finishes.", true);
+    }
+
+    return customerIntelIssueList(copy.issues);
+}
+
+function customerIntelIssueList(issues) {
+    var cards = (issues || []).map(function (issue, index) {
         var countLabel = issue.mentions + " similar customer report" + (issue.mentions === 1 ? "" : "s");
         var priority = customerIntelPriority(issue);
         var badge = priority
             ? "<span class=\"customer-intel-priority " + priority.tone + "\">" + customerIntelEscape(priority.label) + "</span>"
             : "";
-        var trend = issue.increasing ? "<span class=\"customer-intel-issue-trend\">Increasing concern</span>" : "";
+        var trend = issue.increasing
+            ? '<p class="problem-trend"><span aria-hidden="true">↑</span> Increasing concern</p><p class="problem-trend-detail">' + customerIntelEscape(issue.recent + " recent report" + (issue.recent === 1 ? "" : "s") + " · " + issue.previous + " previous period") + "</p>"
+            : "";
 
-        return "<li><span class=\"customer-intel-issue-rank\">" + (index + 1) + ".</span><span class=\"customer-intel-issue-copy\"><span class=\"customer-intel-issue-heading\"><span class=\"customer-intel-issue-name\">" + customerIntelEscape(issue.name) + "</span>" + badge + "</span><span class=\"customer-intel-issue-count\">" + customerIntelEscape(countLabel) + "</span>" + trend + "</span></li>";
+        return '<article class="problem-card"><span class="problem-rank">' + String(index + 1).padStart(2, "0") + '</span><div class="problem-card-main"><div class="problem-card-top"><h5>' + customerIntelEscape(issue.name) + "</h5>" + badge + '</div><p class="problem-count">' + customerIntelEscape(countLabel) + "</p>" + trend + '<button type="button" class="problem-open" onclick="customerProblemOpenDrawer(' + index + ')">View related feedback →</button></div></article>';
     }).join("");
 
-    return '<div class="customer-intel-issues"><p class="customer-intel-issues-kicker">Recurring customer problems</p><ol>' + items + "</ol></div>";
+    return '<section class="problem-panel">' + customerIntelProblemHead() + '<div class="problem-list">' + cards + "</div></section>";
 }
+
+function customerProblemWhen(time) {
+    if (!isFinite(time)) {
+        return "";
+    }
+
+    var date = new Date(time);
+
+    if (isNaN(date.getTime())) {
+        return "";
+    }
+
+    return date.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" }) + " · " + date.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+}
+
+var customerProblemDrawerFocus = null;
+
+function customerProblemOpenDrawer(index) {
+    var drawer = document.getElementById("customerProblemDrawer");
+    var issue = customerProblemState.issues && customerProblemState.issues[index];
+
+    if (!drawer || !issue || !Array.isArray(issue.reports)) {
+        return;
+    }
+
+    var title = document.getElementById("problemDrawerTitle");
+    var count = drawer.querySelector(".problem-drawer-count");
+    var list = drawer.querySelector(".problem-drawer-list");
+    var countLabel = issue.mentions + " matching report" + (issue.mentions === 1 ? "" : "s");
+
+    if (title) {
+        title.textContent = issue.name;
+    }
+
+    if (count) {
+        count.textContent = countLabel;
+    }
+
+    if (list) {
+        list.innerHTML = issue.reports.map(function (report) {
+            var rating = Math.max(0, Math.min(5, Number(report.rating) || 0));
+            var stars = "★".repeat(rating) + "☆".repeat(5 - rating);
+            var tone = rating <= 1 ? " is-low" : rating === 2 ? " is-mid" : "";
+            var when = customerProblemWhen(report.time);
+            var business = report.business ? customerIntelEscape(report.business) : "";
+            var meta = [business, when ? customerIntelEscape(when) : ""].filter(Boolean).join(" · ");
+
+            return '<article class="problem-report' + tone + '"><div class="problem-report-stars" aria-label="' + rating + ' out of 5 stars">' + stars + "</div><p>" + customerIntelEscape(report.text) + "</p>" + (meta ? '<div class="problem-report-meta">' + meta + "</div>" : "") + "</article>";
+        }).join("");
+    }
+
+    customerProblemDrawerFocus = document.activeElement;
+    drawer.classList.add("is-open");
+    drawer.setAttribute("aria-hidden", "false");
+    document.body.classList.add("problem-drawer-open");
+
+    var closeButton = drawer.querySelector(".problem-drawer-close");
+
+    if (closeButton) {
+        closeButton.focus();
+    }
+}
+
+function customerProblemCloseDrawer() {
+    var drawer = document.getElementById("customerProblemDrawer");
+
+    if (!drawer) {
+        return;
+    }
+
+    drawer.classList.remove("is-open");
+    drawer.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("problem-drawer-open");
+
+    if (customerProblemDrawerFocus && typeof customerProblemDrawerFocus.focus === "function") {
+        customerProblemDrawerFocus.focus();
+    }
+
+    customerProblemDrawerFocus = null;
+}
+
+function customerProblemBindDrawer() {
+    var drawer = document.getElementById("customerProblemDrawer");
+
+    if (!drawer || drawer.getAttribute("data-bound") === "1") {
+        return;
+    }
+
+    drawer.setAttribute("data-bound", "1");
+    drawer.querySelector(".problem-drawer-backdrop").addEventListener("click", customerProblemCloseDrawer);
+    drawer.querySelector(".problem-drawer-close").addEventListener("click", customerProblemCloseDrawer);
+    document.addEventListener("keydown", function (event) {
+        if (!drawer.classList.contains("is-open")) {
+            return;
+        }
+
+        if (event.key === "Escape") {
+            customerProblemCloseDrawer();
+            return;
+        }
+
+        if (event.key !== "Tab") {
+            return;
+        }
+
+        var panel = drawer.querySelector(".problem-drawer-panel");
+        var focusable = panel.querySelectorAll("button, a[href], input, select, textarea, [tabindex]:not([tabindex='-1'])");
+        if (!focusable.length) {
+            return;
+        }
+
+        var first = focusable[0];
+        var last = focusable[focusable.length - 1];
+
+        if (event.shiftKey && document.activeElement === first) {
+            event.preventDefault();
+            last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+            event.preventDefault();
+            first.focus();
+        }
+    });
+}
+
+customerProblemBindDrawer();
 
 
 function dashboardEmptyState(withLinks) {
