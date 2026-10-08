@@ -2916,7 +2916,14 @@ var customerProblemStopWords = {
     i: 1, me: 1, my: 1, we: 1, our: 1, you: 1, your: 1, he: 1, she: 1, it: 1, they: 1, them: 1, their: 1, his: 1, her: 1, its: 1, this: 1, that: 1, these: 1, those: 1, there: 1, here: 1,
     not: 1, no: 1, very: 1, really: 1, just: 1, too: 1, also: 1, wasnt: 1, isnt: 1,
     everything: 1, anything: 1, something: 1, nothing: 1,
-    today: 1, yesterday: 1, tomorrow: 1, again: 1, still: 1, please: 1, thanks: 1, thank: 1, ok: 1, okay: 1
+    today: 1, yesterday: 1, tomorrow: 1, again: 1, still: 1, please: 1, thanks: 1, thank: 1, ok: 1, okay: 1,
+    overall: 1, generally: 1, totally: 1, absolutely: 1, completely: 1, quite: 1, pretty: 1, super: 1, whole: 1, entire: 1
+};
+var customerProblemVagueWords = {
+    bad: 1, good: 1, terrible: 1, horrible: 1, awful: 1, disappointed: 1, disappointing: 1,
+    disappointment: 1, worse: 1, worst: 1, poor: 1, great: 1, nice: 1, like: 1, liked: 1,
+    dislike: 1, hated: 1, hate: 1, unpleasant: 1, mediocre: 1, suck: 1, sucked: 1, sucks: 1,
+    crap: 1, rubbish: 1, useless: 1, meh: 1, unhappy: 1, happy: 1, love: 1, loved: 1
 };
 
 function customerProblemComplaints(rows) {
@@ -2953,7 +2960,7 @@ function customerProblemFingerprint(complaints) {
         }
     });
 
-    var body = customerProblemAccountId() + "\nfull-comment-bge-0.62\n" + newest + "\n" + complaints.map(function (item) {
+    var body = customerProblemAccountId() + "\nfull-comment-bge-0.62-specific\n" + newest + "\n" + complaints.map(function (item) {
         return String(isFinite(item.time) ? item.time : "") + "\n" + item.text;
     }).join("\n");
     var hash = 5381;
@@ -3208,9 +3215,17 @@ function customerProblemCluster(complaints, vectors) {
             }
         });
 
-        var name = customerProblemDisplay(complaints[customerProblemMedoid(members, vectors)].text);
+        var specific = members.filter(function (member) {
+            return customerProblemIsSpecific(complaints[member].text);
+        });
 
-        if (!name) {
+        if (specific.length < 2 || specific.length * 2 < members.length) {
+            return;
+        }
+
+        var name = customerProblemDisplay(complaints[customerProblemMedoid(specific, vectors, members)].text);
+
+        if (!name || !customerProblemIsSpecific(name)) {
             return;
         }
 
@@ -3249,6 +3264,111 @@ function customerProblemIsGeneric(token) {
     }
 
     return token.length > 4 && token.slice(-1) === "s" && !!customerProblemGenericWords[token.slice(0, -1)];
+}
+
+function customerProblemSquash(token) {
+    return String(token).toLowerCase().replace(/(.)\1{2,}/g, "$1$1");
+}
+
+function customerProblemEditDistance(left, right) {
+    if (Math.abs(left.length - right.length) > 1) {
+        return 2;
+    }
+
+    var previous = [];
+    var current = [];
+    var column;
+
+    for (column = 0; column <= right.length; column += 1) {
+        previous[column] = column;
+    }
+
+    for (var row = 1; row <= left.length; row += 1) {
+        current[0] = row;
+        var smallest = current[0];
+
+        for (column = 1; column <= right.length; column += 1) {
+            var cost = left.charAt(row - 1) === right.charAt(column - 1) ? 0 : 1;
+            current[column] = Math.min(previous[column] + 1, current[column - 1] + 1, previous[column - 1] + cost);
+
+            if (current[column] < smallest) {
+                smallest = current[column];
+            }
+        }
+
+        if (smallest > 1) {
+            return 2;
+        }
+
+        var swap = previous;
+        previous = current;
+        current = swap;
+    }
+
+    return previous[right.length];
+}
+
+function customerProblemKnownWords() {
+    if (customerProblemKnownWords.list) {
+        return customerProblemKnownWords.list;
+    }
+
+    var list = [];
+    var seen = {};
+
+    function add(map) {
+        Object.keys(map).forEach(function (word) {
+            if (!seen[word]) {
+                seen[word] = 1;
+                list.push(word);
+            }
+        });
+    }
+
+    add(customerProblemStopWords);
+    add(customerProblemGenericWords);
+    add(customerProblemVagueWords);
+    add(customerProblemJunkWords);
+    customerProblemKnownWords.list = list;
+    return list;
+}
+
+function customerProblemCanonical(token) {
+    var squashed = customerProblemSquash(token);
+
+    if (customerProblemStopWords[squashed] || customerProblemIsGeneric(squashed) || customerProblemVagueWords[squashed] || customerProblemJunkWords[squashed]) {
+        return squashed;
+    }
+
+    if (squashed.length < 3) {
+        return squashed;
+    }
+
+    var known = customerProblemKnownWords();
+
+    for (var index = 0; index < known.length; index += 1) {
+        var word = known[index];
+
+        if (word.length < 3 || Math.abs(word.length - squashed.length) > 1) {
+            continue;
+        }
+
+        if (customerProblemEditDistance(squashed, word) <= 1) {
+            return word;
+        }
+    }
+
+    return squashed;
+}
+
+function customerProblemSpecificWords(text) {
+    return customerProblemWords(text).map(customerProblemCanonical).filter(function (word) {
+        return word.length >= 3 && !customerProblemStopWords[word] && !customerProblemIsGeneric(word) && !customerProblemVagueWords[word] && !customerProblemJunkWords[word];
+    });
+}
+
+function customerProblemIsSpecific(text) {
+    return customerProblemSpecificWords(text).length > 0;
 }
 
 function customerProblemWords(text) {
@@ -3309,15 +3429,16 @@ function customerProblemDisplay(text) {
     return phrase.charAt(0).toUpperCase() + phrase.slice(1);
 }
 
-function customerProblemMedoid(members, vectors) {
-    var best = members[0];
+function customerProblemMedoid(candidates, vectors, compareWith) {
+    var pool = compareWith || candidates;
+    var best = candidates[0];
     var bestScore = -1;
 
-    members.forEach(function (member) {
+    candidates.forEach(function (member) {
         var total = 0;
         var compared = 0;
 
-        members.forEach(function (other) {
+        pool.forEach(function (other) {
             if (other === member) {
                 return;
             }
