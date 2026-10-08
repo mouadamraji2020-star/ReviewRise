@@ -2899,18 +2899,24 @@ var customerProblemToken = 0;
 var customerProblemWorker = null;
 var customerProblemEmbedWaiters = {};
 var customerProblemEmbedSeq = 0;
-var customerProblemSimilarity = 0.59;
+var customerProblemSimilarity = 0.62;
 var customerProblemCacheKey = "reviewrise_problem_theme_cache";
 var customerProblemGenericWords = {
     bad: 1, good: 1, service: 1, problem: 1, customer: 1, business: 1,
     hotel: 1, restaurant: 1, experience: 1, thing: 1, room: 1
+};
+var customerProblemJunkWords = {
+    test: 1, testing: 1, tester: 1, hello: 1, hi: 1, hey: 1,
+    asdf: 1, asdfg: 1, asdfgh: 1, qwerty: 1, abc: 1, foo: 1, bar: 1,
+    xxx: 1, yyy: 1, zzz: 1, blah: 1, lorem: 1, ipsum: 1
 };
 var customerProblemStopWords = {
     a: 1, an: 1, the: 1, and: 1, or: 1, but: 1, if: 1, of: 1, to: 1, in: 1, on: 1, at: 1, by: 1, for: 1, with: 1, from: 1, into: 1, over: 1, after: 1, before: 1, about: 1, as: 1, up: 1, out: 1, off: 1, down: 1, than: 1, then: 1, so: 1,
     is: 1, am: 1, are: 1, was: 1, were: 1, be: 1, been: 1, being: 1, do: 1, did: 1, does: 1, doing: 1, have: 1, has: 1, had: 1, having: 1,
     i: 1, me: 1, my: 1, we: 1, our: 1, you: 1, your: 1, he: 1, she: 1, it: 1, they: 1, them: 1, their: 1, his: 1, her: 1, its: 1, this: 1, that: 1, these: 1, those: 1, there: 1, here: 1,
     not: 1, no: 1, very: 1, really: 1, just: 1, too: 1, also: 1, wasnt: 1, isnt: 1,
-    everything: 1, anything: 1, something: 1, nothing: 1
+    everything: 1, anything: 1, something: 1, nothing: 1,
+    today: 1, yesterday: 1, tomorrow: 1, again: 1, still: 1, please: 1, thanks: 1, thank: 1, ok: 1, okay: 1
 };
 
 function customerProblemComplaints(rows) {
@@ -2939,7 +2945,15 @@ function customerProblemAccountId() {
 }
 
 function customerProblemFingerprint(complaints) {
-    var body = customerProblemAccountId() + "\nbge-small-en-v1.5\n" + complaints.map(function (item) {
+    var newest = 0;
+
+    complaints.forEach(function (item) {
+        if (isFinite(item.time) && item.time > newest) {
+            newest = item.time;
+        }
+    });
+
+    var body = customerProblemAccountId() + "\nfull-comment-bge-0.62\n" + newest + "\n" + complaints.map(function (item) {
         return String(isFinite(item.time) ? item.time : "") + "\n" + item.text;
     }).join("\n");
     var hash = 5381;
@@ -3172,27 +3186,6 @@ function customerProblemCluster(complaints, vectors) {
             return;
         }
 
-        var centroid = vectors[members[0]].slice();
-
-        for (var offset = 1; offset < members.length; offset += 1) {
-            var vector = vectors[members[offset]];
-
-            for (var dim = 0; dim < centroid.length; dim += 1) {
-                centroid[dim] += vector[dim];
-            }
-        }
-
-        var norm = 0;
-
-        centroid.forEach(function (value) {
-            norm += value * value;
-        });
-
-        norm = Math.sqrt(norm) || 1;
-        centroid = centroid.map(function (value) {
-            return value / norm;
-        });
-
         var latest = 0;
         var recent = 0;
         var previous = 0;
@@ -3215,7 +3208,7 @@ function customerProblemCluster(complaints, vectors) {
             }
         });
 
-        var name = customerProblemLabel(complaints, members, vectors, centroid);
+        var name = customerProblemDisplay(complaints[customerProblemMedoid(members, vectors)].text);
 
         if (!name) {
             return;
@@ -3226,7 +3219,7 @@ function customerProblemCluster(complaints, vectors) {
             mentions: members.length,
             recent: recent,
             previous: previous,
-            increasing: recent > previous,
+            increasing: previous > 0 && recent > previous,
             latest: latest
         });
     });
@@ -3250,59 +3243,46 @@ function customerProblemCluster(complaints, vectors) {
     });
 }
 
-function customerProblemTokens(text) {
+function customerProblemIsGeneric(token) {
+    if (customerProblemGenericWords[token]) {
+        return true;
+    }
+
+    return token.length > 4 && token.slice(-1) === "s" && !!customerProblemGenericWords[token.slice(0, -1)];
+}
+
+function customerProblemWords(text) {
     return String(text)
         .toLowerCase()
+        .replace(/n['’]t/g, " not ")
         .replace(/[^a-z0-9\s]/g, " ")
         .replace(/\s+/g, " ")
         .trim()
         .split(" ")
-        .filter(function (token) {
-            return token.length >= 3 && !customerProblemStopWords[token];
-        });
-}
-
-function customerProblemPhraseUsable(words) {
-    var meaningful = words.filter(function (word) {
-        return !customerProblemGenericWords[word];
-    });
-
-    return words.length >= 2 && meaningful.length >= 1;
-}
-
-function customerProblemFiller(word) {
-    var token = String(word).toLowerCase().replace(/[^a-z0-9]/g, "");
-    return !token || !!customerProblemStopWords[token];
-}
-
-function customerProblemLabelIsWeak(label) {
-    var tokens = String(label)
-        .toLowerCase()
-        .replace(/[^a-z0-9\s]/g, " ")
-        .split(/\s+/)
         .filter(Boolean);
-    var meaningful = tokens.filter(function (token) {
-        return token.length >= 3 && !customerProblemStopWords[token] && !customerProblemGenericWords[token];
+}
+
+function customerProblemUsable(text) {
+    var words = customerProblemWords(text);
+
+    if (words.length < 3) {
+        return false;
+    }
+
+    var informative = words.filter(function (word) {
+        return word.length >= 3 && !customerProblemJunkWords[word] && !customerProblemStopWords[word] && !customerProblemIsGeneric(word);
     });
 
-    if (tokens.length < 2) {
-        return true;
-    }
-
-    return meaningful.length < 1;
+    return informative.length > 0;
 }
 
-function customerProblemTitle(phrase) {
-    var text = String(phrase || "").replace(/\s+/g, " ").trim();
-
-    if (!text) {
-        return "";
-    }
-
-    return text.charAt(0).toUpperCase() + text.slice(1);
+function customerProblemReady(complaints) {
+    return complaints.filter(function (item) {
+        return customerProblemUsable(item.text);
+    });
 }
 
-function customerProblemRepresentative(text) {
+function customerProblemDisplay(text) {
     var sentence = String(text).replace(/\s+/g, " ").trim();
     var breakAt = sentence.search(/[.!?]/);
 
@@ -3312,163 +3292,68 @@ function customerProblemRepresentative(text) {
 
     var words = sentence.split(/\s+/).filter(Boolean);
 
-    if (words.length > 7) {
-        words = words.slice(0, 7);
-    }
-
-    function edgeWord(word) {
-        var token = String(word).toLowerCase().replace(/[^a-z0-9]/g, "");
-        return customerProblemFiller(word) || customerProblemIsGeneric(token);
-    }
-
-    while (words.length > 2 && edgeWord(words[0])) {
+    if (words.length > 3 && /^(the|a|an)$/i.test(words[0])) {
         words.shift();
     }
 
-    while (words.length > 2 && edgeWord(words[words.length - 1])) {
-        words.pop();
+    if (words.length > 12) {
+        words = words.slice(0, 12);
     }
 
-    var phrase = customerProblemTitle(words.join(" "));
+    var phrase = words.join(" ").replace(/^["']+|["']+$/g, "");
 
-    if (customerProblemLabelIsWeak(phrase)) {
+    if (!phrase || !customerProblemUsable(phrase)) {
         return "";
     }
 
-    return phrase;
+    return phrase.charAt(0).toUpperCase() + phrase.slice(1);
 }
 
-function customerProblemLabel(complaints, members, vectors, centroid) {
-    var phrases = {};
+function customerProblemMedoid(members, vectors) {
+    var best = members[0];
+    var bestScore = -1;
 
     members.forEach(function (member) {
-        var tokens = customerProblemTokens(complaints[member].text);
-        var seen = {};
+        var total = 0;
+        var compared = 0;
 
-        function add(words) {
-            if (!customerProblemPhraseUsable(words)) {
+        members.forEach(function (other) {
+            if (other === member) {
                 return;
             }
 
-            var key = words.join(" ");
-
-            if (seen[key]) {
-                return;
-            }
-
-            seen[key] = true;
-
-            if (!phrases[key]) {
-                phrases[key] = { words: words, count: 0, latest: 0 };
-            }
-
-            phrases[key].count += 1;
-
-            if (isFinite(complaints[member].time) && complaints[member].time > phrases[key].latest) {
-                phrases[key].latest = complaints[member].time;
-            }
-        }
-
-        for (var index = 0; index < tokens.length - 1; index += 1) {
-            add([tokens[index], tokens[index + 1]]);
-
-            if (index + 2 < tokens.length) {
-                add([tokens[index], tokens[index + 1], tokens[index + 2]]);
-            }
-        }
-    });
-
-    var best = null;
-
-    Object.keys(phrases).forEach(function (key) {
-        var phrase = phrases[key];
-
-        if (phrase.count < 2) {
-            return;
-        }
-
-        if (!best || phrase.count > best.count || (phrase.count === best.count && phrase.words.length > best.words.length) || (phrase.count === best.count && phrase.words.length === best.words.length && phrase.latest > best.latest)) {
-            best = phrase;
-        }
-    });
-
-    if (best) {
-        return customerProblemTitle(best.words.join(" "));
-    }
-
-    var closest = members[0];
-    var closestScore = -1;
-
-    members.forEach(function (member) {
-        var score = customerProblemDot(vectors[member], centroid);
-
-        if (score > closestScore) {
-            closestScore = score;
-            closest = member;
-        }
-    });
-
-    return customerProblemRepresentative(complaints[closest].text);
-}
-
-function customerProblemIsGeneric(token) {
-    if (customerProblemGenericWords[token]) {
-        return true;
-    }
-
-    return token.length > 4 && token.slice(-1) === "s" && !!customerProblemGenericWords[token.slice(0, -1)];
-}
-
-function customerProblemFocus(text) {
-    var keep = { not: 1, no: 1, nor: 1, never: 1, too: 1 };
-    var tokens = String(text)
-        .toLowerCase()
-        .replace(/n['’]t/g, " not ")
-        .replace(/[^a-z0-9\s]/g, " ")
-        .replace(/\s+/g, " ")
-        .trim()
-        .split(" ")
-        .filter(function (token) {
-            if (!token || token.length < 2 || customerProblemIsGeneric(token)) {
-                return false;
-            }
-
-            if (keep[token]) {
-                return true;
-            }
-
-            return !customerProblemStopWords[token];
+            total += customerProblemDot(vectors[member], vectors[other]);
+            compared += 1;
         });
-    var content = tokens.filter(function (token) {
-        return !keep[token];
+
+        var score = compared ? total / compared : 0;
+
+        if (score > bestScore) {
+            bestScore = score;
+            best = member;
+        }
     });
 
-    return content.length ? tokens.join(" ") : "";
-}
-
-function customerProblemFocused(complaints) {
-    return complaints.filter(function (item) {
-        return customerProblemFocus(item.text);
-    });
+    return best;
 }
 
 function customerProblemStart(complaints, fingerprint) {
     var token = ++customerProblemToken;
-    var focused = customerProblemFocused(complaints);
+    var ready = customerProblemReady(complaints);
 
-    if (focused.length < 3) {
+    if (ready.length < 3) {
         customerProblemState = { fingerprint: fingerprint, phase: "ready", issues: [] };
         return;
     }
 
-    customerProblemEmbed(focused.map(function (item) {
-        return customerProblemFocus(item.text);
+    customerProblemEmbed(ready.map(function (item) {
+        return item.text;
     })).then(function (vectors) {
         if (token !== customerProblemToken) {
             return;
         }
 
-        var issues = customerProblemCluster(focused, vectors);
+        var issues = customerProblemCluster(ready, vectors);
         customerProblemState = { fingerprint: fingerprint, phase: "ready", issues: issues };
         customerProblemWriteCache(fingerprint, issues);
         renderCustomerIntelligence(customerProblemSource);
@@ -3493,9 +3378,9 @@ function customerIntelThemeCopy(rows) {
         };
     }
 
-    if (customerProblemFocused(complaints).length < 3) {
+    if (customerProblemReady(complaints).length < 3) {
         return {
-            message: "No recurring customer issue detected yet.",
+            message: "No recurring customer problem detected yet.",
             issues: []
         };
     }
@@ -3506,21 +3391,21 @@ function customerIntelThemeCopy(rows) {
     if (cached) {
         customerProblemState = { fingerprint: fingerprint, phase: "ready", issues: cached };
         return {
-            message: cached.length ? "" : "No recurring customer issue detected yet.",
+            message: cached.length ? "" : "No recurring customer problem detected yet.",
             issues: cached
         };
     }
 
     if (customerProblemState.fingerprint === fingerprint && customerProblemState.phase === "ready") {
         return {
-            message: customerProblemState.issues.length ? "" : "No recurring customer issue detected yet.",
+            message: customerProblemState.issues.length ? "" : "No recurring customer problem detected yet.",
             issues: customerProblemState.issues
         };
     }
 
     if (customerProblemState.fingerprint === fingerprint && customerProblemState.phase === "error") {
         return {
-            message: "Recurring themes could not be loaded right now.",
+            message: "Recurring problem analysis is unavailable right now.",
             issues: []
         };
     }
@@ -3531,7 +3416,7 @@ function customerIntelThemeCopy(rows) {
     }
 
     return {
-        message: "Checking customer themes...",
+        message: "Analyzing recurring customer problems…",
         issues: []
     };
 }
@@ -3561,7 +3446,7 @@ function customerIntelIssueList(issues) {
     }
 
     var items = issues.map(function (issue, index) {
-        var countLabel = issue.mentions + " customer report" + (issue.mentions === 1 ? "" : "s");
+        var countLabel = issue.mentions + " similar customer report" + (issue.mentions === 1 ? "" : "s");
         var priority = customerIntelPriority(issue);
         var badge = priority
             ? "<span class=\"customer-intel-priority " + priority.tone + "\">" + customerIntelEscape(priority.label) + "</span>"
@@ -3571,7 +3456,7 @@ function customerIntelIssueList(issues) {
         return "<li><span class=\"customer-intel-issue-rank\">" + (index + 1) + ".</span><span class=\"customer-intel-issue-copy\"><span class=\"customer-intel-issue-heading\"><span class=\"customer-intel-issue-name\">" + customerIntelEscape(issue.name) + "</span>" + badge + "</span><span class=\"customer-intel-issue-count\">" + customerIntelEscape(countLabel) + "</span>" + trend + "</span></li>";
     }).join("");
 
-    return '<div class="customer-intel-issues"><p class="customer-intel-issues-kicker">Recurring issues</p><ol>' + items + "</ol></div>";
+    return '<div class="customer-intel-issues"><p class="customer-intel-issues-kicker">Recurring customer problems</p><ol>' + items + "</ol></div>";
 }
 
 
