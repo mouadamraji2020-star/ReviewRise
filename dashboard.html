@@ -2863,6 +2863,37 @@ function customerIntelAddSupport(supports, key, index) {
     }
 }
 
+var customerIntelAdjectives = {
+    slow: 1, fast: 1, quick: 1, long: 1, late: 1, early: 1, delayed: 1,
+    rude: 1, polite: 1, friendly: 1, unfriendly: 1, helpful: 1, unhelpful: 1,
+    cold: 1, hot: 1, warm: 1, freezing: 1, frozen: 1,
+    dirty: 1, clean: 1, filthy: 1, messy: 1, sticky: 1, smelly: 1,
+    loud: 1, quiet: 1, noisy: 1,
+    bad: 1, poor: 1, terrible: 1, awful: 1, horrible: 1, worse: 1, worst: 1,
+    good: 1, great: 1, nice: 1, excellent: 1,
+    small: 1, large: 1, big: 1, tiny: 1,
+    hard: 1, soft: 1, wet: 1, dry: 1, stale: 1, fresh: 1, raw: 1, burnt: 1, burned: 1,
+    salty: 1, sweet: 1, sour: 1, bitter: 1, spicy: 1, bland: 1, soggy: 1, greasy: 1, oily: 1, tough: 1, chewy: 1,
+    broken: 1, missing: 1, wrong: 1, empty: 1, full: 1, crowded: 1, busy: 1, cramped: 1,
+    old: 1, new: 1, dark: 1, bright: 1, expensive: 1, cheap: 1, overpriced: 1,
+    uncomfortable: 1, comfortable: 1, unprofessional: 1, overcooked: 1, undercooked: 1
+};
+
+function customerIntelNaturalOrder(words) {
+    if (words.length !== 2) {
+        return words;
+    }
+
+    var firstIsAdjective = !!customerIntelAdjectives[words[0]];
+    var secondIsAdjective = !!customerIntelAdjectives[words[1]];
+
+    if (secondIsAdjective && !firstIsAdjective) {
+        return [words[1], words[0]];
+    }
+
+    return words;
+}
+
 function customerIntelPhrase(entries, indexes, left, right) {
     var forward = 0;
 
@@ -2874,7 +2905,7 @@ function customerIntelPhrase(entries, indexes, left, right) {
         }
     });
 
-    var words = forward * 2 >= indexes.length ? [left, right] : [right, left];
+    var words = customerIntelNaturalOrder(forward * 2 >= indexes.length ? [left, right] : [right, left]);
     var phrase = words.join(" ");
     return phrase.charAt(0).toUpperCase() + phrase.slice(1);
 }
