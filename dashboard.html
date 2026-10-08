@@ -2706,6 +2706,7 @@ function feedbackForCurrentAccount(feedback) {
 }
 
 function renderCustomerIntelligence(feedback) {
+    customerProblemSource = Array.isArray(feedback) ? feedback : [];
     var body = document.getElementById("customerIntelBody");
 
     if (!body) {
@@ -2892,265 +2893,30 @@ function customerIntelEscape(value) {
         .replace(/"/g, "&quot;");
 }
 
-var customerIntelStopWords = {
+var customerProblemSource = [];
+var customerProblemState = { fingerprint: "", phase: "idle", issues: [] };
+var customerProblemToken = 0;
+var customerProblemWorker = null;
+var customerProblemEmbedWaiters = {};
+var customerProblemEmbedSeq = 0;
+var customerProblemSimilarity = 0.59;
+var customerProblemCacheKey = "reviewrise_problem_theme_cache";
+var customerProblemGenericWords = {
+    bad: 1, good: 1, service: 1, problem: 1, customer: 1, business: 1,
+    hotel: 1, restaurant: 1, experience: 1, thing: 1, room: 1
+};
+var customerProblemStopWords = {
     a: 1, an: 1, the: 1, and: 1, or: 1, but: 1, if: 1, of: 1, to: 1, in: 1, on: 1, at: 1, by: 1, for: 1, with: 1, from: 1, into: 1, over: 1, after: 1, before: 1, about: 1, as: 1, up: 1, out: 1, off: 1, down: 1, than: 1, then: 1, so: 1,
     is: 1, am: 1, are: 1, was: 1, were: 1, be: 1, been: 1, being: 1, do: 1, did: 1, does: 1, doing: 1, have: 1, has: 1, had: 1, having: 1,
-    i: 1, me: 1, my: 1, mine: 1, we: 1, our: 1, ours: 1, you: 1, your: 1, yours: 1, he: 1, she: 1, it: 1, they: 1, them: 1, their: 1, theirs: 1, his: 1, her: 1, hers: 1, its: 1, this: 1, that: 1, these: 1, those: 1, there: 1, here: 1,
-    not: 1, no: 1, nor: 1, very: 1, really: 1, just: 1, too: 1, also: 1, even: 1, still: 1, only: 1, again: 1, much: 1, more: 1, most: 1, some: 1, any: 1, all: 1, such: 1, own: 1,
-    what: 1, which: 1, who: 1, whom: 1, whose: 1, when: 1, where: 1, why: 1, how: 1,
-    would: 1, could: 1, should: 1, can: 1, will: 1, because: 1, while: 1, during: 1, through: 1, between: 1, without: 1, within: 1, around: 1, onto: 1, across: 1,
-    got: 1, get: 1, getting: 1, like: 1, one: 1, two: 1, us: 1,
-    im: 1, ive: 1, id: 1, dont: 1, didnt: 1, cant: 1, wasnt: 1, werent: 1, isnt: 1, arent: 1, wont: 1, thats: 1, theres: 1, theyre: 1, youre: 1, weve: 1, couldnt: 1, wouldnt: 1, shouldnt: 1
+    i: 1, me: 1, my: 1, we: 1, our: 1, you: 1, your: 1, he: 1, she: 1, it: 1, they: 1, them: 1, their: 1, his: 1, her: 1, its: 1, this: 1, that: 1, these: 1, those: 1, there: 1, here: 1,
+    not: 1, no: 1, very: 1, really: 1, just: 1, too: 1, also: 1, wasnt: 1, isnt: 1,
+    everything: 1, anything: 1, something: 1, nothing: 1
 };
 
-function customerIntelContentTokens(text) {
-    return String(text)
-        .toLowerCase()
-        .replace(/['’]/g, "")
-        .replace(/[^a-z0-9\s]/g, " ")
-        .replace(/\s+/g, " ")
-        .trim()
-        .split(" ")
-        .filter(function (token) {
-            return token.length >= 3 && !customerIntelStopWords[token];
-        });
-}
+function customerProblemComplaints(rows) {
+    var complaints = [];
 
-var customerIntelKeepPrefix = {
-    under: 1, understand: 1, until: 1, unless: 1, unlike: 1,
-    unique: 1, unit: 1, united: 1, universe: 1, university: 1, undo: 1
-};
-
-function customerIntelStripSuffix(word) {
-    var stem = word;
-    var removed = "";
-
-    if (word.length > 5 && word.slice(-3) === "ies") {
-        stem = word.slice(0, -3) + "y";
-        removed = "ies";
-    } else if (word.length > 5 && word.slice(-3) === "ied") {
-        stem = word.slice(0, -3) + "y";
-        removed = "ied";
-    } else if (word.length > 5 && word.slice(-3) === "ing") {
-        stem = word.slice(0, -3);
-        removed = "ing";
-    } else if (word.length > 4 && word.slice(-2) === "ed") {
-        stem = word.slice(0, -2);
-        removed = "ed";
-    } else if (word.length > 4 && word.slice(-2) === "ly") {
-        stem = word.slice(0, -2);
-        removed = "ly";
-    } else if (word.length > 4 && word.slice(-2) === "es" && /(?:[sxz]|[cs]h)$/.test(word.slice(0, -2))) {
-        stem = word.slice(0, -2);
-        removed = "es";
-    } else if (word.length > 4 && word.slice(-1) === "s" && word.slice(-2) !== "ss" && word.slice(-2) !== "us") {
-        stem = word.slice(0, -1);
-        removed = "s";
-    }
-
-    if (removed === "ing" || removed === "ed") {
-        if (stem.length >= 4 && stem.slice(-1) === stem.slice(-2, -1) && /[^aeiou]/.test(stem.slice(-1))) {
-            stem = stem.slice(0, -1);
-        } else if (/[^aeiou][aeiou][^aeiouwxy]$/.test(stem)) {
-            stem = stem + "e";
-        }
-    }
-
-    if (stem.length < 3 || !/[aeiouy]/.test(stem)) {
-        return word;
-    }
-
-    return stem;
-}
-
-function customerIntelStem(word) {
-    if (!/^[a-z]+$/.test(word) || customerIntelKeepPrefix[word]) {
-        return word;
-    }
-
-    var base = word;
-
-    if (word.length >= 6 && word.slice(0, 2) === "un" && word.slice(0, 5) !== "under") {
-        base = word.slice(2);
-    }
-
-    var stem = customerIntelStripSuffix(base);
-
-    if (stem.length < 3 || !/[aeiouy]/.test(stem)) {
-        return word;
-    }
-
-    return stem;
-}
-
-function customerIntelTerms(text) {
-    return customerIntelContentTokens(text).map(function (token) {
-        return {
-            surface: token,
-            stem: customerIntelStem(token)
-        };
-    }).filter(function (term) {
-        return term.stem.length >= 3 && !customerIntelStopWords[term.stem];
-    });
-}
-
-var customerIntelAdjectives = {
-    slow: 1, fast: 1, quick: 1, long: 1, late: 1, early: 1, delayed: 1,
-    rude: 1, polite: 1, friendly: 1, unfriendly: 1, helpful: 1, unhelpful: 1,
-    cold: 1, hot: 1, warm: 1, freezing: 1, frozen: 1,
-    dirty: 1, clean: 1, filthy: 1, messy: 1, sticky: 1, smelly: 1,
-    loud: 1, quiet: 1, noisy: 1,
-    bad: 1, poor: 1, terrible: 1, awful: 1, horrible: 1, worse: 1, worst: 1,
-    good: 1, great: 1, nice: 1, excellent: 1,
-    small: 1, large: 1, big: 1, tiny: 1,
-    hard: 1, soft: 1, wet: 1, dry: 1, stale: 1, fresh: 1, raw: 1, burnt: 1, burned: 1,
-    salty: 1, sweet: 1, sour: 1, bitter: 1, spicy: 1, bland: 1, soggy: 1, greasy: 1, oily: 1, tough: 1, chewy: 1,
-    broken: 1, missing: 1, wrong: 1, empty: 1, full: 1, crowded: 1, busy: 1, cramped: 1,
-    old: 1, new: 1, dark: 1, bright: 1, expensive: 1, cheap: 1, overpriced: 1,
-    uncomfortable: 1, comfortable: 1, unprofessional: 1, overcooked: 1, undercooked: 1
-};
-
-function customerIntelNaturalOrder(words) {
-    if (words.length !== 2) {
-        return words;
-    }
-
-    var firstIsAdjective = !!customerIntelAdjectives[words[0]];
-    var secondIsAdjective = !!customerIntelAdjectives[words[1]];
-
-    if (secondIsAdjective && !firstIsAdjective) {
-        return [words[1], words[0]];
-    }
-
-    return words;
-}
-
-function customerIntelOrderTerms(terms) {
-    if (terms.length !== 2) {
-        return terms;
-    }
-
-    var ordered = customerIntelNaturalOrder([terms[0].surface, terms[1].surface]);
-
-    if (ordered[0] === terms[1].surface && ordered[1] === terms[0].surface) {
-        return [terms[1], terms[0]];
-    }
-
-    return terms;
-}
-
-function customerIntelGrams(terms) {
-    var grams = [];
-    var seen = {};
-
-    function add(group) {
-        var ordered = customerIntelOrderTerms(group);
-        var stems = ordered.map(function (term) {
-            return term.stem;
-        });
-        var key = stems.join(" ");
-
-        if (seen[key]) {
-            return;
-        }
-
-        seen[key] = true;
-        grams.push({ key: key, stems: stems });
-    }
-
-    for (var index = 0; index < terms.length; index += 1) {
-        add([terms[index]]);
-
-        if (index + 1 < terms.length) {
-            add([terms[index], terms[index + 1]]);
-        }
-
-        if (index + 2 < terms.length) {
-            add([terms[index], terms[index + 1], terms[index + 2]]);
-        }
-    }
-
-    return grams;
-}
-
-function customerIntelFindSequence(stems, sequence) {
-    for (var start = 0; start <= stems.length - sequence.length; start += 1) {
-        var matched = true;
-
-        for (var offset = 0; offset < sequence.length; offset += 1) {
-            if (stems[start + offset] !== sequence[offset]) {
-                matched = false;
-                break;
-            }
-        }
-
-        if (matched) {
-            return start;
-        }
-    }
-
-    return -1;
-}
-
-function customerIntelSurfaceAt(entry, stems, position) {
-    var entryStems = entry.terms.map(function (term) {
-        return term.stem;
-    });
-    var start = customerIntelFindSequence(entryStems, stems);
-    var sequence = stems;
-
-    if (start === -1 && stems.length === 2) {
-        sequence = [stems[1], stems[0]];
-        start = customerIntelFindSequence(entryStems, sequence);
-
-        if (start !== -1) {
-            position = position === 0 ? 1 : 0;
-        }
-    }
-
-    if (start === -1) {
-        return stems[position];
-    }
-
-    return entry.terms[start + position].surface;
-}
-
-function customerIntelThemeLabel(stems, entries, indexes) {
-    var words = stems.map(function (stem, position) {
-        var counts = {};
-
-        indexes.forEach(function (index) {
-            var surface = customerIntelSurfaceAt(entries[index], stems, position);
-            counts[surface] = (counts[surface] || 0) + 1;
-        });
-
-        var best = stem;
-        var bestCount = 0;
-
-        Object.keys(counts).forEach(function (surface) {
-            if (counts[surface] > bestCount) {
-                best = surface;
-                bestCount = counts[surface];
-            }
-        });
-
-        if (stems.length === 1 || bestCount * 2 <= indexes.length) {
-            return stem;
-        }
-
-        return best;
-    });
-    var phrase = words.join(" ");
-
-    return phrase.charAt(0).toUpperCase() + phrase.slice(1);
-}
-
-function detectRecurringIssue(rows) {
-    var now = Date.now();
-    var day = 24 * 60 * 60 * 1000;
-    var entries = [];
-
-    rows.forEach(function (item) {
+    (Array.isArray(rows) ? rows : []).forEach(function (item) {
         var rating = Number(item && item.rating);
         var text = item && typeof item.feedback === "string" ? item.feedback.trim() : "";
 
@@ -3158,134 +2924,616 @@ function detectRecurringIssue(rows) {
             return;
         }
 
-        entries.push({
-            terms: customerIntelTerms(text),
+        complaints.push({
+            text: text,
             time: new Date(item.created_at).getTime()
         });
     });
 
-    if (entries.length < 3) {
-        return { insufficient: true };
+    return complaints;
+}
+
+function customerProblemAccountId() {
+    var token = localStorage.getItem("reviewrise_token");
+    return token ? (reviewRiseUserId(token) || "") : "";
+}
+
+function customerProblemFingerprint(complaints) {
+    var body = customerProblemAccountId() + "\nbge-small-en-v1.5\n" + complaints.map(function (item) {
+        return String(isFinite(item.time) ? item.time : "") + "\n" + item.text;
+    }).join("\n");
+    var hash = 5381;
+
+    for (var index = 0; index < body.length; index += 1) {
+        hash = ((hash << 5) + hash) + body.charCodeAt(index);
+        hash |= 0;
     }
 
-    var supports = {};
+    return String(hash);
+}
 
-    entries.forEach(function (entry, index) {
-        customerIntelGrams(entry.terms).forEach(function (gram) {
-            if (!supports[gram.key]) {
-                supports[gram.key] = { stems: gram.stems, indexes: [] };
-            }
+function customerProblemReadCache(fingerprint) {
+    try {
+        var parsed = JSON.parse(localStorage.getItem(customerProblemCacheKey) || "null");
 
-            if (supports[gram.key].indexes.indexOf(index) === -1) {
-                supports[gram.key].indexes.push(index);
-            }
-        });
-    });
+        if (!parsed || parsed.fingerprint !== fingerprint || !Array.isArray(parsed.issues)) {
+            return null;
+        }
 
-    var candidates = [];
+        return parsed.issues;
+    } catch (error) {
+        return null;
+    }
+}
 
-    Object.keys(supports).forEach(function (key) {
-        var support = supports[key];
+function customerProblemWriteCache(fingerprint, issues) {
+    try {
+        localStorage.setItem(customerProblemCacheKey, JSON.stringify({
+            fingerprint: fingerprint,
+            issues: issues
+        }));
+    } catch (error) {
+        return;
+    }
+}
 
-        if (support.indexes.length < 3) {
+function customerProblemVectors(data, width, count) {
+    if (!data || !width || !count) {
+        throw new Error("embed");
+    }
+
+    if (data.length === width && count === 1) {
+        return [Array.prototype.slice.call(data)];
+    }
+
+    if (data.length !== width * count) {
+        throw new Error("embed");
+    }
+
+    var vectors = [];
+
+    for (var index = 0; index < count; index += 1) {
+        var vector = [];
+
+        for (var offset = 0; offset < width; offset += 1) {
+            vector.push(data[index * width + offset]);
+        }
+
+        vectors.push(vector);
+    }
+
+    return vectors;
+}
+
+function customerProblemEnsureWorker() {
+    if (customerProblemWorker) {
+        return customerProblemWorker;
+    }
+
+    var source = [
+        "import { pipeline, env } from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1';",
+        "env.allowLocalModels = false;",
+        "env.useBrowserCache = true;",
+        "if (env.backends && env.backends.onnx && env.backends.onnx.wasm) { env.backends.onnx.wasm.numThreads = 1; }",
+        "var modelPromise = null;",
+        "function model() {",
+        "  if (!modelPromise) {",
+        "    modelPromise = pipeline('feature-extraction', 'Xenova/bge-small-en-v1.5', { dtype: 'q8', device: 'wasm' });",
+        "  }",
+        "  return modelPromise;",
+        "}",
+        "self.onmessage = async function (event) {",
+        "  var id = event.data && event.data.id;",
+        "  try {",
+        "    var extractor = await model();",
+        "    var texts = event.data.texts || [];",
+        "    var width = 0;",
+        "    var chunks = [];",
+        "    for (var index = 0; index < texts.length; index += 8) {",
+        "      var batch = texts.slice(index, index + 8);",
+        "      var tensor = await extractor(batch, { pooling: 'mean', normalize: true });",
+        "      width = tensor.dims[tensor.dims.length - 1];",
+        "      chunks.push(tensor.data);",
+        "    }",
+        "    var total = 0;",
+        "    chunks.forEach(function (chunk) { total += chunk.length; });",
+        "    var data = new Float32Array(total);",
+        "    var offset = 0;",
+        "    chunks.forEach(function (chunk) { data.set(chunk, offset); offset += chunk.length; });",
+        "    self.postMessage({ id: id, width: width, data: data });",
+        "  } catch (error) {",
+        "    self.postMessage({ id: id, error: true });",
+        "  }",
+        "};"
+    ].join("\n");
+    var url = URL.createObjectURL(new Blob([source], { type: "text/javascript" }));
+    var worker = new Worker(url, { type: "module" });
+
+    worker.onmessage = function (event) {
+        var payload = event.data || {};
+        var waiter = customerProblemEmbedWaiters[payload.id];
+
+        if (!waiter) {
             return;
         }
 
+        delete customerProblemEmbedWaiters[payload.id];
+
+        if (payload.error) {
+            waiter.reject();
+        } else {
+            waiter.resolve(payload);
+        }
+    };
+
+    worker.onerror = function () {
+        customerProblemWorker = null;
+        Object.keys(customerProblemEmbedWaiters).forEach(function (id) {
+            customerProblemEmbedWaiters[id].reject();
+            delete customerProblemEmbedWaiters[id];
+        });
+    };
+
+    customerProblemWorker = worker;
+    return worker;
+}
+
+function customerProblemEmbed(texts) {
+    return new Promise(function (resolve, reject) {
+        var worker = customerProblemEnsureWorker();
+        var id = ++customerProblemEmbedSeq;
+        var timer = setTimeout(function () {
+            if (!customerProblemEmbedWaiters[id]) {
+                return;
+            }
+
+            delete customerProblemEmbedWaiters[id];
+            reject(new Error("timeout"));
+        }, 120000);
+
+        customerProblemEmbedWaiters[id] = {
+            resolve: function (payload) {
+                clearTimeout(timer);
+                resolve(customerProblemVectors(payload.data, payload.width, texts.length));
+            },
+            reject: function () {
+                clearTimeout(timer);
+                reject(new Error("embed"));
+            }
+        };
+
+        worker.postMessage({ id: id, texts: texts });
+    });
+}
+
+function customerProblemDot(left, right) {
+    var total = 0;
+
+    for (var index = 0; index < left.length; index += 1) {
+        total += left[index] * right[index];
+    }
+
+    return total;
+}
+
+function customerProblemCluster(complaints, vectors) {
+    var count = complaints.length;
+    var clusters = [];
+
+    for (var index = 0; index < count; index += 1) {
+        clusters.push([index]);
+    }
+
+    function average(left, right) {
+        var total = 0;
+
+        left.forEach(function (leftIndex) {
+            right.forEach(function (rightIndex) {
+                total += customerProblemDot(vectors[leftIndex], vectors[rightIndex]);
+            });
+        });
+
+        return total / (left.length * right.length);
+    }
+
+    while (clusters.length > 1) {
+        var bestScore = customerProblemSimilarity;
+        var bestLeft = -1;
+        var bestRight = -1;
+
+        for (var left = 0; left < clusters.length; left += 1) {
+            for (var right = left + 1; right < clusters.length; right += 1) {
+                var score = average(clusters[left], clusters[right]);
+
+                if (score >= bestScore) {
+                    bestScore = score;
+                    bestLeft = left;
+                    bestRight = right;
+                }
+            }
+        }
+
+        if (bestLeft === -1) {
+            break;
+        }
+
+        clusters[bestLeft] = clusters[bestLeft].concat(clusters[bestRight]);
+        clusters.splice(bestRight, 1);
+    }
+
+    var now = Date.now();
+    var day = 24 * 60 * 60 * 1000;
+    var recentStart = now - 30 * day;
+    var previousStart = now - 60 * day;
+    var issues = [];
+
+    clusters.forEach(function (members) {
+        if (members.length < 3) {
+            return;
+        }
+
+        var centroid = vectors[members[0]].slice();
+
+        for (var offset = 1; offset < members.length; offset += 1) {
+            var vector = vectors[members[offset]];
+
+            for (var dim = 0; dim < centroid.length; dim += 1) {
+                centroid[dim] += vector[dim];
+            }
+        }
+
+        var norm = 0;
+
+        centroid.forEach(function (value) {
+            norm += value * value;
+        });
+
+        norm = Math.sqrt(norm) || 1;
+        centroid = centroid.map(function (value) {
+            return value / norm;
+        });
+
         var latest = 0;
+        var recent = 0;
+        var previous = 0;
 
-        support.indexes.forEach(function (index) {
-            var time = entries[index].time;
+        members.forEach(function (member) {
+            var time = complaints[member].time;
 
-            if (isFinite(time) && time <= now && time > latest) {
+            if (!isFinite(time) || time > now) {
+                return;
+            }
+
+            if (time > latest) {
                 latest = time;
+            }
+
+            if (time >= recentStart) {
+                recent += 1;
+            } else if (time >= previousStart) {
+                previous += 1;
             }
         });
 
-        candidates.push({
-            key: key,
-            stems: support.stems,
-            mentions: support.indexes.length,
-            latest: latest,
-            indexes: support.indexes,
-            name: customerIntelThemeLabel(support.stems, entries, support.indexes)
+        var name = customerProblemLabel(complaints, members, vectors, centroid);
+
+        if (!name) {
+            return;
+        }
+
+        issues.push({
+            name: name,
+            mentions: members.length,
+            recent: recent,
+            previous: previous,
+            increasing: recent > previous,
+            latest: latest
         });
     });
 
-    candidates.sort(function (first, second) {
+    issues.sort(function (first, second) {
         if (second.mentions !== first.mentions) {
             return second.mentions - first.mentions;
         }
 
-        if (second.latest !== first.latest) {
-            return second.latest - first.latest;
-        }
-
-        if (second.stems.length !== first.stems.length) {
-            return second.stems.length - first.stems.length;
-        }
-
-        if (first.key < second.key) {
-            return -1;
-        }
-
-        return first.key > second.key ? 1 : 0;
+        return second.latest - first.latest;
     });
 
-    var selected = [];
+    return issues.slice(0, 3).map(function (issue) {
+        return {
+            name: issue.name,
+            mentions: issue.mentions,
+            recent: issue.recent,
+            previous: issue.previous,
+            increasing: issue.increasing
+        };
+    });
+}
 
-    candidates.forEach(function (candidate) {
-        if (selected.length >= 3) {
+function customerProblemTokens(text) {
+    return String(text)
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim()
+        .split(" ")
+        .filter(function (token) {
+            return token.length >= 3 && !customerProblemStopWords[token];
+        });
+}
+
+function customerProblemPhraseUsable(words) {
+    var meaningful = words.filter(function (word) {
+        return !customerProblemGenericWords[word];
+    });
+
+    return words.length >= 2 && meaningful.length >= 1;
+}
+
+function customerProblemFiller(word) {
+    var token = String(word).toLowerCase().replace(/[^a-z0-9]/g, "");
+    return !token || !!customerProblemStopWords[token];
+}
+
+function customerProblemLabelIsWeak(label) {
+    var tokens = String(label)
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, " ")
+        .split(/\s+/)
+        .filter(Boolean);
+    var meaningful = tokens.filter(function (token) {
+        return token.length >= 3 && !customerProblemStopWords[token] && !customerProblemGenericWords[token];
+    });
+
+    if (tokens.length < 2) {
+        return true;
+    }
+
+    return meaningful.length < 1;
+}
+
+function customerProblemTitle(phrase) {
+    var text = String(phrase || "").replace(/\s+/g, " ").trim();
+
+    if (!text) {
+        return "";
+    }
+
+    return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+function customerProblemRepresentative(text) {
+    var sentence = String(text).replace(/\s+/g, " ").trim();
+    var breakAt = sentence.search(/[.!?]/);
+
+    if (breakAt > 0) {
+        sentence = sentence.slice(0, breakAt).trim();
+    }
+
+    var words = sentence.split(/\s+/).filter(Boolean);
+
+    if (words.length > 7) {
+        words = words.slice(0, 7);
+    }
+
+    function edgeWord(word) {
+        var token = String(word).toLowerCase().replace(/[^a-z0-9]/g, "");
+        return customerProblemFiller(word) || customerProblemIsGeneric(token);
+    }
+
+    while (words.length > 2 && edgeWord(words[0])) {
+        words.shift();
+    }
+
+    while (words.length > 2 && edgeWord(words[words.length - 1])) {
+        words.pop();
+    }
+
+    var phrase = customerProblemTitle(words.join(" "));
+
+    if (customerProblemLabelIsWeak(phrase)) {
+        return "";
+    }
+
+    return phrase;
+}
+
+function customerProblemLabel(complaints, members, vectors, centroid) {
+    var phrases = {};
+
+    members.forEach(function (member) {
+        var tokens = customerProblemTokens(complaints[member].text);
+        var seen = {};
+
+        function add(words) {
+            if (!customerProblemPhraseUsable(words)) {
+                return;
+            }
+
+            var key = words.join(" ");
+
+            if (seen[key]) {
+                return;
+            }
+
+            seen[key] = true;
+
+            if (!phrases[key]) {
+                phrases[key] = { words: words, count: 0, latest: 0 };
+            }
+
+            phrases[key].count += 1;
+
+            if (isFinite(complaints[member].time) && complaints[member].time > phrases[key].latest) {
+                phrases[key].latest = complaints[member].time;
+            }
+        }
+
+        for (var index = 0; index < tokens.length - 1; index += 1) {
+            add([tokens[index], tokens[index + 1]]);
+
+            if (index + 2 < tokens.length) {
+                add([tokens[index], tokens[index + 1], tokens[index + 2]]);
+            }
+        }
+    });
+
+    var best = null;
+
+    Object.keys(phrases).forEach(function (key) {
+        var phrase = phrases[key];
+
+        if (phrase.count < 2) {
             return;
         }
 
-        var sameComments = selected.some(function (chosen) {
-            return customerIntelIndexOverlap(chosen.indexes, candidate.indexes) >= 2 / 3;
-        });
-
-        if (!sameComments) {
-            selected.push(candidate);
+        if (!best || phrase.count > best.count || (phrase.count === best.count && phrase.words.length > best.words.length) || (phrase.count === best.count && phrase.words.length === best.words.length && phrase.latest > best.latest)) {
+            best = phrase;
         }
     });
 
-    if (!selected.length) {
-        return null;
+    if (best) {
+        return customerProblemTitle(best.words.join(" "));
     }
 
-    var recentStart = now - 30 * day;
-    var previousStart = now - 60 * day;
+    var closest = members[0];
+    var closestScore = -1;
 
-    return {
-        issues: selected.map(function (issue) {
-            var recent = customerIntelRecentCount(entries, issue.indexes, recentStart, now);
-            var previous = customerIntelSpanCount(entries, issue.indexes, previousStart, recentStart);
+    members.forEach(function (member) {
+        var score = customerProblemDot(vectors[member], centroid);
 
-            return {
-                name: issue.name,
-                mentions: issue.mentions,
-                recent: recent,
-                previous: previous,
-                increasing: recent > previous
-            };
-        })
-    };
-}
-
-function customerIntelRecentCount(entries, indexes, recentStart, now) {
-    return customerIntelSpanCount(entries, indexes, recentStart, now + 1);
-}
-
-function customerIntelSpanCount(entries, indexes, start, end) {
-    var count = 0;
-
-    indexes.forEach(function (index) {
-        var time = entries[index].time;
-
-        if (isFinite(time) && time >= start && time < end) {
-            count += 1;
+        if (score > closestScore) {
+            closestScore = score;
+            closest = member;
         }
     });
 
-    return count;
+    return customerProblemRepresentative(complaints[closest].text);
+}
+
+function customerProblemIsGeneric(token) {
+    if (customerProblemGenericWords[token]) {
+        return true;
+    }
+
+    return token.length > 4 && token.slice(-1) === "s" && !!customerProblemGenericWords[token.slice(0, -1)];
+}
+
+function customerProblemFocus(text) {
+    var keep = { not: 1, no: 1, nor: 1, never: 1, too: 1 };
+    var tokens = String(text)
+        .toLowerCase()
+        .replace(/n['’]t/g, " not ")
+        .replace(/[^a-z0-9\s]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim()
+        .split(" ")
+        .filter(function (token) {
+            if (!token || token.length < 2 || customerProblemIsGeneric(token)) {
+                return false;
+            }
+
+            if (keep[token]) {
+                return true;
+            }
+
+            return !customerProblemStopWords[token];
+        });
+    var content = tokens.filter(function (token) {
+        return !keep[token];
+    });
+
+    return content.length ? tokens.join(" ") : "";
+}
+
+function customerProblemFocused(complaints) {
+    return complaints.filter(function (item) {
+        return customerProblemFocus(item.text);
+    });
+}
+
+function customerProblemStart(complaints, fingerprint) {
+    var token = ++customerProblemToken;
+    var focused = customerProblemFocused(complaints);
+
+    if (focused.length < 3) {
+        customerProblemState = { fingerprint: fingerprint, phase: "ready", issues: [] };
+        return;
+    }
+
+    customerProblemEmbed(focused.map(function (item) {
+        return customerProblemFocus(item.text);
+    })).then(function (vectors) {
+        if (token !== customerProblemToken) {
+            return;
+        }
+
+        var issues = customerProblemCluster(focused, vectors);
+        customerProblemState = { fingerprint: fingerprint, phase: "ready", issues: issues };
+        customerProblemWriteCache(fingerprint, issues);
+        renderCustomerIntelligence(customerProblemSource);
+    }).catch(function () {
+        if (token !== customerProblemToken) {
+            return;
+        }
+
+        console.error("Customer problem themes could not be loaded.");
+        customerProblemState = { fingerprint: fingerprint, phase: "error", issues: [] };
+        renderCustomerIntelligence(customerProblemSource);
+    });
+}
+
+function customerIntelThemeCopy(rows) {
+    var complaints = customerProblemComplaints(rows);
+
+    if (complaints.length < 3) {
+        return {
+            message: "More written feedback is needed to identify recurring themes.",
+            issues: []
+        };
+    }
+
+    if (customerProblemFocused(complaints).length < 3) {
+        return {
+            message: "No recurring customer issue detected yet.",
+            issues: []
+        };
+    }
+
+    var fingerprint = customerProblemFingerprint(complaints);
+    var cached = customerProblemReadCache(fingerprint);
+
+    if (cached) {
+        customerProblemState = { fingerprint: fingerprint, phase: "ready", issues: cached };
+        return {
+            message: cached.length ? "" : "No recurring customer issue detected yet.",
+            issues: cached
+        };
+    }
+
+    if (customerProblemState.fingerprint === fingerprint && customerProblemState.phase === "ready") {
+        return {
+            message: customerProblemState.issues.length ? "" : "No recurring customer issue detected yet.",
+            issues: customerProblemState.issues
+        };
+    }
+
+    if (customerProblemState.fingerprint === fingerprint && customerProblemState.phase === "error") {
+        return {
+            message: "Recurring themes could not be loaded right now.",
+            issues: []
+        };
+    }
+
+    if (!(customerProblemState.fingerprint === fingerprint && customerProblemState.phase === "loading")) {
+        customerProblemState = { fingerprint: fingerprint, phase: "loading", issues: [] };
+        customerProblemStart(complaints, fingerprint);
+    }
+
+    return {
+        message: "Checking customer themes...",
+        issues: []
+    };
 }
 
 function customerIntelPriority(issue) {
@@ -3307,49 +3555,13 @@ function customerIntelPriority(issue) {
     return { label: "Low priority", tone: "is-low" };
 }
 
-function customerIntelIndexOverlap(left, right) {
-    var shared = 0;
-
-    left.forEach(function (index) {
-        if (right.indexOf(index) !== -1) {
-            shared += 1;
-        }
-    });
-
-    var union = left.length + right.length - shared;
-    return union ? shared / union : 0;
-}
-
-function customerIntelThemeCopy(rows) {
-    var result = detectRecurringIssue(rows);
-
-    if (result && result.insufficient) {
-        return {
-            message: "More written feedback is needed to identify recurring themes.",
-            issues: []
-        };
-    }
-
-    if (!result || !result.issues || !result.issues.length) {
-        return {
-            message: "No recurring customer issue detected yet.",
-            issues: []
-        };
-    }
-
-    return {
-        message: "",
-        issues: result.issues
-    };
-}
-
 function customerIntelIssueList(issues) {
     if (!issues || !issues.length) {
         return "";
     }
 
     var items = issues.map(function (issue, index) {
-        var countLabel = issue.mentions + " mention" + (issue.mentions === 1 ? "" : "s");
+        var countLabel = issue.mentions + " customer report" + (issue.mentions === 1 ? "" : "s");
         var priority = customerIntelPriority(issue);
         var badge = priority
             ? "<span class=\"customer-intel-priority " + priority.tone + "\">" + customerIntelEscape(priority.label) + "</span>"
