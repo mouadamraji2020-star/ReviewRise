@@ -2533,7 +2533,12 @@ function saveFeedbackDataCache(rows) {
     );
 }
 
+var lastDashboardFeedback = [];
+var customerInsightSnapshot = null;
+var customerInsightRequest = 0;
+
 function renderDashboardFeedback(feedback) {
+    lastDashboardFeedback = Array.isArray(feedback) ? feedback : [];
     const total = feedback.length;
     let ratingTotal = 0;
     let lowRatings = 0;
@@ -2695,28 +2700,23 @@ function renderCustomerIntelligence(feedback) {
     }
 
     var trend = customerIntelTrend(recent, previous, early);
-    var themes = written >= 5
-        ? "ReviewRise will identify recurring customer themes as more written feedback is collected."
-        : written
-            ? "More written feedback is needed to identify recurring customer themes."
-            : "Not enough written feedback yet to identify recurring themes.";
+    var insightCopy = customerInsightCopy(customerInsightSnapshot);
     var supportCount = total + " feedback response" + (total === 1 ? "" : "s");
     var supportAverage = "Average rating " + average;
     var attentionCard = customerIntelCount(attention, "Low-rating response", "Low-rating responses");
     var positiveCard = customerIntelCount(positive, "4–5 star response", "4–5 star responses");
     var trendFigure = trend.label === "Not enough history" ? "—" : trend.label;
     var trendCaption = trend.label === "Not enough history" ? "Not enough history" : "vs previous 30 days";
-    var recurring = detectRecurringIssue(rows);
 
     body.innerHTML =
         '<div class="customer-intel-hero ' + tone + '"><span class="customer-intel-badge">' + customerIntelEscape(badge) + "</span><h4>" + customerIntelEscape(headline) + '</h4><p class="customer-intel-meta"><span>' + customerIntelEscape(supportCount) + "</span><span>" + customerIntelEscape(supportAverage) + "</span></p></div>" +
-        customerIntelAlert(recurring) +
+        customerIntelAlert(insightCopy.theme) +
         '<div class="customer-intel-metrics">' +
         customerIntelMetric("is-attention", customerIntelIcon("alert"), "Attention", attentionCard.figure, attentionCard.caption) +
         customerIntelMetric("is-positive", customerIntelIcon("star"), "Positive signals", positiveCard.figure, positiveCard.caption) +
         customerIntelMetric("is-trend", customerIntelIcon("trend"), "Trend", trendFigure, trendCaption) +
         "</div>" +
-        '<div class="customer-intel-themes">' + customerIntelIcon("themes") + "<p><strong>Customer themes</strong>" + customerIntelEscape(themes) + "</p></div>";
+        '<div class="customer-intel-themes">' + customerIntelIcon("themes") + "<p><strong>Customer themes</strong>" + customerIntelEscape(insightCopy.message) + "</p></div>";
 }
 
 function customerIntelTrend(recent, previous, early) {
@@ -2803,126 +2803,284 @@ function customerIntelEscape(value) {
         .replace(/"/g, "&quot;");
 }
 
-var customerIntelSkipWords = {
-    the: 1, and: 1, for: 1, with: 1, that: 1, this: 1, from: 1, was: 1, were: 1, are: 1, been: 1,
-    have: 1, has: 1, had: 1, but: 1, not: 1, you: 1, your: 1, our: 1, they: 1, them: 1, their: 1,
-    she: 1, her: 1, his: 1, its: 1, just: 1, very: 1, really: 1, too: 1, also: 1, there: 1, here: 1,
-    when: 1, what: 1, which: 1, who: 1, how: 1, about: 1, into: 1, over: 1, after: 1, before: 1,
-    than: 1, then: 1, out: 1, did: 1, does: 1, would: 1, could: 1, should: 1, because: 1, while: 1,
-    got: 1, get: 1, getting: 1, one: 1, all: 1, any: 1, some: 1, more: 1, most: 1, much: 1, like: 1,
-    even: 1, still: 1, only: 1, again: 1, bad: 1, poor: 1, terrible: 1,
-    awful: 1, horrible: 1, worst: 1, worse: 1, good: 1, great: 1, nice: 1, okay: 1, ok: 1
-};
-
-function customerIntelPhrases(text) {
-    var tokens = String(text).toLowerCase().replace(/[^a-z0-9\s']/g, " ").split(/\s+/).filter(function (token) {
-        return token.length >= 3 && !customerIntelSkipWords[token];
-    });
-    var phrases = [];
-    var seen = {};
-
-    tokens.forEach(function (token, index) {
-        if (!seen[token]) {
-            seen[token] = true;
-            phrases.push(token);
-        }
-
-        if (index > 0) {
-            var pair = tokens[index - 1] + " " + token;
-
-            if (!seen[pair]) {
-                seen[pair] = true;
-                phrases.push(pair);
-            }
-        }
-    });
-
-    return phrases;
-}
-
-function customerIntelPhraseLabel(phrase) {
-    return phrase.charAt(0).toUpperCase() + phrase.slice(1);
-}
-
-function detectRecurringIssue(rows) {
-    var day = 24 * 60 * 60 * 1000;
-    var now = Date.now();
-    var recentStart = now - 30 * day;
-    var previousStart = now - 60 * day;
-    var entries = [];
-
-    rows.forEach(function (item) {
-        var rating = Number(item.rating);
-        var text = item && typeof item.feedback === "string" ? item.feedback.trim() : "";
-        var time = new Date(item && item.created_at).getTime();
-
-        if ((rating !== 1 && rating !== 2) || !text || isNaN(time) || time > now || time < previousStart) {
-            return;
-        }
-
-        entries.push({
-            text: text,
-            period: time >= recentStart ? "recent" : "previous"
-        });
-    });
-
-    var phrases = {};
-
-    entries.forEach(function (entry, index) {
-        customerIntelPhrases(entry.text).forEach(function (phrase) {
-            if (!phrases[phrase]) {
-                phrases[phrase] = { recent: {}, previous: {} };
-            }
-
-            phrases[phrase][entry.period][index] = true;
-        });
-    });
-
-    var best = null;
-
-    Object.keys(phrases).forEach(function (phrase) {
-        var recentCount = Object.keys(phrases[phrase].recent).length;
-        var previousCount = Object.keys(phrases[phrase].previous).length;
-
-        if (recentCount < 3 || phrase.indexOf(" ") === -1) {
-            return;
-        }
-
-        var candidate = {
-            phrase: phrase,
-            recent: recentCount,
-            previous: previousCount,
-            words: phrase.indexOf(" ") === -1 ? 1 : 2
-        };
-
-        if (!best || candidate.words > best.words || (candidate.words === best.words && candidate.recent > best.recent) || (candidate.words === best.words && candidate.recent === best.recent && candidate.phrase < best.phrase)) {
-            best = candidate;
-        }
-    });
-
-    if (!best) {
-        return null;
-    }
-
-    return {
-        name: customerIntelPhraseLabel(best.phrase),
-        recent: best.recent,
-        previous: best.previous,
-        increasing: best.recent > best.previous
-    };
-}
-
-function customerIntelAlert(issue) {
-    if (!issue) {
+function customerInsightName(theme) {
+    if (!theme) {
         return "";
     }
 
-    var detail = issue.increasing
-        ? "Mentioned " + issue.recent + " times recently, up from " + issue.previous + " previously."
-        : "Mentioned " + issue.recent + " times recently.";
-    var trend = issue.increasing ? '<p class="customer-intel-alert-trend">Increasing concern</p>' : "";
+    if (typeof theme.name === "string" && theme.name.trim()) {
+        return theme.name.trim();
+    }
 
-    return '<aside class="customer-intel-alert"><p class="customer-intel-alert-kicker">Recurring issue detected</p><p class="customer-intel-alert-title">' + customerIntelEscape(issue.name) + "</p>" + trend + '<p class="customer-intel-alert-meta">' + customerIntelEscape(detail) + "</p></aside>";
+    if (typeof theme.theme_name === "string" && theme.theme_name.trim()) {
+        return theme.theme_name.trim();
+    }
+
+    return "";
+}
+
+function customerInsightNumber(theme, names) {
+    if (!theme) {
+        return null;
+    }
+
+    for (var index = 0; index < names.length; index += 1) {
+        if (theme[names[index]] != null && theme[names[index]] !== "") {
+            var value = Number(theme[names[index]]);
+            return Number.isFinite(value) ? value : null;
+        }
+    }
+
+    return null;
+}
+
+function customerInsightThemes(row) {
+    var themes = row && row.themes;
+
+    if (typeof themes === "string") {
+        try {
+            themes = JSON.parse(themes);
+        } catch (error) {
+            themes = null;
+        }
+    }
+
+    return Array.isArray(themes) ? themes : [];
+}
+
+function customerInsightTheme(row) {
+    return customerInsightThemes(row).filter(function (theme) {
+        var mentions = customerInsightNumber(theme, ["mentions", "mention_count"]);
+        var sentiment = String(theme && theme.sentiment || "").toLowerCase();
+        var name = customerInsightName(theme);
+
+        if (!name || sentiment !== "negative") {
+            return false;
+        }
+
+        if (theme.is_recurring === false || theme.recurring === false) {
+            return false;
+        }
+
+        return mentions != null && mentions >= 3;
+    }).sort(function (first, second) {
+        var firstMentions = customerInsightNumber(first, ["mentions", "mention_count"]) || 0;
+        var secondMentions = customerInsightNumber(second, ["mentions", "mention_count"]) || 0;
+
+        if (secondMentions !== firstMentions) {
+            return secondMentions - firstMentions;
+        }
+
+        var firstTime = new Date(first.last_mentioned_at || first.lastMentionedAt || 0).getTime();
+        var secondTime = new Date(second.last_mentioned_at || second.lastMentionedAt || 0).getTime();
+
+        return (Number.isFinite(secondTime) ? secondTime : 0) - (Number.isFinite(firstTime) ? firstTime : 0);
+    })[0] || null;
+}
+
+function customerInsightCopy(snapshot) {
+    if (!snapshot || snapshot.phase === "loading") {
+        return { message: "Checking customer themes...", theme: null };
+    }
+
+    if (snapshot.phase === "error") {
+        return { message: "Recurring themes could not be loaded right now.", theme: null };
+    }
+
+    var written = snapshot.row ? Number(snapshot.row.written_count) : NaN;
+
+    if (snapshot.status === "insufficient_data" || (Number.isFinite(written) && written < 3)) {
+        return { message: "More written feedback is needed to identify recurring themes.", theme: null };
+    }
+
+    var theme = customerInsightTheme(snapshot.row);
+
+    if (!theme) {
+        return { message: "No recurring customer issue detected yet.", theme: null };
+    }
+
+    return { message: customerInsightName(theme), theme: theme };
+}
+
+function customerIntelAlert(theme) {
+    var themeName = customerInsightName(theme);
+
+    if (!themeName) {
+        return "";
+    }
+
+    var recent = customerInsightNumber(theme, ["recent_count", "recentCount"]);
+    var previous = customerInsightNumber(theme, ["previous_count", "previousCount"]);
+    var mentions = customerInsightNumber(theme, ["mentions", "mention_count"]);
+    var shownRecent = recent != null ? recent : mentions;
+
+    if (shownRecent == null) {
+        return "";
+    }
+
+    var increasing = recent != null && previous != null && previous >= 0 && recent > previous;
+    var detail = increasing
+        ? shownRecent + " recent mentions · " + previous + " in the previous period"
+        : "Mentioned " + shownRecent + " time" + (shownRecent === 1 ? "" : "s") + " recently.";
+    var trend = increasing ? '<p class="customer-intel-alert-trend">Increasing concern</p>' : "";
+
+    return '<aside class="customer-intel-alert"><p class="customer-intel-alert-kicker">Recurring issue detected</p><p class="customer-intel-alert-title">' + customerIntelEscape(themeName) + "</p>" + trend + '<p class="customer-intel-alert-meta">' + customerIntelEscape(detail) + "</p></aside>";
+}
+
+async function postCustomerAnalysis(token) {
+    var response = await fetch(SUPABASE_URL + "/functions/v1/analyze-customer-feedback", {
+        method: "POST",
+        headers: {
+            "Authorization": "Bearer " + token,
+            "apikey": SUPABASE_KEY,
+            "Content-Type": "application/json"
+        },
+        body: "{}"
+    });
+
+    if (response.status === 401 || response.status === 403) {
+        return { ok: false, expired: true };
+    }
+
+    if (!response.ok) {
+        return { ok: false };
+    }
+
+    var payload = null;
+
+    try {
+        payload = await response.json();
+    } catch (error) {
+        payload = null;
+    }
+
+    var status = payload && typeof payload.status === "string" ? payload.status : "";
+
+    if (status && status !== "analyzed" && status !== "unchanged" && status !== "insufficient_data") {
+        return { ok: false };
+    }
+
+    return { ok: true, status: status };
+}
+
+async function fetchCustomerInsightRow(token) {
+    var userId = reviewRiseUserId(token);
+
+    if (!userId) {
+        return { ok: false };
+    }
+
+    var response = await fetch(
+        SUPABASE_URL + "/rest/v1/customer_insights?user_id=eq." + encodeURIComponent(userId) + "&select=user_id,themes,written_count,generated_at&limit=1",
+        {
+            headers: {
+                "apikey": SUPABASE_KEY,
+                "Authorization": "Bearer " + token
+            }
+        }
+    );
+
+    if (response.status === 401 || response.status === 403) {
+        return { ok: false, expired: true };
+    }
+
+    if (!response.ok) {
+        return { ok: false };
+    }
+
+    var rows = await response.json();
+
+    if (!Array.isArray(rows)) {
+        return { ok: false };
+    }
+
+    return { ok: true, row: rows[0] || null };
+}
+
+async function refreshCustomerInsights(accessToken, hasRetried) {
+    var requestId = ++customerInsightRequest;
+    var token = accessToken || localStorage.getItem("reviewrise_token");
+
+    if (!token) {
+        customerInsightSnapshot = { phase: "error" };
+        renderCustomerIntelligence(lastDashboardFeedback);
+        return;
+    }
+
+    customerInsightSnapshot = { phase: "loading" };
+
+    try {
+        var analysis = await postCustomerAnalysis(token);
+
+        if (requestId !== customerInsightRequest) {
+            return;
+        }
+
+        if (analysis.expired && !hasRetried) {
+            var refreshed = await getValidAccessToken();
+
+            if (requestId !== customerInsightRequest) {
+                return;
+            }
+
+            if (!refreshed) {
+                customerInsightSnapshot = { phase: "error" };
+                renderCustomerIntelligence(lastDashboardFeedback);
+                return;
+            }
+
+            customerInsightRequest -= 1;
+            return refreshCustomerInsights(refreshed, true);
+        }
+
+        if (!analysis.ok) {
+            console.error("Customer insight analysis could not be completed.");
+            customerInsightSnapshot = { phase: "error" };
+            renderCustomerIntelligence(lastDashboardFeedback);
+            return;
+        }
+
+        var rowResult = await fetchCustomerInsightRow(token);
+
+        if (requestId !== customerInsightRequest) {
+            return;
+        }
+
+        if (rowResult.expired && !hasRetried) {
+            var nextToken = await getValidAccessToken();
+
+            if (requestId !== customerInsightRequest) {
+                return;
+            }
+
+            if (!nextToken) {
+                customerInsightSnapshot = { phase: "error" };
+                renderCustomerIntelligence(lastDashboardFeedback);
+                return;
+            }
+
+            customerInsightRequest -= 1;
+            return refreshCustomerInsights(nextToken, true);
+        }
+
+        if (!rowResult.ok) {
+            console.error("Customer insights could not be read.");
+            customerInsightSnapshot = { phase: "error" };
+            renderCustomerIntelligence(lastDashboardFeedback);
+            return;
+        }
+
+        customerInsightSnapshot = { phase: "ready", status: analysis.status, row: rowResult.row };
+        renderCustomerIntelligence(lastDashboardFeedback);
+    } catch (error) {
+        if (requestId !== customerInsightRequest) {
+            return;
+        }
+
+        console.error("Customer insights could not be loaded.");
+        customerInsightSnapshot = { phase: "error" };
+        renderCustomerIntelligence(lastDashboardFeedback);
+    }
 }
 
 function dashboardEmptyState(withLinks) {
@@ -3748,6 +3906,9 @@ if (!token) {
       if (intelligence) {
         intelligence.textContent = "Customer Intelligence could not be loaded.";
       }
+    } else {
+      customerInsightSnapshot = { phase: "error" };
+      renderCustomerIntelligence(readFeedbackDataCache() || []);
     }
 
     return;
@@ -3761,6 +3922,7 @@ const feedback = await response.json();
 
   saveFeedbackDataCache(feedback);
   renderDashboardFeedback(feedback);
+  refreshCustomerInsights(token);
 }
 
 
