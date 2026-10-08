@@ -678,6 +678,189 @@
       }
     }
 
+    .intel-card { margin-top: 16px; }
+    .intel-coverage {
+      margin: 14px 0 0;
+      color: #314158;
+      font-size: 14px;
+      font-weight: 650;
+    }
+    .intel-health { margin-top: 18px; }
+    .intel-health h4,
+    .intel-problems h4 {
+      margin: 0;
+      color: #0c1730;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+    }
+    .intel-problems { margin-top: 18px; }
+    .intel-problem-list { display: grid; gap: 10px; margin-top: 12px; }
+    .intel-problem {
+      display: flex;
+      gap: 14px;
+      min-width: 0;
+      padding: 14px 16px;
+      border: 1px solid #e7ecf2;
+      border-radius: 16px;
+      background: #fff;
+      box-shadow: 0 8px 22px rgba(30, 64, 120, 0.04);
+    }
+    .intel-rank {
+      flex: none;
+      color: #8ea0b8;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+    }
+    .intel-problem-main { min-width: 0; flex: 1; }
+    .intel-problem-top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+    .intel-problem h5 {
+      margin: 0;
+      color: #0c1730;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      line-height: 1.3;
+      overflow-wrap: anywhere;
+    }
+    .intel-priority {
+      display: inline-flex;
+      align-items: center;
+      min-height: 20px;
+      padding: 0 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .intel-priority.is-high { background: #fdecec; color: #b42318; }
+    .intel-priority.is-medium { background: #fff4e0; color: #9a6700; }
+    .intel-priority.is-low { background: #eef2f6; color: #5c6d84; }
+    .intel-meta, .intel-quiet {
+      margin: 4px 0 0;
+      color: #5c6d84;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .intel-trend { margin: 6px 0 0; font-size: 12px; font-weight: 700; }
+    .intel-trend.is-up { color: #b42318; }
+    .intel-trend.is-down { color: #067647; }
+    .intel-trend.is-flat, .intel-trend.is-none { color: #5c6d84; }
+    .intel-open {
+      display: inline-flex;
+      align-items: center;
+      min-height: 32px;
+      margin-top: 8px;
+      padding: 0;
+      border: none;
+      background: none;
+      color: #2b7fff;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .intel-open:hover { color: #1d4ed8; }
+    .intel-status {
+      margin-top: 12px;
+      padding: 16px;
+      border: 1px solid #e7ecf2;
+      border-radius: 16px;
+      background: #fbfcfe;
+    }
+    .intel-status strong { display: block; color: #314158; font-size: 14px; }
+    .intel-status p { margin: 4px 0 0; color: #6d7c92; font-size: 13px; line-height: 1.45; }
+    .intel-status.is-busy { display: flex; gap: 12px; align-items: flex-start; }
+    .intel-spinner {
+      width: 16px;
+      height: 16px;
+      margin-top: 2px;
+      flex: none;
+      border: 2px solid #d7e3f4;
+      border-top-color: #2b7fff;
+      border-radius: 50%;
+      animation: intel-spin 0.8s linear infinite;
+    }
+    @keyframes intel-spin { to { transform: rotate(360deg); } }
+    .problem-drawer {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .problem-drawer.is-open { visibility: visible; pointer-events: auto; }
+    .problem-drawer-backdrop {
+      position: absolute;
+      inset: 0;
+      border: none;
+      background: rgba(12, 23, 48, 0.38);
+      opacity: 0;
+      transition: opacity 200ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .problem-drawer.is-open .problem-drawer-backdrop { opacity: 1; }
+    .problem-drawer-panel {
+      position: absolute;
+      top: 0;
+      right: 0;
+      display: flex;
+      flex-direction: column;
+      width: min(440px, 100%);
+      height: 100%;
+      padding: 22px 22px 28px;
+      border-left: 1px solid #e7ecf2;
+      background: #fff;
+      box-shadow: -16px 0 40px rgba(16, 36, 72, 0.12);
+      transform: translateX(24px);
+      transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+      overflow: auto;
+    }
+    .problem-drawer.is-open .problem-drawer-panel { transform: translateX(0); }
+    .problem-drawer-close {
+      align-self: flex-end;
+      width: 36px;
+      height: 36px;
+      border: 1px solid #e7ecf2;
+      border-radius: 10px;
+      background: #fff;
+      color: #314158;
+      font-size: 20px;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .problem-drawer-kicker {
+      margin: 8px 0 0;
+      color: #8b97a8;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .problem-drawer-panel h3 {
+      margin: 8px 0 0;
+      color: #0c1730;
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      line-height: 1.2;
+      overflow-wrap: anywhere;
+    }
+    .problem-drawer-count { margin: 6px 0 0; color: #5c6d84; font-size: 13px; font-weight: 600; }
+    .problem-drawer-list { display: grid; gap: 10px; margin-top: 18px; }
+    .problem-report {
+      min-width: 0;
+      padding: 12px 14px;
+      border: 1px solid #e7ecf2;
+      border-radius: 14px;
+      background: #fff;
+    }
+    .problem-report.is-low { background: #fff8f8; border-color: #f3dede; }
+    .problem-report.is-mid { background: #fffaf3; border-color: #f3e7d2; }
+    .problem-report-stars { color: #f5b400; font-size: 13px; letter-spacing: 1px; }
+    .problem-report p { margin: 8px 0 0; color: #172033; font-size: 14px; line-height: 1.45; overflow-wrap: anywhere; }
+    .problem-report-meta { margin-top: 8px; color: #6d7c92; font-size: 12px; font-weight: 600; }
+    body.problem-drawer-open { overflow: hidden; }
+
     @media (max-width: 1180px) {
       .stats { grid-template-columns: 1fr 1fr; }
       .analytics-middle { grid-template-columns: 1fr 1fr; }
@@ -707,16 +890,38 @@
       .sidebar-collapse { display: none; }
       .mobile-menu-btn { display: flex; }
       .app-workspace { margin-left: 0; }
-      .top-navbar { padding: 14px 16px; flex-wrap: wrap; }
+      .top-navbar { padding: 14px 16px; flex-wrap: wrap; align-items: flex-start; }
+      .top-navbar-title { flex: 1; padding-right: 56px; }
       .top-navbar-title p { display: none; }
-      .analytics-tools { width: 100%; }
-      .analytics-range { flex: 1; }
+      .top-navbar-actions { position: static; width: 100%; margin-left: 0; }
+      .navbar-icon { position: absolute; top: 14px; right: 16px; }
+      .analytics-tools { width: 100%; flex-wrap: wrap; }
+      .analytics-range { flex: 1 1 100%; width: 100%; min-width: 0; max-width: 100%; }
+      .analytics-range select { flex: 1 1 auto; width: auto; min-width: 0; max-width: 100%; }
+      .analytics-export { flex: 1 1 auto; }
+      .main, .intel-card { overflow-x: hidden; }
       .main { padding: 20px 16px 32px; }
       .stats,
       .analytics-middle,
       .analytics-bottom { grid-template-columns: 1fr; }
       .trend-card { grid-column: auto; }
       .vbars { height: 180px; }
+      .intel-open { min-height: 44px; }
+      .problem-drawer-panel {
+        top: auto;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: auto;
+        max-height: min(88vh, 100%);
+        padding: 16px 16px 24px;
+        border-left: none;
+        border-top: 1px solid #e7ecf2;
+        border-radius: 20px 20px 0 0;
+        transform: translateY(24px);
+      }
+      .problem-drawer.is-open .problem-drawer-panel { transform: translateY(0); }
 
       #analyticsPage.sidebar-collapsed .sidebar { width: 240px; }
       #analyticsPage.sidebar-collapsed .sidebar-top { flex-direction: row; }
@@ -739,7 +944,10 @@
       .navbar-icon,
       .account-menu button,
       .analytics-export,
-      .stat-card { transition: none; }
+      .stat-card,
+      .problem-drawer-backdrop,
+      .problem-drawer-panel { transition: none; }
+      .intel-spinner { animation: none; }
       .stat-card:hover { transform: none; }
     }
 
@@ -803,6 +1011,11 @@
       </div>
       <div class="top-navbar-actions">
         <div class="analytics-tools">
+          <label class="analytics-range" id="analyticsBusinessWrap" hidden>
+            <select id="analyticsBusiness" aria-label="Business">
+              <option value="all">All businesses</option>
+            </select>
+          </label>
           <label class="analytics-range">
             <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg>
             <select id="analyticsRange" aria-label="Date range">
@@ -810,6 +1023,7 @@
               <option value="7">Last 7 days</option>
               <option value="30">Last 30 days</option>
               <option value="90">Last 90 days</option>
+              <option value="365">Last 12 months</option>
             </select>
           </label>
           <button class="analytics-export" id="analyticsExport" type="button">Export Report</button>
@@ -874,6 +1088,18 @@
           </article>
         </section>
 
+        <section class="dash-card intel-card" aria-labelledby="analyticsIntelTitle">
+          <h3 id="analyticsIntelTitle">Customer Intelligence</h3>
+          <p class="dash-card-copy">Understand the patterns behind your customer feedback.</p>
+          <p class="intel-coverage" id="writtenCoverage"></p>
+          <div class="intel-health">
+            <h4>Customer health over time</h4>
+            <p class="dash-card-copy">Average rating for periods that contain feedback.</p>
+            <div id="healthChart" class="dash-chart-canvas"></div>
+          </div>
+          <div class="intel-problems" id="analyticsProblems"></div>
+        </section>
+
         <section class="analytics-bottom" id="analyticsBottom">
           <article class="dash-card" id="businessCard">
             <h3>Business Performance</h3>
@@ -899,6 +1125,17 @@
         </section>
       </div>
     </main>
+  </div>
+</div>
+
+<div id="analyticsProblemDrawer" class="problem-drawer" aria-hidden="true">
+  <button class="problem-drawer-backdrop" type="button" aria-label="Close related feedback"></button>
+  <div class="problem-drawer-panel" role="dialog" aria-modal="true" aria-labelledby="analyticsDrawerTitle">
+    <button class="problem-drawer-close" type="button" aria-label="Close">×</button>
+    <p class="problem-drawer-kicker">Recurring problem</p>
+    <h3 id="analyticsDrawerTitle"></h3>
+    <p class="problem-drawer-count"></p>
+    <div class="problem-drawer-list"></div>
   </div>
 </div>
 
@@ -939,24 +1176,118 @@ function analyticsEmptyState() {
     return '<div class="analytics-empty"><strong>Not enough feedback yet</strong><p>Analytics will become more useful as more customer feedback is collected.</p></div>';
 }
 
+function reviewRiseUserId(token) {
+    try {
+        var payload = token.split(".")[1];
+        var json = JSON.parse(atob(payload.replace(/-/g, "+").replace(/_/g, "/")));
+        return json.sub || null;
+    } catch (error) {
+        return null;
+    }
+}
+
+function analyticsAccountRows(feedback) {
+    var token = localStorage.getItem("reviewrise_token");
+    var userId = token ? reviewRiseUserId(token) : null;
+
+    if (!token || !Array.isArray(feedback)) {
+        return [];
+    }
+
+    return feedback.filter(function (item) {
+        if (!item || typeof item !== "object") {
+            return false;
+        }
+
+        if (item.user_id == null || item.user_id === "") {
+            return true;
+        }
+
+        return !!userId && String(item.user_id) === String(userId);
+    });
+}
+
+function syncAnalyticsBusinessFilter() {
+    var select = document.getElementById("analyticsBusiness");
+    var wrap = document.getElementById("analyticsBusinessWrap");
+
+    if (!select || !wrap) {
+        return;
+    }
+
+    var names = [];
+    var seen = {};
+
+    analyticsAccountRows(loadedFeedback).forEach(function (item) {
+        var name = item.business && String(item.business).trim();
+
+        if (!name || seen[name]) {
+            return;
+        }
+
+        seen[name] = 1;
+        names.push(name);
+    });
+
+    names.sort(function (left, right) {
+        return left.localeCompare(right);
+    });
+
+    if (names.length < 2) {
+        wrap.hidden = true;
+        select.value = "all";
+        return;
+    }
+
+    wrap.hidden = false;
+    var current = select.value;
+    var signature = JSON.stringify(names);
+
+    if (select.getAttribute("data-names") !== signature) {
+        select.innerHTML = '<option value="all">All businesses</option>' + names.map(function (name) {
+            var safe = customerIntelEscape(name);
+            return '<option value="' + safe + '">' + safe + "</option>";
+        }).join("");
+        select.setAttribute("data-names", signature);
+        select.value = seen[current] ? current : "all";
+    }
+}
+
 function analyticsRangeRows() {
+    var rows = analyticsAccountRows(loadedFeedback);
+    var businessSelect = document.getElementById("analyticsBusiness");
+    var business = businessSelect ? businessSelect.value : "all";
+
+    if (business && business !== "all") {
+        rows = rows.filter(function (item) {
+            return String(item && item.business || "").trim() === business;
+        });
+    }
+
     var select = document.getElementById("analyticsRange");
     var range = select ? select.value : "all";
 
     if (range === "all") {
-        return loadedFeedback.slice();
+        return rows.slice();
     }
 
     var days = Number(range);
+
+    if (!isFinite(days) || days <= 0) {
+        return rows.slice();
+    }
+
     var cutoff = Date.now() - days * 24 * 60 * 60 * 1000;
 
-    return loadedFeedback.filter(function (item) {
+    return rows.filter(function (item) {
         var time = new Date(item.created_at).getTime();
         return !isNaN(time) && time >= cutoff;
     });
 }
 
 function applyAnalyticsView() {
+    syncAnalyticsBusinessFilter();
+    analyticsProblemCloseDrawer();
     renderAnalytics(analyticsRangeRows());
 }
 
@@ -1001,6 +1332,9 @@ function renderAnalytics(feedback) {
     renderTrend(feedback);
     renderBusinesses(feedback);
     renderInsights(feedback, counts, total);
+    renderWrittenCoverage(feedback);
+    renderHealth(feedback);
+    refreshAnalyticsProblems(feedback);
 }
 
 function renderRatingBars(counts, total) {
@@ -1299,6 +1633,1085 @@ function renderInsights(feedback, counts, total) {
     }).join("");
 }
 
+function customerIntelEscape(value) {
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+}
+
+var customerProblemState = { fingerprint: "", phase: "idle", issues: [] };
+var customerProblemToken = 0;
+var customerProblemWorker = null;
+var customerProblemEmbedWaiters = {};
+var customerProblemEmbedSeq = 0;
+var customerProblemSimilarity = 0.62;
+var customerProblemCacheKey = "reviewrise_analytics_problem_cache";
+var customerProblemGenericWords = {
+    bad: 1, good: 1, service: 1, problem: 1, customer: 1, business: 1,
+    hotel: 1, restaurant: 1, experience: 1, thing: 1, room: 1
+};
+var customerProblemJunkWords = {
+    test: 1, testing: 1, tester: 1, hello: 1, hi: 1, hey: 1,
+    asdf: 1, asdfg: 1, asdfgh: 1, qwerty: 1, abc: 1, foo: 1, bar: 1,
+    xxx: 1, yyy: 1, zzz: 1, blah: 1, lorem: 1, ipsum: 1
+};
+var customerProblemStopWords = {
+    a: 1, an: 1, the: 1, and: 1, or: 1, but: 1, if: 1, of: 1, to: 1, in: 1, on: 1, at: 1, by: 1, for: 1, with: 1, from: 1, into: 1, over: 1, after: 1, before: 1, about: 1, as: 1, up: 1, out: 1, off: 1, down: 1, than: 1, then: 1, so: 1,
+    is: 1, am: 1, are: 1, was: 1, were: 1, be: 1, been: 1, being: 1, do: 1, did: 1, does: 1, doing: 1, have: 1, has: 1, had: 1, having: 1,
+    i: 1, me: 1, my: 1, we: 1, our: 1, you: 1, your: 1, he: 1, she: 1, it: 1, they: 1, them: 1, their: 1, his: 1, her: 1, its: 1, this: 1, that: 1, these: 1, those: 1, there: 1, here: 1,
+    not: 1, no: 1, very: 1, really: 1, just: 1, too: 1, also: 1, wasnt: 1, isnt: 1,
+    everything: 1, anything: 1, something: 1, nothing: 1,
+    today: 1, yesterday: 1, tomorrow: 1, again: 1, still: 1, please: 1, thanks: 1, thank: 1, ok: 1, okay: 1,
+    overall: 1, generally: 1, totally: 1, absolutely: 1, completely: 1, quite: 1, pretty: 1, super: 1, whole: 1, entire: 1
+};
+var customerProblemVagueWords = {
+    bad: 1, good: 1, terrible: 1, horrible: 1, awful: 1, disappointed: 1, disappointing: 1,
+    disappointment: 1, worse: 1, worst: 1, poor: 1, great: 1, nice: 1, like: 1, liked: 1,
+    dislike: 1, hated: 1, hate: 1, unpleasant: 1, mediocre: 1, suck: 1, sucked: 1, sucks: 1,
+    crap: 1, rubbish: 1, useless: 1, meh: 1, unhappy: 1, happy: 1, love: 1, loved: 1
+};
+
+function customerProblemComplaints(rows) {
+    var complaints = [];
+
+    (Array.isArray(rows) ? rows : []).forEach(function (item) {
+        var rating = Number(item && item.rating);
+        var text = item && typeof item.feedback === "string" ? item.feedback.trim() : "";
+
+        if ((rating !== 1 && rating !== 2 && rating !== 3) || !text) {
+            return;
+        }
+
+        complaints.push({
+            text: text,
+            time: new Date(item.created_at).getTime(),
+            rating: rating,
+            business: item && typeof item.business === "string" ? item.business.trim() : ""
+        });
+    });
+
+    return complaints;
+}
+
+function customerProblemAccountId() {
+    var token = localStorage.getItem("reviewrise_token");
+    return token ? (reviewRiseUserId(token) || "") : "";
+}
+
+function customerProblemFingerprint(complaints) {
+    var newest = 0;
+
+    complaints.forEach(function (item) {
+        if (isFinite(item.time) && item.time > newest) {
+            newest = item.time;
+        }
+    });
+
+    var body = customerProblemAccountId() + "\nfull-comment-bge-0.62-specific\n" + newest + "\n" + complaints.map(function (item) {
+        return String(isFinite(item.time) ? item.time : "") + "\n" + item.text;
+    }).join("\n");
+    var hash = 5381;
+
+    for (var index = 0; index < body.length; index += 1) {
+        hash = ((hash << 5) + hash) + body.charCodeAt(index);
+        hash |= 0;
+    }
+
+    return String(hash);
+}
+
+function customerProblemReadCache(fingerprint) {
+    try {
+        var parsed = JSON.parse(localStorage.getItem(customerProblemCacheKey) || "null");
+
+        if (!parsed || parsed.fingerprint !== fingerprint || !Array.isArray(parsed.issues)) {
+            return null;
+        }
+
+        if (parsed.issues.some(function (issue) { return !issue || !Array.isArray(issue.reports); })) {
+            return null;
+        }
+
+        return parsed.issues;
+    } catch (error) {
+        return null;
+    }
+}
+
+function customerProblemWriteCache(fingerprint, issues) {
+    try {
+        localStorage.setItem(customerProblemCacheKey, JSON.stringify({
+            fingerprint: fingerprint,
+            issues: issues
+        }));
+    } catch (error) {
+        return;
+    }
+}
+
+function customerProblemVectors(data, width, count) {
+    if (!data || !width || !count) {
+        throw new Error("embed");
+    }
+
+    if (data.length === width && count === 1) {
+        return [Array.prototype.slice.call(data)];
+    }
+
+    if (data.length !== width * count) {
+        throw new Error("embed");
+    }
+
+    var vectors = [];
+
+    for (var index = 0; index < count; index += 1) {
+        var vector = [];
+
+        for (var offset = 0; offset < width; offset += 1) {
+            vector.push(data[index * width + offset]);
+        }
+
+        vectors.push(vector);
+    }
+
+    return vectors;
+}
+
+function customerProblemEnsureWorker() {
+    if (customerProblemWorker) {
+        return customerProblemWorker;
+    }
+
+    var source = [
+        "import { pipeline, env } from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1';",
+        "env.allowLocalModels = false;",
+        "env.useBrowserCache = true;",
+        "if (env.backends && env.backends.onnx && env.backends.onnx.wasm) { env.backends.onnx.wasm.numThreads = 1; }",
+        "var modelPromise = null;",
+        "function model() {",
+        "  if (!modelPromise) {",
+        "    modelPromise = pipeline('feature-extraction', 'Xenova/bge-small-en-v1.5', { dtype: 'q8', device: 'wasm' });",
+        "  }",
+        "  return modelPromise;",
+        "}",
+        "self.onmessage = async function (event) {",
+        "  var id = event.data && event.data.id;",
+        "  try {",
+        "    var extractor = await model();",
+        "    var texts = event.data.texts || [];",
+        "    var width = 0;",
+        "    var chunks = [];",
+        "    for (var index = 0; index < texts.length; index += 8) {",
+        "      var batch = texts.slice(index, index + 8);",
+        "      var tensor = await extractor(batch, { pooling: 'mean', normalize: true });",
+        "      width = tensor.dims[tensor.dims.length - 1];",
+        "      chunks.push(tensor.data);",
+        "    }",
+        "    var total = 0;",
+        "    chunks.forEach(function (chunk) { total += chunk.length; });",
+        "    var data = new Float32Array(total);",
+        "    var offset = 0;",
+        "    chunks.forEach(function (chunk) { data.set(chunk, offset); offset += chunk.length; });",
+        "    self.postMessage({ id: id, width: width, data: data });",
+        "  } catch (error) {",
+        "    self.postMessage({ id: id, error: true });",
+        "  }",
+        "};"
+    ].join("\n");
+    var url = URL.createObjectURL(new Blob([source], { type: "text/javascript" }));
+    var worker = new Worker(url, { type: "module" });
+
+    worker.onmessage = function (event) {
+        var payload = event.data || {};
+        var waiter = customerProblemEmbedWaiters[payload.id];
+
+        if (!waiter) {
+            return;
+        }
+
+        delete customerProblemEmbedWaiters[payload.id];
+
+        if (payload.error) {
+            waiter.reject();
+        } else {
+            waiter.resolve(payload);
+        }
+    };
+
+    worker.onerror = function () {
+        customerProblemWorker = null;
+        Object.keys(customerProblemEmbedWaiters).forEach(function (id) {
+            customerProblemEmbedWaiters[id].reject();
+            delete customerProblemEmbedWaiters[id];
+        });
+    };
+
+    customerProblemWorker = worker;
+    return worker;
+}
+
+function customerProblemEmbed(texts) {
+    return new Promise(function (resolve, reject) {
+        var worker = customerProblemEnsureWorker();
+        var id = ++customerProblemEmbedSeq;
+        var timer = setTimeout(function () {
+            if (!customerProblemEmbedWaiters[id]) {
+                return;
+            }
+
+            delete customerProblemEmbedWaiters[id];
+            reject(new Error("timeout"));
+        }, 120000);
+
+        customerProblemEmbedWaiters[id] = {
+            resolve: function (payload) {
+                clearTimeout(timer);
+                resolve(customerProblemVectors(payload.data, payload.width, texts.length));
+            },
+            reject: function () {
+                clearTimeout(timer);
+                reject(new Error("embed"));
+            }
+        };
+
+        worker.postMessage({ id: id, texts: texts });
+    });
+}
+
+function customerProblemDot(left, right) {
+    var total = 0;
+
+    for (var index = 0; index < left.length; index += 1) {
+        total += left[index] * right[index];
+    }
+
+    return total;
+}
+
+function customerProblemCluster(complaints, vectors) {
+    var count = complaints.length;
+    var clusters = [];
+
+    for (var index = 0; index < count; index += 1) {
+        clusters.push([index]);
+    }
+
+    function average(left, right) {
+        var total = 0;
+
+        left.forEach(function (leftIndex) {
+            right.forEach(function (rightIndex) {
+                total += customerProblemDot(vectors[leftIndex], vectors[rightIndex]);
+            });
+        });
+
+        return total / (left.length * right.length);
+    }
+
+    while (clusters.length > 1) {
+        var bestScore = customerProblemSimilarity;
+        var bestLeft = -1;
+        var bestRight = -1;
+
+        for (var left = 0; left < clusters.length; left += 1) {
+            for (var right = left + 1; right < clusters.length; right += 1) {
+                var score = average(clusters[left], clusters[right]);
+
+                if (score >= bestScore) {
+                    bestScore = score;
+                    bestLeft = left;
+                    bestRight = right;
+                }
+            }
+        }
+
+        if (bestLeft === -1) {
+            break;
+        }
+
+        clusters[bestLeft] = clusters[bestLeft].concat(clusters[bestRight]);
+        clusters.splice(bestRight, 1);
+    }
+
+    var now = Date.now();
+    var day = 24 * 60 * 60 * 1000;
+    var recentStart = now - 30 * day;
+    var previousStart = now - 60 * day;
+    var issues = [];
+
+    clusters.forEach(function (members) {
+        if (members.length < 3) {
+            return;
+        }
+
+        var latest = 0;
+        var recent = 0;
+        var previous = 0;
+
+        members.forEach(function (member) {
+            var time = complaints[member].time;
+
+            if (!isFinite(time) || time > now) {
+                return;
+            }
+
+            if (time > latest) {
+                latest = time;
+            }
+
+            if (time >= recentStart) {
+                recent += 1;
+            } else if (time >= previousStart) {
+                previous += 1;
+            }
+        });
+
+        var specific = members.filter(function (member) {
+            return customerProblemIsSpecific(complaints[member].text);
+        });
+
+        if (specific.length < 2 || specific.length * 2 < members.length) {
+            return;
+        }
+
+        var name = customerProblemDisplay(complaints[customerProblemMedoid(specific, vectors, members)].text);
+
+        if (!name || !customerProblemIsSpecific(name)) {
+            return;
+        }
+
+        var reports = members.map(function (member) {
+            var complaint = complaints[member];
+
+            return {
+                rating: complaint.rating,
+                text: complaint.text,
+                business: complaint.business || "",
+                time: isFinite(complaint.time) ? complaint.time : null
+            };
+        }).sort(function (first, second) {
+            return (second.time || 0) - (first.time || 0);
+        });
+
+        issues.push({
+            name: name,
+            mentions: members.length,
+            recent: recent,
+            previous: previous,
+            increasing: previous > 0 && recent > previous,
+            latest: latest,
+            reports: reports
+        });
+    });
+
+    issues.sort(function (first, second) {
+        if (second.mentions !== first.mentions) {
+            return second.mentions - first.mentions;
+        }
+
+        return second.latest - first.latest;
+    });
+
+    return issues.slice(0, 5).map(function (issue) {
+        return {
+            name: issue.name,
+            mentions: issue.mentions,
+            recent: issue.recent,
+            previous: issue.previous,
+            increasing: issue.increasing,
+            latest: issue.latest,
+            reports: issue.reports
+        };
+    });
+}
+
+function customerProblemIsGeneric(token) {
+    if (customerProblemGenericWords[token]) {
+        return true;
+    }
+
+    return token.length > 4 && token.slice(-1) === "s" && !!customerProblemGenericWords[token.slice(0, -1)];
+}
+
+function customerProblemSquash(token) {
+    return String(token).toLowerCase().replace(/(.)\1{2,}/g, "$1$1");
+}
+
+function customerProblemEditDistance(left, right) {
+    if (Math.abs(left.length - right.length) > 1) {
+        return 2;
+    }
+
+    var previous = [];
+    var current = [];
+    var column;
+
+    for (column = 0; column <= right.length; column += 1) {
+        previous[column] = column;
+    }
+
+    for (var row = 1; row <= left.length; row += 1) {
+        current[0] = row;
+        var smallest = current[0];
+
+        for (column = 1; column <= right.length; column += 1) {
+            var cost = left.charAt(row - 1) === right.charAt(column - 1) ? 0 : 1;
+            current[column] = Math.min(previous[column] + 1, current[column - 1] + 1, previous[column - 1] + cost);
+
+            if (current[column] < smallest) {
+                smallest = current[column];
+            }
+        }
+
+        if (smallest > 1) {
+            return 2;
+        }
+
+        var swap = previous;
+        previous = current;
+        current = swap;
+    }
+
+    return previous[right.length];
+}
+
+function customerProblemKnownWords() {
+    if (customerProblemKnownWords.list) {
+        return customerProblemKnownWords.list;
+    }
+
+    var list = [];
+    var seen = {};
+
+    function add(map) {
+        Object.keys(map).forEach(function (word) {
+            if (!seen[word]) {
+                seen[word] = 1;
+                list.push(word);
+            }
+        });
+    }
+
+    add(customerProblemStopWords);
+    add(customerProblemGenericWords);
+    add(customerProblemVagueWords);
+    add(customerProblemJunkWords);
+    customerProblemKnownWords.list = list;
+    return list;
+}
+
+function customerProblemCanonical(token) {
+    var squashed = customerProblemSquash(token);
+
+    if (customerProblemStopWords[squashed] || customerProblemIsGeneric(squashed) || customerProblemVagueWords[squashed] || customerProblemJunkWords[squashed]) {
+        return squashed;
+    }
+
+    if (squashed.length < 3) {
+        return squashed;
+    }
+
+    var known = customerProblemKnownWords();
+
+    for (var index = 0; index < known.length; index += 1) {
+        var word = known[index];
+
+        if (word.length < 3 || Math.abs(word.length - squashed.length) > 1) {
+            continue;
+        }
+
+        if (customerProblemEditDistance(squashed, word) <= 1) {
+            return word;
+        }
+    }
+
+    return squashed;
+}
+
+function customerProblemSpecificWords(text) {
+    return customerProblemWords(text).map(customerProblemCanonical).filter(function (word) {
+        return word.length >= 3 && !customerProblemStopWords[word] && !customerProblemIsGeneric(word) && !customerProblemVagueWords[word] && !customerProblemJunkWords[word];
+    });
+}
+
+function customerProblemIsSpecific(text) {
+    return customerProblemSpecificWords(text).length > 0;
+}
+
+function customerProblemWords(text) {
+    return String(text)
+        .toLowerCase()
+        .replace(/n['’]t/g, " not ")
+        .replace(/[^a-z0-9\s]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim()
+        .split(" ")
+        .filter(Boolean);
+}
+
+function customerProblemUsable(text) {
+    var words = customerProblemWords(text);
+
+    if (words.length < 3) {
+        return false;
+    }
+
+    var informative = words.filter(function (word) {
+        return word.length >= 3 && !customerProblemJunkWords[word] && !customerProblemStopWords[word] && !customerProblemIsGeneric(word);
+    });
+
+    return informative.length > 0;
+}
+
+function customerProblemReady(complaints) {
+    return complaints.filter(function (item) {
+        return customerProblemUsable(item.text);
+    });
+}
+
+function customerProblemDisplay(text) {
+    var sentence = String(text).replace(/\s+/g, " ").trim();
+    var breakAt = sentence.search(/[.!?]/);
+
+    if (breakAt > 0) {
+        sentence = sentence.slice(0, breakAt).trim();
+    }
+
+    var words = sentence.split(/\s+/).filter(Boolean);
+
+    if (words.length > 3 && /^(the|a|an)$/i.test(words[0])) {
+        words.shift();
+    }
+
+    if (words.length > 12) {
+        words = words.slice(0, 12);
+    }
+
+    var phrase = words.join(" ").replace(/^["']+|["']+$/g, "");
+
+    if (!phrase || !customerProblemUsable(phrase)) {
+        return "";
+    }
+
+    return phrase.charAt(0).toUpperCase() + phrase.slice(1);
+}
+
+function customerProblemMedoid(candidates, vectors, compareWith) {
+    var pool = compareWith || candidates;
+    var best = candidates[0];
+    var bestScore = -1;
+
+    candidates.forEach(function (member) {
+        var total = 0;
+        var compared = 0;
+
+        pool.forEach(function (other) {
+            if (other === member) {
+                return;
+            }
+
+            total += customerProblemDot(vectors[member], vectors[other]);
+            compared += 1;
+        });
+
+        var score = compared ? total / compared : 0;
+
+        if (score > bestScore) {
+            bestScore = score;
+            best = member;
+        }
+    });
+
+    return best;
+}
+
+function customerProblemStart(complaints, fingerprint) {
+    var token = ++customerProblemToken;
+    var ready = customerProblemReady(complaints);
+
+    if (ready.length < 3) {
+        customerProblemState = { fingerprint: fingerprint, phase: "ready", issues: [] };
+        return;
+    }
+
+    customerProblemEmbed(ready.map(function (item) {
+        return item.text;
+    })).then(function (vectors) {
+        if (token !== customerProblemToken) {
+            return;
+        }
+
+        var issues = customerProblemCluster(ready, vectors);
+
+        try {
+            localStorage.setItem("reviewrise_problem_model_seen", "1");
+        } catch (error) {}
+
+        customerProblemState = { fingerprint: fingerprint, phase: "ready", issues: issues };
+        customerProblemWriteCache(fingerprint, issues);
+        refreshAnalyticsProblems(analyticsView);
+    }).catch(function () {
+        if (token !== customerProblemToken) {
+            return;
+        }
+
+        console.error("Customer problem themes could not be loaded.");
+        customerProblemState = { fingerprint: fingerprint, phase: "error", issues: [] };
+        refreshAnalyticsProblems(analyticsView);
+    });
+}
+
+function customerIntelThemeCopy(rows) {
+    var complaints = customerProblemComplaints(rows);
+
+    if (complaints.length < 3 || customerProblemReady(complaints).length < 3) {
+        return { phase: "empty", issues: [] };
+    }
+
+    var fingerprint = customerProblemFingerprint(complaints);
+    var cached = customerProblemReadCache(fingerprint);
+
+    if (cached) {
+        customerProblemState = { fingerprint: fingerprint, phase: "ready", issues: cached };
+        return { phase: cached.length ? "ready" : "none", issues: cached };
+    }
+
+    if (customerProblemState.fingerprint === fingerprint && customerProblemState.phase === "ready") {
+        return {
+            phase: customerProblemState.issues.length ? "ready" : "none",
+            issues: customerProblemState.issues
+        };
+    }
+
+    if (customerProblemState.fingerprint === fingerprint && customerProblemState.phase === "error") {
+        return { phase: "error", issues: [] };
+    }
+
+    if (!(customerProblemState.fingerprint === fingerprint && customerProblemState.phase === "loading")) {
+        customerProblemState = { fingerprint: fingerprint, phase: "loading", issues: [] };
+        customerProblemStart(complaints, fingerprint);
+    }
+
+    var seen = false;
+
+    try {
+        seen = localStorage.getItem("reviewrise_problem_model_seen") === "1";
+    } catch (error) {
+        seen = false;
+    }
+
+    return { phase: seen ? "loading" : "preparing", issues: [] };
+}
+
+function customerIntelPriority(issue) {
+    var mentions = Number(issue && issue.mentions);
+    var recent = Number(issue && issue.recent);
+
+    if (!isFinite(mentions) || mentions < 3) {
+        return null;
+    }
+
+    if ((isFinite(recent) && recent >= 5) || mentions >= 6) {
+        return { label: "High priority", tone: "is-high" };
+    }
+
+    if (mentions >= 4) {
+        return { label: "Medium priority", tone: "is-medium" };
+    }
+
+    return { label: "Low priority", tone: "is-low" };
+}
+
+function analyticsProblemTrend(issue) {
+    var recent = Number(issue && issue.recent);
+    var previous = Number(issue && issue.previous);
+
+    if (!isFinite(recent) || !isFinite(previous) || previous <= 0) {
+        return { text: "Not enough history", tone: "is-none", mark: "" };
+    }
+
+    if (recent > previous) {
+        return { text: "Increasing concern", tone: "is-up", mark: "↑" };
+    }
+
+    if (recent < previous) {
+        return { text: "Declining", tone: "is-down", mark: "↓" };
+    }
+
+    return { text: "Stable", tone: "is-flat", mark: "" };
+}
+
+function analyticsProblemWhen(time, withTime) {
+    if (!isFinite(time)) {
+        return "";
+    }
+
+    var date = new Date(time);
+
+    if (isNaN(date.getTime())) {
+        return "";
+    }
+
+    var day = date.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+
+    if (!withTime) {
+        return day;
+    }
+
+    return day + " · " + date.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+}
+
+function analyticsProblemStatus(title, busy) {
+    var spinner = busy ? '<span class="intel-spinner" aria-hidden="true"></span>' : "";
+
+    return '<div class="intel-status' + (busy ? " is-busy" : "") + '" role="status">' + spinner + "<div><strong>" + customerIntelEscape(title) + "</strong></div></div>";
+}
+
+function analyticsProblemCards(issues) {
+    var cards = (issues || []).map(function (issue, index) {
+        var priority = customerIntelPriority(issue);
+        var badge = priority
+            ? '<span class="intel-priority ' + priority.tone + '">' + customerIntelEscape(priority.label) + "</span>"
+            : "";
+        var trend = analyticsProblemTrend(issue);
+        var trendMark = trend.mark ? '<span aria-hidden="true">' + trend.mark + "</span> " : "";
+        var counts = "";
+
+        if (issue.previous > 0) {
+            counts = '<p class="intel-meta">' + customerIntelEscape(issue.recent + " recent · " + issue.previous + " previous") + "</p>";
+        } else if (issue.recent > 0) {
+            counts = '<p class="intel-meta">' + customerIntelEscape(issue.recent + " recent") + "</p>";
+        }
+
+        var latest = analyticsProblemWhen(issue.latest, false);
+        var latestLine = latest ? '<p class="intel-quiet">Last mentioned ' + customerIntelEscape(latest) + "</p>" : "";
+
+        return '<article class="intel-problem"><span class="intel-rank">' + String(index + 1).padStart(2, "0") + '</span><div class="intel-problem-main"><div class="intel-problem-top"><h5>' + customerIntelEscape(issue.name) + "</h5>" + badge + '</div><p class="intel-meta">' + customerIntelEscape(issue.mentions + " similar reports") + "</p>" + counts + latestLine + '<p class="intel-trend ' + trend.tone + '">' + trendMark + customerIntelEscape(trend.text) + '</p><button type="button" class="intel-open" onclick="analyticsProblemOpenDrawer(' + index + ')">View related feedback</button></div></article>';
+    }).join("");
+
+    return '<h4>Recurring customer problems</h4><div class="intel-problem-list">' + cards + "</div>";
+}
+
+function analyticsProblemMarkup(copy, total) {
+    if (!total) {
+        return analyticsProblemStatus("No feedback yet.", false);
+    }
+
+    if (!copy || copy.phase === "empty") {
+        return analyticsProblemStatus("More written feedback is needed to identify recurring customer problems.", false);
+    }
+
+    if (copy.phase === "none") {
+        return analyticsProblemStatus("No strong recurring customer problem detected.", false);
+    }
+
+    if (copy.phase === "error") {
+        return analyticsProblemStatus("Recurring problem analysis is temporarily unavailable.", false);
+    }
+
+    if (copy.phase === "preparing") {
+        return analyticsProblemStatus("Preparing Customer Intelligence…", true);
+    }
+
+    if (copy.phase !== "ready") {
+        return analyticsProblemStatus("Analyzing customer feedback…", true);
+    }
+
+    return analyticsProblemCards(copy.issues);
+}
+
+function refreshAnalyticsProblems(rows) {
+    var node = document.getElementById("analyticsProblems");
+
+    if (!node) {
+        return;
+    }
+
+    var source = Array.isArray(rows) ? rows : [];
+    var copy = source.length ? customerIntelThemeCopy(source) : { phase: "empty", issues: [] };
+    node.innerHTML = analyticsProblemMarkup(copy, source.length);
+}
+
+function renderWrittenCoverage(feedback) {
+    var node = document.getElementById("writtenCoverage");
+
+    if (!node) {
+        return;
+    }
+
+    if (!feedback.length) {
+        node.textContent = "No feedback yet.";
+        return;
+    }
+
+    var written = 0;
+
+    feedback.forEach(function (item) {
+        if (item && typeof item.feedback === "string" && item.feedback.trim()) {
+            written += 1;
+        }
+    });
+
+    node.textContent = written + " of " + feedback.length + " feedback entries include written comments.";
+}
+
+function analyticsHealthKey(time, mode) {
+    var date = new Date(time);
+    var month = String(date.getMonth() + 1).padStart(2, "0");
+    var day = String(date.getDate()).padStart(2, "0");
+
+    if (mode === "month") {
+        return date.getFullYear() + "-" + month;
+    }
+
+    if (mode === "week") {
+        var weekday = date.getDay();
+        var monday = new Date(date.getFullYear(), date.getMonth(), date.getDate() - (weekday === 0 ? 6 : weekday - 1));
+        return monday.getFullYear() + "-" + String(monday.getMonth() + 1).padStart(2, "0") + "-" + String(monday.getDate()).padStart(2, "0");
+    }
+
+    return date.getFullYear() + "-" + month + "-" + day;
+}
+
+function analyticsHealthLabel(key, mode) {
+    var parts = key.split("-");
+    var date = new Date(Number(parts[0]), Number(parts[1]) - 1, parts[2] ? Number(parts[2]) : 1);
+
+    if (mode === "month") {
+        return date.toLocaleDateString(undefined, { month: "short", year: "numeric" });
+    }
+
+    return date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+}
+
+function renderHealth(feedback) {
+    var chart = document.getElementById("healthChart");
+
+    if (!chart) {
+        return;
+    }
+
+    var dated = [];
+
+    feedback.forEach(function (item) {
+        var rating = Number(item && item.rating);
+        var time = new Date(item && item.created_at).getTime();
+
+        if (rating < 1 || rating > 5 || isNaN(time)) {
+            return;
+        }
+
+        dated.push({ rating: rating, time: time });
+    });
+
+    function lowData() {
+        chart.innerHTML = '<div class="analytics-empty"><strong>Not enough dated ratings yet</strong><p>More feedback is needed before the average can be shown over time.</p></div>';
+    }
+
+    if (!feedback.length) {
+        chart.innerHTML = '<div class="analytics-empty"><strong>No feedback yet.</strong></div>';
+        return;
+    }
+
+    if (dated.length < 3) {
+        lowData();
+        return;
+    }
+
+    dated.sort(function (left, right) {
+        return left.time - right.time;
+    });
+
+    var spanDays = (dated[dated.length - 1].time - dated[0].time) / (24 * 60 * 60 * 1000);
+    var mode = spanDays <= 45 ? "day" : spanDays <= 120 ? "week" : "month";
+    var buckets = {};
+    var order = [];
+
+    dated.forEach(function (item) {
+        var key = analyticsHealthKey(item.time, mode);
+
+        if (!buckets[key]) {
+            buckets[key] = { sum: 0, count: 0 };
+            order.push(key);
+        }
+
+        buckets[key].sum += item.rating;
+        buckets[key].count += 1;
+    });
+
+    if (order.length < 2) {
+        lowData();
+        return;
+    }
+
+    var width = 640;
+    var height = 230;
+    var padL = 36;
+    var padR = 12;
+    var padT = 16;
+    var padB = 32;
+    var innerW = width - padL - padR;
+    var innerH = height - padT - padB;
+
+    function yFor(value) {
+        return padT + innerH - ((Math.max(1, Math.min(5, value)) - 1) / 4) * innerH;
+    }
+
+    var points = order.map(function (key, index) {
+        var bucket = buckets[key];
+        var average = bucket.sum / bucket.count;
+        var x = padL + (innerW * index) / (order.length - 1);
+        return {
+            x: x,
+            y: yFor(average),
+            label: analyticsHealthLabel(key, mode),
+            average: average,
+            count: bucket.count
+        };
+    });
+    var line = points.map(function (point) {
+        return point.x.toFixed(1) + "," + point.y.toFixed(1);
+    }).join(" ");
+    var area = "M" + points[0].x.toFixed(1) + "," + (padT + innerH) + " L" + points.map(function (point) {
+        return point.x.toFixed(1) + "," + point.y.toFixed(1);
+    }).join(" L") + " L" + points[points.length - 1].x.toFixed(1) + "," + (padT + innerH) + " Z";
+    var grid = [1, 3, 5].map(function (rating) {
+        var y = yFor(rating);
+        return '<line x1="' + padL + '" y1="' + y.toFixed(1) + '" x2="' + (width - padR) + '" y2="' + y.toFixed(1) + '" stroke="#e7eef5" stroke-width="1"/>' +
+            '<text x="4" y="' + (y + 4).toFixed(1) + '" fill="#8b97a8" font-size="11" font-family="Inter, Arial, sans-serif">' + rating + "</text>";
+    }).join("");
+    var labelIndexes = order.length <= 6
+        ? order.map(function (_, index) { return index; })
+        : [0, Math.floor((order.length - 1) / 2), order.length - 1];
+    var labels = labelIndexes.map(function (index) {
+        var point = points[index];
+        return '<text x="' + point.x.toFixed(1) + '" y="' + (height - 8) + '" text-anchor="middle" fill="#8b97a8" font-size="11" font-family="Inter, Arial, sans-serif">' + customerIntelEscape(point.label) + "</text>";
+    }).join("");
+    var dots = points.map(function (point) {
+        var title = point.label + " · " + point.average.toFixed(1) + " average · " + point.count + " rating" + (point.count === 1 ? "" : "s");
+        return '<circle cx="' + point.x.toFixed(1) + '" cy="' + point.y.toFixed(1) + '" r="3.5" fill="#fff" stroke="#2b7fff" stroke-width="2"><title>' + customerIntelEscape(title) + "</title></circle>";
+    }).join("");
+
+    chart.innerHTML = '<svg viewBox="0 0 ' + width + " " + height + '" role="img" aria-label="Average rating over time">' +
+        '<defs><linearGradient id="analyticsHealthArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b7fff" stop-opacity="0.28"/><stop offset="1" stop-color="#3ec6ff" stop-opacity="0.03"/></linearGradient></defs>' +
+        grid +
+        '<path d="' + area + '" fill="url(#analyticsHealthArea)"/>' +
+        '<polyline points="' + line + '" fill="none" stroke="#2b7fff" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>' +
+        dots + labels + "</svg>";
+}
+
+var analyticsProblemDrawerFocus = null;
+
+function analyticsProblemOpenDrawer(index) {
+    var drawer = document.getElementById("analyticsProblemDrawer");
+    var issue = customerProblemState.issues && customerProblemState.issues[index];
+
+    if (!drawer || !issue || !Array.isArray(issue.reports)) {
+        return;
+    }
+
+    var title = document.getElementById("analyticsDrawerTitle");
+    var count = drawer.querySelector(".problem-drawer-count");
+    var list = drawer.querySelector(".problem-drawer-list");
+    var countLabel = issue.reports.length + " matching report" + (issue.reports.length === 1 ? "" : "s");
+
+    if (title) {
+        title.textContent = issue.name;
+    }
+
+    if (count) {
+        count.textContent = countLabel;
+    }
+
+    if (list) {
+        list.innerHTML = issue.reports.map(function (report) {
+            var rating = Math.max(0, Math.min(5, Number(report.rating) || 0));
+            var stars = "★".repeat(rating) + "☆".repeat(5 - rating);
+            var tone = rating <= 1 ? " is-low" : rating === 2 ? " is-mid" : "";
+            var when = analyticsProblemWhen(report.time, true);
+            var business = report.business ? customerIntelEscape(report.business) : "";
+            var meta = [business, when ? customerIntelEscape(when) : ""].filter(Boolean).join(" · ");
+
+            return '<article class="problem-report' + tone + '"><div class="problem-report-stars" aria-label="' + rating + ' out of 5 stars">' + stars + "</div><p>" + customerIntelEscape(report.text) + "</p>" + (meta ? '<div class="problem-report-meta">' + meta + "</div>" : "") + "</article>";
+        }).join("");
+    }
+
+    analyticsProblemDrawerFocus = document.activeElement;
+    drawer.classList.add("is-open");
+    drawer.setAttribute("aria-hidden", "false");
+    document.body.classList.add("problem-drawer-open");
+
+    var closeButton = drawer.querySelector(".problem-drawer-close");
+
+    if (closeButton) {
+        closeButton.focus();
+    }
+}
+
+function analyticsProblemCloseDrawer() {
+    var drawer = document.getElementById("analyticsProblemDrawer");
+
+    if (!drawer || !drawer.classList.contains("is-open")) {
+        return;
+    }
+
+    drawer.classList.remove("is-open");
+    drawer.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("problem-drawer-open");
+
+    if (analyticsProblemDrawerFocus && typeof analyticsProblemDrawerFocus.focus === "function") {
+        analyticsProblemDrawerFocus.focus();
+    }
+
+    analyticsProblemDrawerFocus = null;
+}
+
+function analyticsProblemBindDrawer() {
+    var drawer = document.getElementById("analyticsProblemDrawer");
+
+    if (!drawer || drawer.getAttribute("data-bound") === "1") {
+        return;
+    }
+
+    drawer.setAttribute("data-bound", "1");
+    drawer.querySelector(".problem-drawer-backdrop").addEventListener("click", analyticsProblemCloseDrawer);
+    drawer.querySelector(".problem-drawer-close").addEventListener("click", analyticsProblemCloseDrawer);
+    document.addEventListener("keydown", function (event) {
+        if (!drawer.classList.contains("is-open")) {
+            return;
+        }
+
+        if (event.key === "Escape") {
+            analyticsProblemCloseDrawer();
+            return;
+        }
+
+        if (event.key !== "Tab") {
+            return;
+        }
+
+        var panel = drawer.querySelector(".problem-drawer-panel");
+        var focusable = panel.querySelectorAll("button, a[href], input, select, textarea, [tabindex]:not([tabindex='-1'])");
+
+        if (!focusable.length) {
+            return;
+        }
+
+        var first = focusable[0];
+        var last = focusable[focusable.length - 1];
+
+        if (event.shiftKey && document.activeElement === first) {
+            event.preventDefault();
+            last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+            event.preventDefault();
+            first.focus();
+        }
+    });
+}
+
 function csvCell(value) {
     var text = value == null ? "" : String(value);
 
@@ -1443,7 +2856,9 @@ if (
 }
 
 document.getElementById("analyticsRange").addEventListener("change", applyAnalyticsView);
+document.getElementById("analyticsBusiness").addEventListener("change", applyAnalyticsView);
 document.getElementById("analyticsExport").addEventListener("click", exportAnalyticsReport);
+analyticsProblemBindDrawer();
 
 function smoothNavigate(page) {
     document.body.classList.add("page-leaving");
@@ -1483,6 +2898,7 @@ function logout() {
     localStorage.removeItem("reviewrise_analytics_cache");
     localStorage.removeItem("reviewrise_reviewlinks_data");
     localStorage.removeItem(FEEDBACK_DATA_CACHE_KEY);
+    localStorage.removeItem("reviewrise_analytics_problem_cache");
     window.location.href = "dashboard.html";
 }
 
