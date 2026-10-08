@@ -2533,12 +2533,7 @@ function saveFeedbackDataCache(rows) {
     );
 }
 
-var lastDashboardFeedback = [];
-var customerInsightSnapshot = null;
-var customerInsightRequest = 0;
-
 function renderDashboardFeedback(feedback) {
-    lastDashboardFeedback = Array.isArray(feedback) ? feedback : [];
     const total = feedback.length;
     let ratingTotal = 0;
     let lowRatings = 0;
@@ -2700,7 +2695,7 @@ function renderCustomerIntelligence(feedback) {
     }
 
     var trend = customerIntelTrend(recent, previous, early);
-    var insightCopy = customerInsightCopy(customerInsightSnapshot);
+    var insightCopy = customerIntelThemeCopy(rows);
     var supportCount = total + " feedback response" + (total === 1 ? "" : "s");
     var supportAverage = "Average rating " + average;
     var attentionCard = customerIntelCount(attention, "Low-rating response", "Low-rating responses");
@@ -2710,7 +2705,7 @@ function renderCustomerIntelligence(feedback) {
 
     body.innerHTML =
         '<div class="customer-intel-hero ' + tone + '"><span class="customer-intel-badge">' + customerIntelEscape(badge) + "</span><h4>" + customerIntelEscape(headline) + '</h4><p class="customer-intel-meta"><span>' + customerIntelEscape(supportCount) + "</span><span>" + customerIntelEscape(supportAverage) + "</span></p></div>" +
-        customerIntelAlert(insightCopy.theme) +
+        customerIntelAlert(insightCopy.issue) +
         '<div class="customer-intel-metrics">' +
         customerIntelMetric("is-attention", customerIntelIcon("alert"), "Attention", attentionCard.figure, attentionCard.caption) +
         customerIntelMetric("is-positive", customerIntelIcon("star"), "Positive signals", positiveCard.figure, positiveCard.caption) +
@@ -2803,285 +2798,294 @@ function customerIntelEscape(value) {
         .replace(/"/g, "&quot;");
 }
 
-function customerInsightName(theme) {
-    if (!theme) {
-        return "";
-    }
+var customerIntelStopWords = {
+    a: 1, an: 1, the: 1, and: 1, or: 1, but: 1, if: 1, of: 1, to: 1, in: 1, on: 1, at: 1, by: 1, for: 1, with: 1, from: 1, into: 1, over: 1, after: 1, before: 1, about: 1, as: 1, up: 1, out: 1, off: 1, down: 1, than: 1, then: 1, so: 1,
+    is: 1, am: 1, are: 1, was: 1, were: 1, be: 1, been: 1, being: 1, do: 1, did: 1, does: 1, doing: 1, have: 1, has: 1, had: 1, having: 1,
+    i: 1, me: 1, my: 1, mine: 1, we: 1, our: 1, ours: 1, you: 1, your: 1, yours: 1, he: 1, she: 1, it: 1, they: 1, them: 1, their: 1, theirs: 1, his: 1, her: 1, hers: 1, its: 1, this: 1, that: 1, these: 1, those: 1, there: 1, here: 1,
+    not: 1, no: 1, nor: 1, very: 1, really: 1, just: 1, too: 1, also: 1, even: 1, still: 1, only: 1, again: 1, much: 1, more: 1, most: 1, some: 1, any: 1, all: 1, such: 1, own: 1,
+    what: 1, which: 1, who: 1, whom: 1, whose: 1, when: 1, where: 1, why: 1, how: 1,
+    would: 1, could: 1, should: 1, can: 1, will: 1, because: 1, while: 1, during: 1, through: 1, between: 1, without: 1, within: 1, around: 1, onto: 1, across: 1,
+    got: 1, get: 1, getting: 1, like: 1, one: 1, two: 1, us: 1,
+    im: 1, ive: 1, id: 1, dont: 1, didnt: 1, cant: 1, wasnt: 1, werent: 1, isnt: 1, arent: 1, wont: 1, thats: 1, theres: 1, theyre: 1, youre: 1, weve: 1, couldnt: 1, wouldnt: 1, shouldnt: 1
+};
 
-    if (typeof theme.name === "string" && theme.name.trim()) {
-        return theme.name.trim();
-    }
-
-    if (typeof theme.theme_name === "string" && theme.theme_name.trim()) {
-        return theme.theme_name.trim();
-    }
-
-    return "";
+function customerIntelContentTokens(text) {
+    return String(text)
+        .toLowerCase()
+        .replace(/['’]/g, "")
+        .replace(/[^a-z0-9\s]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim()
+        .split(" ")
+        .filter(function (token) {
+            return token.length >= 3 && !customerIntelStopWords[token];
+        });
 }
 
-function customerInsightNumber(theme, names) {
-    if (!theme) {
+function customerIntelTokenSet(tokens) {
+    var map = {};
+    var list = [];
+
+    tokens.forEach(function (token) {
+        if (!map[token]) {
+            map[token] = true;
+            list.push(token);
+        }
+    });
+
+    return { map: map, list: list };
+}
+
+function customerIntelJaccard(left, right) {
+    var shared = 0;
+
+    left.list.forEach(function (token) {
+        if (right.map[token]) {
+            shared += 1;
+        }
+    });
+
+    var union = left.list.length + right.list.length - shared;
+    return union ? shared / union : 0;
+}
+
+function customerIntelPairKey(left, right) {
+    return left < right ? left + "\0" + right : right + "\0" + left;
+}
+
+function customerIntelAddSupport(supports, key, index) {
+    if (!supports[key]) {
+        supports[key] = [];
+    }
+
+    if (supports[key].indexOf(index) === -1) {
+        supports[key].push(index);
+    }
+}
+
+function customerIntelPhrase(entries, indexes, left, right) {
+    var forward = 0;
+
+    indexes.forEach(function (index) {
+        var tokens = entries[index].tokens;
+
+        if (tokens.indexOf(left) <= tokens.indexOf(right)) {
+            forward += 1;
+        }
+    });
+
+    var words = forward * 2 >= indexes.length ? [left, right] : [right, left];
+    var phrase = words.join(" ");
+    return phrase.charAt(0).toUpperCase() + phrase.slice(1);
+}
+
+function customerIntelPairStats(entries, indexes, left, right) {
+    var adjacent = 0;
+    var position = 0;
+
+    indexes.forEach(function (index) {
+        var tokens = entries[index].tokens;
+        var leftAt = tokens.indexOf(left);
+        var rightAt = tokens.indexOf(right);
+        position += Math.min(leftAt, rightAt);
+
+        if (Math.abs(leftAt - rightAt) === 1) {
+            adjacent += 1;
+        }
+    });
+
+    return {
+        adjacent: adjacent,
+        position: indexes.length ? position / indexes.length : 0
+    };
+}
+
+function detectRecurringIssue(rows) {
+    var day = 24 * 60 * 60 * 1000;
+    var now = Date.now();
+    var entries = [];
+
+    rows.forEach(function (item) {
+        var rating = Number(item && item.rating);
+        var text = item && typeof item.feedback === "string" ? item.feedback.trim() : "";
+
+        if ((rating !== 1 && rating !== 2 && rating !== 3) || !text) {
+            return;
+        }
+
+        var time = new Date(item.created_at).getTime();
+        entries.push({
+            tokens: customerIntelContentTokens(text),
+            time: time
+        });
+    });
+
+    if (entries.length < 3) {
+        return { insufficient: true };
+    }
+
+    var sets = entries.map(function (entry) {
+        return customerIntelTokenSet(entry.tokens);
+    });
+    var supports = {};
+
+    sets.forEach(function (set, index) {
+        if (set.list.length < 2 || set.list.length > 4) {
+            return;
+        }
+
+        for (var left = 0; left < set.list.length; left += 1) {
+            for (var right = left + 1; right < set.list.length; right += 1) {
+                customerIntelAddSupport(supports, customerIntelPairKey(set.list[left], set.list[right]), index);
+            }
+        }
+    });
+
+    sets.forEach(function (seed, index) {
+        if (seed.list.length <= 4) {
+            return;
+        }
+
+        var members = [index];
+
+        sets.forEach(function (other, otherIndex) {
+            if (otherIndex === index || other.list.length < 2) {
+                return;
+            }
+
+            var fits = members.every(function (member) {
+                return customerIntelJaccard(sets[member], other) >= 2 / 3;
+            });
+
+            if (fits) {
+                members.push(otherIndex);
+            }
+        });
+
+        if (members.length < 3) {
+            return;
+        }
+
+        var shared = [];
+        seed.list.forEach(function (token) {
+            var inEvery = members.every(function (member) {
+                return sets[member].map[token];
+            });
+
+            if (inEvery) {
+                shared.push(token);
+            }
+        });
+
+        if (shared.length < 2) {
+            return;
+        }
+
+        for (var left = 0; left < shared.length; left += 1) {
+            for (var right = left + 1; right < shared.length; right += 1) {
+                var key = customerIntelPairKey(shared[left], shared[right]);
+
+                members.forEach(function (member) {
+                    customerIntelAddSupport(supports, key, member);
+                });
+            }
+        }
+    });
+
+    var best = null;
+
+    Object.keys(supports).forEach(function (key) {
+        var indexes = supports[key];
+
+        if (indexes.length < 3) {
+            return;
+        }
+
+        var words = key.split("\0");
+        var stats = customerIntelPairStats(entries, indexes, words[0], words[1]);
+        var candidate = {
+            key: key,
+            mentions: indexes.length,
+            adjacent: stats.adjacent,
+            position: stats.position,
+            name: customerIntelPhrase(entries, indexes, words[0], words[1]),
+            indexes: indexes
+        };
+
+        if (!best || candidate.mentions > best.mentions || (candidate.mentions === best.mentions && candidate.adjacent > best.adjacent) || (candidate.mentions === best.mentions && candidate.adjacent === best.adjacent && candidate.position < best.position) || (candidate.mentions === best.mentions && candidate.adjacent === best.adjacent && candidate.position === best.position && candidate.key < best.key)) {
+            best = candidate;
+        }
+    });
+
+    if (!best) {
         return null;
     }
 
-    for (var index = 0; index < names.length; index += 1) {
-        if (theme[names[index]] != null && theme[names[index]] !== "") {
-            var value = Number(theme[names[index]]);
-            return Number.isFinite(value) ? value : null;
-        }
-    }
+    var recent = 0;
+    var previous = 0;
+    var dated = 0;
 
-    return null;
-}
+    best.indexes.forEach(function (index) {
+        var time = entries[index].time;
 
-function customerInsightThemes(row) {
-    var themes = row && row.themes;
-
-    if (typeof themes === "string") {
-        try {
-            themes = JSON.parse(themes);
-        } catch (error) {
-            themes = null;
-        }
-    }
-
-    return Array.isArray(themes) ? themes : [];
-}
-
-function customerInsightTheme(row) {
-    return customerInsightThemes(row).filter(function (theme) {
-        var mentions = customerInsightNumber(theme, ["mentions", "mention_count"]);
-        var sentiment = String(theme && theme.sentiment || "").toLowerCase();
-        var name = customerInsightName(theme);
-
-        if (!name || sentiment !== "negative") {
-            return false;
+        if (!isFinite(time) || time > now) {
+            return;
         }
 
-        if (theme.is_recurring === false || theme.recurring === false) {
-            return false;
+        dated += 1;
+
+        if (time >= now - 30 * day) {
+            recent += 1;
+        } else if (time >= now - 60 * day) {
+            previous += 1;
         }
-
-        return mentions != null && mentions >= 3;
-    }).sort(function (first, second) {
-        var firstMentions = customerInsightNumber(first, ["mentions", "mention_count"]) || 0;
-        var secondMentions = customerInsightNumber(second, ["mentions", "mention_count"]) || 0;
-
-        if (secondMentions !== firstMentions) {
-            return secondMentions - firstMentions;
-        }
-
-        var firstTime = new Date(first.last_mentioned_at || first.lastMentionedAt || 0).getTime();
-        var secondTime = new Date(second.last_mentioned_at || second.lastMentionedAt || 0).getTime();
-
-        return (Number.isFinite(secondTime) ? secondTime : 0) - (Number.isFinite(firstTime) ? firstTime : 0);
-    })[0] || null;
-}
-
-function customerInsightCopy(snapshot) {
-    if (!snapshot || snapshot.phase === "loading") {
-        return { message: "Checking customer themes...", theme: null };
-    }
-
-    if (snapshot.phase === "error") {
-        return { message: "Recurring themes could not be loaded right now.", theme: null };
-    }
-
-    var written = snapshot.row ? Number(snapshot.row.written_count) : NaN;
-
-    if (snapshot.status === "insufficient_data" || (Number.isFinite(written) && written < 3)) {
-        return { message: "More written feedback is needed to identify recurring themes.", theme: null };
-    }
-
-    var theme = customerInsightTheme(snapshot.row);
-
-    if (!theme) {
-        return { message: "No recurring customer issue detected yet.", theme: null };
-    }
-
-    return { message: customerInsightName(theme), theme: theme };
-}
-
-function customerIntelAlert(theme) {
-    var themeName = customerInsightName(theme);
-
-    if (!themeName) {
-        return "";
-    }
-
-    var recent = customerInsightNumber(theme, ["recent_count", "recentCount"]);
-    var previous = customerInsightNumber(theme, ["previous_count", "previousCount"]);
-    var mentions = customerInsightNumber(theme, ["mentions", "mention_count"]);
-    var shownRecent = recent != null ? recent : mentions;
-
-    if (shownRecent == null) {
-        return "";
-    }
-
-    var increasing = recent != null && previous != null && previous >= 0 && recent > previous;
-    var detail = increasing
-        ? shownRecent + " recent mentions · " + previous + " in the previous period"
-        : "Mentioned " + shownRecent + " time" + (shownRecent === 1 ? "" : "s") + " recently.";
-    var trend = increasing ? '<p class="customer-intel-alert-trend">Increasing concern</p>' : "";
-
-    return '<aside class="customer-intel-alert"><p class="customer-intel-alert-kicker">Recurring issue detected</p><p class="customer-intel-alert-title">' + customerIntelEscape(themeName) + "</p>" + trend + '<p class="customer-intel-alert-meta">' + customerIntelEscape(detail) + "</p></aside>";
-}
-
-async function postCustomerAnalysis(token) {
-    var response = await fetch(SUPABASE_URL + "/functions/v1/analyze-customer-feedback", {
-        method: "POST",
-        headers: {
-            "Authorization": "Bearer " + token,
-            "apikey": SUPABASE_KEY,
-            "Content-Type": "application/json"
-        },
-        body: "{}"
     });
 
-    if (response.status === 401 || response.status === 403) {
-        return { ok: false, expired: true };
-    }
-
-    if (!response.ok) {
-        return { ok: false };
-    }
-
-    var payload = null;
-
-    try {
-        payload = await response.json();
-    } catch (error) {
-        payload = null;
-    }
-
-    var status = payload && typeof payload.status === "string" ? payload.status : "";
-
-    if (status && status !== "analyzed" && status !== "unchanged" && status !== "insufficient_data") {
-        return { ok: false };
-    }
-
-    return { ok: true, status: status };
+    return {
+        name: best.name,
+        mentions: best.mentions,
+        recent: recent,
+        previous: previous,
+        increasing: dated === best.mentions && recent + previous === best.mentions && recent > previous
+    };
 }
 
-async function fetchCustomerInsightRow(token) {
-    var userId = reviewRiseUserId(token);
+function customerIntelThemeCopy(rows) {
+    var issue = detectRecurringIssue(rows);
 
-    if (!userId) {
-        return { ok: false };
+    if (issue && issue.insufficient) {
+        return {
+            message: "More written feedback is needed to identify recurring themes.",
+            issue: null
+        };
     }
 
-    var response = await fetch(
-        SUPABASE_URL + "/rest/v1/customer_insights?user_id=eq." + encodeURIComponent(userId) + "&select=user_id,themes,written_count,generated_at&limit=1",
-        {
-            headers: {
-                "apikey": SUPABASE_KEY,
-                "Authorization": "Bearer " + token
-            }
-        }
-    );
-
-    if (response.status === 401 || response.status === 403) {
-        return { ok: false, expired: true };
+    if (!issue || !issue.name) {
+        return {
+            message: "No recurring customer issue detected yet.",
+            issue: null
+        };
     }
 
-    if (!response.ok) {
-        return { ok: false };
-    }
-
-    var rows = await response.json();
-
-    if (!Array.isArray(rows)) {
-        return { ok: false };
-    }
-
-    return { ok: true, row: rows[0] || null };
+    return {
+        message: issue.name,
+        issue: issue
+    };
 }
 
-async function refreshCustomerInsights(accessToken, hasRetried) {
-    var requestId = ++customerInsightRequest;
-    var token = accessToken || localStorage.getItem("reviewrise_token");
-
-    if (!token) {
-        customerInsightSnapshot = { phase: "error" };
-        renderCustomerIntelligence(lastDashboardFeedback);
-        return;
+function customerIntelAlert(issue) {
+    if (!issue || !issue.name || !issue.mentions) {
+        return "";
     }
 
-    customerInsightSnapshot = { phase: "loading" };
+    var detail = issue.increasing
+        ? issue.recent + " recent mentions · " + issue.previous + " in the previous period"
+        : "Mentioned " + issue.mentions + " time" + (issue.mentions === 1 ? "" : "s") + " recently.";
+    var trend = issue.increasing ? '<p class="customer-intel-alert-trend">Increasing concern</p>' : "";
 
-    try {
-        var analysis = await postCustomerAnalysis(token);
-
-        if (requestId !== customerInsightRequest) {
-            return;
-        }
-
-        if (analysis.expired && !hasRetried) {
-            var refreshed = await getValidAccessToken();
-
-            if (requestId !== customerInsightRequest) {
-                return;
-            }
-
-            if (!refreshed) {
-                customerInsightSnapshot = { phase: "error" };
-                renderCustomerIntelligence(lastDashboardFeedback);
-                return;
-            }
-
-            customerInsightRequest -= 1;
-            return refreshCustomerInsights(refreshed, true);
-        }
-
-        if (!analysis.ok) {
-            console.error("Customer insight analysis could not be completed.");
-            customerInsightSnapshot = { phase: "error" };
-            renderCustomerIntelligence(lastDashboardFeedback);
-            return;
-        }
-
-        var rowResult = await fetchCustomerInsightRow(token);
-
-        if (requestId !== customerInsightRequest) {
-            return;
-        }
-
-        if (rowResult.expired && !hasRetried) {
-            var nextToken = await getValidAccessToken();
-
-            if (requestId !== customerInsightRequest) {
-                return;
-            }
-
-            if (!nextToken) {
-                customerInsightSnapshot = { phase: "error" };
-                renderCustomerIntelligence(lastDashboardFeedback);
-                return;
-            }
-
-            customerInsightRequest -= 1;
-            return refreshCustomerInsights(nextToken, true);
-        }
-
-        if (!rowResult.ok) {
-            console.error("Customer insights could not be read.");
-            customerInsightSnapshot = { phase: "error" };
-            renderCustomerIntelligence(lastDashboardFeedback);
-            return;
-        }
-
-        customerInsightSnapshot = { phase: "ready", status: analysis.status, row: rowResult.row };
-        renderCustomerIntelligence(lastDashboardFeedback);
-    } catch (error) {
-        if (requestId !== customerInsightRequest) {
-            return;
-        }
-
-        console.error("Customer insights could not be loaded.");
-        customerInsightSnapshot = { phase: "error" };
-        renderCustomerIntelligence(lastDashboardFeedback);
-    }
+    return '<aside class="customer-intel-alert"><p class="customer-intel-alert-kicker">Recurring issue detected</p><p class="customer-intel-alert-title">' + customerIntelEscape(issue.name) + "</p>" + trend + '<p class="customer-intel-alert-meta">' + customerIntelEscape(detail) + "</p></aside>";
 }
+
 
 function dashboardEmptyState(withLinks) {
     var links = withLinks
@@ -3906,9 +3910,6 @@ if (!token) {
       if (intelligence) {
         intelligence.textContent = "Customer Intelligence could not be loaded.";
       }
-    } else {
-      customerInsightSnapshot = { phase: "error" };
-      renderCustomerIntelligence(readFeedbackDataCache() || []);
     }
 
     return;
@@ -3922,7 +3923,6 @@ const feedback = await response.json();
 
   saveFeedbackDataCache(feedback);
   renderDashboardFeedback(feedback);
-  refreshCustomerInsights(token);
 }
 
 
