@@ -1213,6 +1213,7 @@ a.menu-item:visited {
     margin-left: auto;
     display: flex;
     align-items: center;
+    gap: 8px;
 }
 
 .navbar-icon {
@@ -2205,6 +2206,195 @@ body.problem-drawer-open { overflow: hidden; }
     .customer-intel-metric:last-child { grid-column: 1 / -1; }
 }
 
+.alert-wrap { position: relative; }
+body.alert-panel-open { overflow: hidden; }
+
+.alert-bell {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #e7ecf2;
+    border-radius: 999px;
+    background: #fff;
+    color: #10284d;
+    cursor: pointer;
+}
+
+.alert-bell svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.alert-bell:hover { border-color: #b9d4ff; box-shadow: 0 6px 16px rgba(43, 127, 255, 0.12); }
+
+.alert-bell:focus-visible,
+.alert-mark:focus-visible,
+.alert-close:focus-visible,
+.alert-item:focus-visible {
+    outline: 2px solid #2b7fff;
+    outline-offset: 2px;
+}
+
+.alert-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border: 2px solid #fff;
+    border-radius: 999px;
+    background: #e15b5b;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 14px;
+    text-align: center;
+}
+
+.alert-backdrop { display: none; }
+
+.alert-panel {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    width: min(380px, calc(100vw - 32px));
+    max-height: min(70vh, 520px);
+    border: 1px solid #e7ecf2;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 16px 40px rgba(16, 40, 80, 0.12);
+    z-index: 60;
+    overflow: hidden;
+}
+
+.alert-panel[hidden],
+.alert-backdrop[hidden] { display: none; }
+
+.alert-panel-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 14px 10px;
+    border-bottom: 1px solid #eef2f6;
+}
+
+.alert-panel-head h2 {
+    margin: 0;
+    color: #0c1730;
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+}
+
+.alert-mark {
+    margin-left: auto;
+    padding: 6px 8px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: #2b7fff;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.alert-mark:hover { color: #1d4ed8; }
+
+.alert-close {
+    width: 32px;
+    height: 32px;
+    border: 1px solid #e7ecf2;
+    border-radius: 10px;
+    background: #fff;
+    color: #314158;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.alert-list {
+    min-height: 0;
+    flex: 1 1 auto;
+    overflow: auto;
+}
+
+.alert-panel-head { flex: none; }
+
+.alert-item {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    min-height: 44px;
+    padding: 12px 14px;
+    border: none;
+    border-bottom: 1px solid #eef2f6;
+    background: #fff;
+    color: #172033;
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.alert-item:last-child { border-bottom: none; }
+
+.alert-item.is-unread.is-critical { background: #fff7f7; }
+.alert-item.is-unread.is-warning { background: #fffaf3; }
+.alert-item.is-unread.is-info { background: #f5f9ff; }
+
+.alert-dot {
+    width: 8px;
+    height: 8px;
+    margin-top: 6px;
+    flex: none;
+    border-radius: 50%;
+    background: #2b7fff;
+}
+
+.alert-item.is-critical .alert-dot { background: #e15b5b; }
+.alert-item.is-warning .alert-dot { background: #d09212; }
+
+.alert-copy { min-width: 0; flex: 1; }
+
+.alert-copy strong {
+    display: block;
+    color: #0c1730;
+    font-size: 14px;
+    font-weight: 750;
+    letter-spacing: -0.2px;
+}
+
+.alert-copy p,
+.alert-meta {
+    margin: 3px 0 0;
+    color: #5c6d84;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+.alert-quote { color: #172033 !important; font-weight: 650 !important; }
+
+.alert-stars { color: #f5b400; letter-spacing: 1px; font-size: 13px; }
+
+.alert-empty { padding: 22px 16px 24px; }
+
+.alert-empty strong { display: block; color: #0c1730; font-size: 15px; }
+
+.alert-empty p { margin: 6px 0 0; color: #6d7c92; font-size: 13px; line-height: 1.45; }
+
 @media (max-width: 800px) {
     .close-menu-btn {
         display: none;
@@ -2259,6 +2449,33 @@ body.problem-drawer-open { overflow: hidden; }
     .top-navbar { padding: 14px 16px; }
 
     .top-navbar-title p { display: none; }
+
+.alert-backdrop.is-visible {
+    display: block;
+    position: fixed;
+    inset: 0;
+    border: none;
+    background: rgba(12, 23, 48, 0.28);
+    z-index: 70;
+}
+
+    .alert-panel {
+        position: fixed;
+        top: auto;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        max-height: min(78vh, 560px);
+        border-radius: 20px 20px 0 0;
+        z-index: 80;
+    }
+
+    .alert-bell,
+    .alert-close,
+    .alert-mark { min-width: 44px; min-height: 44px; }
+
+    .alert-mark { padding: 8px 10px; }
 
     .main { padding: 20px 16px 32px; }
 
@@ -2323,6 +2540,8 @@ body.problem-drawer-open { overflow: hidden; }
     .stat-card,
     .navbar-icon,
     .account-menu button,
+    .alert-bell,
+    .alert-panel,
     .dash-view-all,
     .dash-empty-actions button,
     .feedback-card,
@@ -2624,6 +2843,21 @@ body.page-leaving {
         </div>
       </div>
       <div class="top-navbar-actions">
+        <div class="alert-wrap" id="alertWrap">
+          <button class="alert-backdrop" id="alertBackdrop" type="button" hidden aria-label="Close notifications"></button>
+          <button class="alert-bell" id="alertBell" type="button" aria-label="Notifications" aria-expanded="false" aria-controls="alertPanel">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9a6 6 0 1 1 12 0c0 7 2 7 2 9H4c0-2 2-2 2-9"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>
+            <span class="alert-badge" id="alertBadge" hidden>0</span>
+          </button>
+          <div class="alert-panel" id="alertPanel" hidden role="dialog" aria-modal="false" aria-labelledby="alertPanelTitle">
+            <div class="alert-panel-head">
+              <h2 id="alertPanelTitle">Notifications</h2>
+              <button class="alert-mark" id="alertMarkRead" type="button" hidden>Mark all as read</button>
+              <button class="alert-close" id="alertClose" type="button" aria-label="Close notifications">×</button>
+            </div>
+            <div class="alert-list" id="alertList"></div>
+          </div>
+        </div>
         <button class="navbar-icon" id="accountButton" type="button" onclick="toggleAccountMenu()" aria-label="Account">
           <span class="account-avatar"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.2"/><path d="M6 19c1.2-3 3.2-4.5 6-4.5S16.8 16 18 19"/></svg></span>
           <svg class="account-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
@@ -2905,6 +3139,7 @@ function renderCustomerIntelligence(feedback) {
 
     if (!rows.length) {
         body.innerHTML = '<p class="customer-intel-empty">Customer Intelligence will appear once you start receiving feedback.</p>';
+        reviewRiseSyncAlerts(rows, { phase: "empty", issues: [] });
         return;
     }
 
@@ -2990,6 +3225,7 @@ function renderCustomerIntelligence(feedback) {
         customerIntelMetric("is-positive", customerIntelIcon("star"), "Positive signals", positiveCard.figure, positiveCard.caption) +
         customerIntelMetric("is-trend", customerIntelIcon("trend"), "Trend", trendFigure, trendCaption) +
         "</div>";
+    reviewRiseSyncAlerts(rows, insightCopy);
 }
 
 function customerIntelTrend(recent, previous, early) {
@@ -4842,7 +5078,621 @@ async function refreshAccessToken() {
     }
 }
   
+function reviewRiseAlertsKey() {
+    var token = localStorage.getItem("reviewrise_token");
+    var userId = token ? reviewRiseUserId(token) : "";
+
+    if (!userId) {
+        return "";
+    }
+
+    return "reviewrise_alerts_" + userId;
+}
+
+function reviewRiseHash(text) {
+    var hash = 5381;
+    var index;
+
+    for (index = 0; index < text.length; index += 1) {
+        hash = ((hash << 5) + hash) + text.charCodeAt(index);
+        hash |= 0;
+    }
+
+    return String(hash);
+}
+
+function reviewRiseReadAlerts() {
+    var key = reviewRiseAlertsKey();
+
+    if (!key) {
+        return [];
+    }
+
+    try {
+        var parsed = JSON.parse(localStorage.getItem(key) || "[]");
+        return Array.isArray(parsed) ? parsed.filter(function (alert) {
+            return alert && typeof alert.id === "string";
+        }) : [];
+    } catch (error) {
+        return [];
+    }
+}
+
+function reviewRiseWriteAlerts(alerts) {
+    var key = reviewRiseAlertsKey();
+
+    if (!key) {
+        return;
+    }
+
+    try {
+        localStorage.setItem(key, JSON.stringify(alerts.slice(0, 50)));
+    } catch (error) {
+        return;
+    }
+}
+
+function reviewRiseFeedbackKey(item) {
+    if (item && item.id != null && String(item.id) !== "") {
+        return String(item.id);
+    }
+
+    return reviewRiseHash([
+        item && item.created_at,
+        item && item.rating,
+        item && item.feedback,
+        item && item.business
+    ].join("\n"));
+}
+
+function reviewRiseClusterMembers(issue) {
+    return (issue && Array.isArray(issue.reports) ? issue.reports : []).map(function (report) {
+        return String(isFinite(report.time) ? report.time : "") + "|" + String(report.text || "").trim();
+    }).filter(Boolean).sort();
+}
+
+function reviewRiseSameCluster(left, right) {
+    if (!Array.isArray(left) || !Array.isArray(right) || !left.length || !right.length) {
+        return false;
+    }
+
+    var seen = {};
+    var shared = 0;
+
+    left.forEach(function (item) {
+        seen[item] = 1;
+    });
+    right.forEach(function (item) {
+        if (seen[item]) {
+            shared += 1;
+        }
+    });
+
+    var smaller = Math.min(left.length, right.length);
+    return smaller >= 3 && shared === smaller;
+}
+
+function reviewRiseMatchCluster(existing, members) {
+    var found = "";
+
+    existing.forEach(function (alert) {
+        if (alert && alert.clusterId && reviewRiseSameCluster(alert.members, members)) {
+            found = alert.clusterId;
+        }
+    });
+
+    return found || reviewRiseHash(members.join("\n"));
+}
+
+function reviewRiseLatestReport(issue) {
+    var latest = 0;
+
+    (issue.reports || []).forEach(function (report) {
+        if (isFinite(report.time) && report.time > latest) {
+            latest = report.time;
+        }
+    });
+
+    return latest;
+}
+
+function reviewRiseAlertWhen(time) {
+    if (!isFinite(time) || time <= 0) {
+        return "";
+    }
+
+    var date = new Date(time);
+
+    if (isNaN(date.getTime())) {
+        return "";
+    }
+
+    var now = new Date();
+    var startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    var startThen = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+    var dayDiff = Math.round((startToday - startThen) / 86400000);
+
+    if (dayDiff < 0) {
+        return date.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+    }
+
+    if (dayDiff === 0) {
+        var minutes = Math.floor((now.getTime() - time) / 60000);
+
+        if (minutes < 1) {
+            return "Just now";
+        }
+
+        if (minutes < 60) {
+            return minutes + " min ago";
+        }
+
+        return "Today";
+    }
+
+    if (dayDiff === 1) {
+        return "Yesterday";
+    }
+
+    if (dayDiff < 7) {
+        return dayDiff + " days ago";
+    }
+
+    return date.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+}
+
+function reviewRiseAlertPreview(text) {
+    var clean = String(text || "").replace(/\s+/g, " ").trim();
+
+    if (clean.length <= 90) {
+        return clean;
+    }
+
+    return clean.slice(0, 87).trim() + "…";
+}
+
+function reviewRiseSyncAlerts(rows, copy) {
+    if (!reviewRiseAlertsKey()) {
+        reviewRiseRenderAlerts([]);
+        return;
+    }
+
+    var existing = reviewRiseReadAlerts();
+    var byId = {};
+    var incoming = [];
+
+    existing.forEach(function (alert) {
+        byId[alert.id] = alert;
+    });
+
+    (Array.isArray(rows) ? rows : []).forEach(function (item) {
+        var rating = Number(item && item.rating);
+        var time = new Date(item && item.created_at).getTime();
+
+        if ((rating !== 1 && rating !== 2 && rating !== 3) || !isFinite(time)) {
+            return;
+        }
+
+        incoming.push({
+            id: "low:" + reviewRiseFeedbackKey(item),
+            type: "low",
+            tone: rating === 1 ? "critical" : "warning",
+            title: "New low-rating feedback",
+            time: time,
+            rating: rating,
+            preview: typeof item.feedback === "string" ? item.feedback.trim() : "",
+            business: item && item.business ? String(item.business).trim() : "",
+            feedbackId: item && item.id != null ? String(item.id) : ""
+        });
+    });
+
+    if (copy && copy.phase === "ready" && Array.isArray(copy.issues)) {
+        copy.issues.forEach(function (issue) {
+            var members = reviewRiseClusterMembers(issue);
+
+            if (members.length < 3 || !issue.name) {
+                return;
+            }
+
+            var clusterId = reviewRiseMatchCluster(existing, members);
+            var latest = reviewRiseLatestReport(issue);
+            var priority = customerIntelPriority(issue);
+            var priorityLabel = priority ? priority.label : "";
+
+            incoming.push({
+                id: "problem:" + clusterId,
+                type: "problem",
+                tone: "info",
+                title: "Recurring problem detected",
+                time: latest,
+                name: issue.name,
+                mentions: issue.mentions,
+                priority: priorityLabel,
+                clusterId: clusterId,
+                members: members
+            });
+
+            if (priority && priority.tone === "is-high") {
+                incoming.push({
+                    id: "high:" + clusterId,
+                    type: "high",
+                    tone: "critical",
+                    title: "High-priority customer issue",
+                    time: latest,
+                    name: issue.name,
+                    mentions: issue.mentions,
+                    recent: issue.recent,
+                    clusterId: clusterId,
+                    members: members
+                });
+            }
+
+            if (issue.increasing && Number(issue.previous) > 0 && Number(issue.recent) > Number(issue.previous)) {
+                incoming.push({
+                    id: "up:" + clusterId + ":" + issue.recent + ":" + issue.previous,
+                    type: "increasing",
+                    tone: "warning",
+                    title: "Customer issue is increasing",
+                    time: latest,
+                    name: issue.name,
+                    recent: issue.recent,
+                    previous: issue.previous,
+                    clusterId: clusterId,
+                    members: members
+                });
+            }
+        });
+    }
+
+    incoming.forEach(function (alert) {
+        var prior = byId[alert.id];
+        alert.read = !!(prior && prior.read);
+        byId[alert.id] = alert;
+    });
+
+    var merged = Object.keys(byId).map(function (id) {
+        return byId[id];
+    }).sort(function (left, right) {
+        return (right.time || 0) - (left.time || 0);
+    }).slice(0, 50);
+
+    reviewRiseWriteAlerts(merged);
+    reviewRiseRenderAlerts(merged);
+}
+
+function reviewRiseAlertDetails(alert) {
+    var when = reviewRiseAlertWhen(alert.time);
+    var whenLine = when ? '<p class="alert-meta">' + customerIntelEscape(when) + "</p>" : "";
+
+    if (alert.type === "low") {
+        var rating = Math.max(0, Math.min(5, Number(alert.rating) || 0));
+        var stars = "★".repeat(rating) + "☆".repeat(5 - rating);
+        var preview = reviewRiseAlertPreview(alert.preview);
+        var meta = [alert.business, when].filter(Boolean).join(" · ");
+
+        return '<span class="alert-stars" aria-label="' + rating + ' out of 5 stars">' + stars + "</span>" +
+            (preview ? "<p class=\"alert-quote\">" + customerIntelEscape("\u201c" + preview + "\u201d") + "</p>" : "") +
+            (meta ? '<p class="alert-meta">' + customerIntelEscape(meta) + "</p>" : "");
+    }
+
+    var quote = alert.name ? "<p class=\"alert-quote\">" + customerIntelEscape("\u201c" + alert.name + "\u201d") + "</p>" : "";
+
+    if (alert.type === "problem") {
+        var problemMeta = (alert.mentions || 0) + " similar reports" + (alert.priority ? " · " + alert.priority : "");
+        return quote + '<p class="alert-meta">' + customerIntelEscape(problemMeta) + "</p>" + whenLine;
+    }
+
+    if (alert.type === "high") {
+        var recent = Number(alert.recent);
+        var activity = (alert.mentions || 0) + " similar reports" + (isFinite(recent) && recent > 0 ? " · " + recent + " recent" : "");
+        return quote + '<p class="alert-meta">' + customerIntelEscape(activity) + "</p>" + whenLine;
+    }
+
+    return quote + '<p class="alert-meta">' + customerIntelEscape((alert.recent || 0) + " recent · " + (alert.previous || 0) + " previous") + "</p>" + whenLine;
+}
+
+function reviewRiseRenderAlerts(alerts) {
+    var list = document.getElementById("alertList");
+    var badge = document.getElementById("alertBadge");
+    var bell = document.getElementById("alertBell");
+    var mark = document.getElementById("alertMarkRead");
+    var items = Array.isArray(alerts) ? alerts : [];
+    var unread = items.filter(function (alert) { return !alert.read; }).length;
+
+    if (badge) {
+        badge.hidden = unread < 1;
+        badge.textContent = unread > 99 ? "99+" : String(unread);
+    }
+
+    if (bell) {
+        bell.setAttribute("aria-label", unread ? "Notifications, " + unread + " unread" : "Notifications");
+    }
+
+    if (mark) {
+        mark.hidden = unread < 1;
+    }
+
+    if (!list) {
+        return;
+    }
+
+    if (!items.length) {
+        list.innerHTML = '<div class="alert-empty"><strong>You\'re all caught up</strong><p>No important customer issues need your attention right now.</p></div>';
+        return;
+    }
+
+    list.innerHTML = items.map(function (alert) {
+        var unreadClass = alert.read ? "" : " is-unread";
+        var dot = alert.read ? "" : '<span class="alert-dot" aria-hidden="true"></span>';
+
+        return '<button type="button" class="alert-item is-' + customerIntelEscape(alert.tone || "info") + unreadClass + '" data-alert-id="' + customerIntelEscape(alert.id) + '">' +
+            dot +
+            '<span class="alert-copy"><strong>' + customerIntelEscape(alert.title || "Notification") + "</strong>" +
+            reviewRiseAlertDetails(alert) +
+            "</span></button>";
+    }).join("");
+}
+
+function reviewRiseMarkAlert(id, readAll) {
+    var alerts = reviewRiseReadAlerts().map(function (alert) {
+        if (readAll || alert.id === id) {
+            alert.read = true;
+        }
+
+        return alert;
+    });
+
+    reviewRiseWriteAlerts(alerts);
+    reviewRiseRenderAlerts(alerts);
+}
+
+function reviewRiseOpenAlert(id) {
+    var alerts = reviewRiseReadAlerts();
+    var alert = null;
+
+    alerts.forEach(function (item) {
+        if (item.id === id) {
+            alert = item;
+        }
+    });
+
+    reviewRiseMarkAlert(id, false);
+    reviewRiseClosePanel();
+
+    if (!alert) {
+        return;
+    }
+
+    if (alert.type === "low") {
+        smoothNavigate("feedback.html");
+        return;
+    }
+
+    var issues = customerProblemState.issues || [];
+    var index = -1;
+
+    issues.forEach(function (issue, issueIndex) {
+        if (index === -1 && reviewRiseSameCluster(reviewRiseClusterMembers(issue), alert.members)) {
+            index = issueIndex;
+        }
+    });
+
+    if (index >= 0) {
+        customerProblemOpenDrawer(index);
+    }
+}
+
+var reviewRiseAlertFocus = null;
+
+function reviewRisePlaceAlertPanel() {
+    var wrap = document.getElementById("alertWrap");
+    var panel = document.getElementById("alertPanel");
+    var backdrop = document.getElementById("alertBackdrop");
+
+    if (!wrap || !panel || !backdrop || panel.hidden) {
+        return;
+    }
+
+    if (window.innerWidth <= 800) {
+        document.body.appendChild(backdrop);
+        document.body.appendChild(panel);
+        backdrop.classList.add("is-visible");
+        document.body.classList.add("alert-panel-open");
+        return;
+    }
+
+    backdrop.classList.remove("is-visible");
+    wrap.appendChild(backdrop);
+    wrap.appendChild(panel);
+    document.body.classList.remove("alert-panel-open");
+}
+
+function reviewRiseOpenPanel() {
+    var wrap = document.getElementById("alertWrap");
+    var panel = document.getElementById("alertPanel");
+    var bell = document.getElementById("alertBell");
+    var backdrop = document.getElementById("alertBackdrop");
+    var accountMenu = document.getElementById("accountMenu");
+
+    if (!wrap || !panel || !bell) {
+        return;
+    }
+
+    if (accountMenu) {
+        accountMenu.classList.remove("open");
+    }
+
+    reviewRiseAlertFocus = document.activeElement;
+    wrap.classList.add("is-open");
+    panel.hidden = false;
+    bell.setAttribute("aria-expanded", "true");
+
+    if (backdrop) {
+        backdrop.hidden = false;
+    }
+
+    if (window.innerWidth <= 800) {
+        document.body.classList.add("alert-panel-open");
+    }
+
+    reviewRisePlaceAlertPanel();
+
+    var closeButton = document.getElementById("alertClose");
+
+    if (closeButton) {
+        closeButton.focus();
+    }
+}
+
+function reviewRiseClosePanel() {
+    var wrap = document.getElementById("alertWrap");
+    var panel = document.getElementById("alertPanel");
+    var bell = document.getElementById("alertBell");
+    var backdrop = document.getElementById("alertBackdrop");
+
+    if (!panel || panel.hidden) {
+        return;
+    }
+
+    if (wrap) {
+        wrap.classList.remove("is-open");
+    }
+
+    panel.hidden = true;
+
+    if (bell) {
+        bell.setAttribute("aria-expanded", "false");
+    }
+
+    if (backdrop) {
+        backdrop.hidden = true;
+        backdrop.classList.remove("is-visible");
+    }
+
+    document.body.classList.remove("alert-panel-open");
+
+    if (wrap && backdrop && panel) {
+        wrap.appendChild(backdrop);
+        wrap.appendChild(panel);
+    }
+
+    if (reviewRiseAlertFocus && typeof reviewRiseAlertFocus.focus === "function") {
+        reviewRiseAlertFocus.focus();
+    }
+
+    reviewRiseAlertFocus = null;
+}
+
+function reviewRiseTogglePanel() {
+    var panel = document.getElementById("alertPanel");
+
+    if (panel && !panel.hidden) {
+        reviewRiseClosePanel();
+        return;
+    }
+
+    reviewRiseOpenPanel();
+}
+
+function reviewRiseBindAlerts() {
+    var bell = document.getElementById("alertBell");
+    var panel = document.getElementById("alertPanel");
+    var list = document.getElementById("alertList");
+    var mark = document.getElementById("alertMarkRead");
+    var closeButton = document.getElementById("alertClose");
+    var backdrop = document.getElementById("alertBackdrop");
+
+    if (!bell || bell.getAttribute("data-bound") === "1") {
+        return;
+    }
+
+    bell.setAttribute("data-bound", "1");
+    bell.addEventListener("click", function (event) {
+        event.stopPropagation();
+        reviewRiseTogglePanel();
+    });
+
+    if (closeButton) {
+        closeButton.addEventListener("click", reviewRiseClosePanel);
+    }
+
+    if (backdrop) {
+        backdrop.addEventListener("click", reviewRiseClosePanel);
+    }
+
+    if (mark) {
+        mark.addEventListener("click", function () {
+            reviewRiseMarkAlert("", true);
+        });
+    }
+
+    if (list) {
+        list.addEventListener("click", function (event) {
+            var button = event.target.closest ? event.target.closest("[data-alert-id]") : null;
+
+            if (!button) {
+                return;
+            }
+
+            reviewRiseOpenAlert(button.getAttribute("data-alert-id"));
+        });
+    }
+
+    document.addEventListener("click", function (event) {
+        var wrap = document.getElementById("alertWrap");
+
+        if (!wrap || !wrap.classList.contains("is-open")) {
+            return;
+        }
+
+        if (wrap.contains(event.target) || (panel && panel.contains(event.target)) || (backdrop && backdrop.contains(event.target))) {
+            return;
+        }
+
+        reviewRiseClosePanel();
+    });
+
+    window.addEventListener("resize", reviewRisePlaceAlertPanel);
+
+    document.addEventListener("keydown", function (event) {
+        if (!panel || panel.hidden) {
+            return;
+        }
+
+        if (event.key === "Escape") {
+            reviewRiseClosePanel();
+            if (bell) {
+                bell.focus();
+            }
+            return;
+        }
+
+        if (event.key !== "Tab") {
+            return;
+        }
+
+        var focusable = panel.querySelectorAll("button, a[href], input, select, textarea, [tabindex]:not([tabindex='-1'])");
+
+        if (!focusable.length) {
+            return;
+        }
+
+        var first = focusable[0];
+        var last = focusable[focusable.length - 1];
+
+        if (event.shiftKey && document.activeElement === first) {
+            event.preventDefault();
+            last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+            event.preventDefault();
+            first.focus();
+        }
+    });
+}
+
 function logout() {
+
+  reviewRiseClosePanel();
 
   localStorage.removeItem(
     "reviewrise_token"
@@ -4866,6 +5716,7 @@ function logout() {
   "flex";
 
   showAuthPanel("authSignIn");
+  reviewRiseRenderAlerts([]);
 
 }
 
@@ -4991,6 +5842,7 @@ sidebar.classList.toggle("open");
 }  // closes toggleSidebar
 
 function toggleAccountMenu() {
+    reviewRiseClosePanel();
     const accountMenu = document.getElementById("accountMenu");
     accountMenu.classList.toggle("open");
 }
@@ -5026,6 +5878,9 @@ function toggleAccountMenu() {
     var collapsed = stored === "1" || (stored !== "0" && window.innerWidth <= 1100);
     applyCollapsed(collapsed);
 })();
+
+reviewRiseBindAlerts();
+reviewRiseRenderAlerts(reviewRiseReadAlerts());
   
 </script>
 
