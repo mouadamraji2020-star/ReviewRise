@@ -91,54 +91,11 @@
       justify-self: start;
     }
 
-    .brand .logo-mark {
-      width: 34px;
-      height: 26px;
-    }
-
-    .brand .logo-mark img {
-      width: 82px;
-      height: 82px;
-      transform: translate(-23px, -14px);
-    }
-
-    .brand .logo-name {
-      font-size: 20px;
-      letter-spacing: -0.6px;
-    }
-
-    .logo-mark {
-      width: 50px;
-      height: 38px;
-      overflow: hidden;
-      flex: none;
-      position: relative;
-    }
-
-    .logo-mark img {
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 118px;
-      height: 118px;
-      max-width: none;
-      transform: translate(-33px, -20px);
+    .brand-logo {
       display: block;
-    }
-
-    .logo-name {
-      font-size: 26px;
-      font-weight: 800;
-      letter-spacing: -0.9px;
-      color: #10284d;
-      line-height: 1;
-    }
-
-    .logo-name span {
-      background: linear-gradient(90deg, #1d4ed8 10%, #2f8bff 55%, #3ec6ff 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
+      height: 34px;
+      width: auto;
+      object-fit: contain;
     }
 
     .nav-center {
@@ -464,18 +421,12 @@
       padding-top: 78px;
     }
 
-    .phone-brand .logo-mark {
-      width: 42px;
-      height: 32px;
+    .phone-logo {
+      display: block;
+      height: 40px;
+      width: auto;
+      object-fit: contain;
     }
-
-    .phone-brand .logo-mark img {
-      width: 100px;
-      height: 100px;
-      transform: translate(-28px, -17px);
-    }
-
-    .phone-brand .logo-name { font-size: 20px; }
 
     .phone-question {
       margin: 28px 24px 0;
@@ -1028,7 +979,6 @@
 
     @media (max-width: 640px) {
       .wrap { width: calc(100% - 32px); }
-      .logo-name { font-size: 20px; }
       .btn-login, .btn-dark { height: 38px; padding: 0 12px; font-size: 13px; }
       h1 { font-size: 36px; letter-spacing: -1.1px; }
       .lede { font-size: 16px; }
@@ -1054,10 +1004,7 @@
   <header class="site-header">
     <div class="nav-frame">
       <a class="brand" href="index.html">
-        <span class="logo-mark">
-          <img src="../../../../.cursor/projects/c-Users-Dima-D-origine-OneDrive-Desktop-git-huuub-ReviewRise/assets/c__Users_Dima_D_origine_AppData_Roaming_Cursor_User_workspaceStorage_d4266493b40e73b4a60b85c5f30c5fcb_images_WhatsApp_Image_2026-10-04_at_22.28.59-ba0e545f-3261-45f1-8544-9cfc0ce6454a.jpg" alt="">
-        </span>
-        <span class="logo-name">Review<span>Rise</span></span>
+        <img class="brand-logo" src="assets/reviewrise-logo.png" alt="ReviewRise">
       </a>
       <nav class="nav-center" aria-label="Primary">
         <a href="#reviews">Reviews</a>
@@ -1124,10 +1071,7 @@
               <div class="island" aria-hidden="true"></div>
               <div class="phone-menu" aria-hidden="true"><span></span><span></span><span></span></div>
               <div class="phone-brand">
-                <span class="logo-mark">
-                  <img src="../../../../.cursor/projects/c-Users-Dima-D-origine-OneDrive-Desktop-git-huuub-ReviewRise/assets/c__Users_Dima_D_origine_AppData_Roaming_Cursor_User_workspaceStorage_d4266493b40e73b4a60b85c5f30c5fcb_images_WhatsApp_Image_2026-10-04_at_22.28.59-ba0e545f-3261-45f1-8544-9cfc0ce6454a.jpg" alt="">
-                </span>
-                <span class="logo-name">Review<span>Rise</span></span>
+                <img class="phone-logo" src="assets/reviewrise-logo.png" alt="ReviewRise">
               </div>
               <p class="phone-question">How was your experience?</p>
               <p class="phone-stars" aria-label="Five stars">★★★★★</p>
