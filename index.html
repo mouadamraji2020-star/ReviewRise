@@ -98,6 +98,21 @@
       object-fit: contain;
     }
 
+    .logo-name {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.6px;
+      color: #10284d;
+      line-height: 1;
+    }
+
+    .logo-name span {
+      background: linear-gradient(90deg, #1d4ed8 10%, #2f8bff 55%, #3ec6ff 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
     .nav-center {
       display: flex;
       align-items: center;
@@ -427,6 +442,8 @@
       width: auto;
       object-fit: contain;
     }
+
+    .phone-brand .logo-name { font-size: 20px; }
 
     .phone-question {
       margin: 28px 24px 0;
@@ -1004,7 +1021,8 @@
   <header class="site-header">
     <div class="nav-frame">
       <a class="brand" href="index.html">
-        <img class="brand-logo" src="assets/reviewrise-logo.png" alt="ReviewRise">
+        <img class="brand-logo" src="assets/reviewrise-logo.png" alt="">
+        <span class="logo-name">Review<span>Rise</span></span>
       </a>
       <nav class="nav-center" aria-label="Primary">
         <a href="#reviews">Reviews</a>
@@ -1071,7 +1089,8 @@
               <div class="island" aria-hidden="true"></div>
               <div class="phone-menu" aria-hidden="true"><span></span><span></span><span></span></div>
               <div class="phone-brand">
-                <img class="phone-logo" src="assets/reviewrise-logo.png" alt="ReviewRise">
+                <img class="phone-logo" src="assets/reviewrise-logo.png" alt="">
+                <span class="logo-name">Review<span>Rise</span></span>
               </div>
               <p class="phone-question">How was your experience?</p>
               <p class="phone-stars" aria-label="Five stars">★★★★★</p>
