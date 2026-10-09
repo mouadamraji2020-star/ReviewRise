@@ -188,6 +188,9 @@ html.reviewrise-signed-out #loginSection {
 
 .auth-mobile-nav { display: none; }
 
+.auth-menu-login,
+.auth-menu-start { display: none; }
+
 .auth-shell {
     position: relative;
     flex: 1;
@@ -907,6 +910,147 @@ form .login-field:last-of-type { margin-bottom: 0; }
     .auth-hero-copy h2 { font-size: 32px; }
     .auth-hero-copy p { font-size: 16px; }
     #authHeaderStart { padding: 0 10px; }
+}
+
+@media (max-width: 768px) {
+    .auth-topnav {
+        height: 64px;
+        width: calc(100% - 32px);
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 12px;
+    }
+    .auth-brand { gap: 8px; min-width: 0; }
+    .auth-logo-mark img { height: 26px; }
+    .auth-logo-name {
+        font-size: 17px;
+        letter-spacing: -0.45px;
+        white-space: nowrap;
+    }
+    .auth-header-actions { gap: 0; }
+    #authHeaderLogin,
+    #authHeaderStart { display: none; }
+    .auth-mobile-nav summary {
+        width: 44px;
+        height: 44px;
+        border: 0;
+        border-radius: 12px;
+        background: transparent;
+    }
+    .auth-mobile-nav summary span,
+    .auth-mobile-nav summary span::before,
+    .auth-mobile-nav summary span::after { width: 18px; }
+    .auth-mobile-nav summary span::before { top: -6px; }
+    .auth-mobile-nav summary span::after { top: 6px; }
+    .auth-mobile-nav nav {
+        left: auto;
+        right: 0;
+        min-width: 220px;
+        gap: 2px;
+        padding: 8px;
+        border-radius: 16px;
+        box-shadow: 0 16px 40px rgba(16, 24, 40, 0.12);
+    }
+    .auth-mobile-nav nav a,
+    .auth-menu-login,
+    .auth-menu-start {
+        display: flex;
+        align-items: center;
+        min-height: 44px;
+        padding: 0 12px;
+        border-radius: 10px;
+        font-family: inherit;
+        font-size: 15px;
+        font-weight: 600;
+    }
+    .auth-mobile-nav nav a { color: #1c2b42; }
+    .auth-mobile-nav nav a:hover { background: #f4f7fb; }
+    .auth-menu-login {
+        width: 100%;
+        margin-top: 4px;
+        border: 0;
+        border-top: 1px solid #e8edf3;
+        border-radius: 0;
+        background: transparent;
+        color: #1c2b42;
+        text-align: left;
+        cursor: pointer;
+    }
+    .auth-menu-start {
+        width: 100%;
+        justify-content: center;
+        border: 0;
+        border-radius: 10px;
+        background: #101828;
+        color: #fff;
+        cursor: pointer;
+    }
+    .auth-shell {
+        flex: none;
+        width: calc(100% - 44px);
+    }
+    .auth-hero {
+        min-height: 0;
+        padding: 14px 0 0;
+    }
+    .auth-hero-copy h2 {
+        font-size: 26px;
+        line-height: 1.08;
+        letter-spacing: -0.7px;
+    }
+    .auth-hero-copy p {
+        margin-top: 8px;
+        font-size: 14px;
+        line-height: 1.4;
+    }
+    .auth-art {
+        width: 100%;
+        max-width: 210px;
+        margin: 4px 0 0;
+    }
+    .auth-pane {
+        overflow: visible;
+        padding: 8px 0 20px;
+    }
+    .auth-panel-wrap {
+        --auth-pad-y: 16px;
+        --auth-pad-x: 16px;
+        --auth-lead: 76px;
+        width: 100%;
+        max-width: none;
+        margin-top: 0;
+        padding: 16px 16px 14px;
+        border-radius: 18px;
+    }
+    .auth-stage { display: block; }
+    .auth-panel[hidden] {
+        display: none !important;
+        transform: none;
+        filter: none;
+    }
+    .auth-tabs-slot,
+    #authSignUp .auth-tabs-slot { height: 48px; }
+    .auth-tab {
+        height: 40px;
+        padding: 0 8px;
+        font-size: 13px;
+        white-space: nowrap;
+    }
+    .auth-panel h2,
+    #authSignUp h2 { font-size: 22px; letter-spacing: -0.4px; }
+    .auth-panel .login-subtitle { margin-top: 4px; font-size: 13.5px; }
+    .login-field,
+    #authSignUp .login-field { margin-bottom: 12px; }
+    .login-field label,
+    #authSignUp .login-field label { margin-bottom: 5px; font-size: 13px; }
+    .login-field input,
+    #authSignUp .login-field input { height: 46px; }
+    #login,
+    .auth-submit,
+    #authSignUp .auth-submit {
+        height: 46px;
+        margin-top: 14px;
+    }
+    .auth-footnote { margin-top: 14px; }
 }
 
 @media (max-height: 800px) and (min-width: 861px) {
@@ -2594,6 +2738,8 @@ body.page-leaving {
                     <a href="index.html#how-it-works">How It Works</a>
                     <a href="index.html#pricing">Pricing</a>
                     <a href="index.html#contact">Contact</a>
+                    <button class="auth-menu-login" type="button" data-auth-proxy="authHeaderLogin">Login</button>
+                    <button class="auth-menu-start" type="button" data-auth-proxy="authHeaderStart">Get Started</button>
                 </nav>
             </details>
             <button id="authHeaderLogin" type="button">Login</button>
@@ -5741,6 +5887,14 @@ document.getElementById("authHeaderLogin").addEventListener("click", function ()
 });
 document.getElementById("authHeaderStart").addEventListener("click", function () {
   showAuthPanel("authSignUp");
+});
+document.querySelectorAll("[data-auth-proxy]").forEach(function (button) {
+  button.addEventListener("click", function () {
+    var menu = button.closest("details");
+    var target = document.getElementById(button.getAttribute("data-auth-proxy"));
+    if (menu) menu.removeAttribute("open");
+    if (target) target.click();
+  });
 });
 document.getElementById("showCreateAccountLink").addEventListener("click", function () {
   showAuthPanel("authSignUp");
