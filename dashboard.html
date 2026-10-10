@@ -1642,6 +1642,100 @@ a.menu-item:visited {
     letter-spacing: -0.1px;
 }
 
+.getting-started {
+    margin-top: 18px;
+    padding: 16px 18px 8px;
+    background: #fff;
+    border: 1px solid #e7ecf2;
+    border-radius: 18px;
+    box-shadow: 0 10px 28px rgba(30, 64, 120, 0.045);
+}
+
+.getting-started[hidden] { display: none !important; }
+
+.getting-started-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 4px;
+}
+
+.getting-started-head h2 {
+    margin: 0;
+    color: #0c1730;
+    font-size: 16px;
+    font-weight: 750;
+    letter-spacing: -0.3px;
+}
+
+.getting-started-head p {
+    margin: 0;
+    color: #6d7c92;
+    font-size: 13px;
+    font-weight: 650;
+}
+
+.getting-started-steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.getting-started-step {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 42px;
+    border-top: 1px solid #eef2f7;
+}
+
+.getting-started-mark {
+    width: 22px;
+    height: 22px;
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: #f3f6fb;
+    color: #6d7c92;
+    font-size: 11px;
+    font-weight: 750;
+}
+
+.getting-started-step.is-done .getting-started-mark {
+    background: #e8f8ef;
+    color: #067647;
+}
+
+.getting-started-label {
+    min-width: 0;
+    color: #10284d;
+    font-size: 14px;
+    font-weight: 650;
+    letter-spacing: -0.1px;
+}
+
+.getting-started-step.is-done .getting-started-label { color: #6d7c92; }
+
+.getting-started-action {
+    margin-left: auto;
+    height: 32px;
+    padding: 0 12px;
+    border: 1px solid #d7e6ff;
+    border-radius: 999px;
+    background: #f5f9ff;
+    color: #1d4ed8;
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.getting-started-action:hover { background: #eaf3ff; }
+
 .stats {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -2832,6 +2926,12 @@ body.alert-panel-open { overflow: hidden; }
 
     .dash-welcome h2 { font-size: 24px; }
 
+    .getting-started { margin-top: 14px; padding: 14px 14px 6px; }
+    .getting-started-head { align-items: flex-start; flex-direction: column; gap: 2px; }
+    .getting-started-step { align-items: flex-start; flex-wrap: wrap; padding: 8px 0; }
+    .getting-started-label { flex: 1 1 160px; padding-top: 2px; }
+    .getting-started-action { margin-left: 32px; }
+
     .feedback-card { grid-template-columns: 1fr; }
     .feedback-meta { text-align: left; }
 }
@@ -3194,6 +3294,14 @@ body.page-leaving {
           <p>Here’s what’s happening with your customer feedback.</p>
         </section>
 
+        <section class="getting-started" id="gettingStarted" hidden aria-labelledby="gettingStartedTitle">
+          <div class="getting-started-head">
+            <h2 id="gettingStartedTitle">Getting Started</h2>
+            <p id="gettingStartedCount">0 of 5 completed</p>
+          </div>
+          <ol class="getting-started-steps" id="gettingStartedSteps"></ol>
+        </section>
+
         <div class="stats">
           <div class="stat-card">
             <div class="stat-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 6h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H9l-4 3v-3H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z"/></svg></div>
@@ -3365,11 +3473,14 @@ function saveFeedbackDataCache(rows) {
 var dashboardAccountFeedback = [];
 var dashboardReviewLinks = [];
 var dashboardReviewLinksReady = false;
+var dashboardFeedbackReady = false;
 
 function renderDashboardFeedback(feedback) {
     dashboardAccountFeedback = Array.isArray(feedback) ? feedback : [];
+    dashboardFeedbackReady = true;
     renderBusinessSwitcher();
     paintDashboard(feedbackForSelectedBusiness(dashboardAccountFeedback));
+    renderGettingStarted();
 }
 
 function paintDashboard(feedback) {
@@ -3713,6 +3824,89 @@ async function loadOwnedReviewLinks(accessToken) {
     if (previous !== next && dashboardAccountFeedback.length) {
         paintDashboard(feedbackForSelectedBusiness(dashboardAccountFeedback));
     }
+
+    renderGettingStarted();
+}
+
+function gettingStartedStorageKey(suffix) {
+    var token = localStorage.getItem("reviewrise_token");
+    var userId = token ? reviewRiseUserId(token) : "";
+
+    return userId ? "reviewrise_getting_started_" + suffix + "_" + userId : "";
+}
+
+function gettingStartedFlag(suffix) {
+    var key = gettingStartedStorageKey(suffix);
+
+    if (!key) {
+        return false;
+    }
+
+    try {
+        return localStorage.getItem(key) === "1";
+    } catch (error) {
+        return false;
+    }
+}
+
+function markGettingStarted(suffix) {
+    var key = gettingStartedStorageKey(suffix);
+
+    if (!key) {
+        return;
+    }
+
+    try {
+        localStorage.setItem(key, "1");
+    } catch (error) {}
+}
+
+function renderGettingStarted() {
+    var root = document.getElementById("gettingStarted");
+    var count = document.getElementById("gettingStartedCount");
+    var list = document.getElementById("gettingStartedSteps");
+
+    if (!root || !count || !list) {
+        return;
+    }
+
+    if (!dashboardReviewLinksReady || !dashboardFeedbackReady) {
+        root.hidden = true;
+        return;
+    }
+
+    var hasBusiness = dashboardReviewLinks.some(function (link) {
+        return !!(link && link.business_name && link.business_name !== "Untitled business");
+    });
+    var hasReviewLink = dashboardReviewLinks.length > 0;
+    var hasFeedback = feedbackForCurrentAccount(dashboardAccountFeedback).length > 0;
+    var hasQr = gettingStartedFlag("qr");
+    var hasInsights = gettingStartedFlag("insights");
+    var steps = [
+        { done: hasBusiness, title: "Create your business", href: "review-link.html", action: "Create business" },
+        { done: hasReviewLink, title: "Create your first review link", href: "review-link.html", action: "Create link" },
+        { done: hasQr, title: "Generate QR / NFC", href: "qr-nfc.html", action: "Open QR & NFC" },
+        { done: hasFeedback, title: "Collect your first feedback", href: "review-link.html", action: "Share link" },
+        { done: hasInsights, title: "View your insights", href: "analytics.html", action: "View insights" }
+    ];
+    var completed = steps.filter(function (step) { return step.done; }).length;
+    var established = hasReviewLink && hasFeedback && !gettingStartedFlag("active");
+
+    if (established || completed === steps.length) {
+        root.hidden = true;
+        return;
+    }
+
+    markGettingStarted("active");
+    count.textContent = completed + " of 5 completed";
+    list.innerHTML = steps.map(function (step, index) {
+        return '<li class="getting-started-step' + (step.done ? " is-done" : "") + '">' +
+            '<span class="getting-started-mark" aria-hidden="true">' + (step.done ? "✓" : String(index + 1)) + "</span>" +
+            '<span class="getting-started-label">' + step.title + "</span>" +
+            (step.done ? "" : '<button class="getting-started-action" type="button" onclick="smoothNavigate(\'' + step.href + '\')">' + step.action + "</button>") +
+            "</li>";
+    }).join("");
+    root.hidden = false;
 }
 
 function bindBusinessSwitcher() {
@@ -6517,6 +6711,14 @@ document.querySelectorAll(".password-toggle").forEach(function (button) {
 })();
    
 function smoothNavigate(page) {
+    if (page === "qr-nfc.html") {
+        markGettingStarted("qr");
+    }
+
+    if (page === "analytics.html") {
+        markGettingStarted("insights");
+    }
+
     document.body.classList.add("page-leaving");
 
     setTimeout(function () {
