@@ -141,6 +141,7 @@
       transition: border-color 180ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 180ms cubic-bezier(0.22, 1, 0.36, 1), transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
     }
     .link-card:hover { border-color: #d5e4f7; box-shadow: 0 14px 28px rgba(30, 64, 120, 0.07); transform: translateY(-1px); }
+    .link-card.is-active-business { border-color: #8eb6ff; box-shadow: 0 0 0 3px rgba(43, 127, 255, 0.12), 0 8px 22px rgba(30, 64, 120, 0.045); }
     .link-visual {
       position: relative; min-height: 168px; display: flex; align-items: center; justify-content: center; overflow: hidden;
       border-radius: 16px; background: linear-gradient(180deg, #eef4ff, #f8fbff);
@@ -148,6 +149,7 @@
     .link-visual img { max-width: 78%; max-height: 78%; object-fit: contain; }
     .link-mark { color: #8eabda; font-size: 28px; font-weight: 800; letter-spacing: -0.6px; }
     .primary-badge { position: absolute; top: 10px; left: 10px; padding: 3px 8px; border-radius: 999px; background: #2b7fff; color: #fff; font-size: 11px; font-weight: 700; }
+    .active-badge { position: absolute; top: 10px; right: 10px; padding: 3px 8px; border-radius: 999px; background: #10284d; color: #fff; font-size: 11px; font-weight: 700; }
     .link-body { min-width: 0; display: flex; flex-direction: column; gap: 8px; }
     .link-body h3 { margin: 0; color: #10284d; font-size: 16px; font-weight: 750; letter-spacing: -0.3px; }
     .google-url, .public-url { display: flex; align-items: center; gap: 8px; min-width: 0; color: #5c6d84; font-size: 12.5px; font-weight: 500; }
@@ -601,6 +603,24 @@ function renderSummary(rows) {
     stats.innerHTML = html;
 }
 
+function activeBusinessKey() {
+    const token = localStorage.getItem("reviewrise_token");
+    const userId = token ? reviewLinksOwnerId(token) : "";
+    return userId ? "reviewrise_selected_business_" + userId : "";
+}
+
+function readActiveBusinessId() {
+    const key = activeBusinessKey();
+    return key ? (localStorage.getItem(key) || "") : "";
+}
+
+function writeActiveBusinessId(id) {
+    const key = activeBusinessKey();
+    if (!key) return;
+    if (!id) localStorage.removeItem(key);
+    else localStorage.setItem(key, String(id));
+}
+
 function customerReviewUrl(link) {
     return new URL("review.html", window.location.href).href + "?id=" + encodeURIComponent(link.id);
 }
@@ -659,11 +679,19 @@ function paintReviewLinks() {
         container.innerHTML = '<div class="filter-empty"><strong>No matching review links</strong><p>Try another business name.</p></div>';
         return;
     }
+    const activeBusinessId = readActiveBusinessId();
     visible.forEach(function (link) {
         const item = document.createElement("article");
-        item.className = "link-card review-link-item";
+        const isActiveBusiness = !!activeBusinessId && String(link.id) === String(activeBusinessId);
+        item.className = "link-card review-link-item" + (isActiveBusiness ? " is-active-business" : "");
         const visual = document.createElement("div");
         visual.className = "link-visual";
+        if (isActiveBusiness) {
+            const activeBadge = document.createElement("span");
+            activeBadge.className = "active-badge";
+            activeBadge.textContent = "Active";
+            visual.appendChild(activeBadge);
+        }
         if (link.is_primary) {
             const badge = document.createElement("span");
             badge.className = "primary-badge";
@@ -736,6 +764,14 @@ function paintReviewLinks() {
         }
         const actions = document.createElement("div");
         actions.className = "link-actions";
+        const activeAction = document.createElement("button");
+        activeAction.className = "action-btn";
+        activeAction.type = "button";
+        activeAction.textContent = isActiveBusiness ? "Use all businesses" : "Set as active business";
+        activeAction.addEventListener("click", function () {
+            writeActiveBusinessId(isActiveBusiness ? "" : link.id);
+            paintReviewLinks();
+        });
         const qr = document.createElement("button");
         qr.className = "action-btn";
         qr.type = "button";
@@ -774,6 +810,7 @@ function paintReviewLinks() {
                     writeReviewLinksCache(ownerId, cachedLinks.filter(function (row) { return String(row.id) !== String(link.id); }));
                 }
                 loadedReviewLinks = loadedReviewLinks.filter(function (row) { return String(row.id) !== String(link.id); });
+                if (String(link.id) === readActiveBusinessId()) writeActiveBusinessId("");
                 paintReviewLinks();
                 const successToast = document.getElementById("successToast");
                 successToast.querySelector("strong").textContent = "Review link deleted";
@@ -785,6 +822,7 @@ function paintReviewLinks() {
                 alert("Could not delete the review link.");
             }
         });
+        actions.appendChild(activeAction);
         actions.appendChild(qr);
         actions.appendChild(edit);
         actions.appendChild(remove);
