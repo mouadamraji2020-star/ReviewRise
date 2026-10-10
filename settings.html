@@ -841,6 +841,10 @@ body.page-leaving { opacity: 0; }
               <h2>Business Profile</h2>
               <p>These details appear on your customer review experience.</p>
             </div>
+            <div class="card info-card" id="businessSelectionNotice" hidden>
+              <p>Select a business before editing business-specific settings.</p>
+            </div>
+            <div id="businessSettingsForm" hidden>
             <div class="card">
               <div class="form-group full" style="margin-bottom: 18px;">
                 <label>Business Logo</label>
@@ -921,6 +925,11 @@ body.page-leaving { opacity: 0; }
                 <p class="field-hint">This link is opened for customers whose rating meets the positive review threshold.</p>
               </div>
             </div>
+            <div>
+              <button class="btn btn-primary" type="button" id="saveBusinessBtn" disabled>Save Changes</button>
+              <p id="businessStatus" class="settings-status" role="status"></p>
+            </div>
+            </div>
           </section>
 
           <section class="panel" id="panel-account">
@@ -986,6 +995,10 @@ body.page-leaving { opacity: 0; }
               <h2>Review Settings</h2>
               <p>Control how ratings are routed to Google or private feedback.</p>
             </div>
+            <div class="card info-card" id="reviewsSelectionNotice" hidden>
+              <p>Select a business before editing business-specific settings.</p>
+            </div>
+            <div id="reviewsSettingsForm" hidden>
             <div class="card">
               <h3>Positive review threshold</h3>
               <div class="threshold-options" id="thresholdOptions">
@@ -1010,6 +1023,8 @@ body.page-leaving { opacity: 0; }
                 </div>
                 <button class="toggle on" id="googleRedirectToggle" type="button" aria-pressed="true" aria-label="Google review redirect"><span class="toggle-knob"></span></button>
               </div>
+              <p id="reviewSettingsStatus" class="settings-status" role="status"></p>
+            </div>
             </div>
           </section>
 
@@ -1114,6 +1129,7 @@ document.getElementById("businessLogoInput").addEventListener("change", function
     const preview = document.getElementById("businessLogoPreview");
     const emptyIcon = document.getElementById("logoEmptyIcon");
     if (!file) return;
+    removeBusinessLogo = false;
     preview.src = URL.createObjectURL(file);
     preview.style.display = "block";
     emptyIcon.style.display = "none";
@@ -1123,6 +1139,7 @@ document.getElementById("removeLogoBtn").addEventListener("click", function () {
     const preview = document.getElementById("businessLogoPreview");
     const emptyIcon = document.getElementById("logoEmptyIcon");
     const input = document.getElementById("businessLogoInput");
+    removeBusinessLogo = true;
     preview.removeAttribute("src");
     preview.style.display = "none";
     emptyIcon.style.display = "block";
@@ -1131,13 +1148,8 @@ document.getElementById("removeLogoBtn").addEventListener("click", function () {
 
 document.querySelectorAll(".threshold-btn").forEach(function (button) {
     button.addEventListener("click", function () {
-        document.querySelectorAll(".threshold-btn").forEach(function (item) {
-            item.classList.remove("active");
-        });
-        button.classList.add("active");
-        const value = button.getAttribute("data-threshold");
-        document.getElementById("thresholdHelp").textContent =
-            "Ratings of " + value + " stars or above are directed to Google. Lower ratings collect private feedback.";
+        applyThreshold(button.getAttribute("data-threshold"));
+        if (businessSettingsReady) saveReviewSettings();
     });
 });
 
@@ -1145,6 +1157,7 @@ document.querySelectorAll(".threshold-btn").forEach(function (button) {
     document.getElementById(id).addEventListener("click", function () {
         const isOn = this.classList.toggle("on");
         this.setAttribute("aria-pressed", isOn ? "true" : "false");
+        if (businessSettingsReady) saveReviewSettings();
     });
 });
 
@@ -1640,7 +1653,449 @@ document.getElementById("updatePasswordBtn").addEventListener("click", async fun
     }
 });
 
+let loadedReviewLink = null;
+let businessSettingsReady = false;
+let removeBusinessLogo = false;
+let reviewSettingsSaving = false;
+let reviewSaveQueued = false;
+
+function settingsOwnerId(token) {
+    try {
+        const payload = token.split(".")[1];
+        const json = JSON.parse(atob(payload.replace(/-/g, "+").replace(/_/g, "/")));
+        return json.sub || "";
+    } catch (error) {
+        return "";
+    }
+}
+
+function readSelectedBusinessId() {
+    const token = localStorage.getItem("reviewrise_token");
+    const userId = token ? settingsOwnerId(token) : "";
+    if (!userId) return "";
+    try {
+        return localStorage.getItem("reviewrise_selected_business_" + userId) || "";
+    } catch (error) {
+        return "";
+    }
+}
+
+function emptyToNull(value) {
+    const trimmed = String(value || "").trim();
+    return trimmed ? trimmed : null;
+}
+
+function normalizeOptionalUrl(value) {
+    const trimmed = String(value || "").trim();
+    if (!trimmed) return "";
+    return trimmed.indexOf("://") === -1 ? "https://" + trimmed : trimmed;
+}
+
+function setChoiceToggle(id, isOn) {
+    const toggle = document.getElementById(id);
+    toggle.classList.toggle("on", !!isOn);
+    toggle.setAttribute("aria-pressed", isOn ? "true" : "false");
+}
+
+function applyThreshold(value) {
+    const normalized = String(value || "4");
+    document.querySelectorAll(".threshold-btn").forEach(function (item) {
+        item.classList.toggle("active", item.getAttribute("data-threshold") === normalized);
+    });
+    document.getElementById("thresholdHelp").textContent =
+        "Ratings of " + normalized + " stars or above are directed to Google. Lower ratings collect private feedback.";
+}
+
+function showBusinessSelectionPrompt(message) {
+    businessSettingsReady = false;
+    loadedReviewLink = null;
+    document.getElementById("businessSelectionNotice").hidden = false;
+    document.getElementById("reviewsSelectionNotice").hidden = false;
+    document.getElementById("businessSelectionNotice").querySelector("p").textContent = message;
+    document.getElementById("reviewsSelectionNotice").querySelector("p").textContent = message;
+    document.getElementById("businessSettingsForm").hidden = true;
+    document.getElementById("reviewsSettingsForm").hidden = true;
+    document.getElementById("saveBusinessBtn").disabled = true;
+}
+
+function showLoadedBusinessSettings() {
+    document.getElementById("businessSelectionNotice").hidden = true;
+    document.getElementById("reviewsSelectionNotice").hidden = true;
+    document.getElementById("businessSettingsForm").hidden = false;
+    document.getElementById("reviewsSettingsForm").hidden = false;
+}
+
+function showBusinessLogo(url) {
+    const preview = document.getElementById("businessLogoPreview");
+    const emptyIcon = document.getElementById("logoEmptyIcon");
+    if (url) {
+        preview.src = url;
+        preview.style.display = "block";
+        emptyIcon.style.display = "none";
+        return;
+    }
+    preview.removeAttribute("src");
+    preview.style.display = "none";
+    emptyIcon.style.display = "block";
+}
+
+function setBusinessType(value) {
+    const select = document.getElementById("businessType");
+    const type = value || "";
+    const exists = Array.prototype.some.call(select.options, function (option) {
+        return option.value === type;
+    });
+    if (type && !exists) {
+        const option = document.createElement("option");
+        option.value = type;
+        option.textContent = type;
+        select.appendChild(option);
+    }
+    select.value = type;
+}
+
+function fillBusinessSettings(link) {
+    businessSettingsReady = false;
+    loadedReviewLink = link;
+    removeBusinessLogo = false;
+    document.getElementById("businessLogoInput").value = "";
+    document.getElementById("businessName").value = link.business_name || "";
+    setBusinessType(link.business_type || "");
+    document.getElementById("businessPhone").value = link.phone || "";
+    document.getElementById("businessEmail").value = link.business_email || "";
+    document.getElementById("businessWebsite").value = link.website || "";
+    document.getElementById("businessAddress").value = link.address || "";
+    document.getElementById("businessCity").value = link.city || "";
+    document.getElementById("businessCountry").value = link.country || "";
+    document.getElementById("businessPostal").value = link.postal_code || "";
+    document.getElementById("googleReviewLink").value = link.google_review_link || "";
+    showBusinessLogo(link.logo_url || "");
+    applyThreshold(link.positive_threshold || 4);
+    setChoiceToggle("privateFeedbackToggle", link.private_feedback_enabled !== false);
+    setChoiceToggle("googleRedirectToggle", link.google_redirect_enabled !== false);
+    setSettingsStatus("businessStatus", "");
+    setSettingsStatus("reviewSettingsStatus", "");
+    showLoadedBusinessSettings();
+    document.getElementById("saveBusinessBtn").disabled = false;
+    businessSettingsReady = true;
+}
+
+function updateReviewLinksCache(linkId, changes) {
+    try {
+        const token = localStorage.getItem("reviewrise_token");
+        const ownerId = token ? settingsOwnerId(token) : "";
+        const parsed = JSON.parse(localStorage.getItem("reviewrise_reviewlinks_data") || "null");
+        if (!parsed || parsed.owner_id !== ownerId || !Array.isArray(parsed.links)) return;
+        parsed.links = parsed.links.map(function (link) {
+            if (String(link.id) !== String(linkId)) return link;
+            return Object.assign({}, link, changes);
+        });
+        localStorage.setItem("reviewrise_reviewlinks_data", JSON.stringify(parsed));
+    } catch (error) {}
+}
+
+async function fetchOwnReviewLink(path) {
+    let token = await getValidAccessToken();
+    if (!token) return null;
+
+    let response = await fetch(SUPABASE_URL + path, { headers: authHeaders(token) });
+
+    if (response.status === 401) {
+        token = await refreshStoredSession();
+        if (!token) {
+            logout();
+            return null;
+        }
+        response = await fetch(SUPABASE_URL + path, { headers: authHeaders(token) });
+    }
+
+    if (response.status === 401 || response.status === 403) {
+        logout();
+        return null;
+    }
+
+    return response;
+}
+
+const REVIEW_LINK_FIELDS = "id,business_name,business_type,phone,business_email,website,address,city,country,postal_code,logo_url,google_review_link,positive_threshold,private_feedback_enabled,google_redirect_enabled";
+
+async function loadSelectedBusinessSettings() {
+    const prompt = "Select a business before editing business-specific settings.";
+    const token = localStorage.getItem("reviewrise_token") || "";
+    const userId = settingsOwnerId(token) || accountUserId || "";
+    if (!userId) {
+        const freshToken = await getValidAccessToken();
+        if (!freshToken) return;
+    }
+
+    const ownerId = settingsOwnerId(localStorage.getItem("reviewrise_token") || "") || accountUserId;
+    if (!ownerId) return;
+
+    let targetId = readSelectedBusinessId();
+
+    if (!targetId) {
+        const listResponse = await fetchOwnReviewLink(
+            "/rest/v1/Reviewlinks?select=id&user_id=eq." + encodeURIComponent(ownerId) + "&limit=2"
+        );
+        if (!listResponse) return;
+        if (!listResponse.ok) {
+            showBusinessSelectionPrompt("These settings could not be loaded. Please try again.");
+            return;
+        }
+        const rows = await listResponse.json();
+        if (!Array.isArray(rows) || rows.length !== 1) {
+            showBusinessSelectionPrompt(prompt);
+            return;
+        }
+        targetId = String(rows[0].id);
+    }
+
+    const response = await fetchOwnReviewLink(
+        "/rest/v1/Reviewlinks?id=eq." + encodeURIComponent(targetId) +
+        "&user_id=eq." + encodeURIComponent(ownerId) +
+        "&select=" + REVIEW_LINK_FIELDS
+    );
+    if (!response) return;
+    if (!response.ok) {
+        showBusinessSelectionPrompt("These settings could not be loaded. Please try again.");
+        return;
+    }
+
+    const rows = await response.json();
+    const link = Array.isArray(rows) ? rows[0] : null;
+    if (!link || String(link.id) !== String(targetId)) {
+        showBusinessSelectionPrompt(prompt);
+        return;
+    }
+
+    fillBusinessSettings(link);
+}
+
+async function uploadBusinessLogo(token, file) {
+    const ownerId = settingsOwnerId(token) || accountUserId;
+    const extension = (file.name.split(".").pop() || "png").toLowerCase();
+    const fileName = ownerId + "-settings-" + loadedReviewLink.id + "-" + Date.now() + "." + extension;
+    const response = await fetch(SUPABASE_URL + "/storage/v1/object/business-logos/" + fileName, {
+        method: "POST",
+        headers: {
+            "apikey": SUPABASE_KEY,
+            "Authorization": "Bearer " + token,
+            "Content-Type": file.type || "image/png"
+        },
+        body: file
+    });
+    if (!response.ok) return false;
+    return SUPABASE_URL + "/storage/v1/object/public/business-logos/" + fileName;
+}
+
+async function patchSelectedReviewLink(changes) {
+    if (!loadedReviewLink) return false;
+    let token = await getValidAccessToken();
+    if (!token) {
+        logout();
+        return null;
+    }
+
+    const ownerId = settingsOwnerId(token) || accountUserId;
+    const path = "/rest/v1/Reviewlinks?id=eq." + encodeURIComponent(loadedReviewLink.id) +
+        "&user_id=eq." + encodeURIComponent(ownerId);
+
+    let response = await fetch(SUPABASE_URL + path, {
+        method: "PATCH",
+        headers: authHeaders(token, true),
+        body: JSON.stringify(changes)
+    });
+
+    if (response.status === 401) {
+        token = await refreshStoredSession();
+        if (!token) {
+            logout();
+            return null;
+        }
+        response = await fetch(SUPABASE_URL + path, {
+            method: "PATCH",
+            headers: authHeaders(token, true),
+            body: JSON.stringify(changes)
+        });
+    }
+
+    if (response.status === 401 || response.status === 403) {
+        logout();
+        return null;
+    }
+
+    if (!response.ok) return false;
+    const rows = await response.json();
+    return Array.isArray(rows) && rows.length > 0;
+}
+
+document.getElementById("saveBusinessBtn").addEventListener("click", async function () {
+    const button = this;
+    if (!loadedReviewLink || button.disabled) return;
+
+    const businessName = document.getElementById("businessName").value.trim();
+    const businessEmail = document.getElementById("businessEmail").value.trim();
+    const website = normalizeOptionalUrl(document.getElementById("businessWebsite").value);
+    const googleReviewLink = document.getElementById("googleReviewLink").value.trim();
+
+    if (!businessName) {
+        setSettingsStatus("businessStatus", "Enter the business name.", "error");
+        return;
+    }
+
+    if (businessEmail && !isValidEmail(businessEmail)) {
+        setSettingsStatus("businessStatus", "Enter a valid business email.", "error");
+        return;
+    }
+
+    if (website) {
+        try { new URL(website); } catch (error) {
+            setSettingsStatus("businessStatus", "Enter a valid website.", "error");
+            return;
+        }
+    }
+
+    if (googleReviewLink) {
+        try { new URL(googleReviewLink); } catch (error) {
+            setSettingsStatus("businessStatus", "Enter a valid Google review URL.", "error");
+            return;
+        }
+    }
+
+    button.disabled = true;
+    button.textContent = "Saving...";
+    setSettingsStatus("businessStatus", "");
+
+    try {
+        let token = await getValidAccessToken();
+        if (!token) {
+            logout();
+            return;
+        }
+
+        let logoUrl = loadedReviewLink.logo_url || null;
+        const logoFile = document.getElementById("businessLogoInput").files[0];
+        if (logoFile) {
+            const uploaded = await uploadBusinessLogo(token, logoFile);
+            if (uploaded === false) {
+                setSettingsStatus("businessStatus", "The business logo could not be uploaded.", "error");
+                return;
+            }
+            logoUrl = uploaded;
+        } else if (removeBusinessLogo) {
+            logoUrl = null;
+        }
+
+        const saved = await patchSelectedReviewLink({
+            business_name: businessName,
+            business_type: emptyToNull(document.getElementById("businessType").value),
+            phone: emptyToNull(document.getElementById("businessPhone").value),
+            business_email: emptyToNull(businessEmail),
+            website: emptyToNull(website),
+            address: emptyToNull(document.getElementById("businessAddress").value),
+            city: emptyToNull(document.getElementById("businessCity").value),
+            country: emptyToNull(document.getElementById("businessCountry").value),
+            postal_code: emptyToNull(document.getElementById("businessPostal").value),
+            google_review_link: googleReviewLink,
+            logo_url: logoUrl
+        });
+
+        if (saved === null) return;
+        if (!saved) {
+            setSettingsStatus("businessStatus", "These business details could not be saved. Please try again.", "error");
+            return;
+        }
+
+        loadedReviewLink.business_name = businessName;
+        loadedReviewLink.business_type = emptyToNull(document.getElementById("businessType").value);
+        loadedReviewLink.phone = emptyToNull(document.getElementById("businessPhone").value);
+        loadedReviewLink.business_email = emptyToNull(businessEmail);
+        loadedReviewLink.website = emptyToNull(website);
+        loadedReviewLink.address = emptyToNull(document.getElementById("businessAddress").value);
+        loadedReviewLink.city = emptyToNull(document.getElementById("businessCity").value);
+        loadedReviewLink.country = emptyToNull(document.getElementById("businessCountry").value);
+        loadedReviewLink.postal_code = emptyToNull(document.getElementById("businessPostal").value);
+        loadedReviewLink.google_review_link = googleReviewLink;
+        loadedReviewLink.logo_url = logoUrl;
+        removeBusinessLogo = false;
+        document.getElementById("businessLogoInput").value = "";
+        showBusinessLogo(logoUrl || "");
+        updateReviewLinksCache(loadedReviewLink.id, {
+            business_name: businessName,
+            logo_url: logoUrl,
+            google_review_link: googleReviewLink
+        });
+        setSettingsStatus("businessStatus", "Business details saved.", "success");
+    } catch (error) {
+        console.error("Business settings save failed:", error);
+        setSettingsStatus("businessStatus", "We could not reach ReviewRise. Please try again.", "error");
+    } finally {
+        button.disabled = false;
+        button.textContent = "Save Changes";
+    }
+});
+
+async function saveReviewSettings() {
+    if (!businessSettingsReady || !loadedReviewLink) return;
+    if (reviewSettingsSaving) {
+        reviewSaveQueued = true;
+        return;
+    }
+
+    const thresholdButton = document.querySelector(".threshold-btn.active");
+    const threshold = Number(thresholdButton ? thresholdButton.getAttribute("data-threshold") : 4);
+    const privateFeedback = document.getElementById("privateFeedbackToggle").classList.contains("on");
+    const googleRedirect = document.getElementById("googleRedirectToggle").classList.contains("on");
+    const previous = {
+        positive_threshold: loadedReviewLink.positive_threshold,
+        private_feedback_enabled: loadedReviewLink.private_feedback_enabled,
+        google_redirect_enabled: loadedReviewLink.google_redirect_enabled
+    };
+
+    reviewSettingsSaving = true;
+    setSettingsStatus("reviewSettingsStatus", "");
+
+    try {
+        const saved = await patchSelectedReviewLink({
+            positive_threshold: threshold,
+            private_feedback_enabled: privateFeedback,
+            google_redirect_enabled: googleRedirect
+        });
+
+        if (saved === null) return;
+        if (!saved) {
+            businessSettingsReady = false;
+            applyThreshold(previous.positive_threshold || 4);
+            setChoiceToggle("privateFeedbackToggle", previous.private_feedback_enabled !== false);
+            setChoiceToggle("googleRedirectToggle", previous.google_redirect_enabled !== false);
+            businessSettingsReady = true;
+            setSettingsStatus("reviewSettingsStatus", "These review settings could not be saved. Please try again.", "error");
+            return;
+        }
+
+        loadedReviewLink.positive_threshold = threshold;
+        loadedReviewLink.private_feedback_enabled = privateFeedback;
+        loadedReviewLink.google_redirect_enabled = googleRedirect;
+        setSettingsStatus("reviewSettingsStatus", "Review settings saved.", "success");
+    } catch (error) {
+        console.error("Review settings save failed:", error);
+        businessSettingsReady = false;
+        applyThreshold(previous.positive_threshold || 4);
+        setChoiceToggle("privateFeedbackToggle", previous.private_feedback_enabled !== false);
+        setChoiceToggle("googleRedirectToggle", previous.google_redirect_enabled !== false);
+        businessSettingsReady = true;
+        setSettingsStatus("reviewSettingsStatus", "We could not reach ReviewRise. Please try again.", "error");
+    } finally {
+        reviewSettingsSaving = false;
+        if (reviewSaveQueued) {
+            reviewSaveQueued = false;
+            saveReviewSettings();
+        }
+    }
+}
+
 loadAccountSettings();
+loadSelectedBusinessSettings();
 
 (function initSidebarCollapse() {
     var button = document.getElementById("sidebarCollapse");
