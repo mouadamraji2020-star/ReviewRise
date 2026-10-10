@@ -233,7 +233,15 @@
       backdrop-filter: blur(16px);
     }
 
-    .top-navbar-title { display: flex; align-items: center; gap: 12px; min-width: 0; }
+    .top-navbar-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .top-navbar-title > div:not(.biz-switch) { flex: none; }
 
     .top-navbar-title h1 {
       margin: 0;
@@ -251,7 +259,133 @@
       font-weight: 500;
     }
 
-    .top-navbar-actions { position: relative; margin-left: auto; display: flex; align-items: center; }
+    .top-navbar-actions { position: relative; margin-left: auto; display: flex; align-items: center; flex: none; }
+
+    .biz-switch {
+      position: relative;
+      flex: 0 1 240px;
+      min-width: 0;
+      max-width: 240px;
+    }
+
+    .biz-switch[hidden] { display: none !important; }
+
+    .biz-switch-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      max-width: 240px;
+      height: 40px;
+      padding: 0 10px 0 8px;
+      border: 1px solid #e7ecf2;
+      border-radius: 12px;
+      background: #fff;
+      color: #10284d;
+      box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+      font-family: inherit;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .biz-switch-btn:hover { border-color: #d5e0ee; }
+
+    .biz-switch-logo,
+    .biz-switch-item .biz-mark {
+      width: 22px;
+      height: 22px;
+      flex: none;
+      border-radius: 7px;
+      object-fit: cover;
+      background: #eef4ff;
+    }
+
+    .biz-switch-logo { display: flex; }
+    .biz-switch-logo[hidden] { display: none !important; }
+
+    .biz-switch-logo img {
+      width: 22px;
+      height: 22px;
+      border-radius: 7px;
+      object-fit: cover;
+    }
+
+    .biz-switch-item .biz-mark {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #1d4ed8;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .biz-switch-label,
+    .biz-switch-item .biz-name {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .biz-switch-label { flex: 1; text-align: left; }
+
+    .biz-switch-btn svg,
+    .biz-switch-check {
+      width: 16px;
+      height: 16px;
+      flex: none;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .biz-switch-btn svg { color: #7b8ba0; }
+
+    .biz-switch-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      z-index: 50;
+      width: min(300px, calc(100vw - 32px));
+      max-height: min(320px, 60vh);
+      overflow: auto;
+      padding: 6px;
+      background: #fff;
+      border: 1px solid #e8edf3;
+      border-radius: 14px;
+      box-shadow: 0 16px 40px rgba(16, 24, 40, 0.12);
+    }
+
+    .biz-switch-menu[hidden] { display: none !important; }
+
+    .biz-switch-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      min-height: 40px;
+      padding: 0 8px;
+      border: 0;
+      border-radius: 10px;
+      background: transparent;
+      color: #1c2b42;
+      font-family: inherit;
+      font-size: 13.5px;
+      font-weight: 600;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .biz-switch-item:hover,
+    .biz-switch-item.is-selected { background: #f4f7fb; }
+
+    .biz-switch-item .biz-name { flex: 1; }
+
+    .biz-switch-check { color: #2b7fff; opacity: 0; }
+    .biz-switch-item.is-selected .biz-switch-check { opacity: 1; }
 
     .navbar-icon {
       height: 40px;
@@ -647,8 +781,18 @@
       .sidebar-collapse { display: none; }
       .mobile-menu-btn { display: flex; }
       .app-workspace { margin-left: 0; }
-      .top-navbar { padding: 14px 16px; }
+      .top-navbar { padding: 14px 16px; flex-wrap: wrap; align-items: flex-start; row-gap: 8px; }
+      .top-navbar-title { flex: 1 1 auto; flex-wrap: wrap; row-gap: 8px; }
       .top-navbar-title p { display: none; }
+      .top-navbar-actions { align-self: flex-start; }
+      .biz-switch { flex: 1 1 100%; max-width: none; }
+      .biz-switch-btn { width: 100%; max-width: none; height: 36px; padding-right: 8px; }
+      .biz-switch-menu {
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 0;
+        width: min(300px, calc(100vw - 32px));
+      }
       .main { padding: 20px 16px 32px; }
       .page-intro h2 { font-size: 24px; }
       .feedback-toolbar { align-items: stretch; }
@@ -747,6 +891,14 @@
         <div>
           <h1>Feedback</h1>
           <p>Review and understand private customer feedback.</p>
+        </div>
+        <div class="biz-switch" id="bizSwitch" hidden>
+          <button class="biz-switch-btn" id="bizSwitchBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-controls="bizSwitchMenu">
+            <span class="biz-switch-logo" id="bizSwitchLogo" hidden></span>
+            <span class="biz-switch-label" id="bizSwitchLabel">All businesses</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="biz-switch-menu" id="bizSwitchMenu" role="listbox" aria-label="Businesses" hidden></div>
         </div>
       </div>
       <div class="top-navbar-actions">
@@ -867,8 +1019,365 @@ async function getValidAccessToken() {
       );
     }
 
+    var feedbackSource = [];
     var loadedFeedback = [];
     var feedbackRatingFilter = 0;
+    var feedbackReviewLinks = [];
+    var feedbackReviewLinksReady = false;
+
+    function reviewRiseUserId(token) {
+      try {
+        var payload = token.split(".")[1];
+        var json = JSON.parse(atob(payload.replace(/-/g, "+").replace(/_/g, "/")));
+        return json.sub || null;
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function feedbackEscape(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function feedbackAccountRows(feedback) {
+      var token = localStorage.getItem("reviewrise_token");
+      var userId = token ? reviewRiseUserId(token) : null;
+
+      if (!token || !Array.isArray(feedback)) {
+        return [];
+      }
+
+      return feedback.filter(function (item) {
+        if (!item || typeof item !== "object") {
+          return false;
+        }
+
+        if (item.user_id == null || item.user_id === "") {
+          return true;
+        }
+
+        return !!userId && String(item.user_id) === String(userId);
+      });
+    }
+
+    function businessSelectionKey() {
+      var token = localStorage.getItem("reviewrise_token");
+      var userId = token ? reviewRiseUserId(token) : "";
+      return userId ? "reviewrise_selected_business_" + userId : "";
+    }
+
+    function normalizeReviewLink(link) {
+      if (!link || link.id == null || String(link.id) === "") {
+        return null;
+      }
+
+      var token = localStorage.getItem("reviewrise_token");
+      var userId = token ? reviewRiseUserId(token) : "";
+
+      if (link.user_id != null && link.user_id !== "" && userId && String(link.user_id) !== String(userId)) {
+        return null;
+      }
+
+      return {
+        id: String(link.id),
+        business_name: link.business_name ? String(link.business_name).trim() : "Untitled business",
+        logo_url: typeof link.logo_url === "string" && /^https:\/\//i.test(link.logo_url) ? link.logo_url : "",
+        is_primary: link.is_primary === true
+      };
+    }
+
+    function readOwnedReviewLinks() {
+      var token = localStorage.getItem("reviewrise_token");
+      var userId = token ? reviewRiseUserId(token) : "";
+
+      if (!userId) {
+        return [];
+      }
+
+      try {
+        var parsed = JSON.parse(localStorage.getItem("reviewrise_reviewlinks_data") || "null");
+
+        if (!parsed || String(parsed.owner_id) !== String(userId) || !Array.isArray(parsed.links)) {
+          return [];
+        }
+
+        return parsed.links.map(normalizeReviewLink).filter(Boolean);
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function sortReviewLinks(links) {
+      return links.slice().sort(function (left, right) {
+        if (left.is_primary !== right.is_primary) {
+          return left.is_primary ? -1 : 1;
+        }
+
+        return left.business_name.localeCompare(right.business_name);
+      });
+    }
+
+    function readBusinessSelection() {
+      var key = businessSelectionKey();
+
+      if (!key) {
+        return "";
+      }
+
+      var saved = localStorage.getItem(key) || "";
+
+      if (!saved || !feedbackReviewLinksReady) {
+        return saved;
+      }
+
+      var exists = feedbackReviewLinks.some(function (link) {
+        return link.id === saved;
+      });
+
+      if (!exists) {
+        localStorage.removeItem(key);
+        return "";
+      }
+
+      return saved;
+    }
+
+    function writeBusinessSelection(id) {
+      var key = businessSelectionKey();
+
+      if (!key) {
+        return;
+      }
+
+      if (!id) {
+        localStorage.removeItem(key);
+        return;
+      }
+
+      localStorage.setItem(key, id);
+    }
+
+    function activeBusinessId() {
+      if (feedbackReviewLinksReady && feedbackReviewLinks.length < 2) {
+        return "";
+      }
+
+      return readBusinessSelection();
+    }
+
+    function feedbackForSelectedBusiness(rows) {
+      var account = feedbackAccountRows(rows);
+      var selected = activeBusinessId();
+
+      if (!selected) {
+        return account;
+      }
+
+      return account.filter(function (item) {
+        return item && String(item.review_link_id) === selected;
+      });
+    }
+
+    function selectedReviewLink() {
+      var selected = activeBusinessId();
+      var found = null;
+
+      if (!selected) {
+        return null;
+      }
+
+      feedbackReviewLinks.forEach(function (link) {
+        if (link.id === selected) {
+          found = link;
+        }
+      });
+
+      return found;
+    }
+
+    function businessMark(link) {
+      if (link && link.logo_url) {
+        return '<img class="biz-mark" src="' + feedbackEscape(link.logo_url) + '" alt="">';
+      }
+
+      var name = link && link.business_name ? link.business_name : "All";
+      var letter = name.trim().charAt(0).toUpperCase() || "A";
+      return '<span class="biz-mark">' + feedbackEscape(letter) + "</span>";
+    }
+
+    function renderBusinessSwitcher() {
+      var root = document.getElementById("bizSwitch");
+      var label = document.getElementById("bizSwitchLabel");
+      var logo = document.getElementById("bizSwitchLogo");
+      var menu = document.getElementById("bizSwitchMenu");
+
+      if (!root || !label || !logo || !menu) {
+        return;
+      }
+
+      var multiple = feedbackReviewLinks.length > 1;
+      root.hidden = !multiple;
+
+      if (!multiple) {
+        closeBusinessSwitcher();
+      }
+
+      var selected = selectedReviewLink();
+      label.textContent = selected ? selected.business_name : "All businesses";
+
+      if (selected && selected.logo_url) {
+        logo.hidden = false;
+        logo.innerHTML = '<img src="' + feedbackEscape(selected.logo_url) + '" alt="">';
+      } else if (selected) {
+        logo.hidden = false;
+        logo.innerHTML = businessMark(selected);
+      } else {
+        logo.hidden = true;
+        logo.innerHTML = "";
+      }
+
+      var current = activeBusinessId();
+      var options = [{ id: "", business_name: "All businesses", logo_url: "" }].concat(feedbackReviewLinks);
+      menu.innerHTML = options.map(function (link) {
+        var chosen = (link.id || "") === current;
+        return '<button type="button" class="biz-switch-item' + (chosen ? " is-selected" : "") + '" role="option" aria-selected="' + (chosen ? "true" : "false") + '" data-business-id="' + feedbackEscape(link.id) + '">' +
+          (link.id ? businessMark(link) : '<span class="biz-mark">All</span>') +
+          '<span class="biz-name">' + feedbackEscape(link.business_name) + "</span>" +
+          '<svg class="biz-switch-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5 9.2 17 19 7"/></svg></button>';
+      }).join("");
+    }
+
+    function closeBusinessSwitcher() {
+      var menu = document.getElementById("bizSwitchMenu");
+      var button = document.getElementById("bizSwitchBtn");
+
+      if (menu) {
+        menu.hidden = true;
+      }
+
+      if (button) {
+        button.setAttribute("aria-expanded", "false");
+      }
+    }
+
+    function toggleBusinessSwitcher() {
+      var menu = document.getElementById("bizSwitchMenu");
+      var button = document.getElementById("bizSwitchBtn");
+
+      if (!menu || !button) {
+        return;
+      }
+
+      var open = menu.hidden;
+      menu.hidden = !open;
+      button.setAttribute("aria-expanded", open ? "true" : "false");
+    }
+
+    async function loadOwnedReviewLinks(accessToken) {
+      feedbackReviewLinks = sortReviewLinks(readOwnedReviewLinks());
+      renderBusinessSwitcher();
+
+      var token = accessToken || await getValidAccessToken();
+      var ownerId = token ? reviewRiseUserId(token) : "";
+
+      if (!token || !ownerId) {
+        feedbackReviewLinksReady = true;
+        renderBusinessSwitcher();
+        return;
+      }
+
+      try {
+        var response = await fetch(
+          SUPABASE_URL + "/rest/v1/Reviewlinks?select=id,business_name,logo_url,is_primary,created_at,user_id&user_id=eq." + encodeURIComponent(ownerId) + "&order=created_at.desc",
+          {
+            headers: {
+              "apikey": SUPABASE_KEY,
+              "Authorization": "Bearer " + token
+            }
+          }
+        );
+
+        if (response.ok) {
+          var rows = await response.json();
+
+          if (Array.isArray(rows)) {
+            feedbackReviewLinks = sortReviewLinks(rows.map(normalizeReviewLink).filter(Boolean));
+          }
+        }
+      } catch (error) {
+        console.error("Review links could not be loaded:", error);
+      }
+
+      var previous = activeBusinessId();
+      feedbackReviewLinksReady = true;
+      var next = activeBusinessId();
+      renderBusinessSwitcher();
+
+      if (previous !== next && feedbackSource.length) {
+        applyFeedbackBusiness();
+      }
+    }
+
+    function bindBusinessSwitcher() {
+      var root = document.getElementById("bizSwitch");
+      var button = document.getElementById("bizSwitchBtn");
+      var menu = document.getElementById("bizSwitchMenu");
+
+      if (!root || !button || !menu || root.dataset.bound === "1") {
+        return;
+      }
+
+      root.dataset.bound = "1";
+
+      button.addEventListener("click", function (event) {
+        event.stopPropagation();
+        toggleBusinessSwitcher();
+      });
+
+      menu.addEventListener("click", function (event) {
+        var item = event.target.closest(".biz-switch-item");
+
+        if (!item) {
+          return;
+        }
+
+        writeBusinessSelection(item.getAttribute("data-business-id") || "");
+        closeBusinessSwitcher();
+        renderBusinessSwitcher();
+        applyFeedbackBusiness();
+      });
+
+      document.addEventListener("click", function (event) {
+        if (!root.contains(event.target)) {
+          closeBusinessSwitcher();
+        }
+      });
+
+      document.addEventListener("keydown", function (event) {
+        if (event.key !== "Escape" || !menu || menu.hidden) {
+          return;
+        }
+
+        var accountMenu = document.getElementById("accountMenu");
+
+        if (accountMenu && accountMenu.classList.contains("open")) {
+          return;
+        }
+
+        closeBusinessSwitcher();
+        button.focus();
+      });
+    }
+
+    function applyFeedbackBusiness() {
+      loadedFeedback = feedbackForSelectedBusiness(feedbackSource);
+      renderBusinessSwitcher();
+      paintFeedbackView();
+    }
 
     function feedbackStarCount(item) {
       var rating = Number(item.rating) || 0;
@@ -876,8 +1385,8 @@ async function getValidAccessToken() {
     }
 
     function renderFeedbackList(feedback) {
-      loadedFeedback = Array.isArray(feedback) ? feedback.slice() : [];
-      paintFeedbackView();
+      feedbackSource = Array.isArray(feedback) ? feedback.slice() : [];
+      applyFeedbackBusiness();
     }
 
     function paintFeedbackChips() {
@@ -1005,6 +1514,7 @@ async function getValidAccessToken() {
         return;
       }
 
+      const linksPromise = loadOwnedReviewLinks(token);
       let response;
 
       try {
@@ -1019,6 +1529,7 @@ async function getValidAccessToken() {
         );
       } catch (error) {
         console.error("Feedback load error:", error);
+        await linksPromise;
         return;
       }
 
@@ -1028,10 +1539,13 @@ async function getValidAccessToken() {
       }
 
       if (!response.ok) {
+        await linksPromise;
         return;
       }
 
       const feedback = await response.json();
+
+      await linksPromise;
 
       if (!Array.isArray(feedback)) {
         return;
@@ -1047,6 +1561,8 @@ async function getValidAccessToken() {
     ) {
       window.location.href = "dashboard.html";
     } else {
+      bindBusinessSwitcher();
+
       const cachedFeedback = readFeedbackDataCache();
 
       if (cachedFeedback) {
