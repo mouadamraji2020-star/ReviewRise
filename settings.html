@@ -2476,7 +2476,10 @@ function renderSubscriptionAccess(profile) {
         document.getElementById("subscriptionBillingStatus").textContent = state.subscriptionStatus;
     }
 
-    if (showTrial || state.kind === "pro" || state.kind === "business") {
+    if (state.kind === "trial-expired") {
+        note.hidden = false;
+        note.textContent = "Choose Pro or Business to continue.";
+    } else if (showTrial || state.kind === "pro" || state.kind === "business") {
         note.hidden = true;
         note.textContent = "";
     } else {

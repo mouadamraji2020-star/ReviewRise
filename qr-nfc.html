@@ -1584,6 +1584,94 @@ html.sidebar-boot .main {
   transition: none;
 }
 
+.trial-lock[hidden] { display: none !important; }
+.trial-lock {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 150px);
+  padding: 28px 0 48px;
+}
+.main.is-locked > :not(#trialLock) { display: none !important; }
+.is-trial-locked .alert-wrap,
+.is-trial-locked .biz-switch,
+.is-trial-locked .analytics-tools { display: none !important; }
+.trial-lock-card {
+  width: min(440px, 100%);
+  padding: 36px 32px 30px;
+  background: #fff;
+  border: 1px solid #e6edf5;
+  border-radius: 22px;
+  box-shadow: 0 18px 44px rgba(16, 40, 80, 0.08);
+  text-align: center;
+}
+.trial-lock-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 0 0 18px;
+  color: #10284d;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.4px;
+}
+.trial-lock-brand img { height: 22px; width: auto; }
+.trial-lock-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 16px;
+  border-radius: 16px;
+  background: #eef5ff;
+  color: #1d4ed8;
+}
+.trial-lock-icon svg {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.trial-lock-card h2 {
+  margin: 0;
+  color: #0c1730;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.6px;
+  line-height: 1.2;
+}
+.trial-lock-card p {
+  margin: 10px 0 0;
+  color: #5d6c84;
+  font-size: 15px;
+  line-height: 1.5;
+}
+.trial-lock-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 46px;
+  margin-top: 22px;
+  padding: 0 18px;
+  border-radius: 12px;
+  background: #10284d;
+  color: #fff;
+  font-size: 14.5px;
+  font-weight: 700;
+  letter-spacing: -0.1px;
+  text-decoration: none;
+}
+.trial-lock-btn:hover { background: #0b1220; }
+@media (max-width: 640px) {
+  .trial-lock-card { padding: 28px 20px 24px; }
+  .trial-lock-card h2 { font-size: 22px; }
+}
+
 </style>
 <script>
 (function () {
@@ -1667,6 +1755,17 @@ html.sidebar-boot .main {
     </header>
 
     <main class="main">
+      <section class="trial-lock" id="trialLock" hidden>
+        <div class="trial-lock-card">
+          <p class="trial-lock-brand"><img src="assets/reviewrise-logo.png" alt="">ReviewRise</p>
+          <div class="trial-lock-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+          </div>
+          <h2>Your 7-day free trial has ended</h2>
+          <p>Choose a plan to continue using ReviewRise.</p>
+          <a class="trial-lock-btn" href="settings.html#subscription">View Plans</a>
+        </div>
+      </section>
       <div class="qr-content">
         <div id="qrWorkspace">
           <div class="links-head">
@@ -2182,6 +2281,10 @@ async function getValidAccessToken() {
 }
 
 async function refreshQRReviewLinks() {
+  if (trialAccessLocked) {
+    return;
+  }
+
   if (
     !localStorage.getItem("reviewrise_token") &&
     !localStorage.getItem("reviewrise_refresh_token")
@@ -2982,21 +3085,92 @@ studio.querySelector('[data-action="print"]').addEventListener("click", async fu
   };
 });
 
-(function paintCachedReviewLinks() {
-  const token = localStorage.getItem("reviewrise_token");
-  const refreshToken = localStorage.getItem("reviewrise_refresh_token");
+var trialAccessLocked = false;
 
-  if (!token && !refreshToken) return;
-  if (!token) return;
+function showTrialLock() {
+  trialAccessLocked = true;
+  var main = document.querySelector(".main");
+  var lock = document.getElementById("trialLock");
 
-  const cachedLinks = readReviewLinksCache(reviewLinksOwnerId(token));
+  if (main) {
+    main.classList.add("is-locked");
+  }
+
+  if (lock) {
+    lock.hidden = false;
+  }
+
+  document.body.classList.add("is-trial-locked");
+}
+
+function reviewRiseTrialExpired(profile, now) {
+  var plan = profile && typeof profile.plan === "string" ? profile.plan.trim().toLowerCase() : "";
+  var endsAt = profile && profile.trial_ends_at != null && String(profile.trial_ends_at).trim() !== ""
+    ? Date.parse(profile.trial_ends_at)
+    : NaN;
+  var current = now instanceof Date ? now.getTime() : Date.now();
+
+  return plan === "trial" && isFinite(endsAt) && current >= endsAt;
+}
+
+async function reviewRiseTrialAccessExpired(token) {
+  var userId = token ? reviewLinksOwnerId(token) : null;
+
+  if (!token || !userId) {
+    return false;
+  }
+
+  try {
+    var response = await fetch(
+      SUPABASE_URL + "/rest/v1/profiles?id=eq." + encodeURIComponent(userId) + "&select=plan,trial_ends_at,subscription_status",
+      {
+        headers: {
+          "apikey": SUPABASE_KEY,
+          "Authorization": "Bearer " + token
+        }
+      }
+    );
+
+    if (!response.ok) {
+      return false;
+    }
+
+    var rows = await response.json();
+    return reviewRiseTrialExpired(Array.isArray(rows) ? rows[0] : null, new Date());
+  } catch (error) {
+    return false;
+  }
+}
+
+(async function startQrPage() {
+  if (
+    !localStorage.getItem("reviewrise_token") &&
+    !localStorage.getItem("reviewrise_refresh_token")
+  ) {
+    window.location.href = "dashboard.html";
+    return;
+  }
+
+  var token = await getValidAccessToken();
+
+  if (!token) {
+    window.location.href = "dashboard.html";
+    return;
+  }
+
+  if (await reviewRiseTrialAccessExpired(token)) {
+    showTrialLock();
+    return;
+  }
+
+  var cachedLinks = readReviewLinksCache(reviewLinksOwnerId(token));
 
   if (cachedLinks && cachedLinks.length) {
     loadQRReviewLinks(cachedLinks);
   }
-})();
 
-refreshQRReviewLinks();
+  refreshQRReviewLinks();
+})();
 
 function smoothNavigate(page) {
   document.body.classList.add("page-leaving");
