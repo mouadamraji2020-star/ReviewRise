@@ -1642,6 +1642,33 @@ a.menu-item:visited {
     letter-spacing: -0.1px;
 }
 
+.trial-status {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    max-width: 100%;
+    margin: 12px 0 0;
+    padding: 7px 12px;
+    border: 1px solid #d7e6f8;
+    border-radius: 999px;
+    background: #fff;
+    box-shadow: 0 8px 20px rgba(16, 40, 80, 0.05);
+    color: #10284d;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: -0.1px;
+    line-height: 1.35;
+    text-decoration: none;
+}
+
+.trial-status[hidden] { display: none !important; }
+
+.trial-status.is-expired {
+    border-color: #f3d7c4;
+    background: #fffaf6;
+    color: #8a4b12;
+}
+
 .getting-started {
     margin-top: 18px;
     padding: 16px 18px 8px;
@@ -3369,6 +3396,7 @@ body.page-leaving {
         <section class="dash-welcome">
           <h2 id="dashGreeting">Welcome back</h2>
           <p>Here’s what’s happening with your customer feedback.</p>
+          <a class="trial-status" id="trialStatus" href="settings.html#subscription" hidden></a>
         </section>
 
         <section class="getting-started" id="gettingStarted" hidden aria-labelledby="gettingStartedTitle">
@@ -5403,6 +5431,103 @@ function applyDashboardGreeting() {
 
     heading.textContent = first ? "Welcome back, " + first : "Welcome back";
 }
+
+function reviewRiseTrialInstant(value) {
+    if (value == null || String(value).trim() === "") {
+        return null;
+    }
+
+    var time = Date.parse(value);
+
+    if (!isFinite(time)) {
+        return null;
+    }
+
+    return time;
+}
+
+function reviewRiseTrialState(profile, now) {
+    var plan = profile && typeof profile.plan === "string" ? profile.plan.trim().toLowerCase() : "";
+    var endsAt = profile ? reviewRiseTrialInstant(profile.trial_ends_at) : null;
+    var current = now instanceof Date ? now.getTime() : Date.now();
+
+    if (plan !== "trial" || endsAt == null) {
+        return { kind: "hidden" };
+    }
+
+    if (current < endsAt) {
+        return {
+            kind: "trial-active",
+            daysRemaining: Math.ceil((endsAt - current) / 86400000)
+        };
+    }
+
+    return { kind: "trial-expired", daysRemaining: 0 };
+}
+
+function renderTrialStatus(profile) {
+    var banner = document.getElementById("trialStatus");
+
+    if (!banner) {
+        return;
+    }
+
+    var state = reviewRiseTrialState(profile, new Date());
+
+    banner.classList.remove("is-expired");
+
+    if (state.kind === "trial-active") {
+        var dayLabel = state.daysRemaining === 1 ? "1 day remaining" : state.daysRemaining + " days remaining";
+        banner.textContent = "Trial active · " + dayLabel;
+        banner.hidden = false;
+        return;
+    }
+
+    if (state.kind === "trial-expired") {
+        banner.textContent = "Trial expired · Choose a plan to continue";
+        banner.classList.add("is-expired");
+        banner.hidden = false;
+        return;
+    }
+
+    banner.hidden = true;
+    banner.textContent = "";
+}
+
+async function loadTrialStatus(token) {
+    var banner = document.getElementById("trialStatus");
+    var accessToken = token || localStorage.getItem("reviewrise_token");
+    var userId = accessToken ? reviewRiseUserId(accessToken) : null;
+
+    if (!banner || !accessToken || !userId) {
+        if (banner) {
+            banner.hidden = true;
+        }
+        return;
+    }
+
+    try {
+        var response = await fetch(
+            SUPABASE_URL + "/rest/v1/profiles?id=eq." + encodeURIComponent(userId) + "&select=plan,trial_started_at,trial_ends_at,subscription_status",
+            {
+                headers: {
+                    "apikey": SUPABASE_KEY,
+                    "Authorization": "Bearer " + accessToken
+                }
+            }
+        );
+
+        if (!response.ok) {
+            banner.hidden = true;
+            return;
+        }
+
+        var rows = await response.json();
+        renderTrialStatus(Array.isArray(rows) ? rows[0] : null);
+    } catch (error) {
+        banner.hidden = true;
+    }
+}
   
 function reviewRiseUserId(token) {
   try {
@@ -6078,6 +6203,7 @@ function showDashboard() {
   document.getElementById("mobileMenuBtn").style.display = "block";
 
   applyDashboardGreeting();
+  loadTrialStatus(localStorage.getItem("reviewrise_token"));
 
   bindBusinessSwitcher();
   loadOwnedReviewLinks();
@@ -6915,6 +7041,7 @@ document.querySelectorAll(".password-toggle").forEach(function (button) {
         dashboard.style.display = "block";
         document.getElementById("mobileMenuBtn").style.display = "block";
         applyDashboardGreeting();
+        loadTrialStatus(validToken);
         bindBusinessSwitcher();
         loadOwnedReviewLinks(validToken);
         loadFeedback(validToken);

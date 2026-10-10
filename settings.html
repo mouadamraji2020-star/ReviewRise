@@ -631,6 +631,33 @@ select:focus {
   font-size: 14px;
   line-height: 1.5;
 }
+.subscription-facts {
+  display: grid;
+  gap: 8px;
+  margin: 14px 0 0;
+}
+.subscription-facts[hidden] { display: none !important; }
+.subscription-facts div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 8px;
+  border-top: 1px solid #eef2f6;
+}
+.subscription-facts div[hidden] { display: none !important; }
+.subscription-facts dt {
+  color: #6d7c92;
+  font-size: 13px;
+  font-weight: 650;
+}
+.subscription-facts dd {
+  margin: 0;
+  color: #0c1730;
+  font-size: 13px;
+  font-weight: 750;
+  text-align: right;
+}
+.subscription-summary.is-trial-expired h3 { color: #8a4b12; }
 .plan-billing {
   display: inline-flex;
   gap: 4px;
@@ -1172,9 +1199,31 @@ body.page-leaving { opacity: 0; }
               <h2>Subscription</h2>
               <p>The 7-day free trial is the only unpaid access. A paid plan is required after it ends.</p>
             </div>
-            <div class="subscription-summary">
+            <div class="subscription-summary" id="subscriptionSummary">
               <p class="subscription-kicker">Current access</p>
               <h3 id="subscriptionAccess">No plan on file</h3>
+              <dl class="subscription-facts" id="subscriptionFacts" hidden>
+                <div id="subscriptionPlanRow">
+                  <dt>Current plan</dt>
+                  <dd id="subscriptionPlan"></dd>
+                </div>
+                <div id="subscriptionStatusRow">
+                  <dt>Trial status</dt>
+                  <dd id="subscriptionTrialStatus"></dd>
+                </div>
+                <div id="subscriptionEndsRow">
+                  <dt>Trial ends</dt>
+                  <dd id="subscriptionTrialEnds"></dd>
+                </div>
+                <div id="subscriptionDaysRow">
+                  <dt>Days remaining</dt>
+                  <dd id="subscriptionDaysRemaining"></dd>
+                </div>
+                <div id="subscriptionBillingRow" hidden>
+                  <dt>Subscription status</dt>
+                  <dd id="subscriptionBillingStatus"></dd>
+                </div>
+              </dl>
               <p id="subscriptionAccessNote">A trial end date has not been saved for this account, so no countdown is shown.</p>
             </div>
             <div class="plan-billing" role="group" aria-label="Paid plan billing period">
@@ -1312,6 +1361,10 @@ document.querySelectorAll(".settings-nav-btn").forEach(function (btn) {
         showSection(btn.getAttribute("data-section"));
     });
 });
+
+if (window.location.hash === "#subscription") {
+    showSection("subscription");
+}
 
 document.getElementById("businessLogoInput").addEventListener("change", function () {
     const file = this.files[0];
@@ -1615,6 +1668,7 @@ async function loadAccountSettings() {
     setNotificationToggle(!!(profile && profile.email_on_private_feedback));
     document.getElementById("saveAccountBtn").disabled = false;
     document.getElementById("feedbackEmailToggle").disabled = false;
+    loadSubscriptionAccess(token);
 }
 
 document.getElementById("saveAccountBtn").addEventListener("click", async function () {
@@ -2311,7 +2365,161 @@ document.querySelectorAll(".plan-billing-btn").forEach(function (button) {
     });
 });
 
+function reviewRiseTrialInstant(value) {
+    if (value == null || String(value).trim() === "") {
+        return null;
+    }
+
+    var time = Date.parse(value);
+
+    if (!isFinite(time)) {
+        return null;
+    }
+
+    return time;
+}
+
+function reviewRiseTrialState(profile, now) {
+    var plan = profile && typeof profile.plan === "string" ? profile.plan.trim().toLowerCase() : "";
+    var endsAt = profile ? reviewRiseTrialInstant(profile.trial_ends_at) : null;
+    var subscriptionStatus = profile && profile.subscription_status != null && String(profile.subscription_status).trim()
+        ? String(profile.subscription_status).trim()
+        : "";
+    var current = now instanceof Date ? now.getTime() : Date.now();
+
+    if (plan === "trial" && endsAt != null) {
+        if (current < endsAt) {
+            return {
+                kind: "trial-active",
+                planLabel: "7-Day Free Trial",
+                statusLabel: "Trial active",
+                endsAt: endsAt,
+                daysRemaining: Math.ceil((endsAt - current) / 86400000),
+                subscriptionStatus: subscriptionStatus
+            };
+        }
+
+        return {
+            kind: "trial-expired",
+            planLabel: "7-Day Free Trial",
+            statusLabel: "Trial expired",
+            endsAt: endsAt,
+            daysRemaining: 0,
+            subscriptionStatus: subscriptionStatus
+        };
+    }
+
+    if (plan === "pro" || plan === "business") {
+        return {
+            kind: plan,
+            planLabel: plan === "pro" ? "Pro" : "Business",
+            statusLabel: "",
+            endsAt: null,
+            daysRemaining: null,
+            subscriptionStatus: subscriptionStatus
+        };
+    }
+
+    return {
+        kind: plan === "trial" ? "trial-undated" : "none",
+        planLabel: plan === "trial" ? "7-Day Free Trial" : "No plan on file",
+        statusLabel: "",
+        endsAt: null,
+        daysRemaining: null,
+        subscriptionStatus: subscriptionStatus
+    };
+}
+
+function formatTrialDate(time) {
+    try {
+        return new Date(time).toLocaleDateString("en-US", {
+            month: "long",
+            day: "numeric",
+            year: "numeric"
+        });
+    } catch (error) {
+        return "";
+    }
+}
+
+function renderSubscriptionAccess(profile) {
+    var summary = document.getElementById("subscriptionSummary");
+    var access = document.getElementById("subscriptionAccess");
+    var note = document.getElementById("subscriptionAccessNote");
+    var facts = document.getElementById("subscriptionFacts");
+    var trialButton = document.getElementById("startTrialBtn");
+    var state = reviewRiseTrialState(profile, new Date());
+    var showTrial = state.kind === "trial-active" || state.kind === "trial-expired";
+
+    if (!summary || !access || !note || !facts) {
+        return;
+    }
+
+    summary.classList.toggle("is-trial-active", state.kind === "trial-active");
+    summary.classList.toggle("is-trial-expired", state.kind === "trial-expired");
+    access.textContent = showTrial ? state.statusLabel : state.planLabel;
+    facts.hidden = !(showTrial || state.subscriptionStatus);
+    document.getElementById("subscriptionPlanRow").hidden = !showTrial;
+    document.getElementById("subscriptionStatusRow").hidden = !showTrial;
+    document.getElementById("subscriptionEndsRow").hidden = !showTrial;
+    document.getElementById("subscriptionDaysRow").hidden = !showTrial;
+    document.getElementById("subscriptionBillingRow").hidden = !state.subscriptionStatus;
+
+    if (showTrial) {
+        document.getElementById("subscriptionPlan").textContent = state.planLabel;
+        document.getElementById("subscriptionTrialStatus").textContent = state.statusLabel;
+        document.getElementById("subscriptionTrialEnds").textContent = formatTrialDate(state.endsAt);
+        document.getElementById("subscriptionDaysRemaining").textContent = String(state.daysRemaining);
+    }
+
+    if (state.subscriptionStatus) {
+        document.getElementById("subscriptionBillingStatus").textContent = state.subscriptionStatus;
+    }
+
+    if (showTrial || state.kind === "pro" || state.kind === "business") {
+        note.hidden = true;
+        note.textContent = "";
+    } else {
+        note.hidden = false;
+        note.textContent = "A trial end date has not been saved for this account, so no countdown is shown.";
+    }
+
+    if (trialButton) {
+        trialButton.textContent = state.kind === "trial-active" ? "Current Trial" : "Start Trial";
+        trialButton.setAttribute("data-trial-state", state.kind);
+    }
+}
+
+async function loadSubscriptionAccess(token) {
+    if (!token || !accountUserId) {
+        return;
+    }
+
+    var response;
+
+    try {
+        response = await fetch(
+            SUPABASE_URL + "/rest/v1/profiles?id=eq." + encodeURIComponent(accountUserId) + "&select=plan,trial_started_at,trial_ends_at,subscription_status",
+            { headers: authHeaders(token) }
+        );
+    } catch (error) {
+        return;
+    }
+
+    if (!response.ok) {
+        return;
+    }
+
+    var rows = await response.json();
+    renderSubscriptionAccess(Array.isArray(rows) ? rows[0] : null);
+}
+
 document.getElementById("startTrialBtn").addEventListener("click", function () {
+    if (this.getAttribute("data-trial-state") === "trial-active") {
+        setSettingsStatus("subscriptionNotice", "Your trial is already active.", "");
+        return;
+    }
+
     setSettingsStatus("subscriptionNotice", "Trial activation is coming soon.", "");
 });
 
