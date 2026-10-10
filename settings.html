@@ -602,6 +602,128 @@ select:focus {
 
 .info-card p { margin: 0; color: #516074; font-size: 14.5px; line-height: 1.55; }
 
+.subscription-summary {
+  margin-bottom: 16px;
+  padding: 18px 20px;
+  background: #fff;
+  border: 1px solid #e7ecf2;
+  border-radius: 18px;
+  box-shadow: 0 10px 28px rgba(16, 40, 80, 0.04);
+}
+.subscription-kicker {
+  margin: 0;
+  color: #6d7c92;
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.subscription-summary h3 {
+  margin: 4px 0 0;
+  color: #0c1730;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.4px;
+}
+.subscription-summary p:last-child {
+  margin: 6px 0 0;
+  color: #516074;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.plan-billing {
+  display: inline-flex;
+  gap: 4px;
+  margin: 0 0 16px;
+  padding: 4px;
+  border: 1px solid #e7ecf2;
+  border-radius: 999px;
+  background: #fff;
+}
+.plan-billing-btn {
+  height: 34px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #516074;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.plan-billing-btn.is-selected { background: #10284d; color: #fff; }
+.plan-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  align-items: stretch;
+}
+.plan-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 22px 20px 18px;
+  background: #fff;
+  border: 1px solid #e7ecf2;
+  border-radius: 20px;
+  box-shadow: 0 10px 28px rgba(16, 40, 80, 0.045);
+}
+.plan-card.is-featured {
+  border-color: #8eb6ff;
+  box-shadow: 0 0 0 3px rgba(43, 127, 255, 0.12), 0 16px 36px rgba(29, 78, 216, 0.08);
+}
+.plan-card-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.plan-name { margin: 0; color: #0c1730; font-size: 18px; font-weight: 800; letter-spacing: -0.3px; }
+.plan-badge {
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #10284d;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 750;
+  white-space: nowrap;
+}
+.plan-subtitle { margin: 8px 0 0; color: #6d7c92; font-size: 13.5px; line-height: 1.45; min-height: 40px; }
+.plan-price { display: flex; align-items: baseline; gap: 6px; margin: 16px 0 0; color: #0c1730; }
+.plan-price strong { font-size: 32px; font-weight: 800; letter-spacing: -0.8px; line-height: 1; }
+.plan-price span { color: #6d7c92; font-size: 13px; font-weight: 650; }
+.plan-price-note { margin: 6px 0 0; min-height: 18px; color: #516074; font-size: 12.5px; font-weight: 600; }
+.plan-features { list-style: none; margin: 16px 0 18px; padding: 0; }
+.plan-features li {
+  position: relative;
+  margin: 0;
+  padding: 6px 0 6px 18px;
+  color: #314158;
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.plan-features li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 12px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #2b7fff;
+}
+.plan-soon {
+  margin-left: 6px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: #eef3f9;
+  color: #6d7c92;
+  font-size: 11px;
+  font-weight: 700;
+}
+.plan-card .btn { width: 100%; margin-top: auto; }
+@media (max-width: 980px) {
+  .plan-grid { grid-template-columns: 1fr; }
+  .plan-subtitle { min-height: 0; }
+}
+
 .danger-card {
   padding: 26px 28px;
   background: #fff;
@@ -1048,11 +1170,78 @@ body.page-leaving { opacity: 0; }
           <section class="panel" id="panel-subscription">
             <div class="panel-head">
               <h2>Subscription</h2>
-              <p>Billing and subscription management will be available here.</p>
+              <p>The 7-day free trial is the only unpaid access. A paid plan is required after it ends.</p>
             </div>
-            <div class="card info-card">
-              <p>Billing and subscription management will be available here.</p>
+            <div class="subscription-summary">
+              <p class="subscription-kicker">Current access</p>
+              <h3 id="subscriptionAccess">No plan on file</h3>
+              <p id="subscriptionAccessNote">A trial end date has not been saved for this account, so no countdown is shown.</p>
             </div>
+            <div class="plan-billing" role="group" aria-label="Paid plan billing period">
+              <button class="plan-billing-btn is-selected" type="button" data-billing="monthly" aria-pressed="true">Monthly</button>
+              <button class="plan-billing-btn" type="button" data-billing="yearly" aria-pressed="false">Yearly</button>
+            </div>
+            <div class="plan-grid">
+              <article class="plan-card">
+                <div class="plan-card-top">
+                  <h3 class="plan-name">7-Day Free Trial</h3>
+                </div>
+                <p class="plan-subtitle">Try ReviewRise before choosing a paid plan.</p>
+                <p class="plan-price"><strong>7 days</strong><span>Free</span></p>
+                <p class="plan-price-note">Core features during the trial only.</p>
+                <ul class="plan-features">
+                  <li>1 business</li>
+                  <li>Review link creation</li>
+                  <li>Feedback collection</li>
+                  <li>Google review redirect</li>
+                  <li>Dashboard</li>
+                  <li>Analytics</li>
+                  <li>Customer Intelligence</li>
+                  <li>QR generation</li>
+                  <li>Smart Alerts</li>
+                </ul>
+                <button class="btn btn-secondary" type="button" id="startTrialBtn">Start Trial</button>
+              </article>
+              <article class="plan-card is-featured">
+                <div class="plan-card-top">
+                  <h3 class="plan-name">Pro</h3>
+                  <span class="plan-badge">Most Popular</span>
+                </div>
+                <p class="plan-subtitle">For individual businesses and growing companies.</p>
+                <p class="plan-price"><strong id="proPrice">$29</strong><span id="proPeriod">/ month</span></p>
+                <p class="plan-price-note" id="proPriceNote">Billed monthly</p>
+                <ul class="plan-features">
+                  <li>Up to 5 businesses</li>
+                  <li>Multiple Review Links</li>
+                  <li>Customer Intelligence</li>
+                  <li>Recurring-problem detection</li>
+                  <li>Smart Alerts</li>
+                  <li>Advanced Analytics</li>
+                  <li>Advanced QR &amp; NFC</li>
+                  <li>Business switching</li>
+                  <li>Priority support</li>
+                </ul>
+                <button class="btn btn-primary" type="button" id="upgradeProBtn">Upgrade to Pro</button>
+              </article>
+              <article class="plan-card">
+                <div class="plan-card-top">
+                  <h3 class="plan-name">Business</h3>
+                </div>
+                <p class="plan-subtitle">For larger businesses and multi-location operators.</p>
+                <p class="plan-price"><strong>Custom</strong><span>Contact us</span></p>
+                <p class="plan-price-note">Pricing is arranged with the ReviewRise team.</p>
+                <ul class="plan-features">
+                  <li>Higher business and location limits</li>
+                  <li>Everything in Pro</li>
+                  <li>Advanced multi-location reporting</li>
+                  <li>Team features <span class="plan-soon">Coming soon</span></li>
+                  <li>Custom branding <span class="plan-soon">Coming soon</span></li>
+                  <li>Priority onboarding and support</li>
+                </ul>
+                <button class="btn btn-secondary" type="button" id="chooseBusinessBtn">Contact Sales</button>
+              </article>
+            </div>
+            <p id="subscriptionNotice" class="settings-status" role="status"></p>
           </section>
 
           <section class="panel" id="panel-danger">
@@ -2093,6 +2282,46 @@ async function saveReviewSettings() {
         }
     }
 }
+
+var SUBSCRIPTION_PRICING = {
+    proMonthly: 29,
+    proYearly: 288
+};
+
+function renderProPrice(period) {
+    var amount = document.getElementById("proPrice");
+    var cadence = document.getElementById("proPeriod");
+    var note = document.getElementById("proPriceNote");
+    var yearly = period === "yearly";
+    var perMonth = Math.round((SUBSCRIPTION_PRICING.proYearly / 12) * 10) / 10;
+
+    amount.textContent = "$" + (yearly ? SUBSCRIPTION_PRICING.proYearly : SUBSCRIPTION_PRICING.proMonthly);
+    cadence.textContent = yearly ? "/ year" : "/ month";
+    note.textContent = yearly ? "$" + perMonth + " per month, billed yearly" : "Billed monthly";
+}
+
+document.querySelectorAll(".plan-billing-btn").forEach(function (button) {
+    button.addEventListener("click", function () {
+        document.querySelectorAll(".plan-billing-btn").forEach(function (item) {
+            var selected = item === button;
+            item.classList.toggle("is-selected", selected);
+            item.setAttribute("aria-pressed", selected ? "true" : "false");
+        });
+        renderProPrice(button.getAttribute("data-billing"));
+    });
+});
+
+document.getElementById("startTrialBtn").addEventListener("click", function () {
+    setSettingsStatus("subscriptionNotice", "Trial activation is coming soon.", "");
+});
+
+document.getElementById("upgradeProBtn").addEventListener("click", function () {
+    setSettingsStatus("subscriptionNotice", "Online billing is coming soon.", "");
+});
+
+document.getElementById("chooseBusinessBtn").addEventListener("click", function () {
+    setSettingsStatus("subscriptionNotice", "Online billing is coming soon.", "");
+});
 
 loadAccountSettings();
 loadSelectedBusinessSettings();
