@@ -828,6 +828,12 @@ body {
   transform: translateY(-2px);
 }
 
+.qr-link-card.is-active-business,
+.qr-link-card.is-active-business:hover {
+  border-color: #8eb6ff;
+  box-shadow: 0 0 0 3px rgba(43, 127, 255, 0.12), 0 10px 28px rgba(30, 64, 120, 0.045);
+}
+
 .qr-link-card[hidden] { display: none !important; }
 
 .qr-link-top { display: flex; align-items: flex-start; gap: 12px; min-width: 0; }
@@ -1852,7 +1858,13 @@ html.sidebar-boot .main {
   var links = parsed.links.map(publicReviewLink);
   var grid = document.getElementById("qrReviewLinksContainer");
   var emptyState = document.getElementById("qrEmptyState");
+  var selectedBusinessId = "";
   if (!grid) return;
+  try {
+    selectedBusinessId = localStorage.getItem("reviewrise_selected_business_" + owner) || "";
+  } catch (error) {
+    selectedBusinessId = "";
+  }
 
   function escapeHtml(value) {
     return String(value || "")
@@ -1868,7 +1880,8 @@ html.sidebar-boot .main {
       ? '<img src="' + escapeHtml(link.logo_url) + '" alt="">'
       : "<span>" + escapeHtml(name.charAt(0).toUpperCase()) + "</span>";
     var place = [link.city, link.country].filter(Boolean).join(", ");
-    return '<article class="qr-link-card" data-link-id="' + escapeHtml(link.id) + '" data-name="' + escapeHtml(name) + '">' +
+    var isActiveBusiness = !!selectedBusinessId && String(link.id) === String(selectedBusinessId);
+    return '<article class="qr-link-card' + (isActiveBusiness ? " is-active-business" : "") + '" data-link-id="' + escapeHtml(link.id) + '" data-name="' + escapeHtml(name) + '">' +
       '<div class="qr-link-top"><div class="qr-link-logo">' + logo + '</div><div class="qr-link-copy">' +
       '<div class="qr-link-name-row"><h3>' + escapeHtml(name) + '</h3>' +
       (link.is_primary === true ? '<span class="primary-badge">Primary</span>' : '') +
@@ -1983,6 +1996,22 @@ function escapeHtml(value) {
     .replace(/"/g, "&quot;");
 }
 
+function activeBusinessStorageKey() {
+  const token = localStorage.getItem("reviewrise_token");
+  const userId = token ? reviewLinksOwnerId(token) : "";
+  return userId ? "reviewrise_selected_business_" + userId : "";
+}
+
+function readActiveBusinessId() {
+  const key = activeBusinessStorageKey();
+  if (!key) return "";
+  try {
+    return localStorage.getItem(key) || "";
+  } catch (error) {
+    return "";
+  }
+}
+
 function pickLink(links, preferredId) {
   if (preferredId !== undefined && preferredId !== null && preferredId !== "") {
     const found = links.filter(function (link) {
@@ -2001,7 +2030,9 @@ function renderCards(links) {
       ? '<img src="' + escapeHtml(link.logo_url) + '" alt="">'
       : "<span>" + escapeHtml(name.charAt(0).toUpperCase()) + "</span>";
     const place = [link.city, link.country].filter(Boolean).join(", ");
-    return '<article class="qr-link-card" data-link-id="' + escapeHtml(link.id) + '" data-name="' + escapeHtml(name) + '">' +
+    const selectedBusinessId = readActiveBusinessId();
+    const isActiveBusiness = !!selectedBusinessId && String(link.id) === String(selectedBusinessId);
+    return '<article class="qr-link-card' + (isActiveBusiness ? " is-active-business" : "") + '" data-link-id="' + escapeHtml(link.id) + '" data-name="' + escapeHtml(name) + '">' +
       '<div class="qr-link-top"><div class="qr-link-logo">' + logo + '</div><div class="qr-link-copy">' +
       '<div class="qr-link-name-row"><h3>' + escapeHtml(name) + '</h3>' +
       (link.is_primary === true ? '<span class="primary-badge">Primary</span>' : '') +
@@ -2106,6 +2137,7 @@ function loadQRReviewLinks(reviewLinks) {
   renderedReviewLinksKey = nextKey;
   window.__qrPaintedReviewLinksKey = null;
   warmPoster(currentLinks);
+  focusSelectedBusiness();
 }
 
 async function getValidAccessToken() {
@@ -2348,9 +2380,27 @@ function preparePoster(link, options) {
   return posterPrepare;
 }
 
+let didFocusSelectedBusiness = false;
+
+function focusSelectedBusiness() {
+  const selectedId = readActiveBusinessId();
+  if (!cardGrid) return;
+  cardGrid.querySelectorAll(".qr-link-card").forEach(function (card) {
+    card.classList.toggle("is-active-business", !!selectedId && String(card.getAttribute("data-link-id")) === String(selectedId));
+  });
+  if (didFocusSelectedBusiness || !selectedId || (qrModal && !qrModal.hidden)) return;
+  const link = findLink(selectedId);
+  if (!link) return;
+  didFocusSelectedBusiness = true;
+  const card = cardGrid.querySelector(".qr-link-card.is-active-business");
+  if (card && card.scrollIntoView) card.scrollIntoView({ block: "nearest" });
+  openPreparedPoster(link);
+}
+
 function warmPoster(links) {
   preloadPosterAssets(links);
-  const link = pickLink(links, activeLink && activeLink.id);
+  const preferredId = (activeLink && activeLink.id) || readActiveBusinessId();
+  const link = pickLink(links, preferredId);
   if (!link) return;
   preparePoster(link).then(function (key) {
     if (key && posterPrepareKey === key) markPosterReady(key);
