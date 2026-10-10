@@ -316,6 +316,8 @@ let currentBusiness = null;
 let selectedRating = 0;
 let feedbackSubmitted = false;
 let redirecting = false;
+let savingPositiveRating = false;
+let positiveRatingSaved = false;
 
 const stars = document.querySelectorAll(".star");
 const ratingLabel = document.getElementById("ratingLabel");
@@ -470,10 +472,18 @@ function showSuccess() {
   reviewCard.classList.add("is-success");
 }
 
+function setStarsEnabled(enabled) {
+  stars.forEach(function (star) {
+    star.disabled = !enabled;
+  });
+}
+
 function resetReviewExperience() {
   feedbackSubmitted = false;
   selectedRating = 0;
   redirecting = false;
+  savingPositiveRating = false;
+  positiveRatingSaved = false;
   feedbackText.value = "";
   submitFeedback.disabled = false;
   submitFeedback.textContent = "Submit feedback";
@@ -486,11 +496,80 @@ function resetReviewExperience() {
   ratingHint.textContent = "Tap a star to continue";
   ratingLabel.textContent = "Select your rating";
   reviewCard.classList.remove("is-success");
+  setStarsEnabled(true);
   stars.forEach(function (star) { star.classList.remove("selected", "active"); });
 }
 
+function beginGoogleRedirect() {
+  const googleUrl = currentBusiness && currentBusiness.google_review_link;
+  if (!googleUrl) {
+    setStarsEnabled(true);
+    feedbackMessage.style.display = "block";
+    feedbackMessage.textContent = "A Google review link is not available for this business.";
+    return;
+  }
+  redirecting = true;
+  setStarsEnabled(false);
+  feedbackForm.style.display = "none";
+  feedbackMessage.style.display = "none";
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    window.location.assign(googleUrl);
+    return;
+  }
+  reviewCard.style.transition = "opacity 150ms cubic-bezier(0.22, 1, 0.36, 1), transform 150ms cubic-bezier(0.22, 1, 0.36, 1)";
+  reviewCard.style.opacity = "0.88";
+  reviewCard.style.transform = "translateY(-3px)";
+  window.setTimeout(function () {
+    window.location.assign(googleUrl);
+  }, 150);
+}
+
+async function savePositiveRatingThenRedirect(rating) {
+  if (savingPositiveRating || redirecting || feedbackSubmitted || positiveRatingSaved) return;
+  if (!currentBusiness || !currentBusiness.id) {
+    feedbackMessage.style.display = "block";
+    feedbackMessage.textContent = "This review link is incomplete, so your rating could not be saved. Tap your rating again to try again.";
+    return;
+  }
+
+  savingPositiveRating = true;
+  setStarsEnabled(false);
+  feedbackForm.style.display = "none";
+  feedbackMessage.className = "";
+  feedbackMessage.style.display = "block";
+  feedbackMessage.textContent = "Saving your rating…";
+
+  try {
+    const response = await fetch(SUPABASE_URL + "/rest/v1/Feedback", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": SUPABASE_KEY,
+        "Prefer": "return=minimal"
+      },
+      body: JSON.stringify({
+        rating: rating,
+        feedback: null,
+        business: currentBusiness.business_name,
+        review_link_id: currentBusiness.id
+      })
+    });
+    if (!response.ok) throw new Error("Rating could not be saved");
+    positiveRatingSaved = true;
+    savingPositiveRating = false;
+    beginGoogleRedirect();
+  } catch (error) {
+    console.error("Positive rating save error:", error);
+    savingPositiveRating = false;
+    positiveRatingSaved = false;
+    setStarsEnabled(true);
+    feedbackMessage.style.display = "block";
+    feedbackMessage.textContent = "Your rating could not be saved. Tap your rating again to try again.";
+  }
+}
+
 function handleRating(rating) {
-  if (!currentBusiness || feedbackSubmitted || redirecting) return;
+  if (!currentBusiness || feedbackSubmitted || redirecting || savingPositiveRating) return;
   selectedRating = rating;
   stars.forEach(function (star) { star.classList.remove("selected"); });
   stars[rating - 1].classList.add("selected");
@@ -498,24 +577,11 @@ function handleRating(rating) {
   ratingLabel.textContent = labels[rating];
 
   if (rating >= 4) {
-    const googleUrl = currentBusiness.google_review_link;
-    if (!googleUrl) {
-      feedbackMessage.style.display = "block";
-      feedbackMessage.textContent = "A Google review link is not available for this business.";
+    if (positiveRatingSaved) {
+      beginGoogleRedirect();
       return;
     }
-    redirecting = true;
-    feedbackForm.style.display = "none";
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      window.location.assign(currentBusiness.google_review_link);
-      return;
-    }
-    reviewCard.style.transition = "opacity 150ms cubic-bezier(0.22, 1, 0.36, 1), transform 150ms cubic-bezier(0.22, 1, 0.36, 1)";
-    reviewCard.style.opacity = "0.88";
-    reviewCard.style.transform = "translateY(-3px)";
-    window.setTimeout(function () {
-      window.location.assign(currentBusiness.google_review_link);
-    }, 150);
+    savePositiveRatingThenRedirect(rating);
     return;
   }
 
@@ -528,7 +594,7 @@ function handleRating(rating) {
 
 stars.forEach(function (star) {
   star.addEventListener("mouseenter", function () {
-    if (feedbackSubmitted || redirecting) return;
+    if (feedbackSubmitted || redirecting || savingPositiveRating) return;
     const rating = Number(this.dataset.rating);
     highlightStars(rating);
     ratingLabel.textContent = labels[rating];
@@ -539,7 +605,7 @@ stars.forEach(function (star) {
 });
 
 document.getElementById("stars").addEventListener("mouseleave", function () {
-  if (feedbackSubmitted || redirecting) {
+  if (feedbackSubmitted || redirecting || savingPositiveRating) {
     highlightStars(selectedRating);
     return;
   }
