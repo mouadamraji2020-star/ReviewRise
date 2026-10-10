@@ -1736,6 +1736,79 @@ a.menu-item:visited {
 
 .getting-started-action:hover { background: #eaf3ff; }
 
+.business-health {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-top: 16px;
+    padding: 16px 18px;
+    background: #fff;
+    border: 1px solid #e7ecf2;
+    border-radius: 18px;
+    box-shadow: 0 10px 28px rgba(30, 64, 120, 0.045);
+}
+
+.business-health-copy { min-width: 0; }
+
+.business-health-kicker {
+    margin: 0;
+    color: #6d7c92;
+    font-size: 11px;
+    font-weight: 750;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.business-health h3 {
+    margin: 3px 0 0;
+    color: #10284d;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.45px;
+    line-height: 1.15;
+}
+
+.business-health-note {
+    margin: 4px 0 0;
+    color: #516074;
+    font-size: 13px;
+    font-weight: 550;
+    line-height: 1.4;
+}
+
+.business-health-metrics {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 14px 18px;
+    margin: 0;
+}
+
+.business-health-metrics div { min-width: 72px; }
+
+.business-health-metrics dt {
+    margin: 0;
+    color: #6d7c92;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.business-health-metrics dd {
+    margin: 2px 0 0;
+    color: #10284d;
+    font-size: 15px;
+    font-weight: 750;
+    letter-spacing: -0.2px;
+}
+
+.business-health.is-healthy { background: #f4fbf7; border-color: #cfeedd; }
+.business-health.is-healthy h3 { color: #067647; }
+.business-health.is-stable { background: #fffaf3; border-color: #f3e2c2; }
+.business-health.is-stable h3 { color: #9a6700; }
+.business-health.is-attention { background: #fff6f6; border-color: #f4d4d4; }
+.business-health.is-attention h3 { color: #b42318; }
+
 .stats {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -2932,6 +3005,10 @@ body.alert-panel-open { overflow: hidden; }
     .getting-started-label { flex: 1 1 160px; padding-top: 2px; }
     .getting-started-action { margin-left: 32px; }
 
+    .business-health { flex-direction: column; align-items: stretch; gap: 12px; margin-top: 14px; padding: 14px; }
+    .business-health-metrics { justify-content: flex-start; gap: 12px 16px; }
+    .business-health h3 { font-size: 20px; }
+
     .feedback-card { grid-template-columns: 1fr; }
     .feedback-meta { text-align: left; }
 }
@@ -3322,6 +3399,15 @@ body.page-leaving {
             <span class="stat-note">Lower ratings to review</span>
           </div>
         </div>
+
+        <section class="business-health" id="businessHealth" aria-labelledby="businessHealthTitle">
+          <div class="business-health-copy">
+            <p class="business-health-kicker">Business Health</p>
+            <h3 id="businessHealthTitle">Not enough data yet</h3>
+            <p class="business-health-note" id="businessHealthNote">At least 5 ratings are needed before a status is shown.</p>
+          </div>
+          <dl class="business-health-metrics" id="businessHealthMetrics"></dl>
+        </section>
 
         <section class="dash-card customer-intel" aria-labelledby="customerIntelTitle">
           <div class="dash-section-head">
@@ -3980,6 +4066,7 @@ function renderCustomerIntelligence(feedback) {
         } else {
             reviewRiseSyncAlerts(rows, { phase: "empty", issues: [] });
         }
+        renderBusinessHealth(rows);
         return;
     }
 
@@ -4070,6 +4157,7 @@ function renderCustomerIntelligence(feedback) {
     } else {
         reviewRiseSyncAlerts(rows, insightCopy);
     }
+    renderBusinessHealth(rows);
 }
 
 function customerIntelTrend(recent, previous, early) {
@@ -4107,6 +4195,129 @@ function customerIntelTrend(recent, previous, early) {
         statusClass: "is-flat",
         text: "Customer ratings are relatively stable." + detail
     };
+}
+
+function businessHealthProblems(rows) {
+    var complaints = customerProblemComplaints(rows);
+
+    if (complaints.length < 3 || customerProblemReady(complaints).length < 3) {
+        return { known: true, issues: [] };
+    }
+
+    var fingerprint = customerProblemFingerprint(complaints);
+    var state = customerProblemState;
+
+    if (state.fingerprint === fingerprint && state.phase === "ready") {
+        return { known: true, issues: Array.isArray(state.issues) ? state.issues : [] };
+    }
+
+    return { known: false, issues: [] };
+}
+
+function renderBusinessHealth(feedback) {
+    var root = document.getElementById("businessHealth");
+    var title = document.getElementById("businessHealthTitle");
+    var note = document.getElementById("businessHealthNote");
+    var metrics = document.getElementById("businessHealthMetrics");
+
+    if (!root || !title || !note || !metrics) {
+        return;
+    }
+
+    var rows = Array.isArray(feedback) ? feedback : [];
+    var rated = [];
+    var low = 0;
+    var positive = 0;
+    var day = 24 * 60 * 60 * 1000;
+    var now = Date.now();
+    var recent = [];
+    var previous = [];
+
+    rows.forEach(function (item) {
+        var rating = Number(item && item.rating);
+        var time = new Date(item && item.created_at).getTime();
+
+        if (rating < 1 || rating > 5) {
+            return;
+        }
+
+        rated.push(rating);
+
+        if (rating <= 3) {
+            low += 1;
+        }
+
+        if (rating >= 4) {
+            positive += 1;
+        }
+
+        if (!isNaN(time) && time >= now - 60 * day && time <= now) {
+            if (time >= now - 30 * day) {
+                recent.push(rating);
+            } else {
+                previous.push(rating);
+            }
+        }
+    });
+
+    var average = rated.length ? rated.reduce(function (sum, rating) { return sum + rating; }, 0) / rated.length : 0;
+    var trend = customerIntelTrend(recent, previous, rated.length < 5);
+    var problems = businessHealthProblems(rows);
+    var highPriority = problems.issues.some(function (issue) {
+        var priority = customerIntelPriority(issue);
+        return priority && priority.tone === "is-high";
+    });
+    var mediumPriority = problems.issues.some(function (issue) {
+        var priority = customerIntelPriority(issue);
+        return priority && priority.tone === "is-medium";
+    });
+    var increasing = problems.issues.some(function (issue) {
+        return issue && issue.increasing === true;
+    });
+    var lowShare = rated.length ? low / rated.length : 0;
+    var status = "Not enough data yet";
+    var detail = "At least 5 ratings are needed before a status is shown.";
+    var tone = "";
+
+    if (rated.length >= 5) {
+        if (highPriority || mediumPriority || increasing || trend.label === "Declining" || average < 3.5 || lowShare >= 0.4) {
+            status = "Needs Attention";
+            tone = "is-attention";
+            if (highPriority) {
+                detail = "A high-priority recurring problem is present.";
+            } else if (mediumPriority) {
+                detail = "A recurring problem needs attention.";
+            } else if (increasing) {
+                detail = "A recurring problem is increasing.";
+            } else if (trend.label === "Declining") {
+                detail = "Ratings are lower than the previous 30 days.";
+            } else if (average < 3.5) {
+                detail = "The average rating is below 3.5.";
+            } else {
+                detail = "At least 40% of ratings are 1–3 stars.";
+            }
+        } else if (average >= 4.3 && lowShare < 0.15 && positive > low && problems.known && problems.issues.length === 0 && (trend.label === "Improving" || trend.label === "Stable")) {
+            status = "Healthy";
+            tone = "is-healthy";
+            detail = "Ratings are strong, with no pressing recurring problem.";
+        } else {
+            status = "Stable";
+            tone = "is-stable";
+            detail = problems.known ? "Nothing urgent stands out in the current ratings." : "Ratings are in so far. Recurring problems are still being checked.";
+        }
+    }
+
+    root.classList.remove("is-healthy", "is-stable", "is-attention");
+    if (tone) {
+        root.classList.add(tone);
+    }
+    title.textContent = status;
+    note.textContent = detail;
+    metrics.innerHTML =
+        "<div><dt>Average</dt><dd>" + (rated.length ? average.toFixed(1) : "—") + "</dd></div>" +
+        "<div><dt>1–3 stars</dt><dd>" + String(low) + "</dd></div>" +
+        "<div><dt>4–5 stars</dt><dd>" + String(positive) + "</dd></div>" +
+        "<div><dt>Problems</dt><dd>" + (problems.known ? String(problems.issues.length) : "—") + "</dd></div>";
 }
 
 function customerIntelAverage(ratings) {
