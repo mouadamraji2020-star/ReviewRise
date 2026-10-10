@@ -1330,7 +1330,12 @@ a.menu-item:visited {
     display: flex;
     align-items: center;
     gap: 12px;
+    flex: 1;
     min-width: 0;
+}
+
+.top-navbar-title > div:not(.biz-switch) {
+    flex: none;
 }
 
 .top-navbar-title h1 {
@@ -1356,7 +1361,141 @@ a.menu-item:visited {
     display: flex;
     align-items: center;
     gap: 8px;
+    flex: none;
 }
+
+.biz-switch {
+    position: relative;
+    flex: 0 1 240px;
+    min-width: 0;
+    max-width: 240px;
+}
+
+.biz-switch[hidden] { display: none !important; }
+
+.biz-switch-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    max-width: 240px;
+    height: 40px;
+    padding: 0 10px 0 8px;
+    border: 1px solid #e7ecf2;
+    border-radius: 12px;
+    background: #fff;
+    color: #10284d;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.biz-switch-btn:hover { border-color: #d5e0ee; }
+
+.biz-switch-logo,
+.biz-switch-fallback,
+.biz-switch-item .biz-mark {
+    width: 22px;
+    height: 22px;
+    flex: none;
+    border-radius: 7px;
+    object-fit: cover;
+    background: #eef4ff;
+}
+
+.biz-switch-logo { display: flex; }
+
+.biz-switch-logo[hidden] { display: none !important; }
+
+.biz-switch-logo img {
+    width: 22px;
+    height: 22px;
+    border-radius: 7px;
+    object-fit: cover;
+}
+
+.biz-switch-fallback,
+.biz-switch-item .biz-mark {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #1d4ed8;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.biz-switch-label,
+.biz-switch-item .biz-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.biz-switch-label { flex: 1; text-align: left; }
+
+.biz-switch-btn svg,
+.biz-switch-check {
+    width: 16px;
+    height: 16px;
+    flex: none;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.biz-switch-btn svg { color: #7b8ba0; }
+
+.biz-switch-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    z-index: 50;
+    width: min(300px, calc(100vw - 32px));
+    max-height: min(320px, 60vh);
+    overflow: auto;
+    padding: 6px;
+    background: #fff;
+    border: 1px solid #e8edf3;
+    border-radius: 14px;
+    box-shadow: 0 16px 40px rgba(16, 24, 40, 0.12);
+}
+
+.biz-switch-menu[hidden] { display: none !important; }
+
+.biz-switch-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    min-height: 40px;
+    padding: 0 8px;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: #1c2b42;
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+}
+
+.biz-switch-item:hover,
+.biz-switch-item.is-selected { background: #f4f7fb; }
+
+.biz-switch-item .biz-name { flex: 1; }
+
+.biz-switch-check {
+    color: #2b7fff;
+    opacity: 0;
+}
+
+.biz-switch-item.is-selected .biz-switch-check { opacity: 1; }
 
 .navbar-icon {
     height: 40px;
@@ -2588,9 +2727,37 @@ body.alert-panel-open { overflow: hidden; }
 
     .app-workspace { margin-left: 0; }
 
-    .top-navbar { padding: 14px 16px; }
+    .top-navbar {
+        flex-wrap: wrap;
+        row-gap: 8px;
+        padding: 14px 16px;
+    }
+
+    .top-navbar-title {
+        flex-wrap: wrap;
+        row-gap: 8px;
+    }
 
     .top-navbar-title p { display: none; }
+
+    .biz-switch {
+        flex: 1 1 100%;
+        max-width: none;
+    }
+
+    .biz-switch-btn {
+        width: 100%;
+        max-width: none;
+        height: 36px;
+        padding-right: 8px;
+    }
+
+    .biz-switch-menu {
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 0;
+        width: min(300px, calc(100vw - 32px));
+    }
 
 .alert-backdrop.is-visible {
     display: block;
@@ -2985,6 +3152,14 @@ body.page-leaving {
           <h1>Dashboard</h1>
           <p>Monitor customer feedback and reputation performance.</p>
         </div>
+        <div class="biz-switch" id="bizSwitch" hidden>
+          <button class="biz-switch-btn" id="bizSwitchBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-controls="bizSwitchMenu">
+            <span class="biz-switch-logo" id="bizSwitchLogo" hidden></span>
+            <span class="biz-switch-label" id="bizSwitchLabel">All businesses</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="biz-switch-menu" id="bizSwitchMenu" role="listbox" aria-label="Businesses" hidden></div>
+        </div>
       </div>
       <div class="top-navbar-actions">
         <div class="alert-wrap" id="alertWrap">
@@ -3187,7 +3362,17 @@ function saveFeedbackDataCache(rows) {
     );
 }
 
+var dashboardAccountFeedback = [];
+var dashboardReviewLinks = [];
+var dashboardReviewLinksReady = false;
+
 function renderDashboardFeedback(feedback) {
+    dashboardAccountFeedback = Array.isArray(feedback) ? feedback : [];
+    renderBusinessSwitcher();
+    paintDashboard(feedbackForSelectedBusiness(dashboardAccountFeedback));
+}
+
+function paintDashboard(feedback) {
     const total = feedback.length;
     let ratingTotal = 0;
     let lowRatings = 0;
@@ -3269,6 +3454,319 @@ function feedbackForCurrentAccount(feedback) {
     });
 }
 
+function businessSelectionKey() {
+    var token = localStorage.getItem("reviewrise_token");
+    var userId = token ? reviewRiseUserId(token) : "";
+
+    return userId ? "reviewrise_selected_business_" + userId : "";
+}
+
+function readOwnedReviewLinks() {
+    var token = localStorage.getItem("reviewrise_token");
+    var userId = token ? reviewRiseUserId(token) : "";
+
+    if (!userId) {
+        return [];
+    }
+
+    try {
+        var parsed = JSON.parse(localStorage.getItem("reviewrise_reviewlinks_data") || "null");
+
+        if (!parsed || String(parsed.owner_id) !== String(userId) || !Array.isArray(parsed.links)) {
+            return [];
+        }
+
+        return parsed.links.map(normalizeReviewLink).filter(Boolean);
+    } catch (error) {
+        return [];
+    }
+}
+
+function normalizeReviewLink(link) {
+    if (!link || link.id == null || String(link.id) === "") {
+        return null;
+    }
+
+    var token = localStorage.getItem("reviewrise_token");
+    var userId = token ? reviewRiseUserId(token) : "";
+
+    if (link.user_id != null && link.user_id !== "" && userId && String(link.user_id) !== String(userId)) {
+        return null;
+    }
+
+    return {
+        id: String(link.id),
+        business_name: link.business_name ? String(link.business_name).trim() : "Untitled business",
+        logo_url: typeof link.logo_url === "string" && /^https:\/\//i.test(link.logo_url) ? link.logo_url : "",
+        is_primary: link.is_primary === true
+    };
+}
+
+function sortReviewLinks(links) {
+    return links.slice().sort(function (left, right) {
+        if (left.is_primary !== right.is_primary) {
+            return left.is_primary ? -1 : 1;
+        }
+
+        return left.business_name.localeCompare(right.business_name);
+    });
+}
+
+function readBusinessSelection() {
+    var key = businessSelectionKey();
+
+    if (!key) {
+        return "";
+    }
+
+    var saved = localStorage.getItem(key) || "";
+
+    if (!saved || !dashboardReviewLinksReady) {
+        return saved;
+    }
+
+    var exists = dashboardReviewLinks.some(function (link) {
+        return link.id === saved;
+    });
+
+    if (!exists) {
+        localStorage.removeItem(key);
+        return "";
+    }
+
+    return saved;
+}
+
+function writeBusinessSelection(id) {
+    var key = businessSelectionKey();
+
+    if (!key) {
+        return;
+    }
+
+    if (!id) {
+        localStorage.removeItem(key);
+        return;
+    }
+
+    localStorage.setItem(key, id);
+}
+
+function activeBusinessId() {
+    if (dashboardReviewLinksReady && dashboardReviewLinks.length < 2) {
+        return "";
+    }
+
+    return readBusinessSelection();
+}
+
+function feedbackForSelectedBusiness(rows) {
+    var account = feedbackForCurrentAccount(rows);
+    var selected = activeBusinessId();
+
+    if (!selected) {
+        return account;
+    }
+
+    return account.filter(function (item) {
+        return item && String(item.review_link_id) === selected;
+    });
+}
+
+function selectedReviewLink() {
+    var selected = activeBusinessId();
+
+    if (!selected) {
+        return null;
+    }
+
+    var found = null;
+
+    dashboardReviewLinks.forEach(function (link) {
+        if (link.id === selected) {
+            found = link;
+        }
+    });
+
+    return found;
+}
+
+function businessMark(link) {
+    if (link && link.logo_url) {
+        return '<img class="biz-mark" src="' + customerIntelEscape(link.logo_url) + '" alt="">';
+    }
+
+    var name = link && link.business_name ? link.business_name : "All";
+    var letter = name.trim().charAt(0).toUpperCase() || "A";
+
+    return '<span class="biz-mark">' + customerIntelEscape(letter) + "</span>";
+}
+
+function renderBusinessSwitcher() {
+    var root = document.getElementById("bizSwitch");
+    var label = document.getElementById("bizSwitchLabel");
+    var logo = document.getElementById("bizSwitchLogo");
+    var menu = document.getElementById("bizSwitchMenu");
+
+    if (!root || !label || !logo || !menu) {
+        return;
+    }
+
+    var multiple = dashboardReviewLinks.length > 1;
+    root.hidden = !multiple;
+
+    if (!multiple) {
+        closeBusinessSwitcher();
+    }
+
+    var selected = selectedReviewLink();
+    label.textContent = selected ? selected.business_name : "All businesses";
+
+    if (selected && selected.logo_url) {
+        logo.hidden = false;
+        logo.innerHTML = '<img src="' + customerIntelEscape(selected.logo_url) + '" alt="">';
+    } else if (selected) {
+        logo.hidden = false;
+        logo.innerHTML = businessMark(selected);
+    } else {
+        logo.hidden = true;
+        logo.innerHTML = "";
+    }
+
+    var current = activeBusinessId();
+    var options = [{ id: "", business_name: "All businesses", logo_url: "" }].concat(dashboardReviewLinks);
+    menu.innerHTML = options.map(function (link) {
+        var chosen = (link.id || "") === current;
+        return '<button type="button" class="biz-switch-item' + (chosen ? " is-selected" : "") + '" role="option" aria-selected="' + (chosen ? "true" : "false") + '" data-business-id="' + customerIntelEscape(link.id) + '">' +
+            (link.id ? businessMark(link) : '<span class="biz-mark">All</span>') +
+            '<span class="biz-name">' + customerIntelEscape(link.business_name) + "</span>" +
+            '<svg class="biz-switch-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5 9.2 17 19 7"/></svg></button>';
+    }).join("");
+}
+
+function closeBusinessSwitcher() {
+    var menu = document.getElementById("bizSwitchMenu");
+    var button = document.getElementById("bizSwitchBtn");
+
+    if (menu) {
+        menu.hidden = true;
+    }
+
+    if (button) {
+        button.setAttribute("aria-expanded", "false");
+    }
+}
+
+function toggleBusinessSwitcher() {
+    var menu = document.getElementById("bizSwitchMenu");
+    var button = document.getElementById("bizSwitchBtn");
+
+    if (!menu || !button) {
+        return;
+    }
+
+    var open = menu.hidden;
+    menu.hidden = !open;
+    button.setAttribute("aria-expanded", open ? "true" : "false");
+}
+
+async function loadOwnedReviewLinks(accessToken) {
+    dashboardReviewLinks = sortReviewLinks(readOwnedReviewLinks());
+    renderBusinessSwitcher();
+
+    var token = accessToken || await getValidAccessToken();
+    var ownerId = token ? reviewRiseUserId(token) : "";
+
+    if (!token || !ownerId) {
+        dashboardReviewLinksReady = true;
+        renderBusinessSwitcher();
+        return;
+    }
+
+    try {
+        var response = await fetch(
+            SUPABASE_URL + "/rest/v1/Reviewlinks?select=id,business_name,logo_url,is_primary,created_at,user_id&user_id=eq." + encodeURIComponent(ownerId) + "&order=created_at.desc",
+            {
+                headers: {
+                    "apikey": SUPABASE_KEY,
+                    "Authorization": "Bearer " + token
+                }
+            }
+        );
+
+        if (response.ok) {
+            var rows = await response.json();
+
+            if (Array.isArray(rows)) {
+                dashboardReviewLinks = sortReviewLinks(rows.map(normalizeReviewLink).filter(Boolean));
+            }
+        }
+    } catch (error) {
+        console.error("Review links could not be loaded:", error);
+    }
+
+    var previous = activeBusinessId();
+    dashboardReviewLinksReady = true;
+    var next = activeBusinessId();
+    renderBusinessSwitcher();
+
+    if (previous !== next && dashboardAccountFeedback.length) {
+        paintDashboard(feedbackForSelectedBusiness(dashboardAccountFeedback));
+    }
+}
+
+function bindBusinessSwitcher() {
+    var root = document.getElementById("bizSwitch");
+    var button = document.getElementById("bizSwitchBtn");
+    var menu = document.getElementById("bizSwitchMenu");
+
+    if (!root || !button || !menu || root.dataset.bound === "1") {
+        return;
+    }
+
+    root.dataset.bound = "1";
+
+    button.addEventListener("click", function (event) {
+        event.stopPropagation();
+        toggleBusinessSwitcher();
+    });
+
+    menu.addEventListener("click", function (event) {
+        var item = event.target.closest(".biz-switch-item");
+
+        if (!item) {
+            return;
+        }
+
+        writeBusinessSelection(item.getAttribute("data-business-id") || "");
+        closeBusinessSwitcher();
+        renderBusinessSwitcher();
+        paintDashboard(feedbackForSelectedBusiness(dashboardAccountFeedback));
+    });
+
+    document.addEventListener("click", function (event) {
+        if (!root.contains(event.target)) {
+            closeBusinessSwitcher();
+        }
+    });
+
+    document.addEventListener("keydown", function (event) {
+        if (event.key !== "Escape" || !menu || menu.hidden) {
+            return;
+        }
+
+        var drawer = document.getElementById("customerProblemDrawer");
+        var alerts = document.getElementById("alertPanel");
+
+        if ((drawer && drawer.classList.contains("is-open")) || (alerts && !alerts.hidden)) {
+            return;
+        }
+
+        closeBusinessSwitcher();
+        button.focus();
+    });
+}
+
 function renderCustomerIntelligence(feedback) {
     customerProblemSource = Array.isArray(feedback) ? feedback : [];
     var body = document.getElementById("customerIntelBody");
@@ -3283,7 +3781,11 @@ function renderCustomerIntelligence(feedback) {
 
     if (!rows.length) {
         body.innerHTML = '<p class="customer-intel-empty">Customer Intelligence will appear once you start receiving feedback.</p>';
-        reviewRiseSyncAlerts(rows, { phase: "empty", issues: [] });
+        if (activeBusinessId()) {
+            reviewRiseSyncAlerts(feedbackForCurrentAccount(dashboardAccountFeedback), { phase: "filtered", issues: [] });
+        } else {
+            reviewRiseSyncAlerts(rows, { phase: "empty", issues: [] });
+        }
         return;
     }
 
@@ -3369,7 +3871,11 @@ function renderCustomerIntelligence(feedback) {
         customerIntelMetric("is-positive", customerIntelIcon("star"), "Positive signals", positiveCard.figure, positiveCard.caption) +
         customerIntelMetric("is-trend", customerIntelIcon("trend"), "Trend", trendFigure, trendCaption) +
         "</div>";
-    reviewRiseSyncAlerts(rows, insightCopy);
+    if (activeBusinessId()) {
+        reviewRiseSyncAlerts(feedbackForCurrentAccount(dashboardAccountFeedback), { phase: "filtered", issues: [] });
+    } else {
+        reviewRiseSyncAlerts(rows, insightCopy);
+    }
 }
 
 function customerIntelTrend(recent, previous, early) {
@@ -5168,6 +5674,8 @@ function showDashboard() {
 
   applyDashboardGreeting();
 
+  bindBusinessSwitcher();
+  loadOwnedReviewLinks();
   loadFeedback();
 
 }
@@ -5504,6 +6012,49 @@ function reviewRiseSyncAlerts(rows, copy) {
     reviewRiseRenderAlerts(merged);
 }
 
+function reviewRiseVisibleAlerts(alerts) {
+    var selected = activeBusinessId();
+    var items = Array.isArray(alerts) ? alerts : [];
+
+    if (!selected) {
+        return items;
+    }
+
+    var ids = {};
+    var members = {};
+
+    feedbackForSelectedBusiness(dashboardAccountFeedback).forEach(function (item) {
+        if (item && item.id != null && String(item.id) !== "") {
+            ids[String(item.id)] = 1;
+        }
+
+        var time = new Date(item && item.created_at).getTime();
+        var text = item && typeof item.feedback === "string" ? item.feedback.trim() : "";
+
+        if (text) {
+            members[String(isFinite(time) ? time : "") + "|" + text] = 1;
+        }
+    });
+
+    return items.filter(function (alert) {
+        if (!alert) {
+            return false;
+        }
+
+        if (alert.type === "low") {
+            if (alert.feedbackId && ids[String(alert.feedbackId)]) {
+                return true;
+            }
+
+            return !!members[String(alert.time || "") + "|" + (alert.preview || "")];
+        }
+
+        return Array.isArray(alert.members) && alert.members.some(function (member) {
+            return members[member];
+        });
+    });
+}
+
 function reviewRiseAlertDetails(alert) {
     var when = reviewRiseAlertWhen(alert.time);
     var whenLine = when ? '<p class="alert-meta">' + customerIntelEscape(when) + "</p>" : "";
@@ -5540,7 +6091,7 @@ function reviewRiseRenderAlerts(alerts) {
     var badge = document.getElementById("alertBadge");
     var bell = document.getElementById("alertBell");
     var mark = document.getElementById("alertMarkRead");
-    var items = Array.isArray(alerts) ? alerts : [];
+    var items = reviewRiseVisibleAlerts(alerts);
     var unread = items.filter(function (alert) { return !alert.read; }).length;
 
     if (badge) {
@@ -5959,6 +6510,8 @@ document.querySelectorAll(".password-toggle").forEach(function (button) {
         dashboard.style.display = "block";
         document.getElementById("mobileMenuBtn").style.display = "block";
         applyDashboardGreeting();
+        bindBusinessSwitcher();
+        loadOwnedReviewLinks(validToken);
         loadFeedback(validToken);
     })();
 })();
