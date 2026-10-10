@@ -901,16 +901,197 @@
       line-height: 1.4;
     }
 
-    .pricing-block,
     .contact-block {
       max-width: 640px;
     }
 
-    .pricing-block p,
     .contact-block p {
       margin: 0 0 22px;
       color: var(--muted);
       font-size: 17px;
+    }
+
+    .pricing-block { max-width: 1080px; }
+
+    .plan-billing {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin: 0 0 22px;
+      padding: 4px;
+      background: #f4f7fb;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+    }
+
+    .plan-billing-btn {
+      display: inline-flex;
+      align-items: center;
+      height: 36px;
+      padding: 0 14px;
+      border: 0;
+      border-radius: 9px;
+      background: transparent;
+      color: #5c6b80;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .plan-billing-btn.is-selected {
+      background: #10284d;
+      color: #fff;
+    }
+
+    .plan-billing-btn:focus-visible {
+      outline: 2px solid var(--blue);
+      outline-offset: 2px;
+    }
+
+    .plan-save {
+      margin-left: 8px;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: #e8f2ff;
+      color: #1d4ed8;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .plan-billing-btn.is-selected .plan-save {
+      background: rgba(255, 255, 255, 0.16);
+      color: #fff;
+    }
+
+    .plan-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .plan-card {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      padding: 22px 20px 20px;
+      background: #fff;
+      border: 1px solid #e6edf5;
+      border-radius: 18px;
+      box-shadow: 0 10px 28px rgba(16, 32, 63, 0.05);
+    }
+
+    .plan-card.is-featured {
+      position: relative;
+      border-color: #2f7cf6;
+      box-shadow: 0 16px 36px rgba(47, 124, 246, 0.14);
+    }
+
+    .plan-badge {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: #10284d;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .plan-card h3 {
+      margin: 0 28px 6px 0;
+      font-size: 20px;
+      letter-spacing: -0.3px;
+    }
+
+    .plan-desc {
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 14.5px;
+      line-height: 1.45;
+    }
+
+    .plan-price {
+      display: flex;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 0;
+    }
+
+    .plan-price strong {
+      color: #10284d;
+      font-size: 40px;
+      font-weight: 800;
+      letter-spacing: -1.2px;
+      line-height: 1;
+    }
+
+    .plan-price span {
+      color: var(--muted);
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .plan-note {
+      margin: 8px 0 0;
+      min-height: 18px;
+      color: var(--soft);
+      font-size: 13px;
+    }
+
+    .plan-features {
+      margin: 18px 0 22px;
+      padding: 0;
+      list-style: none;
+    }
+
+    .plan-features li {
+      position: relative;
+      padding: 6px 0 6px 16px;
+      color: #3c4d66;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .plan-features li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 12px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--blue);
+    }
+
+    .plan-soon {
+      display: inline-block;
+      margin-left: 6px;
+      padding: 1px 7px;
+      border-radius: 999px;
+      background: #f4f7fb;
+      color: #5d6c84;
+      font-size: 11px;
+      font-weight: 700;
+      vertical-align: 1px;
+    }
+
+    .plan-card .btn {
+      width: 100%;
+      margin-top: auto;
+    }
+
+    @media (max-width: 980px) {
+      .plan-grid { grid-template-columns: 1fr; }
+      .plan-card h3 { margin-right: 0; }
+      .plan-badge { position: static; align-self: flex-start; margin-bottom: 10px; }
     }
 
     .site-footer {
@@ -1397,10 +1578,68 @@
 
     <section class="band" id="pricing">
       <div class="wrap pricing-block">
-        <p class="eyebrow">PLANS</p>
-        <h2>Pricing</h2>
-        <p>Simple plans are coming soon.</p>
-        <a class="btn btn-dark" href="dashboard.html">Get Started</a>
+        <p class="eyebrow">PRICING</p>
+        <h2>Simple pricing for growing businesses</h2>
+        <p class="band-intro">Start free for 7 days. Upgrade when you're ready.</p>
+        <div class="plan-billing" role="group" aria-label="Billing period">
+          <button class="plan-billing-btn is-selected" type="button" data-period="monthly" aria-pressed="true">Monthly</button>
+          <button class="plan-billing-btn" type="button" data-period="yearly" aria-pressed="false">Yearly <span class="plan-save" id="homePlanSave">Save 17%</span></button>
+        </div>
+        <ul class="plan-grid">
+          <li class="plan-card">
+            <h3>7-Day Free Trial</h3>
+            <p class="plan-desc">Try ReviewRise before choosing a paid plan.</p>
+            <p class="plan-price"><strong>Free</strong><span>for 7 days</span></p>
+            <p class="plan-note">Core features during the trial only.</p>
+            <ul class="plan-features">
+              <li>1 business</li>
+              <li>review link creation</li>
+              <li>feedback collection</li>
+              <li>Google review redirect</li>
+              <li>Dashboard</li>
+              <li>Analytics</li>
+              <li>Customer Intelligence</li>
+              <li>QR generation</li>
+              <li>Smart Alerts</li>
+            </ul>
+            <a class="btn btn-secondary" href="dashboard.html">Start Free Trial</a>
+          </li>
+          <li class="plan-card is-featured">
+            <span class="plan-badge">Most Popular</span>
+            <h3>Pro</h3>
+            <p class="plan-desc">For growing businesses that want deeper customer intelligence.</p>
+            <p class="plan-price"><strong id="homeProPrice">$29</strong><span id="homeProPeriod">/ month</span></p>
+            <p class="plan-note" id="homeProNote">Billed monthly</p>
+            <ul class="plan-features">
+              <li>up to 5 businesses</li>
+              <li>multiple Review Links</li>
+              <li>Customer Intelligence</li>
+              <li>recurring customer-problem detection</li>
+              <li>Smart Alerts</li>
+              <li>advanced Analytics</li>
+              <li>advanced QR &amp; NFC</li>
+              <li>business switching</li>
+              <li>priority support</li>
+            </ul>
+            <a class="btn btn-primary" href="dashboard.html">Start 7-Day Trial</a>
+          </li>
+          <li class="plan-card">
+            <h3>Business</h3>
+            <p class="plan-desc">For larger businesses and multi-location operators.</p>
+            <p class="plan-price"><strong>Custom</strong></p>
+            <p class="plan-note">Pricing is arranged with the ReviewRise team.</p>
+            <ul class="plan-features">
+              <li>higher business/location limits</li>
+              <li>everything in Pro</li>
+              <li>advanced multi-location reporting</li>
+              <li>priority onboarding</li>
+              <li>premium support</li>
+              <li>team access <span class="plan-soon">Coming soon</span></li>
+              <li>custom branding <span class="plan-soon">Coming soon</span></li>
+            </ul>
+            <a class="btn btn-secondary" href="#contact">Contact</a>
+          </li>
+        </ul>
       </div>
     </section>
 
@@ -1463,6 +1702,44 @@
 
       window.addEventListener("resize", function () {
         if (window.innerWidth > 980) closeMenu(false);
+      });
+    })();
+  </script>
+  <script>
+    (function () {
+      var PRICING = {
+        proMonthly: 29,
+        proYearly: 288
+      };
+      var amount = document.getElementById("homeProPrice");
+      var cadence = document.getElementById("homeProPeriod");
+      var note = document.getElementById("homeProNote");
+      var save = document.getElementById("homePlanSave");
+      var buttons = document.querySelectorAll(".plan-billing-btn");
+      if (!amount || !cadence || !note || !buttons.length) return;
+
+      var fullYear = PRICING.proMonthly * 12;
+      var saved = Math.max(0, Math.round((1 - PRICING.proYearly / fullYear) * 100));
+      if (save && saved > 0) save.textContent = "Save " + saved + "%";
+
+      function renderPrice(period) {
+        var yearly = period === "yearly";
+        var perMonth = Math.round((PRICING.proYearly / 12) * 10) / 10;
+        amount.textContent = "$" + (yearly ? PRICING.proYearly : PRICING.proMonthly);
+        cadence.textContent = yearly ? "/ year" : "/ month";
+        note.textContent = yearly ? "$" + perMonth + " per month, billed yearly" : "Billed monthly";
+      }
+
+      buttons.forEach(function (button) {
+        button.addEventListener("click", function () {
+          var period = button.getAttribute("data-period") || "monthly";
+          buttons.forEach(function (item) {
+            var selected = item === button;
+            item.classList.toggle("is-selected", selected);
+            item.setAttribute("aria-pressed", selected ? "true" : "false");
+          });
+          renderPrice(period);
+        });
       });
     })();
   </script>
