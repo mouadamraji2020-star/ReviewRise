@@ -658,6 +658,34 @@ select:focus {
   text-align: right;
 }
 .subscription-summary.is-trial-expired h3 { color: #8a4b12; }
+.subscription-usage { margin-top: 14px; }
+.subscription-usage[hidden] { display: none !important; }
+.subscription-usage-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: #6d7c92;
+  font-size: 13px;
+  font-weight: 650;
+}
+.subscription-usage-row strong {
+  color: #0c1730;
+  font-weight: 750;
+}
+.subscription-usage-track {
+  height: 6px;
+  margin-top: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e7eef6;
+}
+.subscription-usage-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #2b7fff;
+}
 .plan-billing {
   display: inline-flex;
   gap: 4px;
@@ -1236,6 +1264,15 @@ body.page-leaving { opacity: 0; }
                   <dd id="subscriptionProvider"></dd>
                 </div>
               </dl>
+              <div class="subscription-usage" id="subscriptionUsage" hidden>
+                <div class="subscription-usage-row">
+                  <span>Businesses</span>
+                  <strong id="subscriptionUsageCount"></strong>
+                </div>
+                <div class="subscription-usage-track" id="subscriptionUsageTrack" role="progressbar" aria-valuemin="0" aria-valuemax="1" aria-valuenow="0">
+                  <span id="subscriptionUsageBar"></span>
+                </div>
+              </div>
               <p id="subscriptionAccessNote">A trial end date has not been saved for this account, so no countdown is shown.</p>
             </div>
             <div class="plan-billing" role="group" aria-label="Paid plan billing period">
@@ -1292,7 +1329,7 @@ body.page-leaving { opacity: 0; }
                 <p class="plan-price"><strong id="businessPrice">$49</strong><span id="businessPeriod">/ month</span></p>
                 <p class="plan-price-note" id="businessPriceNote">Billed monthly</p>
                 <ul class="plan-features">
-                  <li>Higher business and location limits</li>
+                  <li>Up to 25 businesses</li>
                   <li>Everything in Pro</li>
                   <li>Advanced multi-location reporting</li>
                   <li>Team features <span class="plan-soon">Coming soon</span></li>
@@ -2535,6 +2572,57 @@ function setSubscriptionFact(rowId, valueId, value) {
     }
 }
 
+function planBusinessLimit(plan) {
+    if (plan === "trial") return 1;
+    if (plan === "pro") return 5;
+    if (plan === "business") return 25;
+    return null;
+}
+
+function renderBusinessUsage(count, limit) {
+    var box = document.getElementById("subscriptionUsage");
+    var label = document.getElementById("subscriptionUsageCount");
+    var bar = document.getElementById("subscriptionUsageBar");
+    var track = document.getElementById("subscriptionUsageTrack");
+
+    if (!box || !label || !bar || !track) {
+        return;
+    }
+
+    if (count == null || limit == null) {
+        box.hidden = true;
+        return;
+    }
+
+    var used = Math.max(0, count);
+    var pct = limit > 0 ? Math.min(100, Math.round((used / limit) * 100)) : 0;
+
+    label.textContent = used + " of " + limit + " used";
+    bar.style.width = pct + "%";
+    track.setAttribute("aria-valuemax", String(limit));
+    track.setAttribute("aria-valuenow", String(used));
+    track.setAttribute("aria-valuetext", used + " of " + limit + " businesses used");
+    box.hidden = false;
+}
+
+async function loadOwnedBusinessCount(token) {
+    try {
+        var response = await fetch(
+            SUPABASE_URL + "/rest/v1/Reviewlinks?select=id&user_id=eq." + encodeURIComponent(accountUserId),
+            { headers: authHeaders(token) }
+        );
+
+        if (!response.ok) {
+            return null;
+        }
+
+        var rows = await response.json();
+        return Array.isArray(rows) ? rows.length : null;
+    } catch (error) {
+        return null;
+    }
+}
+
 function renderSubscriptionAccess(profile) {
     var summary = document.getElementById("subscriptionSummary");
     var access = document.getElementById("subscriptionAccess");
@@ -2584,6 +2672,7 @@ async function loadSubscriptionAccess(token) {
         return;
     }
 
+    var usageCount = loadOwnedBusinessCount(token);
     var response;
 
     try {
@@ -2607,7 +2696,11 @@ async function loadSubscriptionAccess(token) {
     }
 
     var rows = await response.json();
-    renderSubscriptionAccess(Array.isArray(rows) ? rows[0] : null);
+    var profile = Array.isArray(rows) ? rows[0] : null;
+    var plan = profile && typeof profile.plan === "string" ? profile.plan.trim().toLowerCase() : "";
+
+    renderSubscriptionAccess(profile);
+    renderBusinessUsage(await usageCount, planBusinessLimit(plan));
 }
 
 document.getElementById("startTrialBtn").addEventListener("click", function () {

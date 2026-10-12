@@ -197,6 +197,8 @@
     .field-error { display: none; margin-top: 6px; color: #dc2626; font-size: 13px; font-weight: 500; }
     .input-error { border-color: #dc2626 !important; box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.08); }
     .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
+    #planLimitMessage { margin: 8px 0 0; color: #314158; font-size: 15px; line-height: 1.5; }
+    a.plan-limit-link { text-decoration: none; }
     .cancel-btn { height: 42px; padding: 0 16px; border: 1px solid #e6edf5; border-radius: 12px; background: #fff; color: #314158; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer; }
     .success-toast { position: fixed; top: 24px; right: 24px; z-index: 9999; display: flex; align-items: center; gap: 12px; width: 340px; max-width: calc(100% - 32px); padding: 16px 18px; background: #fff; border: 1px solid #e5e7eb; border-radius: 14px; box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12); opacity: 0; visibility: hidden; transform: translateY(-8px); transition: opacity 220ms cubic-bezier(0.22, 1, 0.36, 1), transform 220ms cubic-bezier(0.22, 1, 0.36, 1), visibility 220ms; }
     .success-toast.show { opacity: 1; visibility: visible; transform: translateY(0); }
@@ -491,6 +493,22 @@
   </div>
 </div>
 
+<div class="review-modal" id="planLimitModal" role="dialog" aria-modal="true" aria-labelledby="planLimitTitle">
+  <div class="review-modal-box">
+    <div class="review-modal-header">
+      <div>
+        <h2 id="planLimitTitle">Business limit reached</h2>
+        <p id="planLimitMessage"></p>
+      </div>
+      <button class="modal-close" type="button" onclick="closePlanLimitModal()" aria-label="Close">×</button>
+    </div>
+    <div class="modal-actions">
+      <button class="cancel-btn" type="button" onclick="closePlanLimitModal()">Close</button>
+      <a class="save-link-btn plan-limit-link" href="settings.html#subscription">View Plans</a>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 let editingReviewLinkId = null;
@@ -506,7 +524,135 @@ function smoothNavigate(page) {
     setTimeout(function () { window.location.href = page; }, 250);
 }
 
-function openReviewLinkModal() {
+var planLimitCheckInFlight = false;
+
+function showPlanLimit(message, title) {
+    document.getElementById("planLimitTitle").textContent = title || "Business limit reached";
+    document.getElementById("planLimitMessage").textContent = message;
+    document.getElementById("planLimitModal").classList.add("open");
+}
+
+function closePlanLimitModal() {
+    document.getElementById("planLimitModal").classList.remove("open");
+}
+
+var cachedReviewLinkProfile = null;
+
+function reviewLinkLimitCopy(profile) {
+    if (reviewRiseTrialExpired(profile, new Date())) {
+        return { title: "Trial ended", message: "Your 7-day free trial has ended." };
+    }
+
+    var plan = profile && typeof profile.plan === "string" ? profile.plan.trim().toLowerCase() : "";
+    var status = profile && profile.subscription_status != null ? String(profile.subscription_status).trim().toLowerCase() : "";
+
+    if ((plan === "pro" || plan === "business") && status && status !== "active") {
+        return { title: "Subscription inactive", message: "Your subscription is not active." };
+    }
+    if (plan === "pro") {
+        return { title: "Business limit reached", message: "Your Pro plan supports up to 5 businesses." };
+    }
+    if (plan === "business") {
+        return { title: "Business limit reached", message: "Your Business plan supports up to 25 businesses." };
+    }
+    if (plan === "trial") {
+        return { title: "Business limit reached", message: "Your 7-day trial supports 1 business." };
+    }
+
+    return { title: "Business limit reached", message: "Choose a plan to continue." };
+}
+
+async function reviewLinkDatabaseLimit(errorText, token, userId) {
+    var blob = String(errorText || "");
+
+    if (blob.indexOf("TRIAL_EXPIRED") !== -1) {
+        return { title: "Trial ended", message: "Your 7-day free trial has ended." };
+    }
+
+    if (blob.indexOf("SUBSCRIPTION_INACTIVE") !== -1) {
+        return { title: "Subscription inactive", message: "Your subscription is not active." };
+    }
+
+    if (blob.indexOf("PLAN_LIMIT_REACHED") !== -1) {
+        return reviewLinkLimitCopy(await reviewLinkPlanProfile(token, userId));
+    }
+
+    return null;
+}
+
+async function reviewLinkPlanProfile(token, userId) {
+    if (cachedReviewLinkProfile) {
+        return cachedReviewLinkProfile;
+    }
+
+    try {
+        var response = await fetch(
+            SUPABASE_URL + "/rest/v1/profiles?id=eq." + encodeURIComponent(userId) + "&select=plan,trial_ends_at,subscription_status",
+            { headers: { "apikey": SUPABASE_KEY, "Authorization": "Bearer " + token } }
+        );
+        if (!response.ok) return null;
+        var rows = await response.json();
+        cachedReviewLinkProfile = Array.isArray(rows) ? rows[0] : null;
+        return cachedReviewLinkProfile;
+    } catch (error) {
+        return null;
+    }
+}
+
+async function reviewLinkCreateGate(existingToken, existingUserId) {
+    var token = existingToken || await getValidAccessToken();
+    var userId = existingUserId || (token ? reviewLinksOwnerId(token) : null);
+    if (!token || !userId) {
+        alert("Please log in again.");
+        return { allowed: false };
+    }
+
+    var response;
+    try {
+        response = await fetch(SUPABASE_URL + "/rest/v1/rpc/can_create_review_link", {
+            method: "POST",
+            headers: {
+                "apikey": SUPABASE_KEY,
+                "Authorization": "Bearer " + token,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ p_user_id: userId })
+        });
+    } catch (error) {
+        return { allowed: false, title: "Plan check unavailable", message: "Could not check your plan limit. Please try again." };
+    }
+
+    if (!response.ok) {
+        return { allowed: false, title: "Plan check unavailable", message: "Could not check your plan limit. Please try again." };
+    }
+
+    var allowed = false;
+    try {
+        allowed = await response.json() === true;
+    } catch (error) {
+        allowed = false;
+    }
+
+    if (allowed) return { allowed: true };
+
+    var profile = await reviewLinkPlanProfile(token, userId);
+    var copy = reviewLinkLimitCopy(profile);
+    return { allowed: false, title: copy.title, message: copy.message };
+}
+
+async function openReviewLinkModal() {
+    if (planLimitCheckInFlight || trialAccessLocked) return;
+    planLimitCheckInFlight = true;
+    try {
+        var gate = await reviewLinkCreateGate();
+        if (!gate.allowed) {
+            if (gate.message) showPlanLimit(gate.message, gate.title);
+            return;
+        }
+    } finally {
+        planLimitCheckInFlight = false;
+    }
+
     document.getElementById("googleReviewLinkError").style.display = "none";
     document.getElementById("googleReviewLink").classList.remove("input-error");
     editingReviewLinkId = null;
@@ -519,7 +665,7 @@ function openReviewLinkModal() {
     document.getElementById("logoPreview").src = "";
     document.getElementById("logoPreviewContainer").style.display = "none";
     document.getElementById("logoUploadPlaceholder").style.display = "";
-    document.querySelector(".save-link-btn").textContent = "Create Review Link";
+    document.getElementById("saveReviewLinkBtn").textContent = "Create Review Link";
     document.getElementById("reviewLinkModal").classList.add("open");
 }
 
@@ -553,6 +699,17 @@ async function createReviewLink() {
     const userResponse = await fetch(SUPABASE_URL + "/auth/v1/user", { headers: { "apikey": SUPABASE_KEY, "Authorization": "Bearer " + token } });
     if (!userResponse.ok) { alert("Please log in again."); return; }
     const user = await userResponse.json();
+    const isEditing = editingReviewLinkId !== null;
+    if (!isEditing) {
+        const gate = await reviewLinkCreateGate(token, user.id);
+        if (!gate.allowed) {
+            if (gate.message) {
+                closeReviewLinkModal();
+                showPlanLimit(gate.message, gate.title);
+            }
+            return;
+        }
+    }
     const logoInput = document.getElementById("businessLogoInput");
     const logoFile = logoInput.files[0];
     let logoUrl = editingReviewLinkId ? editingLogoUrl : null;
@@ -572,7 +729,6 @@ async function createReviewLink() {
         }
         logoUrl = SUPABASE_URL + "/storage/v1/object/public/business-logos/" + fileName;
     }
-    const isEditing = editingReviewLinkId !== null;
     const requestUrl = isEditing
         ? SUPABASE_URL + "/rest/v1/Reviewlinks?id=eq." + encodeURIComponent(editingReviewLinkId)
         : SUPABASE_URL + "/rest/v1/Reviewlinks";
@@ -583,9 +739,22 @@ async function createReviewLink() {
             ? { business_name: businessName, google_review_link: googleReviewLink, logo_url: logoUrl }
             : { business_name: businessName, google_review_link: googleReviewLink, logo_url: logoUrl, user_id: user.id })
     });
-    const error = insertResponse.ok ? null : result;
-    if (error) {
-        console.error(error);
+    if (!insertResponse.ok) {
+        var errorText = "";
+        try {
+            errorText = await insertResponse.text();
+        } catch (readError) {
+            errorText = "";
+        }
+        console.error(errorText || "Could not save the review link.");
+        if (!isEditing) {
+            var limitCopy = await reviewLinkDatabaseLimit(errorText, token, user.id);
+            if (limitCopy) {
+                closeReviewLinkModal();
+                showPlanLimit(limitCopy.message, limitCopy.title);
+                return;
+            }
+        }
         alert("Could not create the review link.");
         return;
     }
@@ -603,7 +772,7 @@ async function createReviewLink() {
     setTimeout(function () { successToast.classList.remove("show"); }, 3000);
     editingReviewLinkId = null;
     editingLogoUrl = null;
-    document.querySelector(".save-link-btn").textContent = "Create Review Link";
+    document.getElementById("saveReviewLinkBtn").textContent = "Create Review Link";
     closeReviewLinkModal();
     document.getElementById("businessName").value = "";
     document.getElementById("googleReviewLink").value = "";
@@ -745,7 +914,7 @@ function openEditReviewLink(link) {
         logoPreviewContainer.style.display = "none";
         logoUploadPlaceholder.style.display = "";
     }
-    document.querySelector(".save-link-btn").textContent = "Save Changes";
+    document.getElementById("saveReviewLinkBtn").textContent = "Save Changes";
     document.getElementById("reviewLinkModal").classList.add("open");
 }
 
@@ -971,6 +1140,10 @@ function showDeleteConfirmation(businessName) {
     });
 }
 
+document.getElementById("planLimitModal").addEventListener("click", function (event) {
+    if (event.target === this) closePlanLimitModal();
+});
+
 document.getElementById("linkSearch").addEventListener("input", paintReviewLinks);
 document.getElementById("linkSort").addEventListener("change", paintReviewLinks);
 
@@ -1025,7 +1198,8 @@ async function reviewRiseTrialAccessExpired(token) {
         }
 
         var rows = await response.json();
-        return reviewRiseTrialExpired(Array.isArray(rows) ? rows[0] : null, new Date());
+        cachedReviewLinkProfile = Array.isArray(rows) ? rows[0] : null;
+        return reviewRiseTrialExpired(cachedReviewLinkProfile, new Date());
     } catch (error) {
         return false;
     }

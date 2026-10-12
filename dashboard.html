@@ -1675,6 +1675,32 @@ a.menu-item:visited {
     color: #10284d;
 }
 
+.trial-ending {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    max-width: 460px;
+    margin: 10px 0 0;
+    padding: 9px 12px;
+    border: 1px solid #e4edf7;
+    border-radius: 12px;
+    background: #f7faff;
+    color: #3d4e68;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.trial-ending[hidden] { display: none !important; }
+
+.trial-ending a {
+    flex: none;
+    color: #1d4ed8;
+    font-weight: 700;
+    text-decoration: none;
+}
+
 .getting-started {
     margin-top: 18px;
     padding: 16px 18px 8px;
@@ -3502,6 +3528,10 @@ body.page-leaving {
           <h2 id="dashGreeting">Welcome back</h2>
           <p>Here’s what’s happening with your customer feedback.</p>
           <a class="trial-status" id="trialStatus" href="settings.html#subscription" hidden></a>
+          <p class="trial-ending" id="trialEnding" hidden>
+            <span id="trialEndingText"></span>
+            <a href="settings.html#subscription">View Plans</a>
+          </p>
         </section>
 
         <section class="getting-started" id="gettingStarted" hidden aria-labelledby="gettingStartedTitle">
@@ -5595,11 +5625,60 @@ function reviewRiseTrialState(profile, now) {
     if (current < endsAt) {
         return {
             kind: "trial-active",
+            endsAt: endsAt,
             daysRemaining: Math.ceil((endsAt - current) / 86400000)
         };
     }
 
     return { kind: "trial-expired", daysRemaining: 0 };
+}
+
+function trialEndingMessage(endsAt, now) {
+    var current = now instanceof Date ? now.getTime() : Date.now();
+    var remaining = endsAt - current;
+    var day = 86400000;
+
+    if (!(remaining > 0) || remaining > 3 * day) {
+        return "";
+    }
+
+    if (remaining < day) {
+        return "Your free trial ends today.";
+    }
+
+    var days = Math.ceil(remaining / day);
+
+    if (days === 1) {
+        return "Your free trial ends tomorrow.";
+    }
+
+    if (days === 2) {
+        return "Your free trial ends in 2 days.";
+    }
+
+    if (days === 3) {
+        return "Your free trial ends in 3 days.";
+    }
+
+    return "";
+}
+
+function renderTrialEnding(message) {
+    var note = document.getElementById("trialEnding");
+    var text = document.getElementById("trialEndingText");
+
+    if (!note || !text) {
+        return;
+    }
+
+    if (!message) {
+        note.hidden = true;
+        text.textContent = "";
+        return;
+    }
+
+    text.textContent = message;
+    note.hidden = false;
 }
 
 function renderTrialStatus(profile) {
@@ -5609,9 +5688,11 @@ function renderTrialStatus(profile) {
         return;
     }
 
-    var state = reviewRiseTrialState(profile, new Date());
+    var now = new Date();
+    var state = reviewRiseTrialState(profile, now);
 
     banner.classList.remove("is-expired", "is-paid");
+    renderTrialEnding("");
 
     if (state.kind === "pro-active" || state.kind === "business-active") {
         banner.textContent = state.kind === "pro-active" ? "Pro" : "Business";
@@ -5622,8 +5703,9 @@ function renderTrialStatus(profile) {
 
     if (state.kind === "trial-active") {
         var dayLabel = state.daysRemaining === 1 ? "1 day remaining" : state.daysRemaining + " days remaining";
-        banner.textContent = "Trial active · " + dayLabel;
+        banner.textContent = "Trial · " + dayLabel;
         banner.hidden = false;
+        renderTrialEnding(trialEndingMessage(state.endsAt, now));
         return;
     }
 
