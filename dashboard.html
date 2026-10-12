@@ -10,6 +10,8 @@
 <script>
 if (!localStorage.getItem("reviewrise_token") && !localStorage.getItem("reviewrise_refresh_token")) {
     document.documentElement.classList.add("reviewrise-signed-out");
+} else {
+    document.documentElement.classList.add("is-booting");
 }
 </script>
 
@@ -3200,6 +3202,28 @@ body.page-leaving {
     .trial-lock-card { padding: 28px 20px 24px; }
     .trial-lock-card h2 { font-size: 22px; }
 }
+html.is-booting .biz-switch { visibility: hidden; }
+html.is-booting #loginSection { display: none !important; }
+html.is-booting #dashboard { display: block !important; }
+html.is-booting .boot-screen { display: flex; }
+html.is-booting .main > :not(.boot-screen) { display: none !important; }
+.boot-screen { display: none; min-height: 280px; align-items: center; justify-content: center; gap: 8px; }
+.boot-screen span { width: 8px; height: 8px; border-radius: 50%; background: #b7c4d6; animation: bootPulse 1s ease-in-out infinite; }
+.boot-screen span:nth-child(2) { animation-delay: .15s; }
+.boot-screen span:nth-child(3) { animation-delay: .3s; }
+@keyframes bootPulse { 0%, 100% { opacity: .35; } 50% { opacity: 1; } }
+h2.stat-pending { color: transparent !important; background: linear-gradient(90deg, #e7edf5, #f5f8fb, #e7edf5); background-size: 200% 100%; border-radius: 8px; min-width: 52px; min-height: 28px; animation: statShimmer 1.2s linear infinite; }
+@keyframes statShimmer { to { background-position: -200% 0; } }
+.data-error { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin: 0 0 16px; padding: 14px 16px; border: 1px solid #ead7d7; border-radius: 12px; background: #fff; }
+.data-error[hidden] { display: none !important; }
+.data-error p { margin: 0; color: #3d4b63; font-size: 14px; line-height: 1.45; }
+.data-error button { border: 0; border-radius: 10px; background: #10284d; color: #fff; font: inherit; font-weight: 700; min-height: 40px; padding: 8px 14px; cursor: pointer; }
+.biz-name, .feedback-text { overflow-wrap: anywhere; }
+body { overflow-x: hidden; }
+@media (max-width: 800px) {
+    .trial-lock-card { max-width: calc(100vw - 32px); }
+    .stat-card, .dash-card, .feedback-card { min-width: 0; max-width: 100%; }
+}
   
 </style>
 </head>
@@ -3512,6 +3536,13 @@ body.page-leaving {
     </header>
 
     <main class="main">
+      <div class="boot-screen" id="bootScreen" role="status" aria-live="polite" aria-label="Loading">
+        <span></span><span></span><span></span>
+      </div>
+      <div class="data-error" id="dataError" hidden>
+        <p>Something went wrong while loading your data.</p>
+        <button type="button" id="dataRetry">Retry</button>
+      </div>
       <section class="trial-lock" id="trialLock" hidden>
         <div class="trial-lock-card">
           <p class="trial-lock-brand"><img src="assets/reviewrise-logo.png" alt="">ReviewRise</p>
@@ -3546,19 +3577,19 @@ body.page-leaving {
           <div class="stat-card">
             <div class="stat-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 6h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H9l-4 3v-3H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z"/></svg></div>
             <p>Total Feedback</p>
-            <h2 id="totalFeedback">_</h2>
+            <h2 id="totalFeedback" class="stat-pending">&nbsp;</h2>
             <span class="stat-note">All private feedback received</span>
           </div>
           <div class="stat-card">
             <div class="stat-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m12 3 2.4 5.4L20 9.2l-4 3.8.9 5.8L12 16.2 7.1 18.8 8 13 4 9.2l5.6-.8L12 3z"/></svg></div>
             <p>Average Rating</p>
-            <h2 id="averageRating">_</h2>
+            <h2 id="averageRating" class="stat-pending">&nbsp;</h2>
             <span class="stat-note">Across received feedback</span>
           </div>
           <div class="stat-card">
             <div class="stat-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 4 3.5 19h17L12 4z"/><path d="M12 10v4"/><path d="M12 16.5h.01"/></svg></div>
             <p>1–3 Star Feedback</p>
-            <h2 id="lowRatings">_</h2>
+            <h2 id="lowRatings" class="stat-pending">&nbsp;</h2>
             <span class="stat-note">Lower ratings to review</span>
           </div>
         </div>
@@ -3753,6 +3784,11 @@ function paintDashboard(feedback) {
     document.getElementById("totalFeedback").textContent = total;
     document.getElementById("averageRating").textContent = average;
     document.getElementById("lowRatings").textContent = lowRatings;
+    document.getElementById("totalFeedback").classList.remove("stat-pending");
+    document.getElementById("averageRating").classList.remove("stat-pending");
+    document.getElementById("lowRatings").classList.remove("stat-pending");
+    hideDataError();
+    finishPageBoot();
 
     const list = document.getElementById("feedbackList");
     list.innerHTML = "";
@@ -5399,7 +5435,7 @@ customerProblemBindDrawer();
 
 function dashboardEmptyState(withLinks) {
     var links = withLinks
-        ? '<div class="dash-empty-actions"><button type="button" onclick="smoothNavigate(\'review-link.html\')">Review Links</button><button type="button" onclick="smoothNavigate(\'qr-nfc.html\')">QR &amp; NFC</button></div>'
+        ? '<div class="dash-empty-actions"><button type="button" onclick="smoothNavigate(\'review-link.html\')">View Review Links</button></div>'
         : "";
 
     return '<div class="dash-empty"><strong>No feedback yet</strong><p>Share your ReviewRise link or QR code to start collecting customer feedback.</p>' + links + "</div>";
@@ -5800,21 +5836,42 @@ function renderTrialStatus(state) {
     banner.textContent = "";
 }
 
+function finishPageBoot() {
+    document.documentElement.classList.remove("is-booting");
+}
+
+function showDataError() {
+    var node = document.getElementById("dataError");
+    if (node) node.hidden = false;
+    document.querySelectorAll(".dash-loading").forEach(function (item) {
+        item.textContent = "";
+    });
+    finishPageBoot();
+}
+
+function hideDataError() {
+    var node = document.getElementById("dataError");
+    if (node) node.hidden = true;
+}
+
 async function loadTrialStatus(token) {
     var result = await readPageSubscription(token);
 
     if (result.access === "unauthorized") {
+        finishPageBoot();
         return "unauthorized";
     }
 
     if (result.access === "unverified") {
         showSubscriptionProblem("unverified");
+        finishPageBoot();
         return "stop";
     }
 
     if (result.access === "locked") {
         renderTrialStatus(result.state);
         showTrialLock();
+        finishPageBoot();
         return "stop";
     }
 
@@ -6425,7 +6482,10 @@ if (!token) {
     return;
 }
 
-  const response = await fetch(
+  let response;
+
+  try {
+    response = await fetch(
 
     SUPABASE_URL +
     "/rest/v1/Feedback?select=*&order=created_at.desc",
@@ -6440,7 +6500,11 @@ if (!token) {
       }
     }
   );
-  
+  } catch (error) {
+    if (!readFeedbackDataCache()) showDataError();
+    else finishPageBoot();
+    return;
+  }
 
   if (response.status === 401 || response.status === 403) {
     logout();
@@ -6448,36 +6512,16 @@ if (!token) {
   }
 
   if (!response.ok) {
-
-    if (!readFeedbackDataCache()) {
-      document.getElementById("feedbackList")
-        .textContent =
-        "Could not load feedback.";
-
-      var chart = document.getElementById("feedbackChart");
-      var distribution = document.getElementById("ratingDistribution");
-
-      if (chart) {
-        chart.textContent = "Could not load feedback.";
-      }
-
-      if (distribution) {
-        distribution.textContent = "";
-      }
-
-      var intelligence = document.getElementById("customerIntelBody");
-
-      if (intelligence) {
-        intelligence.textContent = "Customer Intelligence could not be loaded.";
-      }
-    }
-
+    if (!readFeedbackDataCache()) showDataError();
+    else finishPageBoot();
     return;
   }
 
 const feedback = await response.json();
 
   if (!Array.isArray(feedback)) {
+    if (!readFeedbackDataCache()) showDataError();
+    else finishPageBoot();
     return;
   }
 
@@ -7244,6 +7288,7 @@ function logout() {
   dashboard.style.display =
   "none";
 
+  document.documentElement.classList.remove("is-booting");
   document.documentElement.classList.add("reviewrise-signed-out");
 
   loginSection.style.display =
@@ -7332,6 +7377,7 @@ document.querySelectorAll(".password-toggle").forEach(function (button) {
         }
 
         if (route === "error") {
+            finishPageBoot();
             loginSection.style.display = "flex";
             dashboard.style.display = "none";
             setAuthMessage("loginMessage", "We couldn't load your account setup. Please try again.");
@@ -7445,6 +7491,17 @@ function toggleAccountMenu() {
 
 reviewRiseBindAlerts();
 reviewRiseRenderAlerts(reviewRiseReadAlerts());
+
+var dataRetry = document.getElementById("dataRetry");
+if (dataRetry) {
+  dataRetry.addEventListener("click", function () {
+    hideDataError();
+    document.querySelectorAll(".dash-loading").forEach(function (item) {
+      item.textContent = "Loading feedback...";
+    });
+    loadFeedback();
+  });
+}
   
 </script>
 

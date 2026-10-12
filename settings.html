@@ -897,7 +897,22 @@ html.sidebar-boot .main {
   .panel.active { animation: none; }
 }
 
-body { opacity: 1; transition: opacity 0.25s ease; }
+body { opacity: 1; transition: opacity 0.25s ease; overflow-x: hidden; }
+.subscription-summary.is-pending #subscriptionAccessNote { display: none !important; }
+.subscription-summary.is-pending #subscriptionAccess {
+  color: transparent !important;
+  background: #e8eef6;
+  border-radius: 8px;
+  user-select: none;
+}
+.legal-links { margin: 18px 2px 0; font-size: 13px; }
+.legal-links a { color: #6d7c92; text-decoration: none; margin-right: 16px; }
+.legal-links a:hover { text-decoration: underline; }
+#subscriptionRetry { margin-top: 12px; }
+@media (max-width: 800px) {
+  .plan-card, .danger-card, .settings-card { min-width: 0; max-width: 100%; }
+  .subscription-summary h3, .settings-content h3 { overflow-wrap: anywhere; }
+}
 body.page-leaving { opacity: 0; }
 </style>
 <script>
@@ -1227,9 +1242,9 @@ body.page-leaving { opacity: 0; }
               <h2>Subscription</h2>
               <p>The 7-day free trial is the only unpaid access. A paid plan is required after it ends.</p>
             </div>
-            <div class="subscription-summary" id="subscriptionSummary">
+            <div class="subscription-summary is-pending" id="subscriptionSummary">
               <p class="subscription-kicker">Current access</p>
-              <h3 id="subscriptionAccess">No plan on file</h3>
+              <h3 id="subscriptionAccess">Loading</h3>
               <dl class="subscription-facts" id="subscriptionFacts" hidden>
                 <div id="subscriptionPlanRow">
                   <dt>Current plan</dt>
@@ -1278,6 +1293,7 @@ body.page-leaving { opacity: 0; }
                 </div>
               </div>
               <p id="subscriptionAccessNote">A trial end date has not been saved for this account, so no countdown is shown.</p>
+              <button class="btn btn-secondary" type="button" id="subscriptionRetry" hidden>Retry</button>
             </div>
             <div class="plan-billing" role="group" aria-label="Paid plan billing period">
               <button class="plan-billing-btn is-selected" type="button" data-billing="monthly" aria-pressed="true">Monthly</button>
@@ -1357,6 +1373,7 @@ body.page-leaving { opacity: 0; }
               <button class="btn btn-danger" type="button" disabled>Delete account unavailable</button>
             </div>
           </section>
+          <p class="legal-links"><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms of Service</a></p>
         </div>
       </div>
     </main>
@@ -2660,10 +2677,13 @@ function subscriptionStatusLabel(status) {
 }
 
 function renderSubscriptionUnavailable() {
+    var summary = document.getElementById("subscriptionSummary");
     var access = document.getElementById("subscriptionAccess");
     var note = document.getElementById("subscriptionAccessNote");
     var facts = document.getElementById("subscriptionFacts");
+    var retry = document.getElementById("subscriptionRetry");
 
+    if (summary) summary.classList.remove("is-pending");
     if (access) access.textContent = "Subscription unavailable";
     if (facts) facts.hidden = true;
     renderBusinessUsage(null, null);
@@ -2671,6 +2691,7 @@ function renderSubscriptionUnavailable() {
         note.hidden = false;
         note.textContent = "We couldn't confirm your subscription. Please try again.";
     }
+    if (retry) retry.hidden = false;
 }
 
 function renderSubscriptionAccess(state) {
@@ -2688,6 +2709,9 @@ function renderSubscriptionAccess(state) {
         return;
     }
 
+    summary.classList.remove("is-pending");
+    var retry = document.getElementById("subscriptionRetry");
+    if (retry) retry.hidden = true;
     summary.classList.toggle("is-trial-active", plan === "trial" && state.hasAccess);
     summary.classList.toggle("is-trial-expired", plan === "trial" && !state.hasAccess);
     access.textContent = planLabel;
@@ -2852,6 +2876,16 @@ loadSelectedBusinessSettings();
     applyCollapsed(collapsed);
     enableSidebarMotion();
 })();
+
+var subscriptionRetry = document.getElementById("subscriptionRetry");
+if (subscriptionRetry) {
+    subscriptionRetry.addEventListener("click", function () {
+        var summary = document.getElementById("subscriptionSummary");
+        subscriptionRetry.hidden = true;
+        if (summary) summary.classList.add("is-pending");
+        loadSubscriptionAccess(localStorage.getItem("reviewrise_token"));
+    });
+}
 </script>
 </body>
 </html>

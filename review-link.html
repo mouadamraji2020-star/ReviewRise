@@ -4,6 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Review Links - ReviewRise</title>
+  <script>
+    if (localStorage.getItem("reviewrise_token") || localStorage.getItem("reviewrise_refresh_token")) {
+      document.documentElement.classList.add("is-booting");
+    }
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -330,6 +335,24 @@
       .trial-lock-card { padding: 28px 20px 24px; }
       .trial-lock-card h2 { font-size: 22px; }
     }
+    html.is-booting .boot-screen { display: flex; }
+    html.is-booting .main > :not(.boot-screen) { display: none !important; }
+    .boot-screen { display: none; min-height: 280px; align-items: center; justify-content: center; gap: 8px; }
+    .boot-screen span { width: 8px; height: 8px; border-radius: 50%; background: #b7c4d6; animation: bootPulse 1s ease-in-out infinite; }
+    .boot-screen span:nth-child(2) { animation-delay: .15s; }
+    .boot-screen span:nth-child(3) { animation-delay: .3s; }
+    @keyframes bootPulse { 0%, 100% { opacity: .35; } 50% { opacity: 1; } }
+    .data-error { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin: 0 0 16px; padding: 14px 16px; border: 1px solid #ead7d7; border-radius: 12px; background: #fff; }
+    .data-error[hidden] { display: none !important; }
+    .data-error p { margin: 0; color: #3d4b63; font-size: 14px; line-height: 1.45; }
+    .data-error button { border: 0; border-radius: 10px; background: #10284d; color: #fff; font: inherit; font-weight: 700; min-height: 40px; padding: 8px 14px; cursor: pointer; }
+    .link-card h3, .biz-name { overflow-wrap: anywhere; }
+    body { overflow-x: hidden; }
+    @media (max-width: 800px) {
+      .trial-lock-card, .review-modal-box { max-width: calc(100vw - 32px); }
+      .review-modal { padding: 12px; }
+      .link-card { min-width: 0; max-width: 100%; }
+    }
   </style>
 </head>
 <body>
@@ -404,6 +427,13 @@
     </header>
 
     <main class="main">
+      <div class="boot-screen" id="bootScreen" role="status" aria-live="polite" aria-label="Loading">
+        <span></span><span></span><span></span>
+      </div>
+      <div class="data-error" id="dataError" hidden>
+        <p>Something went wrong while loading your data.</p>
+        <button type="button" id="dataRetry">Retry</button>
+      </div>
       <section class="trial-lock" id="trialLock" hidden>
         <div class="trial-lock-card">
           <p class="trial-lock-brand"><img src="assets/reviewrise-logo.png" alt="">ReviewRise</p>
@@ -441,9 +471,8 @@
         <div class="review-links-card" id="reviewLinksCard">
           <div id="reviewLinksContainer"></div>
           <div class="empty-state" id="emptyState" style="display: none;">
-            <h3>No review links yet</h3>
-            <p>Create your first review link to start collecting customer feedback.</p>
-            <button class="empty-add-btn" type="button" onclick="openReviewLinkModal()">+ Create Review Link</button>
+            <h3>No businesses yet.</h3>
+            <button class="empty-add-btn" type="button" onclick="openReviewLinkModal()">Create your first business</button>
           </div>
         </div>
       </div>
@@ -517,6 +546,22 @@
 let editingReviewLinkId = null;
 let editingLogoUrl = null;
 var loadedReviewLinks = [];
+var reviewLinksSettled = false;
+
+function finishPageBoot() {
+    document.documentElement.classList.remove("is-booting");
+}
+
+function showDataError() {
+    var node = document.getElementById("dataError");
+    if (node) node.hidden = false;
+    finishPageBoot();
+}
+
+function hideDataError() {
+    var node = document.getElementById("dataError");
+    if (node) node.hidden = true;
+}
 
 const SUPABASE_URL = "https://intlhwmvldxdiytemjlr.supabase.co";
 const SUPABASE_KEY = "sb_publishable_0KjZZApJCuvTEJH3nNyLUg_aps6aXaA";
@@ -904,6 +949,9 @@ function openEditReviewLink(link) {
 }
 
 function paintReviewLinks() {
+    reviewLinksSettled = true;
+    hideDataError();
+    finishPageBoot();
     const container = document.getElementById("reviewLinksContainer");
     const emptyState = document.getElementById("emptyState");
     const toolbar = document.getElementById("linksToolbar");
@@ -1092,13 +1140,32 @@ async function loadReviewLinks(cachedReviewLinks = null) {
     if (!reviewLinks) {
         const token = await getValidAccessToken();
         if (!token) { window.location.href = "dashboard.html"; return; }
-        const response = await fetch(
-            SUPABASE_URL + "/rest/v1/Reviewlinks?select=id,business_name,logo_url,google_review_link,is_primary,created_at&order=created_at.desc",
-            { headers: { "apikey": SUPABASE_KEY, "Authorization": "Bearer " + token, "Prefer": "return=representation" } }
-        );
-        if (!response.ok) { console.error("Could not load review links:", await response.text()); return; }
+        let response;
+        try {
+            response = await fetch(
+                SUPABASE_URL + "/rest/v1/Reviewlinks?select=id,business_name,logo_url,google_review_link,is_primary,created_at&order=created_at.desc",
+                { headers: { "apikey": SUPABASE_KEY, "Authorization": "Bearer " + token, "Prefer": "return=representation" } }
+            );
+        } catch (error) {
+            if (!reviewLinksSettled) showDataError();
+            else finishPageBoot();
+            return;
+        }
+        if (response.status === 401 || response.status === 403) {
+            window.location.href = "dashboard.html";
+            return;
+        }
+        if (!response.ok) {
+            if (!reviewLinksSettled) showDataError();
+            else finishPageBoot();
+            return;
+        }
         reviewLinks = await response.json();
-        if (!Array.isArray(reviewLinks)) return;
+        if (!Array.isArray(reviewLinks)) {
+            if (!reviewLinksSettled) showDataError();
+            else finishPageBoot();
+            return;
+        }
         reviewLinks = reviewLinks.map(publicReviewLink);
         writeReviewLinksCache(reviewLinksOwnerId(token), reviewLinks);
     }
@@ -1244,6 +1311,7 @@ function postSubscriptionState(accessToken) {
     }
     if (subscription.access !== "ok") {
         showSubscriptionProblem(subscription.access === "unverified" ? "unverified" : "locked");
+        finishPageBoot();
         return;
     }
     renderPlanUsage(subscription.state);
@@ -1307,6 +1375,14 @@ function logout() {
     var stored = localStorage.getItem("reviewrise_sidebar_collapsed");
     applyCollapsed(stored === "1" || (stored !== "0" && window.innerWidth <= 1100));
 })();
+
+var dataRetry = document.getElementById("dataRetry");
+if (dataRetry) {
+    dataRetry.addEventListener("click", function () {
+        hideDataError();
+        loadReviewLinks();
+    });
+}
 </script>
 </body>
 </html>

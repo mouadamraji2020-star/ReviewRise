@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Page not found | ReviewRise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-x: hidden;
+    padding: 32px 20px;
+    font-family: Inter, "Segoe UI", Arial, sans-serif;
+    color: #0c1424;
+    background:
+      radial-gradient(ellipse 720px 560px at 58% 42%, rgba(186, 220, 255, 0.36), transparent 70%),
+      radial-gradient(ellipse 560px 480px at 36% 74%, rgba(214, 232, 255, 0.46), transparent 72%),
+      #f5f8fd;
+  }
+  main {
+    width: min(480px, 100%);
+    text-align: center;
+    background: #fff;
+    border: 1px solid #e7edf5;
+    border-radius: 24px;
+    padding: 40px 28px 32px;
+    box-shadow: 0 24px 50px rgba(16, 40, 80, 0.08);
+  }
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 22px;
+    text-decoration: none;
+  }
+  .brand img { height: 36px; width: auto; }
+  .logo-name { font-size: 22px; font-weight: 800; letter-spacing: -0.6px; color: #10284d; }
+  .logo-name span {
+    background: linear-gradient(90deg, #1d4ed8 10%, #2f8bff 55%, #3ec6ff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  p.kicker { margin: 0; color: #2f7cf6; font-size: 13px; font-weight: 700; letter-spacing: 0.08em; }
+  h1 { margin: 8px 0 10px; font-size: 34px; letter-spacing: -0.8px; }
+  p { margin: 0; color: #5c6b82; font-size: 16px; line-height: 1.55; }
+  .actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 26px; }
+  a.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0 16px;
+    border-radius: 12px;
+    font-size: 14.5px;
+    font-weight: 700;
+    text-decoration: none;
+  }
+  a.primary { background: #10284d; color: #fff; }
+  a.secondary { background: #fff; color: #10284d; border: 1px solid #d7e0ec; }
+  @media (max-width: 520px) {
+    main { padding: 32px 18px 24px; }
+    h1 { font-size: 28px; }
+    .actions { flex-direction: column; }
+    a.btn { width: 100%; }
+  }
+</style>
+</head>
+<body>
+  <main>
+    <a class="brand" href="index.html">
+      <img src="assets/reviewrise-logo.png" alt="">
+      <span class="logo-name">Review<span>Rise</span></span>
+    </a>
+    <p class="kicker">404</p>
+    <h1>Page not found</h1>
+    <p>The page you're looking for doesn't exist or may have moved.</p>
+    <div class="actions">
+      <a class="btn primary" href="index.html">Go to Homepage</a>
+      <a class="btn secondary" href="dashboard.html">Go to Dashboard</a>
+    </div>
+  </main>
+</body>
+</html>

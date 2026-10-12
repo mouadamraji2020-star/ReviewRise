@@ -1134,6 +1134,7 @@
     }
 
     .site-footer a { color: var(--muted); text-decoration: none; }
+    .footer-links { display: flex; flex-wrap: wrap; gap: 10px 18px; }
 
     @media (max-width: 1100px) {
       h1 { font-size: 52px; }
@@ -1686,8 +1687,14 @@
 
   <footer class="site-footer">
     <div class="wrap">
-      <span>ReviewRise</span>
-      <a href="#main">Back to top</a>
+      <span>© 2026 ReviewRise</span>
+      <nav class="footer-links" aria-label="Footer">
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="terms.html">Terms of Service</a>
+        <a href="dashboard.html">Login</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#main">Back to top</a>
+      </nav>
     </div>
   </footer>
   <script>

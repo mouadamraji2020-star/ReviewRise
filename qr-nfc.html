@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>QR & NFC | ReviewRise</title>
+<script>
+if (localStorage.getItem("reviewrise_token") || localStorage.getItem("reviewrise_refresh_token")) {
+  document.documentElement.classList.add("is-booting");
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -1671,6 +1676,23 @@ html.sidebar-boot .main {
   .trial-lock-card { padding: 28px 20px 24px; }
   .trial-lock-card h2 { font-size: 22px; }
 }
+html.is-booting .boot-screen { display: flex; }
+html.is-booting .main > :not(.boot-screen) { display: none !important; }
+.boot-screen { display: none; min-height: 280px; align-items: center; justify-content: center; gap: 8px; }
+.boot-screen span { width: 8px; height: 8px; border-radius: 50%; background: #b7c4d6; animation: bootPulse 1s ease-in-out infinite; }
+.boot-screen span:nth-child(2) { animation-delay: .15s; }
+.boot-screen span:nth-child(3) { animation-delay: .3s; }
+@keyframes bootPulse { 0%, 100% { opacity: .35; } 50% { opacity: 1; } }
+.data-error { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin: 0 0 16px; padding: 14px 16px; border: 1px solid #ead7d7; border-radius: 12px; background: #fff; }
+.data-error[hidden] { display: none !important; }
+.data-error p { margin: 0; color: #3d4b63; font-size: 14px; line-height: 1.45; }
+.data-error button { border: 0; border-radius: 10px; background: #10284d; color: #fff; font: inherit; font-weight: 700; min-height: 40px; padding: 8px 14px; cursor: pointer; }
+.qr-link-name-row h3, .qr-poster-business-name, .qr-business-preview-name { overflow-wrap: anywhere; }
+body { overflow-x: hidden; }
+@media (max-width: 800px) {
+  .trial-lock-card, .qr-dialog { max-width: calc(100vw - 32px); }
+  .qr-link-card { min-width: 0; max-width: 100%; }
+}
 
 </style>
 <script>
@@ -1755,6 +1777,13 @@ html.sidebar-boot .main {
     </header>
 
     <main class="main">
+      <div class="boot-screen" id="bootScreen" role="status" aria-live="polite" aria-label="Loading">
+        <span></span><span></span><span></span>
+      </div>
+      <div class="data-error" id="dataError" hidden>
+        <p>Something went wrong while loading your data.</p>
+        <button type="button" id="dataRetry">Retry</button>
+      </div>
       <section class="trial-lock" id="trialLock" hidden>
         <div class="trial-lock-card">
           <p class="trial-lock-brand"><img src="assets/reviewrise-logo.png" alt="">ReviewRise</p>
@@ -1779,9 +1808,8 @@ html.sidebar-boot .main {
         </div>
 
         <div class="empty-state" id="qrEmptyState" hidden>
-          <h2>No Review Links yet</h2>
-          <p>Create a Review Link first, then it will automatically appear here.</p>
-          <button class="empty-link" type="button" onclick="smoothNavigate('review-link.html')">Go to Review Links</button>
+          <h2>No review link available yet.</h2>
+          <button class="empty-link" type="button" onclick="smoothNavigate('review-link.html')">Create Review Link</button>
         </div>
       </div>
     </main>
@@ -2210,7 +2238,27 @@ function applyBusiness(link, options) {
   }
 }
 
+var qrLinksSettled = false;
+
+function finishPageBoot() {
+  document.documentElement.classList.remove("is-booting");
+}
+
+function showDataError() {
+  var node = document.getElementById("dataError");
+  if (node) node.hidden = false;
+  finishPageBoot();
+}
+
+function hideDataError() {
+  var node = document.getElementById("dataError");
+  if (node) node.hidden = true;
+}
+
 function loadQRReviewLinks(reviewLinks) {
+  qrLinksSettled = true;
+  hideDataError();
+  finishPageBoot();
   if (!Array.isArray(reviewLinks) || reviewLinks.length === 0) {
     currentLinks = [];
     activeLink = null;
@@ -2319,12 +2367,16 @@ async function refreshQRReviewLinks() {
     }
 
     if (!response.ok) {
+      if (!qrLinksSettled) showDataError();
+      else finishPageBoot();
       return;
     }
 
     const rows = await response.json();
 
     if (!Array.isArray(rows)) {
+      if (!qrLinksSettled) showDataError();
+      else finishPageBoot();
       return;
     }
 
@@ -2333,9 +2385,13 @@ async function refreshQRReviewLinks() {
 
     if (reviewLinksRenderKey(links) !== renderedReviewLinksKey) {
       loadQRReviewLinks(links);
+    } else {
+      hideDataError();
+      finishPageBoot();
     }
   } catch (error) {
-    console.error("QR Review Links error:", error);
+    if (!qrLinksSettled) showDataError();
+    else finishPageBoot();
   }
 }
 
@@ -3181,6 +3237,7 @@ function postSubscriptionState(accessToken) {
   }
   if (subscription.access !== "ok") {
     showSubscriptionProblem(subscription.access === "unverified" ? "unverified" : "locked");
+    finishPageBoot();
     return;
   }
 
@@ -3267,6 +3324,14 @@ function logout() {
   applyCollapsed(collapsed);
   enableSidebarMotion();
 })();
+
+var dataRetry = document.getElementById("dataRetry");
+if (dataRetry) {
+  dataRetry.addEventListener("click", function () {
+    hideDataError();
+    refreshQRReviewLinks();
+  });
+}
 </script>
 
 </body>
