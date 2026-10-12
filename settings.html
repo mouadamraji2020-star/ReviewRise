@@ -1263,6 +1263,10 @@ body.page-leaving { opacity: 0; }
                   <dt>Payment provider</dt>
                   <dd id="subscriptionProvider"></dd>
                 </div>
+                <div id="subscriptionCancelRow" hidden>
+                  <dt>Cancellation</dt>
+                  <dd id="subscriptionCancel"></dd>
+                </div>
               </dl>
               <div class="subscription-usage" id="subscriptionUsage" hidden>
                 <div class="subscription-usage-row">
@@ -2623,47 +2627,153 @@ async function loadOwnedBusinessCount(token) {
     }
 }
 
-function renderSubscriptionAccess(profile) {
+function subscriptionNumber(value) {
+    if (typeof value === "number" && isFinite(value)) return value;
+    if (typeof value === "string" && value.trim() !== "" && isFinite(Number(value))) return Number(value);
+    return null;
+}
+
+function normalizeSubscriptionState(row) {
+    var cycle = row && typeof row.billing_cycle === "string" ? row.billing_cycle.trim().toLowerCase() : "";
+
+    return {
+        plan: row && typeof row.plan === "string" ? row.plan.trim().toLowerCase() : "",
+        subscriptionStatus: row && row.subscription_status != null ? String(row.subscription_status).trim().toLowerCase() : "",
+        hasAccess: !!(row && row.has_access === true),
+        trialEndsAt: reviewRiseTrialInstant(row && row.trial_ends_at),
+        trialDaysRemaining: subscriptionNumber(row && row.trial_days_remaining),
+        billingCycle: cycle === "monthly" || cycle === "yearly" ? cycle : "",
+        currentPeriodEnd: reviewRiseTrialInstant(row && row.current_period_end),
+        providerLabel: reviewRiseProviderLabel(row && row.payment_provider),
+        cancelAtPeriodEnd: row && row.cancel_at_period_end === true,
+        businessCount: subscriptionNumber(row && row.business_count),
+        businessLimit: subscriptionNumber(row && row.business_limit)
+    };
+}
+
+function subscriptionStatusLabel(status) {
+    if (status === "canceled" || status === "cancelled") return "Canceled";
+    if (status === "expired") return "Expired";
+    if (status === "active") return "Active";
+    if (status === "trialing") return "Trialing";
+    return status || "";
+}
+
+function renderSubscriptionUnavailable() {
+    var access = document.getElementById("subscriptionAccess");
+    var note = document.getElementById("subscriptionAccessNote");
+    var facts = document.getElementById("subscriptionFacts");
+
+    if (access) access.textContent = "Subscription unavailable";
+    if (facts) facts.hidden = true;
+    renderBusinessUsage(null, null);
+    if (note) {
+        note.hidden = false;
+        note.textContent = "We couldn't confirm your subscription. Please try again.";
+    }
+}
+
+function renderSubscriptionAccess(state) {
     var summary = document.getElementById("subscriptionSummary");
     var access = document.getElementById("subscriptionAccess");
     var note = document.getElementById("subscriptionAccessNote");
     var facts = document.getElementById("subscriptionFacts");
     var trialButton = document.getElementById("startTrialBtn");
-    var state = reviewRiseTrialState(profile, new Date());
-    var datedTrial = state.kind === "trial-active" || state.kind === "trial-expired";
-    var knownPlan = state.plan === "trial" || state.plan === "pro" || state.plan === "business";
+    var plan = state && state.plan ? state.plan : "";
+    var paid = (plan === "pro" || plan === "business") && state.subscriptionStatus === "active";
+    var planLabel = plan === "trial" ? "Trial" : plan === "pro" ? "Pro" : plan === "business" ? "Business" : "No plan on file";
+    var showTrialDates = plan === "trial";
 
-    if (!summary || !access || !note || !facts) {
+    if (!summary || !access || !note || !facts || !state) {
         return;
     }
 
-    summary.classList.toggle("is-trial-active", state.kind === "trial-active");
-    summary.classList.toggle("is-trial-expired", state.kind === "trial-expired");
-    access.textContent = state.planLabel;
-    setSubscriptionFact("subscriptionPlanRow", "subscriptionPlan", knownPlan ? state.planLabel : "");
-    setSubscriptionFact("subscriptionStatusRow", "subscriptionTrialStatus", state.statusLabel);
+    summary.classList.toggle("is-trial-active", plan === "trial" && state.hasAccess);
+    summary.classList.toggle("is-trial-expired", plan === "trial" && !state.hasAccess);
+    access.textContent = planLabel;
+    setSubscriptionFact("subscriptionPlanRow", "subscriptionPlan", plan ? planLabel : "");
+    setSubscriptionFact("subscriptionStatusRow", "subscriptionTrialStatus", subscriptionStatusLabel(state.subscriptionStatus));
     setSubscriptionFact("subscriptionCycleRow", "subscriptionCycle", state.billingCycle === "yearly" ? "Yearly" : state.billingCycle === "monthly" ? "Monthly" : "");
-    setSubscriptionFact("subscriptionPriceRow", "subscriptionPrice", state.priceText);
-    setSubscriptionFact("subscriptionEndsRow", "subscriptionTrialEnds", datedTrial ? formatTrialDate(state.endsAt) : "");
-    setSubscriptionFact("subscriptionDaysRow", "subscriptionDaysRemaining", datedTrial ? String(state.daysRemaining) : "");
-    setSubscriptionFact("subscriptionPeriodRow", "subscriptionPeriodEnd", state.periodEnd != null ? formatTrialDate(state.periodEnd) : "");
+    setSubscriptionFact("subscriptionPriceRow", "subscriptionPrice", paid ? reviewRisePlanPrice(plan, state.billingCycle) : "");
+    setSubscriptionFact("subscriptionEndsRow", "subscriptionTrialEnds", showTrialDates && state.trialEndsAt != null ? formatTrialDate(state.trialEndsAt) : "");
+    setSubscriptionFact("subscriptionDaysRow", "subscriptionDaysRemaining", showTrialDates && state.trialDaysRemaining != null ? String(state.trialDaysRemaining) : "");
+    setSubscriptionFact("subscriptionPeriodRow", "subscriptionPeriodEnd", state.currentPeriodEnd != null ? formatTrialDate(state.currentPeriodEnd) : "");
     setSubscriptionFact("subscriptionProviderRow", "subscriptionProvider", state.providerLabel);
+    setSubscriptionFact("subscriptionCancelRow", "subscriptionCancel", state.cancelAtPeriodEnd ? "Cancels at period end" : "");
     facts.hidden = facts.querySelector("div:not([hidden])") == null;
+    renderBusinessUsage(state.businessCount, state.businessLimit);
 
-    if (state.kind === "trial-expired") {
-        note.hidden = false;
-        note.textContent = "Choose Pro or Business to continue.";
-    } else if (state.kind === "trial-active" || state.plan === "pro" || state.plan === "business") {
+    if (paid || (plan === "trial" && state.hasAccess)) {
         note.hidden = true;
         note.textContent = "";
+    } else if (plan === "trial") {
+        note.hidden = false;
+        note.textContent = "Choose Pro or Business to continue.";
+    } else if (plan === "pro" || plan === "business") {
+        note.hidden = false;
+        note.textContent = "Your subscription is not active.";
     } else {
         note.hidden = false;
         note.textContent = "A trial end date has not been saved for this account, so no countdown is shown.";
     }
 
     if (trialButton) {
-        trialButton.textContent = state.kind === "trial-active" ? "Current Trial" : "Start Trial";
-        trialButton.setAttribute("data-trial-state", state.kind);
+        trialButton.textContent = plan === "trial" && state.hasAccess ? "Current Trial" : "Start Trial";
+        trialButton.setAttribute("data-trial-state", plan === "trial" && state.hasAccess ? "trial-active" : plan);
+    }
+}
+
+async function postSubscriptionState(accessToken) {
+    return fetch(SUPABASE_URL + "/rest/v1/rpc/get_my_subscription_state", {
+        method: "POST",
+        headers: authHeaders(accessToken, true),
+        body: "{}"
+    });
+}
+
+async function readSettingsSubscription(token) {
+    var response;
+
+    try {
+        response = await postSubscriptionState(token);
+    } catch (error) {
+        return { access: "unverified", state: null };
+    }
+
+    if (response.status === 401) {
+        var refreshed = await refreshStoredSession();
+
+        if (!refreshed) {
+            return { access: "unauthorized", state: null };
+        }
+
+        try {
+            response = await postSubscriptionState(refreshed);
+        } catch (error) {
+            return { access: "unverified", state: null };
+        }
+
+        if (response.status === 401) {
+            return { access: "unauthorized", state: null };
+        }
+    }
+
+    if (!response.ok) {
+        return { access: "unverified", state: null };
+    }
+
+    try {
+        var payload = await response.json();
+        var row = Array.isArray(payload) ? payload[0] : payload;
+
+        if (!row || typeof row !== "object") {
+            return { access: "unverified", state: null };
+        }
+
+        var state = normalizeSubscriptionState(row);
+        return { access: state.hasAccess ? "ok" : "locked", state: state };
+    } catch (error) {
+        return { access: "unverified", state: null };
     }
 }
 
@@ -2672,35 +2782,19 @@ async function loadSubscriptionAccess(token) {
         return;
     }
 
-    var usageCount = loadOwnedBusinessCount(token);
-    var response;
+    var result = await readSettingsSubscription(token);
 
-    try {
-        response = await fetch(
-            SUPABASE_URL + "/rest/v1/profiles?id=eq." + encodeURIComponent(accountUserId) + "&select=plan,trial_started_at,trial_ends_at,subscription_status,billing_cycle,payment_provider,current_period_end",
-            { headers: authHeaders(token) }
-        );
-
-        if (response.status === 400) {
-            response = await fetch(
-                SUPABASE_URL + "/rest/v1/profiles?id=eq." + encodeURIComponent(accountUserId) + "&select=plan,trial_started_at,trial_ends_at,subscription_status",
-                { headers: authHeaders(token) }
-            );
-        }
-    } catch (error) {
+    if (result.access === "unauthorized") {
+        logout();
         return;
     }
 
-    if (!response.ok) {
+    if (!result.state) {
+        renderSubscriptionUnavailable();
         return;
     }
 
-    var rows = await response.json();
-    var profile = Array.isArray(rows) ? rows[0] : null;
-    var plan = profile && typeof profile.plan === "string" ? profile.plan.trim().toLowerCase() : "";
-
-    renderSubscriptionAccess(profile);
-    renderBusinessUsage(await usageCount, planBusinessLimit(plan));
+    renderSubscriptionAccess(result.state);
 }
 
 document.getElementById("startTrialBtn").addEventListener("click", function () {

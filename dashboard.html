@@ -5593,62 +5593,148 @@ function showTrialLock() {
     document.body.classList.add("is-trial-locked");
 }
 
-function reviewRiseTrialInstant(value) {
-    if (value == null || String(value).trim() === "") {
-        return null;
+function showSubscriptionProblem(reason) {
+    showTrialLock();
+
+    if (reason !== "unverified") {
+        return;
     }
 
-    var time = Date.parse(value);
+    var heading = document.querySelector("#trialLock h2");
+    var message = heading ? heading.nextElementSibling : null;
 
-    if (!isFinite(time)) {
-        return null;
+    if (heading) {
+        heading.textContent = "We couldn't confirm your subscription";
     }
 
-    return time;
+    if (message) {
+        message.textContent = "Access could not be verified. Please try again in a moment.";
+    }
 }
 
-function reviewRiseTrialState(profile, now) {
-    var plan = profile && typeof profile.plan === "string" ? profile.plan.trim().toLowerCase() : "";
-    var status = profile && profile.subscription_status != null ? String(profile.subscription_status).trim().toLowerCase() : "";
-    var endsAt = profile ? reviewRiseTrialInstant(profile.trial_ends_at) : null;
-    var current = now instanceof Date ? now.getTime() : Date.now();
-    var paidActive = (plan === "pro" || plan === "business") && status === "active";
-
-    if (paidActive) {
-        return { kind: plan === "pro" ? "pro-active" : "business-active" };
+function subscriptionNumber(value) {
+    if (typeof value === "number" && isFinite(value)) {
+        return value;
     }
 
-    if (plan !== "trial" || endsAt == null) {
-        return { kind: "hidden" };
+    if (typeof value === "string" && value.trim() !== "" && isFinite(Number(value))) {
+        return Number(value);
     }
 
-    if (current < endsAt) {
-        return {
-            kind: "trial-active",
-            endsAt: endsAt,
-            daysRemaining: Math.ceil((endsAt - current) / 86400000)
-        };
-    }
-
-    return { kind: "trial-expired", daysRemaining: 0 };
+    return null;
 }
 
-function trialEndingMessage(endsAt, now) {
-    var current = now instanceof Date ? now.getTime() : Date.now();
-    var remaining = endsAt - current;
-    var day = 86400000;
+function normalizeSubscriptionState(row) {
+    var plan = row && typeof row.plan === "string" ? row.plan.trim().toLowerCase() : "";
+    var status = row && row.subscription_status != null ? String(row.subscription_status).trim().toLowerCase() : "";
 
-    if (!(remaining > 0) || remaining > 3 * day) {
+    return {
+        plan: plan,
+        subscriptionStatus: status,
+        hasAccess: !!(row && row.has_access === true),
+        trialEndsAt: row && row.trial_ends_at ? row.trial_ends_at : null,
+        trialDaysRemaining: subscriptionNumber(row && row.trial_days_remaining),
+        billingCycle: row && typeof row.billing_cycle === "string" ? row.billing_cycle.trim().toLowerCase() : "",
+        currentPeriodEnd: row && row.current_period_end ? row.current_period_end : null,
+        paymentProvider: row && row.payment_provider != null ? String(row.payment_provider).trim() : "",
+        cancelAtPeriodEnd: row && row.cancel_at_period_end === true ? true : row && row.cancel_at_period_end === false ? false : null,
+        businessCount: subscriptionNumber(row && row.business_count),
+        businessLimit: subscriptionNumber(row && row.business_limit)
+    };
+}
+
+var subscriptionAccessPromise = null;
+
+async function readPageSubscription(token) {
+    if (!subscriptionAccessPromise) {
+        subscriptionAccessPromise = requestPageSubscription(token);
+    }
+
+    return subscriptionAccessPromise;
+}
+
+async function requestPageSubscription(token) {
+    var accessToken = token || localStorage.getItem("reviewrise_token");
+
+    if (!accessToken) {
+        return { access: "unauthorized", state: null };
+    }
+
+    var response;
+
+    try {
+        response = await postSubscriptionState(accessToken);
+    } catch (error) {
+        return { access: "unverified", state: null };
+    }
+
+    if (response.status === 401) {
+        var refreshed = await getValidAccessToken();
+
+        if (!refreshed || refreshed === accessToken) {
+            return { access: "unauthorized", state: null };
+        }
+
+        try {
+            response = await postSubscriptionState(refreshed);
+        } catch (error) {
+            return { access: "unverified", state: null };
+        }
+
+        if (response.status === 401) {
+            return { access: "unauthorized", state: null };
+        }
+    }
+
+    if (!response.ok) {
+        return { access: "unverified", state: null };
+    }
+
+    try {
+        var payload = await response.json();
+        var row = Array.isArray(payload) ? payload[0] : payload;
+
+        if (!row || typeof row !== "object") {
+            return { access: "unverified", state: null };
+        }
+
+        var state = normalizeSubscriptionState(row);
+        return { access: state.hasAccess ? "ok" : "locked", state: state };
+    } catch (error) {
+        return { access: "unverified", state: null };
+    }
+}
+
+function postSubscriptionState(accessToken) {
+    return fetch(SUPABASE_URL + "/rest/v1/rpc/get_my_subscription_state", {
+        method: "POST",
+        headers: {
+            "apikey": SUPABASE_KEY,
+            "Authorization": "Bearer " + accessToken,
+            "Content-Type": "application/json"
+        },
+        body: "{}"
+    });
+}
+
+function trialEndingFromSubscription(state) {
+    if (!state || state.plan !== "trial" || state.hasAccess !== true) {
         return "";
     }
 
-    if (remaining < day) {
+    var days = state.trialDaysRemaining;
+
+    if (typeof days !== "number" || days > 3) {
+        return "";
+    }
+
+    var ends = Date.parse(state.trialEndsAt || "");
+
+    if (isFinite(ends) && ends - Date.now() > 0 && ends - Date.now() < 86400000) {
         return "Your free trial ends today.";
     }
 
-    var days = Math.ceil(remaining / day);
-
-    if (days === 1) {
+    if (days <= 1) {
         return "Your free trial ends tomorrow.";
     }
 
@@ -5681,38 +5767,32 @@ function renderTrialEnding(message) {
     note.hidden = false;
 }
 
-function renderTrialStatus(profile) {
+function renderTrialStatus(state) {
     var banner = document.getElementById("trialStatus");
 
     if (!banner) {
         return;
     }
 
-    var now = new Date();
-    var state = reviewRiseTrialState(profile, now);
-
     banner.classList.remove("is-expired", "is-paid");
     renderTrialEnding("");
 
-    if (state.kind === "pro-active" || state.kind === "business-active") {
-        banner.textContent = state.kind === "pro-active" ? "Pro" : "Business";
+    var paid = state && (state.plan === "pro" || state.plan === "business") && state.subscriptionStatus === "active";
+
+    if (paid) {
+        banner.textContent = state.plan === "pro" ? "Pro" : "Business";
         banner.classList.add("is-paid");
         banner.hidden = false;
         return;
     }
 
-    if (state.kind === "trial-active") {
-        var dayLabel = state.daysRemaining === 1 ? "1 day remaining" : state.daysRemaining + " days remaining";
-        banner.textContent = "Trial · " + dayLabel;
+    if (state && state.plan === "trial" && state.hasAccess === true) {
+        var days = state.trialDaysRemaining;
+        banner.textContent = typeof days === "number"
+            ? "Trial · " + (days === 1 ? "1 day remaining" : days + " days remaining")
+            : "Trial";
         banner.hidden = false;
-        renderTrialEnding(trialEndingMessage(state.endsAt, now));
-        return;
-    }
-
-    if (state.kind === "trial-expired") {
-        banner.textContent = "Trial expired · Choose a plan to continue";
-        banner.classList.add("is-expired");
-        banner.hidden = false;
+        renderTrialEnding(trialEndingFromSubscription(state));
         return;
     }
 
@@ -5721,38 +5801,25 @@ function renderTrialStatus(profile) {
 }
 
 async function loadTrialStatus(token) {
-    var accessToken = token || localStorage.getItem("reviewrise_token");
-    var userId = accessToken ? reviewRiseUserId(accessToken) : null;
+    var result = await readPageSubscription(token);
 
-    if (!accessToken || !userId) {
-        renderTrialStatus(null);
-        return false;
+    if (result.access === "unauthorized") {
+        return "unauthorized";
     }
 
-    try {
-        var response = await fetch(
-            SUPABASE_URL + "/rest/v1/profiles?id=eq." + encodeURIComponent(userId) + "&select=plan,trial_started_at,trial_ends_at,subscription_status",
-            {
-                headers: {
-                    "apikey": SUPABASE_KEY,
-                    "Authorization": "Bearer " + accessToken
-                }
-            }
-        );
-
-        if (!response.ok) {
-            renderTrialStatus(null);
-            return false;
-        }
-
-        var rows = await response.json();
-        var profile = Array.isArray(rows) ? rows[0] : null;
-        renderTrialStatus(profile);
-        return reviewRiseTrialState(profile, new Date()).kind === "trial-expired";
-    } catch (error) {
-        renderTrialStatus(null);
-        return false;
+    if (result.access === "unverified") {
+        showSubscriptionProblem("unverified");
+        return "stop";
     }
+
+    if (result.access === "locked") {
+        renderTrialStatus(result.state);
+        showTrialLock();
+        return "stop";
+    }
+
+    renderTrialStatus(result.state);
+    return "ok";
 }
   
 function reviewRiseUserId(token) {
@@ -6434,10 +6501,14 @@ function showDashboard() {
   applyDashboardGreeting();
 
   (async function () {
-    var expired = await loadTrialStatus(localStorage.getItem("reviewrise_token"));
+    var subscriptionGate = await loadTrialStatus(localStorage.getItem("reviewrise_token"));
 
-    if (expired) {
-      showTrialLock();
+    if (subscriptionGate === "unauthorized") {
+      logout();
+      return;
+    }
+
+    if (subscriptionGate !== "ok") {
       return;
     }
 
@@ -7273,10 +7344,14 @@ document.querySelectorAll(".password-toggle").forEach(function (button) {
         document.getElementById("mobileMenuBtn").style.display = "block";
         applyDashboardGreeting();
 
-        const expired = await loadTrialStatus(validToken);
+        const subscriptionGate = await loadTrialStatus(validToken);
 
-        if (expired) {
-            showTrialLock();
+        if (subscriptionGate === "unauthorized") {
+            logout();
+            return;
+        }
+
+        if (subscriptionGate !== "ok") {
             return;
         }
 

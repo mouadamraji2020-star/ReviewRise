@@ -3369,43 +3369,59 @@ function showTrialLock() {
     document.body.classList.add("is-trial-locked");
 }
 
-function reviewRiseTrialExpired(profile, now) {
-    var plan = profile && typeof profile.plan === "string" ? profile.plan.trim().toLowerCase() : "";
-    var endsAt = profile && profile.trial_ends_at != null && String(profile.trial_ends_at).trim() !== ""
-        ? Date.parse(profile.trial_ends_at)
-        : NaN;
-    var current = now instanceof Date ? now.getTime() : Date.now();
-
-    return plan === "trial" && isFinite(endsAt) && current >= endsAt;
+function showSubscriptionProblem(reason) {
+    showTrialLock();
+    if (reason !== "unverified") return;
+    var heading = document.querySelector("#trialLock h2");
+    var message = heading ? heading.nextElementSibling : null;
+    if (heading) heading.textContent = "We couldn't confirm your subscription";
+    if (message) message.textContent = "Access could not be verified. Please try again in a moment.";
 }
 
-async function reviewRiseTrialAccessExpired(token) {
-    var userId = token ? reviewRiseUserId(token) : null;
+function normalizeSubscriptionState(row) {
+    return { hasAccess: !!(row && row.has_access === true) };
+}
 
-    if (!token || !userId) {
-        return false;
-    }
-
+async function readPageSubscription(token) {
+    if (!token) return { access: "unauthorized", state: null };
+    var response;
     try {
-        var response = await fetch(
-            SUPABASE_URL + "/rest/v1/profiles?id=eq." + encodeURIComponent(userId) + "&select=plan,trial_ends_at,subscription_status",
-            {
-                headers: {
-                    "apikey": SUPABASE_KEY,
-                    "Authorization": "Bearer " + token
-                }
-            }
-        );
-
-        if (!response.ok) {
-            return false;
-        }
-
-        var rows = await response.json();
-        return reviewRiseTrialExpired(Array.isArray(rows) ? rows[0] : null, new Date());
+        response = await postSubscriptionState(token);
     } catch (error) {
-        return false;
+        return { access: "unverified", state: null };
     }
+    if (response.status === 401) {
+        var refreshed = await getValidAccessToken();
+        if (!refreshed || refreshed === token) return { access: "unauthorized", state: null };
+        try {
+            response = await postSubscriptionState(refreshed);
+        } catch (error) {
+            return { access: "unverified", state: null };
+        }
+        if (response.status === 401) return { access: "unauthorized", state: null };
+    }
+    if (!response.ok) return { access: "unverified", state: null };
+    try {
+        var payload = await response.json();
+        var row = Array.isArray(payload) ? payload[0] : payload;
+        if (!row || typeof row !== "object") return { access: "unverified", state: null };
+        var state = normalizeSubscriptionState(row);
+        return { access: state.hasAccess ? "ok" : "locked", state: state };
+    } catch (error) {
+        return { access: "unverified", state: null };
+    }
+}
+
+function postSubscriptionState(accessToken) {
+    return fetch(SUPABASE_URL + "/rest/v1/rpc/get_my_subscription_state", {
+        method: "POST",
+        headers: {
+            "apikey": SUPABASE_KEY,
+            "Authorization": "Bearer " + accessToken,
+            "Content-Type": "application/json"
+        },
+        body: "{}"
+    });
 }
 
 if (
@@ -3422,8 +3438,13 @@ if (
             return;
         }
 
-        if (await reviewRiseTrialAccessExpired(token)) {
-            showTrialLock();
+        var subscription = await readPageSubscription(token);
+        if (subscription.access === "unauthorized") {
+            window.location.href = "dashboard.html";
+            return;
+        }
+        if (subscription.access !== "ok") {
+            showSubscriptionProblem(subscription.access === "unverified" ? "unverified" : "locked");
             return;
         }
 

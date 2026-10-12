@@ -101,6 +101,8 @@
     .links-hero h2, .links-hero p { position: relative; }
     .links-hero h2 { margin: 0; color: #0c1730; font-size: 28px; font-weight: 800; letter-spacing: -0.7px; }
     .links-hero p { margin: 6px 0 0; color: #6d7c92; font-size: 14.5px; font-weight: 500; }
+    .plan-usage { margin: 8px 0 0; color: #314158; font-size: 13px; font-weight: 700; }
+    .plan-usage[hidden] { display: none !important; }
     .create-link-btn, .empty-add-btn, .save-link-btn {
       position: relative; height: 42px; display: inline-flex; align-items: center; gap: 8px; padding: 0 16px;
       border: none; border-radius: 12px; background: #2b7fff; color: #fff; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer;
@@ -418,6 +420,7 @@
           <div>
             <h2>Review Links</h2>
             <p>Create dedicated review experiences for each business or location.</p>
+            <p class="plan-usage" id="planUsage" hidden></p>
           </div>
           <button class="create-link-btn" type="button" onclick="openReviewLinkModal()">+ Create Review Link</button>
         </section>
@@ -536,16 +539,18 @@ function closePlanLimitModal() {
     document.getElementById("planLimitModal").classList.remove("open");
 }
 
-var cachedReviewLinkProfile = null;
+var pageSubscriptionState = null;
 
-function reviewLinkLimitCopy(profile) {
-    if (reviewRiseTrialExpired(profile, new Date())) {
+function reviewLinkLimitCopy() {
+    var state = pageSubscriptionState;
+    var plan = state && state.plan ? state.plan : "";
+    var status = state && state.subscriptionStatus ? state.subscriptionStatus : "";
+    var ends = state && state.trialEndsAt ? Date.parse(state.trialEndsAt) : NaN;
+    var expired = plan === "trial" && isFinite(ends) && Date.now() >= ends;
+
+    if (expired) {
         return { title: "Trial ended", message: "Your 7-day free trial has ended." };
     }
-
-    var plan = profile && typeof profile.plan === "string" ? profile.plan.trim().toLowerCase() : "";
-    var status = profile && profile.subscription_status != null ? String(profile.subscription_status).trim().toLowerCase() : "";
-
     if ((plan === "pro" || plan === "business") && status && status !== "active") {
         return { title: "Subscription inactive", message: "Your subscription is not active." };
     }
@@ -574,29 +579,10 @@ async function reviewLinkDatabaseLimit(errorText, token, userId) {
     }
 
     if (blob.indexOf("PLAN_LIMIT_REACHED") !== -1) {
-        return reviewLinkLimitCopy(await reviewLinkPlanProfile(token, userId));
+        return reviewLinkLimitCopy();
     }
 
     return null;
-}
-
-async function reviewLinkPlanProfile(token, userId) {
-    if (cachedReviewLinkProfile) {
-        return cachedReviewLinkProfile;
-    }
-
-    try {
-        var response = await fetch(
-            SUPABASE_URL + "/rest/v1/profiles?id=eq." + encodeURIComponent(userId) + "&select=plan,trial_ends_at,subscription_status",
-            { headers: { "apikey": SUPABASE_KEY, "Authorization": "Bearer " + token } }
-        );
-        if (!response.ok) return null;
-        var rows = await response.json();
-        cachedReviewLinkProfile = Array.isArray(rows) ? rows[0] : null;
-        return cachedReviewLinkProfile;
-    } catch (error) {
-        return null;
-    }
 }
 
 async function reviewLinkCreateGate(existingToken, existingUserId) {
@@ -635,8 +621,7 @@ async function reviewLinkCreateGate(existingToken, existingUserId) {
 
     if (allowed) return { allowed: true };
 
-    var profile = await reviewLinkPlanProfile(token, userId);
-    var copy = reviewLinkLimitCopy(profile);
+    var copy = reviewLinkLimitCopy();
     return { allowed: false, title: copy.title, message: copy.message };
 }
 
@@ -1165,44 +1150,83 @@ function showTrialLock() {
     document.body.classList.add("is-trial-locked");
 }
 
-function reviewRiseTrialExpired(profile, now) {
-    var plan = profile && typeof profile.plan === "string" ? profile.plan.trim().toLowerCase() : "";
-    var endsAt = profile && profile.trial_ends_at != null && String(profile.trial_ends_at).trim() !== ""
-        ? Date.parse(profile.trial_ends_at)
-        : NaN;
-    var current = now instanceof Date ? now.getTime() : Date.now();
-
-    return plan === "trial" && isFinite(endsAt) && current >= endsAt;
+function showSubscriptionProblem(reason) {
+    showTrialLock();
+    if (reason !== "unverified") return;
+    var heading = document.querySelector("#trialLock h2");
+    var message = heading ? heading.nextElementSibling : null;
+    if (heading) heading.textContent = "We couldn't confirm your subscription";
+    if (message) message.textContent = "Access could not be verified. Please try again in a moment.";
 }
 
-async function reviewRiseTrialAccessExpired(token) {
-    var userId = token ? reviewLinksOwnerId(token) : null;
+function subscriptionNumber(value) {
+    if (typeof value === "number" && isFinite(value)) return value;
+    if (typeof value === "string" && value.trim() !== "" && isFinite(Number(value))) return Number(value);
+    return null;
+}
 
-    if (!token || !userId) {
-        return false;
+function normalizeSubscriptionState(row) {
+    return {
+        plan: row && typeof row.plan === "string" ? row.plan.trim().toLowerCase() : "",
+        subscriptionStatus: row && row.subscription_status != null ? String(row.subscription_status).trim().toLowerCase() : "",
+        hasAccess: !!(row && row.has_access === true),
+        trialEndsAt: row && row.trial_ends_at ? row.trial_ends_at : null,
+        businessCount: subscriptionNumber(row && row.business_count),
+        businessLimit: subscriptionNumber(row && row.business_limit)
+    };
+}
+
+function renderPlanUsage(state) {
+    var node = document.getElementById("planUsage");
+    if (!node) return;
+    if (!state || state.businessCount == null || state.businessLimit == null) {
+        node.hidden = true;
+        return;
     }
+    node.textContent = state.businessCount + " / " + state.businessLimit + " businesses";
+    node.hidden = false;
+}
 
+async function readPageSubscription(token) {
+    if (!token) return { access: "unauthorized", state: null };
+    var response;
     try {
-        var response = await fetch(
-            SUPABASE_URL + "/rest/v1/profiles?id=eq." + encodeURIComponent(userId) + "&select=plan,trial_ends_at,subscription_status",
-            {
-                headers: {
-                    "apikey": SUPABASE_KEY,
-                    "Authorization": "Bearer " + token
-                }
-            }
-        );
-
-        if (!response.ok) {
-            return false;
-        }
-
-        var rows = await response.json();
-        cachedReviewLinkProfile = Array.isArray(rows) ? rows[0] : null;
-        return reviewRiseTrialExpired(cachedReviewLinkProfile, new Date());
+        response = await postSubscriptionState(token);
     } catch (error) {
-        return false;
+        return { access: "unverified", state: null };
     }
+    if (response.status === 401) {
+        var refreshed = await getValidAccessToken();
+        if (!refreshed || refreshed === token) return { access: "unauthorized", state: null };
+        try {
+            response = await postSubscriptionState(refreshed);
+        } catch (error) {
+            return { access: "unverified", state: null };
+        }
+        if (response.status === 401) return { access: "unauthorized", state: null };
+    }
+    if (!response.ok) return { access: "unverified", state: null };
+    try {
+        var payload = await response.json();
+        var row = Array.isArray(payload) ? payload[0] : payload;
+        if (!row || typeof row !== "object") return { access: "unverified", state: null };
+        var state = normalizeSubscriptionState(row);
+        return { access: state.hasAccess ? "ok" : "locked", state: state };
+    } catch (error) {
+        return { access: "unverified", state: null };
+    }
+}
+
+function postSubscriptionState(accessToken) {
+    return fetch(SUPABASE_URL + "/rest/v1/rpc/get_my_subscription_state", {
+        method: "POST",
+        headers: {
+            "apikey": SUPABASE_KEY,
+            "Authorization": "Bearer " + accessToken,
+            "Content-Type": "application/json"
+        },
+        body: "{}"
+    });
 }
 
 (async function startReviewLinks() {
@@ -1212,10 +1236,17 @@ async function reviewRiseTrialAccessExpired(token) {
     }
     const token = await getValidAccessToken();
     if (!token) { window.location.href = "dashboard.html"; return; }
-    if (await reviewRiseTrialAccessExpired(token)) {
-        showTrialLock();
+    var subscription = await readPageSubscription(token);
+    pageSubscriptionState = subscription.state;
+    if (subscription.access === "unauthorized") {
+        window.location.href = "dashboard.html";
         return;
     }
+    if (subscription.access !== "ok") {
+        showSubscriptionProblem(subscription.access === "unverified" ? "unverified" : "locked");
+        return;
+    }
+    renderPlanUsage(subscription.state);
     const cachedLinks = readReviewLinksCache(reviewLinksOwnerId(token));
     if (cachedLinks) loadReviewLinks(cachedLinks);
     loadReviewLinks();
