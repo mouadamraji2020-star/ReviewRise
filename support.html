@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Help Center | ReviewRise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    overflow-x: hidden;
+    font-family: Inter, "Segoe UI", Arial, sans-serif;
+    color: #0c1424;
+    background: #f5f8fd;
+  }
+  a { color: inherit; }
+  .top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    min-height: 68px;
+    padding: 12px 24px;
+    background: #fff;
+    border-bottom: 1px solid #e8edf3;
+  }
+  .brand { display: flex; align-items: center; gap: 8px; text-decoration: none; }
+  .brand img { height: 34px; width: auto; }
+  .logo-name { font-size: 20px; font-weight: 800; letter-spacing: -0.6px; color: #10284d; }
+  .logo-name span {
+    background: linear-gradient(90deg, #1d4ed8 10%, #2f8bff 55%, #3ec6ff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .top nav { display: flex; flex-wrap: wrap; gap: 14px; font-size: 14px; font-weight: 600; }
+  .top nav a { color: #314158; text-decoration: none; }
+  main { width: min(760px, calc(100% - 40px)); margin: 36px auto 64px; }
+  article {
+    background: #fff;
+    border: 1px solid #e7edf5;
+    border-radius: 22px;
+    padding: 36px 32px;
+    box-shadow: 0 16px 40px rgba(16, 40, 80, 0.05);
+  }
+  h1 { margin: 0 0 12px; font-size: 36px; letter-spacing: -1px; }
+  h2 { margin: 32px 0 8px; font-size: 18px; letter-spacing: -0.3px; }
+  p, li, summary { color: #314158; font-size: 15px; line-height: 1.65; }
+  .lead { margin: 0; }
+  form { display: grid; gap: 8px; margin-top: 16px; }
+  label { font-size: 13px; font-weight: 700; color: #314158; }
+  input, textarea {
+    width: 100%;
+    border: 1px solid #e3eaf3;
+    border-radius: 12px;
+    background: #fff;
+    color: #0c1424;
+    font: inherit;
+    font-size: 15px;
+  }
+  input { height: 46px; padding: 0 14px; }
+  textarea { min-height: 140px; padding: 12px 14px; resize: vertical; }
+  button {
+    justify-self: start;
+    min-height: 44px;
+    margin-top: 6px;
+    padding: 0 16px;
+    border: 0;
+    border-radius: 12px;
+    background: #10284d;
+    color: #fff;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .notice {
+    margin: 12px 0 0;
+    color: #3d4b63;
+    font-size: 14px;
+  }
+  .notice.error { color: #b42318; }
+  details {
+    border-top: 1px solid #e7edf5;
+    padding: 12px 0;
+  }
+  summary { cursor: pointer; font-weight: 700; color: #10284d; }
+  details p { margin: 8px 0 0; }
+  @media (max-width: 700px) {
+    .top { align-items: flex-start; flex-direction: column; }
+    article { padding: 24px 18px; }
+    h1 { font-size: 30px; }
+    button { width: 100%; }
+  }
+</style>
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="index.html">
+      <img src="assets/reviewrise-logo.png" alt="">
+      <span class="logo-name">Review<span>Rise</span></span>
+    </a>
+    <nav aria-label="Help">
+      <a href="index.html">Home</a>
+      <a href="settings.html">Settings</a>
+      <a href="dashboard.html">Login</a>
+    </nav>
+  </header>
+  <main>
+    <article>
+      <h1>Help Center</h1>
+      <p class="lead">Answers for trials, review links, billing, and account tools. A support inbox is not connected yet, so messages stay in this form until you copy them.</p>
+
+      <h2 id="contact">Contact Support</h2>
+      <p>Write your question here. ReviewRise does not email this form yet.</p>
+      <form id="supportForm">
+        <label for="supportName">Name</label>
+        <input id="supportName" name="name" type="text" autocomplete="name" required maxlength="120">
+        <label for="supportEmail">Email</label>
+        <input id="supportEmail" name="email" type="email" autocomplete="email" required maxlength="160">
+        <label for="supportSubject">Subject</label>
+        <input id="supportSubject" name="subject" type="text" required maxlength="160">
+        <label for="supportMessage">Message</label>
+        <textarea id="supportMessage" name="message" required maxlength="4000"></textarea>
+        <button type="submit">Send Message</button>
+        <p id="supportNotice" class="notice" role="status"></p>
+      </form>
+
+      <h2>Report a Problem</h2>
+      <p>Include what you were trying to do, the page you were on, and what you saw. Leave out passwords, sign-in codes, and payment details. Signed-in users can also open <a href="settings.html">Settings</a> and choose Report a Problem. That report stays on the page as well until a support channel is connected.</p>
+
+      <h2>Billing Questions</h2>
+      <p>New accounts can use a 7-day free trial. After the trial, continued access uses a Pro or Business plan. Prices are shown on the <a href="index.html#pricing">homepage pricing section</a>. Choosing a paid plan does not start a charge yet, because online payment setup is still being prepared. Billing will depend on a supported payment provider when that setup is available.</p>
+
+      <h2>Account Questions</h2>
+      <p>Password changes and sign out are in Settings → Security. Export My Data is in Settings → Data &amp; Privacy. Delete Account is in Settings → Danger Zone and asks you to type DELETE before it continues. Those actions stay available from Settings after a trial ends.</p>
+
+      <h2>Review Link / QR Help</h2>
+      <p>Create a business from Review Links. The trial includes 1 business, Pro includes up to 5, and Business includes up to 25. QR &amp; NFC uses a review link that already exists. If none is available yet, create one from Review Links first.</p>
+
+      <h2>FAQ</h2>
+      <details>
+        <summary>How does the 7-day trial work?</summary>
+        <p>A new account can receive one free trial that lasts 7 days and includes 1 business. When the trial ends, Dashboard, Analytics, Feedback, Review Links, and QR &amp; NFC require an active Pro or Business plan. Settings stays open.</p>
+      </details>
+      <details>
+        <summary>How do I create a review link?</summary>
+        <p>Sign in, open Review Links, and create a business. ReviewRise checks your plan limit before saving a new business. You can then use that link for your review page, QR code, or NFC tag.</p>
+      </details>
+      <details>
+        <summary>Why did my trial expire?</summary>
+        <p>The free trial lasts 7 days from the trial end time saved on the account. After that, pages that need an active plan show the trial lock unless Pro or Business is active. Your feedback and businesses are not deleted. Open Settings → Subscription to see the plan on the account.</p>
+      </details>
+      <details>
+        <summary>How do I upgrade?</summary>
+        <p>Open Settings → Subscription and review Pro or Business. The buttons explain that online payment setup is coming soon. They do not activate a paid plan or start billing.</p>
+      </details>
+      <details>
+        <summary>How does Customer Intelligence work?</summary>
+        <p>Customer Intelligence reads the written feedback already stored for your businesses and groups similar comments into recurring themes. It is a way to review patterns. It does not change ratings or promise more reviews, revenue, or a higher Google rating.</p>
+      </details>
+      <details>
+        <summary>Can I use ReviewRise for multiple businesses?</summary>
+        <p>Yes, within the plan limit. The trial supports 1 business, Pro supports up to 5, and Business supports up to 25. The business switcher lets you focus on one business or view all of them.</p>
+      </details>
+      <details>
+        <summary>How do I delete my account?</summary>
+        <p>Open Settings → Danger Zone and choose Delete Account. Type DELETE to enable the final button. The account is removed only after ReviewRise confirms the deletion. If that step fails, you stay signed in.</p>
+      </details>
+      <details>
+        <summary>How do I export my data?</summary>
+        <p>Open Settings → Data &amp; Privacy and choose Export My Data. When the export service is available, ReviewRise downloads a JSON file of your own profile, businesses, feedback, and subscription details. The file does not include your password or sign-in tokens.</p>
+      </details>
+    </article>
+  </main>
+  <script>
+    function reviewRiseReportError(details) {
+      var raw = details && details.message ? String(details.message) : "Something went wrong";
+      var message = raw.replace(/\s+/g, " ").slice(0, 180);
+      if (/bearer\s|eyJ[A-Za-z0-9_-]{10,}|sb_|refresh_token|access_token|password|service_role|card number|cvv/i.test(message)) {
+        message = "A diagnostic was redacted.";
+      }
+      var entry = {
+        page: location.pathname.split("/").pop() || "support.html",
+        type: String(details && details.type || "error").slice(0, 60),
+        message: message,
+        timestamp: new Date().toISOString()
+      };
+      // TODO: Forward entry to a monitoring provider. Send only page, type, message, and timestamp.
+      console.info("[ReviewRise]", entry.page, entry.type, entry.message, entry.timestamp);
+      return entry;
+    }
+
+    document.getElementById("supportForm").addEventListener("submit", function (event) {
+      event.preventDefault();
+      var notice = document.getElementById("supportNotice");
+      var email = document.getElementById("supportEmail").value.trim();
+      var name = document.getElementById("supportName").value.trim();
+      var subject = document.getElementById("supportSubject").value.trim();
+      var message = document.getElementById("supportMessage").value.trim();
+      notice.className = "notice";
+      if (!name || !subject || !message || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        notice.className = "notice error";
+        notice.textContent = "Enter your name, a valid email, a subject, and a message.";
+        return;
+      }
+      reviewRiseReportError({
+        type: "support-form",
+        message: "Support form was kept on the page because messaging is not connected."
+      });
+      notice.textContent = "Support messaging is being prepared. Please save your message and contact ReviewRise through the available contact channel.";
+    });
+  </script>
+</body>
+</html>

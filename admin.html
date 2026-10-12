@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin | ReviewRise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    overflow-x: hidden;
+    font-family: Inter, "Segoe UI", Arial, sans-serif;
+    color: #0c1424;
+    background: #f5f8fd;
+  }
+  a { color: inherit; }
+  .top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    min-height: 68px;
+    padding: 12px 24px;
+    background: #fff;
+    border-bottom: 1px solid #e8edf3;
+  }
+  .brand { display: flex; align-items: center; gap: 8px; text-decoration: none; }
+  .brand img { height: 34px; width: auto; }
+  .logo-name { font-size: 20px; font-weight: 800; letter-spacing: -0.6px; color: #10284d; }
+  .logo-name span {
+    background: linear-gradient(90deg, #1d4ed8 10%, #2f8bff 55%, #3ec6ff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .top nav { display: flex; flex-wrap: wrap; gap: 14px; font-size: 14px; font-weight: 600; }
+  .top nav a { color: #314158; text-decoration: none; }
+  main { width: min(880px, calc(100% - 40px)); margin: 36px auto 64px; }
+  .panel {
+    background: #fff;
+    border: 1px solid #e7edf5;
+    border-radius: 22px;
+    padding: 28px 24px;
+    box-shadow: 0 16px 40px rgba(16, 40, 80, 0.05);
+  }
+  .panel + .panel { margin-top: 16px; }
+  h1 { margin: 0 0 8px; font-size: 34px; letter-spacing: -0.8px; }
+  h2 { margin: 0 0 14px; font-size: 18px; }
+  p { margin: 0; color: #5c6b82; line-height: 1.55; }
+  .metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .metric {
+    min-width: 0;
+    padding: 16px;
+    border: 1px solid #e7edf5;
+    border-radius: 16px;
+    background: #f8fbff;
+  }
+  .metric span { display: block; color: #6d7c92; font-size: 13px; font-weight: 700; }
+  .metric strong { display: block; margin-top: 6px; color: #10284d; font-size: 18px; overflow-wrap: anywhere; }
+  #adminApp[hidden], #adminDenied[hidden] { display: none !important; }
+  @media (max-width: 700px) {
+    .top { align-items: flex-start; flex-direction: column; }
+    .panel { padding: 22px 16px; }
+    h1 { font-size: 28px; }
+    .metrics { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="index.html">
+      <img src="assets/reviewrise-logo.png" alt="">
+      <span class="logo-name">Review<span>Rise</span></span>
+    </a>
+    <nav aria-label="Admin">
+      <a href="index.html">Home</a>
+      <a href="dashboard.html">Login</a>
+    </nav>
+  </header>
+  <main>
+    <section class="panel" id="adminChecking">
+      <h1>Admin</h1>
+      <p>Checking access…</p>
+    </section>
+    <section class="panel" id="adminDenied" hidden>
+      <h1>Access denied</h1>
+      <p>This page is only available to an approved ReviewRise administrator.</p>
+    </section>
+    <div id="adminApp" hidden>
+      <section class="panel">
+        <h2>Overview</h2>
+        <div class="metrics">
+          <div class="metric"><span>Total users</span><strong>Admin backend required</strong></div>
+          <div class="metric"><span>Trial users</span><strong>Admin backend required</strong></div>
+          <div class="metric"><span>Pro users</span><strong>Admin backend required</strong></div>
+          <div class="metric"><span>Business users</span><strong>Admin backend required</strong></div>
+          <div class="metric"><span>Expired trials</span><strong>Admin backend required</strong></div>
+        </div>
+      </section>
+      <section class="panel">
+        <h2>Businesses</h2>
+        <div class="metrics">
+          <div class="metric"><span>Total businesses</span><strong>Admin backend required</strong></div>
+        </div>
+      </section>
+      <section class="panel">
+        <h2>Feedback</h2>
+        <div class="metrics">
+          <div class="metric"><span>Total feedback count</span><strong>Admin backend required</strong></div>
+        </div>
+      </section>
+      <section class="panel">
+        <h2>Payments</h2>
+        <div class="metrics">
+          <div class="metric"><span>Payment event count</span><strong>Admin backend required</strong></div>
+        </div>
+      </section>
+    </div>
+  </main>
+  <script>
+    const SUPABASE_URL = "https://intlhwmvldxdiytemjlr.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_0KjZZApJCuvTEJH3nNyLUg_aps6aXaA";
+    const REVIEWRISE_ADMIN_USER_IDS = [
+      // add approved admin UUIDs here later
+    ];
+
+    function reviewRiseReportError(details) {
+      var raw = details && details.message ? String(details.message) : "Something went wrong";
+      var message = raw.replace(/\s+/g, " ").slice(0, 180);
+      if (/bearer\s|eyJ[A-Za-z0-9_-]{10,}|sb_|refresh_token|access_token|password|service_role|card number|cvv/i.test(message)) {
+        message = "A diagnostic was redacted.";
+      }
+      var entry = {
+        page: "admin.html",
+        type: String(details && details.type || "error").slice(0, 60),
+        message: message,
+        timestamp: new Date().toISOString()
+      };
+      // TODO: Forward entry to a monitoring provider. Send only page, type, message, and timestamp.
+      console.info("[ReviewRise]", entry.page, entry.type, entry.message, entry.timestamp);
+      return entry;
+    }
+
+    function showDenied() {
+      document.getElementById("adminChecking").hidden = true;
+      document.getElementById("adminApp").hidden = true;
+      document.getElementById("adminDenied").hidden = false;
+    }
+
+    function showAdmin() {
+      document.getElementById("adminChecking").hidden = true;
+      document.getElementById("adminDenied").hidden = true;
+      document.getElementById("adminApp").hidden = false;
+      // TODO: Call the secure admin-stats Edge Function here.
+      // Use the signed-in session only. Do not read a user id from the query string.
+      // Do not query every profile, business, feedback row, or payment event from the browser.
+      // Do not place the service-role key in this file.
+      // Example later: POST SUPABASE_URL + "/functions/v1/admin-stats"
+    }
+
+    async function sessionUserId() {
+      var token = localStorage.getItem("reviewrise_token");
+      var refreshToken = localStorage.getItem("reviewrise_refresh_token");
+      if (!token && !refreshToken) return "";
+
+      async function readUser(accessToken) {
+        if (!accessToken) return null;
+        var response = await fetch(SUPABASE_URL + "/auth/v1/user", {
+          headers: {
+            apikey: SUPABASE_KEY,
+            Authorization: "Bearer " + accessToken
+          }
+        });
+        if (!response.ok) return null;
+        return response.json();
+      }
+
+      var user = await readUser(token);
+      if (!user && refreshToken) {
+        var refreshed = await fetch(SUPABASE_URL + "/auth/v1/token?grant_type=refresh_token", {
+          method: "POST",
+          headers: {
+            apikey: SUPABASE_KEY,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ refresh_token: refreshToken })
+        });
+        if (refreshed.ok) {
+          var data = await refreshed.json();
+          if (data.access_token) {
+            localStorage.setItem("reviewrise_token", data.access_token);
+            if (data.refresh_token) localStorage.setItem("reviewrise_refresh_token", data.refresh_token);
+            user = await readUser(data.access_token);
+          }
+        }
+      }
+      return user && typeof user.id === "string" ? user.id : "";
+    }
+
+    (async function () {
+      try {
+        var userId = await sessionUserId();
+        var allowed = REVIEWRISE_ADMIN_USER_IDS.indexOf(userId) !== -1 && userId !== "";
+        if (!allowed) {
+          showDenied();
+          return;
+        }
+        showAdmin();
+      } catch (error) {
+        reviewRiseReportError({ type: "admin-access", message: "Admin access could not be checked." });
+        showDenied();
+      }
+    })();
+  </script>
+</body>
+</html>

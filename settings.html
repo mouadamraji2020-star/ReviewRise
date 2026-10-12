@@ -930,9 +930,30 @@ body { opacity: 1; transition: opacity 0.25s ease; overflow-x: hidden; }
   border-radius: 8px;
   user-select: none;
 }
-.legal-links { margin: 18px 2px 0; font-size: 13px; }
-.legal-links a { color: #6d7c92; text-decoration: none; margin-right: 16px; }
-.legal-links a:hover { text-decoration: underline; }
+.legal-links { display: flex; flex-wrap: wrap; gap: 10px 16px; margin: 18px 2px 0; font-size: 13px; }
+.legal-links a, .legal-links button {
+  border: 0;
+  background: none;
+  padding: 0;
+  color: #6d7c92;
+  font: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+.legal-links a:hover, .legal-links button:hover { text-decoration: underline; }
+.account-modal-box select,
+.account-modal-box textarea {
+  width: 100%;
+  margin-bottom: 16px;
+  font: inherit;
+}
+.account-modal-box textarea {
+  min-height: 110px;
+  padding: 12px 14px;
+  border: 1px solid #e3eaf3;
+  border-radius: 13px;
+  resize: vertical;
+}
 #subscriptionRetry { margin-top: 12px; }
 @media (max-width: 800px) {
   .plan-card, .danger-card, .settings-card { min-width: 0; max-width: 100%; }
@@ -1415,7 +1436,12 @@ body.page-leaving { opacity: 0; }
               <p id="deleteStatus" class="settings-status" role="status"></p>
             </div>
           </section>
-          <p class="legal-links"><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms of Service</a></p>
+          <p class="legal-links">
+            <a href="support.html">Support</a>
+            <button type="button" id="reportProblemBtn">Report a Problem</button>
+            <a href="privacy.html">Privacy Policy</a>
+            <a href="terms.html">Terms of Service</a>
+          </p>
         </div>
       </div>
     </main>
@@ -1434,7 +1460,71 @@ body.page-leaving { opacity: 0; }
     <p id="deleteModalStatus" class="settings-status" role="status"></p>
   </div>
 </div>
+<div class="account-modal" id="reportProblemModal" hidden>
+  <div class="account-modal-box" role="dialog" aria-modal="true" aria-labelledby="reportProblemTitle">
+    <h2 id="reportProblemTitle">Report a Problem</h2>
+    <p>Describe what happened. Leave out passwords, access codes, and payment details.</p>
+    <form id="reportProblemForm">
+      <label for="problemCategory">Category</label>
+      <select id="problemCategory" required>
+        <option value="">Choose a category</option>
+        <option>Bug</option>
+        <option>Billing</option>
+        <option>Account</option>
+        <option>Review Links</option>
+        <option>Analytics</option>
+        <option>QR &amp; NFC</option>
+        <option>Other</option>
+      </select>
+      <label for="problemTitle">Short title</label>
+      <input id="problemTitle" type="text" maxlength="120" required autocomplete="off">
+      <label for="problemDescription">Description</label>
+      <textarea id="problemDescription" maxlength="2000" required></textarea>
+      <label for="problemLocation">Page or location <span style="font-weight:500;color:#6d7c92;">(optional)</span></label>
+      <input id="problemLocation" type="text" maxlength="160" autocomplete="off">
+      <label for="problemBrowser">Browser information <span style="font-weight:500;color:#6d7c92;">(optional)</span></label>
+      <textarea id="problemBrowser" maxlength="300"></textarea>
+      <div class="password-actions">
+        <button class="btn btn-secondary" type="button" id="addBrowserInfoBtn">Add browser details</button>
+        <button class="btn btn-secondary" type="button" id="cancelProblemBtn">Cancel</button>
+        <button class="btn btn-primary" type="submit" id="sendProblemBtn">Send Report</button>
+      </div>
+      <p id="problemStatus" class="settings-status" role="status"></p>
+    </form>
+  </div>
+</div>
 <script>
+function reviewRiseReportError(details) {
+    var raw = details && details.message ? String(details.message) : "Something went wrong";
+    var message = raw.replace(/\s+/g, " ").slice(0, 180);
+    if (/bearer\s|eyJ[A-Za-z0-9_-]{10,}|sb_|refresh_token|access_token|password|service_role|card number|cvv/i.test(message)) {
+        message = "A diagnostic was redacted.";
+    }
+    var entry = {
+        page: location.pathname.split("/").pop() || "settings.html",
+        type: String(details && details.type || "error").slice(0, 60),
+        message: message,
+        timestamp: new Date().toISOString()
+    };
+    // TODO: Forward entry to a monitoring provider. Send only page, type, message, and timestamp.
+    console.info("[ReviewRise]", entry.page, entry.type, entry.message, entry.timestamp);
+    return entry;
+}
+
+window.addEventListener("error", function (event) {
+    reviewRiseReportError({
+        type: "window-error",
+        message: event && event.message ? event.message : "Script error"
+    });
+});
+
+window.addEventListener("unhandledrejection", function (event) {
+    var reason = event && event.reason;
+    var message = "Unhandled rejection";
+    if (typeof reason === "string") message = reason;
+    else if (reason && typeof reason.message === "string") message = reason.message;
+    reviewRiseReportError({ type: "unhandled-rejection", message: message });
+});
 function smoothNavigate(page) {
     document.body.classList.add("page-leaving");
     setTimeout(function () {
@@ -3135,6 +3225,42 @@ loadSelectedBusinessSettings();
     applyCollapsed(collapsed);
     enableSidebarMotion();
 })();
+
+document.getElementById("reportProblemBtn").addEventListener("click", function () {
+    document.getElementById("problemStatus").textContent = "";
+    document.getElementById("problemStatus").className = "settings-status";
+    document.getElementById("reportProblemModal").hidden = false;
+    document.getElementById("problemCategory").focus();
+});
+
+document.getElementById("cancelProblemBtn").addEventListener("click", function () {
+    document.getElementById("reportProblemModal").hidden = true;
+});
+
+document.getElementById("reportProblemModal").addEventListener("click", function (event) {
+    if (event.target === this) this.hidden = true;
+});
+
+document.getElementById("addBrowserInfoBtn").addEventListener("click", function () {
+    var pageName = location.pathname.split("/").pop() || "settings.html";
+    document.getElementById("problemBrowser").value = "page: " + pageName + ", viewport: " + window.innerWidth + "x" + window.innerHeight + ", language: " + (navigator.language || "");
+});
+
+document.getElementById("reportProblemForm").addEventListener("submit", function (event) {
+    event.preventDefault();
+    var category = document.getElementById("problemCategory").value;
+    var title = document.getElementById("problemTitle").value.trim();
+    var description = document.getElementById("problemDescription").value.trim();
+    if (!category || !title || !description) {
+        setSettingsStatus("problemStatus", "Add a category, title, and description.", "error");
+        return;
+    }
+    reviewRiseReportError({
+        type: "problem-report",
+        message: "Problem report was kept on the page because messaging is not connected."
+    });
+    setSettingsStatus("problemStatus", "Support messaging is being prepared. Please save your message and contact ReviewRise through the available contact channel.", "");
+});
 
 var subscriptionRetry = document.getElementById("subscriptionRetry");
 if (subscriptionRetry) {
