@@ -683,9 +683,18 @@ select:focus {
 .subscription-usage-track span {
   display: block;
   height: 100%;
+  max-width: 100%;
   border-radius: inherit;
   background: #2b7fff;
 }
+#subscriptionUsage .subscription-usage-note {
+  margin: 8px 0 0;
+  color: #8a4b12;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.45;
+}
+#subscriptionUsageWarning[hidden] { display: none !important; }
 .plan-billing {
   display: inline-flex;
   gap: 4px;
@@ -955,6 +964,7 @@ body { opacity: 1; transition: opacity 0.25s ease; overflow-x: hidden; }
   resize: vertical;
 }
 #subscriptionRetry { margin-top: 12px; }
+#subscriptionRetry[hidden] { display: none !important; }
 @media (max-width: 800px) {
   .plan-card, .danger-card, .settings-card { min-width: 0; max-width: 100%; }
   .subscription-summary h3, .settings-content h3 { overflow-wrap: anywhere; }
@@ -1353,6 +1363,7 @@ body.page-leaving { opacity: 0; }
                 <div class="subscription-usage-track" id="subscriptionUsageTrack" role="progressbar" aria-valuemin="0" aria-valuemax="1" aria-valuenow="0">
                   <span id="subscriptionUsageBar"></span>
                 </div>
+                <p class="subscription-usage-note" id="subscriptionUsageWarning" hidden></p>
               </div>
               <p id="subscriptionAccessNote">A trial end date has not been saved for this account, so no countdown is shown.</p>
               <button class="btn btn-secondary" type="button" id="subscriptionRetry" hidden>Retry</button>
@@ -2949,11 +2960,12 @@ function planBusinessLimit(plan) {
     return null;
 }
 
-function renderBusinessUsage(count, limit) {
+function renderBusinessUsage(count, limit, plan) {
     var box = document.getElementById("subscriptionUsage");
     var label = document.getElementById("subscriptionUsageCount");
     var bar = document.getElementById("subscriptionUsageBar");
     var track = document.getElementById("subscriptionUsageTrack");
+    var warning = document.getElementById("subscriptionUsageWarning");
 
     if (!box || !label || !bar || !track) {
         return;
@@ -2961,17 +2973,38 @@ function renderBusinessUsage(count, limit) {
 
     if (count == null || limit == null) {
         box.hidden = true;
+        if (warning) {
+            warning.hidden = true;
+            warning.textContent = "";
+        }
         return;
     }
 
     var used = Math.max(0, count);
-    var pct = limit > 0 ? Math.min(100, Math.round((used / limit) * 100)) : 0;
+    var over = used > limit;
+    var pct = limit > 0 ? Math.min(100, Math.round((used / limit) * 100)) : (used > 0 ? 100 : 0);
+    var usageText = over
+        ? used + (used === 1 ? " business" : " businesses")
+        : used + " of " + limit + " used";
+    var warningText = "";
 
-    label.textContent = used + " of " + limit + " used";
+    if (over && plan === "trial") {
+        warningText = "Your current Trial plan supports 1 business. Your existing businesses are preserved, but you cannot add another business unless you upgrade or reduce your usage.";
+    } else if (over && plan === "pro") {
+        warningText = "Your Pro plan supports up to 5 businesses.";
+    } else if (over && plan === "business") {
+        warningText = "Your Business plan supports up to 25 businesses.";
+    }
+
+    label.textContent = usageText;
     bar.style.width = pct + "%";
-    track.setAttribute("aria-valuemax", String(limit));
-    track.setAttribute("aria-valuenow", String(used));
-    track.setAttribute("aria-valuetext", used + " of " + limit + " businesses used");
+    track.setAttribute("aria-valuemax", String(Math.max(limit, 0)));
+    track.setAttribute("aria-valuenow", String(limit > 0 ? Math.min(used, limit) : 0));
+    track.setAttribute("aria-valuetext", over ? usageText : used + " of " + limit + " businesses used");
+    if (warning) {
+        warning.hidden = warningText === "";
+        warning.textContent = warningText;
+    }
     box.hidden = false;
 }
 
@@ -3074,7 +3107,7 @@ function renderSubscriptionAccess(state) {
     setSubscriptionFact("subscriptionProviderRow", "subscriptionProvider", state.providerLabel);
     setSubscriptionFact("subscriptionCancelRow", "subscriptionCancel", state.cancelAtPeriodEnd ? "Cancels at period end" : "");
     facts.hidden = facts.querySelector("div:not([hidden])") == null;
-    renderBusinessUsage(state.businessCount, state.businessLimit);
+    renderBusinessUsage(state.businessCount, state.businessLimit, plan);
 
     if (paid || (plan === "trial" && state.hasAccess)) {
         note.hidden = true;
