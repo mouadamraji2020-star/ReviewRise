@@ -792,9 +792,34 @@ select:focus {
   background: #fff;
   color: #b42318;
   border-color: #f3d0cc;
-  cursor: not-allowed;
+  cursor: pointer;
 }
-.btn-danger:disabled { opacity: 1; }
+.btn-danger:disabled { opacity: 0.55; cursor: not-allowed; }
+.account-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(12, 20, 36, 0.45);
+}
+.account-modal[hidden] { display: none !important; }
+.account-modal-box {
+  width: min(440px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  overflow: auto;
+  padding: 24px;
+  background: #fff;
+  border: 1px solid #e7edf5;
+  border-radius: 20px;
+  box-shadow: 0 24px 50px rgba(16, 40, 80, 0.16);
+}
+.account-modal-box h2 { margin: 0 0 8px; font-size: 22px; letter-spacing: -0.4px; }
+.account-modal-box p { margin: 0 0 16px; color: #5c6b82; font-size: 14px; line-height: 1.5; }
+.account-modal-box label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 700; }
+.account-modal-box input { width: 100%; height: 44px; margin-bottom: 16px; }
 
 html.sidebar-boot .sidebar,
 html.sidebar-boot .app-workspace,
@@ -1009,6 +1034,10 @@ body.page-leaving { opacity: 0; }
             <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
             <span>Security</span>
           </button>
+          <button class="settings-nav-btn" type="button" data-section="privacy">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v6c0 4.2 2.8 7.4 7 9 4.2-1.6 7-4.8 7-9V6l-7-3z"/></svg>
+            <span>Data &amp; Privacy</span>
+          </button>
           <button class="settings-nav-btn" type="button" data-section="reviews">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.4 5.7L20 10l-4.5 4 1.2 6.2L12 17.3 7.3 20.2 8.5 14 4 10l5.6-1.3z"/></svg>
             <span>Review Settings</span>
@@ -1151,19 +1180,18 @@ body.page-leaving { opacity: 0; }
               <p>Keep your ReviewRise account secure.</p>
             </div>
             <div class="card">
-              <h3>Password</h3>
+              <h3>Change Password</h3>
               <p class="field-hint" style="margin-top:0; margin-bottom:16px;">Use at least 8 characters. Choose a password you do not use elsewhere.</p>
-              <button class="btn btn-secondary" type="button" id="showPasswordForm">Change Password</button>
-              <div id="passwordChangeForm" hidden>
+              <div id="passwordChangeForm">
                 <div class="form-group">
-                  <label for="newPassword">New Password</label>
+                  <label for="newPassword">New password</label>
                   <div class="password-field">
                     <input id="newPassword" type="password" autocomplete="new-password" placeholder="At least 8 characters">
                     <button class="password-toggle" type="button" data-target="newPassword" aria-label="Show password">Show</button>
                   </div>
                 </div>
                 <div class="form-group" style="margin-top: 16px;">
-                  <label for="confirmNewPassword">Confirm Password</label>
+                  <label for="confirmNewPassword">Confirm new password</label>
                   <div class="password-field">
                     <input id="confirmNewPassword" type="password" autocomplete="new-password" placeholder="Re-enter your new password">
                     <button class="password-toggle" type="button" data-target="confirmNewPassword" aria-label="Show password">Show</button>
@@ -1171,14 +1199,27 @@ body.page-leaving { opacity: 0; }
                 </div>
                 <div class="password-actions">
                   <button class="btn btn-primary" type="button" id="updatePasswordBtn">Update Password</button>
-                  <button class="btn btn-secondary" type="button" id="cancelPasswordBtn">Cancel</button>
                 </div>
               </div>
               <p id="passwordStatus" class="settings-status" role="status"></p>
             </div>
             <div class="card">
-              <h3>Current session</h3>
-              <div class="session-box">Signed in on this browser. Session tokens are stored locally on this device.</div>
+              <h3>Sign Out</h3>
+              <p class="field-hint" style="margin-top:0; margin-bottom:16px;">You are signed in on this browser.</p>
+              <button class="btn btn-secondary" type="button" id="securitySignOut">Sign Out</button>
+            </div>
+          </section>
+
+          <section class="panel" id="panel-privacy">
+            <div class="panel-head">
+              <h2>Data &amp; Privacy</h2>
+              <p>Download a copy of the information stored for your account.</p>
+            </div>
+            <div class="card">
+              <h3>Export My Data</h3>
+              <p class="field-hint" style="margin-top:0; margin-bottom:16px;">Download your profile, businesses, feedback, and subscription details as a JSON file.</p>
+              <button class="btn btn-secondary" type="button" id="exportDataBtn">Export My Data</button>
+              <p id="exportStatus" class="settings-status" role="status"></p>
             </div>
           </section>
 
@@ -1368,15 +1409,29 @@ body.page-leaving { opacity: 0; }
               <p>Irreversible account actions.</p>
             </div>
             <div class="danger-card">
-              <h3>Delete account</h3>
-              <p>Permanently deleting a ReviewRise account is not available yet.</p>
-              <button class="btn btn-danger" type="button" disabled>Delete account unavailable</button>
+              <h3>Delete Account</h3>
+              <p>Permanently delete your ReviewRise account and the data stored for it. This cannot be undone.</p>
+              <button class="btn btn-danger" type="button" id="deleteAccountBtn">Delete Account</button>
+              <p id="deleteStatus" class="settings-status" role="status"></p>
             </div>
           </section>
           <p class="legal-links"><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms of Service</a></p>
         </div>
       </div>
     </main>
+  </div>
+</div>
+<div class="account-modal" id="deleteAccountModal" hidden>
+  <div class="account-modal-box" role="dialog" aria-modal="true" aria-labelledby="deleteAccountTitle">
+    <h2 id="deleteAccountTitle">Delete account?</h2>
+    <p>This permanently deletes your ReviewRise account. Type DELETE to confirm.</p>
+    <label for="deleteConfirmInput">Type DELETE</label>
+    <input id="deleteConfirmInput" type="text" autocomplete="off" spellcheck="false" autocapitalize="off">
+    <div class="password-actions">
+      <button class="btn btn-secondary" type="button" id="cancelDeleteBtn">Cancel</button>
+      <button class="btn btn-danger" type="button" id="confirmDeleteBtn" disabled>Delete Account</button>
+    </div>
+    <p id="deleteModalStatus" class="settings-status" role="status"></p>
   </div>
 </div>
 <script>
@@ -1406,14 +1461,73 @@ function toggleAccountMenu() {
     document.getElementById("accountMenu").classList.toggle("open");
 }
 
-function logout() {
-    localStorage.removeItem("reviewrise_token");
-    localStorage.removeItem("reviewrise_refresh_token");
-    localStorage.removeItem("reviewrise_dashboard_cache");
-    localStorage.removeItem("reviewrise_feedback_cache");
-    localStorage.removeItem("reviewrise_analytics_cache");
-    localStorage.removeItem("reviewrise_reviewlinks_data");
-    localStorage.removeItem("reviewrise_feedback_data_cache");
+function clearReviewRiseAccountStorage() {
+    var token = localStorage.getItem("reviewrise_token") || "";
+    var userId = "";
+
+    try {
+        var payload = token.split(".")[1];
+        if (payload) {
+            var json = JSON.parse(atob(payload.replace(/-/g, "+").replace(/_/g, "/")));
+            userId = json.sub || "";
+        }
+    } catch (error) {
+        userId = "";
+    }
+
+    [
+        "reviewrise_token",
+        "reviewrise_refresh_token",
+        "reviewrise_dashboard_cache",
+        "reviewrise_feedback_cache",
+        "reviewrise_analytics_cache",
+        "reviewrise_reviewlinks_data",
+        "reviewrise_feedback_data_cache",
+        "reviewrise_onboarding_draft",
+        "reviewrise_problem_theme_cache",
+        "reviewrise_analytics_problem_cache"
+    ].forEach(function (key) {
+        localStorage.removeItem(key);
+    });
+
+    if (userId) {
+        localStorage.removeItem("reviewrise_selected_business_" + userId);
+        localStorage.removeItem("reviewrise_alerts_" + userId);
+    }
+
+    var prefixes = ["reviewrise_selected_business_", "reviewrise_getting_started_", "reviewrise_alerts_"];
+    var index = localStorage.length;
+
+    while (index--) {
+        var key = localStorage.key(index);
+        if (!key) continue;
+        for (var i = 0; i < prefixes.length; i++) {
+            if (key.indexOf(prefixes[i]) === 0) {
+                localStorage.removeItem(key);
+                break;
+            }
+        }
+    }
+}
+
+async function logout() {
+    var token = localStorage.getItem("reviewrise_token");
+
+    if (token) {
+        try {
+            await fetch(SUPABASE_URL + "/auth/v1/logout", {
+                method: "POST",
+                headers: {
+                    "apikey": SUPABASE_KEY,
+                    "Authorization": "Bearer " + token,
+                    "Content-Type": "application/json"
+                }
+            });
+        } catch (error) {
+        }
+    }
+
+    clearReviewRiseAccountStorage();
     window.location.href = "dashboard.html";
 }
 
@@ -1876,19 +1990,8 @@ document.getElementById("feedbackEmailToggle").addEventListener("click", async f
     }
 });
 
-document.getElementById("showPasswordForm").addEventListener("click", function () {
-    document.getElementById("passwordChangeForm").hidden = false;
-    this.hidden = true;
-    setSettingsStatus("passwordStatus", "");
-    document.getElementById("newPassword").focus();
-});
-
-document.getElementById("cancelPasswordBtn").addEventListener("click", function () {
-    document.getElementById("passwordChangeForm").hidden = true;
-    document.getElementById("showPasswordForm").hidden = false;
-    document.getElementById("newPassword").value = "";
-    document.getElementById("confirmNewPassword").value = "";
-    setSettingsStatus("passwordStatus", "");
+document.getElementById("securitySignOut").addEventListener("click", function () {
+    logout();
 });
 
 document.getElementById("updatePasswordBtn").addEventListener("click", async function () {
@@ -1939,7 +2042,7 @@ document.getElementById("updatePasswordBtn").addEventListener("click", async fun
             return;
         }
 
-        if (!response.ok) {
+        if (!response.ok || (data && data.error)) {
             setSettingsStatus("passwordStatus", "Your password could not be updated. Please try again.", "error");
             return;
         }
@@ -1954,15 +2057,171 @@ document.getElementById("updatePasswordBtn").addEventListener("click", async fun
 
         document.getElementById("newPassword").value = "";
         document.getElementById("confirmNewPassword").value = "";
-        document.getElementById("passwordChangeForm").hidden = true;
-        document.getElementById("showPasswordForm").hidden = false;
         setSettingsStatus("passwordStatus", "Password updated successfully.", "success");
     } catch (error) {
-        console.error("Password update failed:", error);
         setSettingsStatus("passwordStatus", "We could not reach ReviewRise. Please try again.", "error");
     } finally {
         button.disabled = false;
         button.textContent = "Update Password";
+    }
+});
+
+function downloadAccountExport(data) {
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "reviewrise-account-data.json";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+}
+
+document.getElementById("exportDataBtn").addEventListener("click", async function () {
+    const button = this;
+    button.disabled = true;
+    button.textContent = "Exporting...";
+    setSettingsStatus("exportStatus", "");
+
+    try {
+        const token = await getValidAccessToken();
+
+        if (!token) {
+            logout();
+            return;
+        }
+
+        const response = await fetch(SUPABASE_URL + "/functions/v1/export-account-data", {
+            method: "POST",
+            headers: {
+                "apikey": SUPABASE_KEY,
+                "Authorization": "Bearer " + token,
+                "Content-Type": "application/json"
+            },
+            body: "{}"
+        });
+
+        if (response.status === 401 || response.status === 403) {
+            logout();
+            return;
+        }
+
+        if (!response.ok) {
+            setSettingsStatus("exportStatus", "Your data could not be exported. Please try again.", "error");
+            return;
+        }
+
+        const data = await response.json();
+        downloadAccountExport(data);
+        setSettingsStatus("exportStatus", "Your data download has started.", "success");
+    } catch (error) {
+        setSettingsStatus("exportStatus", "Your data could not be exported. Please try again.", "error");
+    } finally {
+        button.disabled = false;
+        button.textContent = "Export My Data";
+    }
+});
+
+let accountDeletionRunning = false;
+
+function closeDeleteModal() {
+    if (accountDeletionRunning) return;
+    const modal = document.getElementById("deleteAccountModal");
+    const input = document.getElementById("deleteConfirmInput");
+    const confirm = document.getElementById("confirmDeleteBtn");
+    modal.hidden = true;
+    input.value = "";
+    confirm.disabled = true;
+    setSettingsStatus("deleteModalStatus", "");
+}
+
+document.getElementById("deleteAccountBtn").addEventListener("click", function () {
+    setSettingsStatus("deleteStatus", "");
+    closeDeleteModal();
+    document.getElementById("deleteAccountModal").hidden = false;
+    document.getElementById("deleteConfirmInput").focus();
+});
+
+document.getElementById("cancelDeleteBtn").addEventListener("click", closeDeleteModal);
+
+document.getElementById("deleteAccountModal").addEventListener("click", function (event) {
+    if (event.target === this) {
+        closeDeleteModal();
+    }
+});
+
+document.getElementById("deleteConfirmInput").addEventListener("input", function () {
+    if (accountDeletionRunning) return;
+    document.getElementById("confirmDeleteBtn").disabled = this.value !== "DELETE";
+});
+
+document.getElementById("confirmDeleteBtn").addEventListener("click", async function () {
+    const button = this;
+    const input = document.getElementById("deleteConfirmInput");
+
+    if (input.value !== "DELETE") {
+        setSettingsStatus("deleteModalStatus", "Type DELETE to confirm.", "error");
+        return;
+    }
+
+    accountDeletionRunning = true;
+    button.disabled = true;
+    input.disabled = true;
+    document.getElementById("cancelDeleteBtn").disabled = true;
+    button.textContent = "Deleting...";
+    setSettingsStatus("deleteModalStatus", "");
+
+    try {
+        const token = await getValidAccessToken();
+
+        if (!token) {
+            logout();
+            return;
+        }
+
+        const response = await fetch(SUPABASE_URL + "/functions/v1/delete-account", {
+            method: "POST",
+            headers: {
+                "apikey": SUPABASE_KEY,
+                "Authorization": "Bearer " + token,
+                "Content-Type": "application/json"
+            },
+            body: "{}"
+        });
+
+        if (response.status === 401 || response.status === 403) {
+            logout();
+            return;
+        }
+
+        let data = null;
+
+        try {
+            data = await response.json();
+        } catch (parseError) {
+            data = null;
+        }
+
+        if (!response.ok || !data || data.deleted !== true) {
+            accountDeletionRunning = false;
+            input.disabled = false;
+            setSettingsStatus("deleteModalStatus", "Your account could not be deleted. Please try again.", "error");
+            button.disabled = input.value !== "DELETE";
+            document.getElementById("cancelDeleteBtn").disabled = false;
+            button.textContent = "Delete Account";
+            return;
+        }
+
+        clearReviewRiseAccountStorage();
+        window.location.href = "index.html";
+    } catch (error) {
+        accountDeletionRunning = false;
+        input.disabled = false;
+        setSettingsStatus("deleteModalStatus", "Your account could not be deleted. Please try again.", "error");
+        button.disabled = input.value !== "DELETE";
+        document.getElementById("cancelDeleteBtn").disabled = false;
+        button.textContent = "Delete Account";
     }
 });
 
