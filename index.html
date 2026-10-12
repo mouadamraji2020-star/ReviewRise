@@ -1583,7 +1583,7 @@
         <p class="band-intro">Upgrade when you're ready.</p>
         <div class="plan-billing" role="group" aria-label="Billing period">
           <button class="plan-billing-btn is-selected" type="button" data-period="monthly" aria-pressed="true">Monthly</button>
-          <button class="plan-billing-btn" type="button" data-period="yearly" aria-pressed="false">Yearly <span class="plan-save" id="homePlanSave">Save 17%</span></button>
+          <button class="plan-billing-btn" type="button" data-period="yearly" aria-pressed="false">Yearly <span class="plan-save" id="homePlanSave">Save 20%</span></button>
         </div>
         <ul class="plan-grid">
           <li class="plan-card">
@@ -1608,7 +1608,7 @@
             <span class="plan-badge">Most Popular</span>
             <h3>Pro</h3>
             <p class="plan-desc">For growing businesses that want deeper customer intelligence.</p>
-            <p class="plan-price"><strong id="homeProPrice">$29</strong><span id="homeProPeriod">/ month</span></p>
+            <p class="plan-price"><strong id="homeProPrice">$20</strong><span id="homeProPeriod">/ month</span></p>
             <p class="plan-note" id="homeProNote">Billed monthly</p>
             <ul class="plan-features">
               <li>up to 5 businesses</li>
@@ -1626,8 +1626,8 @@
           <li class="plan-card">
             <h3>Business</h3>
             <p class="plan-desc">For larger businesses and multi-location operators.</p>
-            <p class="plan-price"><strong>Custom</strong></p>
-            <p class="plan-note">Pricing is arranged with the ReviewRise team.</p>
+            <p class="plan-price"><strong id="homeBusinessPrice">$49</strong><span id="homeBusinessPeriod">/ month</span></p>
+            <p class="plan-note" id="homeBusinessNote">Billed monthly</p>
             <ul class="plan-features">
               <li>higher business/location limits</li>
               <li>everything in Pro</li>
@@ -1637,7 +1637,7 @@
               <li>team access <span class="plan-soon">Coming soon</span></li>
               <li>custom branding <span class="plan-soon">Coming soon</span></li>
             </ul>
-            <a class="btn btn-secondary" href="#contact">Contact</a>
+            <a class="btn btn-secondary" href="#contact">Choose Business</a>
           </li>
         </ul>
       </div>
@@ -1708,15 +1708,20 @@
   <script>
     (function () {
       var PRICING = {
-        proMonthly: 29,
-        proYearly: 288
+        proMonthly: 20,
+        proYearly: 192,
+        businessMonthly: 49,
+        businessYearly: 470
       };
       var amount = document.getElementById("homeProPrice");
       var cadence = document.getElementById("homeProPeriod");
       var note = document.getElementById("homeProNote");
+      var businessAmount = document.getElementById("homeBusinessPrice");
+      var businessCadence = document.getElementById("homeBusinessPeriod");
+      var businessNote = document.getElementById("homeBusinessNote");
       var save = document.getElementById("homePlanSave");
       var buttons = document.querySelectorAll(".plan-billing-btn");
-      if (!amount || !cadence || !note || !buttons.length) return;
+      if (!amount || !cadence || !note || !businessAmount || !buttons.length) return;
 
       var fullYear = PRICING.proMonthly * 12;
       var saved = Math.max(0, Math.round((1 - PRICING.proYearly / fullYear) * 100));
@@ -1724,10 +1729,14 @@
 
       function renderPrice(period) {
         var yearly = period === "yearly";
-        var perMonth = Math.round((PRICING.proYearly / 12) * 10) / 10;
+        var proMonth = Math.round((PRICING.proYearly / 12) * 10) / 10;
+        var businessMonth = Math.round((PRICING.businessYearly / 12) * 10) / 10;
         amount.textContent = "$" + (yearly ? PRICING.proYearly : PRICING.proMonthly);
         cadence.textContent = yearly ? "/ year" : "/ month";
-        note.textContent = yearly ? "$" + perMonth + " per month, billed yearly" : "Billed monthly";
+        note.textContent = yearly ? "$" + proMonth + " per month, billed yearly" : "Billed monthly";
+        businessAmount.textContent = "$" + (yearly ? PRICING.businessYearly : PRICING.businessMonthly);
+        businessCadence.textContent = yearly ? "/ year" : "/ month";
+        businessNote.textContent = yearly ? "$" + businessMonth + " per month, billed yearly" : "Billed monthly";
       }
 
       buttons.forEach(function (button) {

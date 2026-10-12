@@ -1669,6 +1669,12 @@ a.menu-item:visited {
     color: #8a4b12;
 }
 
+.trial-status.is-paid {
+    border-color: #c9daf6;
+    background: #f4f8ff;
+    color: #10284d;
+}
+
 .getting-started {
     margin-top: 18px;
     padding: 16px 18px 8px;
@@ -5573,8 +5579,14 @@ function reviewRiseTrialInstant(value) {
 
 function reviewRiseTrialState(profile, now) {
     var plan = profile && typeof profile.plan === "string" ? profile.plan.trim().toLowerCase() : "";
+    var status = profile && profile.subscription_status != null ? String(profile.subscription_status).trim().toLowerCase() : "";
     var endsAt = profile ? reviewRiseTrialInstant(profile.trial_ends_at) : null;
     var current = now instanceof Date ? now.getTime() : Date.now();
+    var paidActive = (plan === "pro" || plan === "business") && status === "active";
+
+    if (paidActive) {
+        return { kind: plan === "pro" ? "pro-active" : "business-active" };
+    }
 
     if (plan !== "trial" || endsAt == null) {
         return { kind: "hidden" };
@@ -5599,7 +5611,14 @@ function renderTrialStatus(profile) {
 
     var state = reviewRiseTrialState(profile, new Date());
 
-    banner.classList.remove("is-expired");
+    banner.classList.remove("is-expired", "is-paid");
+
+    if (state.kind === "pro-active" || state.kind === "business-active") {
+        banner.textContent = state.kind === "pro-active" ? "Pro" : "Business";
+        banner.classList.add("is-paid");
+        banner.hidden = false;
+        return;
+    }
 
     if (state.kind === "trial-active") {
         var dayLabel = state.daysRemaining === 1 ? "1 day remaining" : state.daysRemaining + " days remaining";

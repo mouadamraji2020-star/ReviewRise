@@ -1207,21 +1207,33 @@ body.page-leaving { opacity: 0; }
                   <dt>Current plan</dt>
                   <dd id="subscriptionPlan"></dd>
                 </div>
-                <div id="subscriptionStatusRow">
-                  <dt>Trial status</dt>
+                <div id="subscriptionStatusRow" hidden>
+                  <dt>Status</dt>
                   <dd id="subscriptionTrialStatus"></dd>
                 </div>
-                <div id="subscriptionEndsRow">
+                <div id="subscriptionCycleRow" hidden>
+                  <dt>Billing cycle</dt>
+                  <dd id="subscriptionCycle"></dd>
+                </div>
+                <div id="subscriptionPriceRow" hidden>
+                  <dt>Price</dt>
+                  <dd id="subscriptionPrice"></dd>
+                </div>
+                <div id="subscriptionEndsRow" hidden>
                   <dt>Trial ends</dt>
                   <dd id="subscriptionTrialEnds"></dd>
                 </div>
-                <div id="subscriptionDaysRow">
+                <div id="subscriptionDaysRow" hidden>
                   <dt>Days remaining</dt>
                   <dd id="subscriptionDaysRemaining"></dd>
                 </div>
-                <div id="subscriptionBillingRow" hidden>
-                  <dt>Subscription status</dt>
-                  <dd id="subscriptionBillingStatus"></dd>
+                <div id="subscriptionPeriodRow" hidden>
+                  <dt>Current period ends</dt>
+                  <dd id="subscriptionPeriodEnd"></dd>
+                </div>
+                <div id="subscriptionProviderRow" hidden>
+                  <dt>Payment provider</dt>
+                  <dd id="subscriptionProvider"></dd>
                 </div>
               </dl>
               <p id="subscriptionAccessNote">A trial end date has not been saved for this account, so no countdown is shown.</p>
@@ -1257,7 +1269,7 @@ body.page-leaving { opacity: 0; }
                   <span class="plan-badge">Most Popular</span>
                 </div>
                 <p class="plan-subtitle">For individual businesses and growing companies.</p>
-                <p class="plan-price"><strong id="proPrice">$29</strong><span id="proPeriod">/ month</span></p>
+                <p class="plan-price"><strong id="proPrice">$20</strong><span id="proPeriod">/ month</span></p>
                 <p class="plan-price-note" id="proPriceNote">Billed monthly</p>
                 <ul class="plan-features">
                   <li>Up to 5 businesses</li>
@@ -1277,8 +1289,8 @@ body.page-leaving { opacity: 0; }
                   <h3 class="plan-name">Business</h3>
                 </div>
                 <p class="plan-subtitle">For larger businesses and multi-location operators.</p>
-                <p class="plan-price"><strong>Custom</strong><span>Contact us</span></p>
-                <p class="plan-price-note">Pricing is arranged with the ReviewRise team.</p>
+                <p class="plan-price"><strong id="businessPrice">$49</strong><span id="businessPeriod">/ month</span></p>
+                <p class="plan-price-note" id="businessPriceNote">Billed monthly</p>
                 <ul class="plan-features">
                   <li>Higher business and location limits</li>
                   <li>Everything in Pro</li>
@@ -1287,7 +1299,7 @@ body.page-leaving { opacity: 0; }
                   <li>Custom branding <span class="plan-soon">Coming soon</span></li>
                   <li>Priority onboarding and support</li>
                 </ul>
-                <button class="btn btn-secondary" type="button" id="chooseBusinessBtn">Contact Sales</button>
+                <button class="btn btn-secondary" type="button" id="chooseBusinessBtn">Choose Business</button>
               </article>
             </div>
             <p id="subscriptionNotice" class="settings-status" role="status"></p>
@@ -2338,20 +2350,23 @@ async function saveReviewSettings() {
 }
 
 var SUBSCRIPTION_PRICING = {
-    proMonthly: 29,
-    proYearly: 288
+    proMonthly: 20,
+    proYearly: 192,
+    businessMonthly: 49,
+    businessYearly: 470
 };
 
-function renderProPrice(period) {
-    var amount = document.getElementById("proPrice");
-    var cadence = document.getElementById("proPeriod");
-    var note = document.getElementById("proPriceNote");
+function renderCatalogPrice(period) {
     var yearly = period === "yearly";
-    var perMonth = Math.round((SUBSCRIPTION_PRICING.proYearly / 12) * 10) / 10;
+    var proMonth = Math.round((SUBSCRIPTION_PRICING.proYearly / 12) * 10) / 10;
+    var businessMonth = Math.round((SUBSCRIPTION_PRICING.businessYearly / 12) * 10) / 10;
 
-    amount.textContent = "$" + (yearly ? SUBSCRIPTION_PRICING.proYearly : SUBSCRIPTION_PRICING.proMonthly);
-    cadence.textContent = yearly ? "/ year" : "/ month";
-    note.textContent = yearly ? "$" + perMonth + " per month, billed yearly" : "Billed monthly";
+    document.getElementById("proPrice").textContent = "$" + (yearly ? SUBSCRIPTION_PRICING.proYearly : SUBSCRIPTION_PRICING.proMonthly);
+    document.getElementById("proPeriod").textContent = yearly ? "/ year" : "/ month";
+    document.getElementById("proPriceNote").textContent = yearly ? "$" + proMonth + " per month, billed yearly" : "Billed monthly";
+    document.getElementById("businessPrice").textContent = "$" + (yearly ? SUBSCRIPTION_PRICING.businessYearly : SUBSCRIPTION_PRICING.businessMonthly);
+    document.getElementById("businessPeriod").textContent = yearly ? "/ year" : "/ month";
+    document.getElementById("businessPriceNote").textContent = yearly ? "$" + businessMonth + " per month, billed yearly" : "Billed monthly";
 }
 
 document.querySelectorAll(".plan-billing-btn").forEach(function (button) {
@@ -2361,7 +2376,7 @@ document.querySelectorAll(".plan-billing-btn").forEach(function (button) {
             item.classList.toggle("is-selected", selected);
             item.setAttribute("aria-pressed", selected ? "true" : "false");
         });
-        renderProPrice(button.getAttribute("data-billing"));
+        renderCatalogPrice(button.getAttribute("data-billing"));
     });
 });
 
@@ -2379,54 +2394,116 @@ function reviewRiseTrialInstant(value) {
     return time;
 }
 
+function reviewRiseProfileText(profile, field) {
+    if (!profile || profile[field] == null || String(profile[field]).trim() === "") {
+        return "";
+    }
+
+    return String(profile[field]).trim();
+}
+
+function reviewRiseBillingCycle(profile) {
+    var cycle = reviewRiseProfileText(profile, "billing_cycle").toLowerCase();
+
+    if (cycle === "monthly" || cycle === "yearly") {
+        return cycle;
+    }
+
+    return "";
+}
+
+function reviewRiseProviderLabel(value) {
+    var raw = value == null ? "" : String(value).trim();
+    var key = raw.toLowerCase().replace(/[\s-]+/g, "_");
+
+    if (!raw) {
+        return "";
+    }
+
+    if (key === "cih") {
+        return "CIH";
+    }
+
+    if (key === "lana_cash" || key === "lanacash") {
+        return "LANA CASH";
+    }
+
+    return raw;
+}
+
+function reviewRisePlanPrice(plan, cycle) {
+    if (plan === "pro" && cycle === "monthly") {
+        return "$" + SUBSCRIPTION_PRICING.proMonthly + "/month";
+    }
+
+    if (plan === "pro" && cycle === "yearly") {
+        return "$" + SUBSCRIPTION_PRICING.proYearly + "/year";
+    }
+
+    if (plan === "business" && cycle === "monthly") {
+        return "$" + SUBSCRIPTION_PRICING.businessMonthly + "/month";
+    }
+
+    if (plan === "business" && cycle === "yearly") {
+        return "$" + SUBSCRIPTION_PRICING.businessYearly + "/year";
+    }
+
+    return "";
+}
+
+function reviewRiseStatusLabel(rawStatus, kind) {
+    var raw = rawStatus ? rawStatus.toLowerCase() : "";
+
+    if (raw === "canceled" || raw === "cancelled") {
+        return "Canceled";
+    }
+
+    if (kind === "trial-expired" || raw === "expired") {
+        return "Expired";
+    }
+
+    if (raw === "active") {
+        return "Active";
+    }
+
+    if (raw === "trialing") {
+        return "Trialing";
+    }
+
+    return rawStatus || "";
+}
+
 function reviewRiseTrialState(profile, now) {
     var plan = profile && typeof profile.plan === "string" ? profile.plan.trim().toLowerCase() : "";
     var endsAt = profile ? reviewRiseTrialInstant(profile.trial_ends_at) : null;
-    var subscriptionStatus = profile && profile.subscription_status != null && String(profile.subscription_status).trim()
-        ? String(profile.subscription_status).trim()
-        : "";
+    var periodEnd = profile ? reviewRiseTrialInstant(profile.current_period_end) : null;
+    var subscriptionStatus = reviewRiseProfileText(profile, "subscription_status");
+    var billingCycle = reviewRiseBillingCycle(profile);
     var current = now instanceof Date ? now.getTime() : Date.now();
+    var paidActive = (plan === "pro" || plan === "business") && subscriptionStatus.toLowerCase() === "active";
+    var kind = "none";
 
     if (plan === "trial" && endsAt != null) {
-        if (current < endsAt) {
-            return {
-                kind: "trial-active",
-                planLabel: "7-Day Free Trial",
-                statusLabel: "Trial active",
-                endsAt: endsAt,
-                daysRemaining: Math.ceil((endsAt - current) / 86400000),
-                subscriptionStatus: subscriptionStatus
-            };
-        }
-
-        return {
-            kind: "trial-expired",
-            planLabel: "7-Day Free Trial",
-            statusLabel: "Trial expired",
-            endsAt: endsAt,
-            daysRemaining: 0,
-            subscriptionStatus: subscriptionStatus
-        };
-    }
-
-    if (plan === "pro" || plan === "business") {
-        return {
-            kind: plan,
-            planLabel: plan === "pro" ? "Pro" : "Business",
-            statusLabel: "",
-            endsAt: null,
-            daysRemaining: null,
-            subscriptionStatus: subscriptionStatus
-        };
+        kind = current < endsAt ? "trial-active" : "trial-expired";
+    } else if (plan === "trial") {
+        kind = "trial-undated";
+    } else if (plan === "pro" || plan === "business") {
+        kind = plan;
     }
 
     return {
-        kind: plan === "trial" ? "trial-undated" : "none",
-        planLabel: plan === "trial" ? "7-Day Free Trial" : "No plan on file",
-        statusLabel: "",
-        endsAt: null,
-        daysRemaining: null,
-        subscriptionStatus: subscriptionStatus
+        kind: kind,
+        plan: plan,
+        planLabel: plan === "trial" ? "Trial" : plan === "pro" ? "Pro" : plan === "business" ? "Business" : "No plan on file",
+        statusLabel: reviewRiseStatusLabel(subscriptionStatus, kind),
+        endsAt: endsAt,
+        daysRemaining: kind === "trial-active" ? Math.ceil((endsAt - current) / 86400000) : kind === "trial-expired" ? 0 : null,
+        billingCycle: billingCycle,
+        priceText: reviewRisePlanPrice(plan, billingCycle),
+        periodEnd: periodEnd,
+        providerLabel: reviewRiseProviderLabel(reviewRiseProfileText(profile, "payment_provider")),
+        paidActive: paidActive,
+        hasAccess: (kind === "trial-active") || paidActive
     };
 }
 
@@ -2442,6 +2519,22 @@ function formatTrialDate(time) {
     }
 }
 
+function setSubscriptionFact(rowId, valueId, value) {
+    var row = document.getElementById(rowId);
+    var valueNode = document.getElementById(valueId);
+
+    if (!row || !valueNode) {
+        return;
+    }
+
+    var show = value != null && String(value) !== "";
+    row.hidden = !show;
+
+    if (show) {
+        valueNode.textContent = String(value);
+    }
+}
+
 function renderSubscriptionAccess(profile) {
     var summary = document.getElementById("subscriptionSummary");
     var access = document.getElementById("subscriptionAccess");
@@ -2449,7 +2542,8 @@ function renderSubscriptionAccess(profile) {
     var facts = document.getElementById("subscriptionFacts");
     var trialButton = document.getElementById("startTrialBtn");
     var state = reviewRiseTrialState(profile, new Date());
-    var showTrial = state.kind === "trial-active" || state.kind === "trial-expired";
+    var datedTrial = state.kind === "trial-active" || state.kind === "trial-expired";
+    var knownPlan = state.plan === "trial" || state.plan === "pro" || state.plan === "business";
 
     if (!summary || !access || !note || !facts) {
         return;
@@ -2457,29 +2551,21 @@ function renderSubscriptionAccess(profile) {
 
     summary.classList.toggle("is-trial-active", state.kind === "trial-active");
     summary.classList.toggle("is-trial-expired", state.kind === "trial-expired");
-    access.textContent = showTrial ? state.statusLabel : state.planLabel;
-    facts.hidden = !(showTrial || state.subscriptionStatus);
-    document.getElementById("subscriptionPlanRow").hidden = !showTrial;
-    document.getElementById("subscriptionStatusRow").hidden = !showTrial;
-    document.getElementById("subscriptionEndsRow").hidden = !showTrial;
-    document.getElementById("subscriptionDaysRow").hidden = !showTrial;
-    document.getElementById("subscriptionBillingRow").hidden = !state.subscriptionStatus;
-
-    if (showTrial) {
-        document.getElementById("subscriptionPlan").textContent = state.planLabel;
-        document.getElementById("subscriptionTrialStatus").textContent = state.statusLabel;
-        document.getElementById("subscriptionTrialEnds").textContent = formatTrialDate(state.endsAt);
-        document.getElementById("subscriptionDaysRemaining").textContent = String(state.daysRemaining);
-    }
-
-    if (state.subscriptionStatus) {
-        document.getElementById("subscriptionBillingStatus").textContent = state.subscriptionStatus;
-    }
+    access.textContent = state.planLabel;
+    setSubscriptionFact("subscriptionPlanRow", "subscriptionPlan", knownPlan ? state.planLabel : "");
+    setSubscriptionFact("subscriptionStatusRow", "subscriptionTrialStatus", state.statusLabel);
+    setSubscriptionFact("subscriptionCycleRow", "subscriptionCycle", state.billingCycle === "yearly" ? "Yearly" : state.billingCycle === "monthly" ? "Monthly" : "");
+    setSubscriptionFact("subscriptionPriceRow", "subscriptionPrice", state.priceText);
+    setSubscriptionFact("subscriptionEndsRow", "subscriptionTrialEnds", datedTrial ? formatTrialDate(state.endsAt) : "");
+    setSubscriptionFact("subscriptionDaysRow", "subscriptionDaysRemaining", datedTrial ? String(state.daysRemaining) : "");
+    setSubscriptionFact("subscriptionPeriodRow", "subscriptionPeriodEnd", state.periodEnd != null ? formatTrialDate(state.periodEnd) : "");
+    setSubscriptionFact("subscriptionProviderRow", "subscriptionProvider", state.providerLabel);
+    facts.hidden = facts.querySelector("div:not([hidden])") == null;
 
     if (state.kind === "trial-expired") {
         note.hidden = false;
         note.textContent = "Choose Pro or Business to continue.";
-    } else if (showTrial || state.kind === "pro" || state.kind === "business") {
+    } else if (state.kind === "trial-active" || state.plan === "pro" || state.plan === "business") {
         note.hidden = true;
         note.textContent = "";
     } else {
@@ -2502,9 +2588,16 @@ async function loadSubscriptionAccess(token) {
 
     try {
         response = await fetch(
-            SUPABASE_URL + "/rest/v1/profiles?id=eq." + encodeURIComponent(accountUserId) + "&select=plan,trial_started_at,trial_ends_at,subscription_status",
+            SUPABASE_URL + "/rest/v1/profiles?id=eq." + encodeURIComponent(accountUserId) + "&select=plan,trial_started_at,trial_ends_at,subscription_status,billing_cycle,payment_provider,current_period_end",
             { headers: authHeaders(token) }
         );
+
+        if (response.status === 400) {
+            response = await fetch(
+                SUPABASE_URL + "/rest/v1/profiles?id=eq." + encodeURIComponent(accountUserId) + "&select=plan,trial_started_at,trial_ends_at,subscription_status",
+                { headers: authHeaders(token) }
+            );
+        }
     } catch (error) {
         return;
     }
@@ -2527,11 +2620,11 @@ document.getElementById("startTrialBtn").addEventListener("click", function () {
 });
 
 document.getElementById("upgradeProBtn").addEventListener("click", function () {
-    setSettingsStatus("subscriptionNotice", "Online billing is coming soon.", "");
+    setSettingsStatus("subscriptionNotice", "Online payment setup is coming soon.", "");
 });
 
 document.getElementById("chooseBusinessBtn").addEventListener("click", function () {
-    setSettingsStatus("subscriptionNotice", "Online billing is coming soon.", "");
+    setSettingsStatus("subscriptionNotice", "Online payment setup is coming soon.", "");
 });
 
 loadAccountSettings();
