@@ -1,6 +1,10 @@
+const ALLOWED_ORIGINS = [
+  "https://mouadamraji2020-star.github.io",
+];
+
 function requestOrigin(request: Request): string | null {
   const origin = request.headers.get("Origin");
-  if (!origin || !/^https?:\/\//i.test(origin)) return null;
+  if (!origin || !ALLOWED_ORIGINS.includes(origin)) return null;
   return origin;
 }
 

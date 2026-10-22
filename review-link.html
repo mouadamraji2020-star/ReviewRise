@@ -606,7 +606,7 @@ function reviewLinkLimitCopy() {
         return { title: "Business limit reached", message: "Your Business plan supports up to 25 businesses." };
     }
     if (plan === "trial") {
-        return { title: "Business limit reached", message: "Your 7-day trial supports 1 business." };
+        return { title: "Business limit reached", message: "Your 7-day trial supports 1 business. Your existing businesses are kept, but you can't add another one unless you upgrade." };
     }
 
     return { title: "Business limit reached", message: "Choose a plan to continue." };
@@ -785,7 +785,7 @@ async function createReviewLink() {
                 return;
             }
         }
-        alert("Could not create the review link.");
+        alert(isEditing ? "Could not save your changes." : "Could not create the review link.");
         return;
     }
     const successToast = document.getElementById("successToast");
