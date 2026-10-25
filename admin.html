@@ -315,7 +315,16 @@
         body: "{}"
       });
       if (response.status === 401 || response.status === 403) return { denied: true };
-      if (!response.ok) return { error: true };
+      if (!response.ok) {
+        var reason = "";
+        try {
+          var failure = await response.json();
+          reason = failure && typeof failure.reason === "string" ? failure.reason.slice(0, 200) : "";
+        } catch (parseError) {
+          reason = "";
+        }
+        return { error: true, reason: reason, status: response.status };
+      }
       return { data: await response.json() };
     }
 
@@ -327,7 +336,7 @@
         return;
       }
       if (result.error || !result.data) {
-        showError("The statistics could not be loaded. Please try again.");
+        showError("The statistics could not be loaded." + (result.reason ? " " + result.reason + "." : " Please try again.") + (result.status ? " (Error " + result.status + ")" : ""));
         return;
       }
       document.getElementById("adminChecking").hidden = true;

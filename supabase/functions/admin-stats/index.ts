@@ -138,7 +138,7 @@ function lastDays(days: number, now: number): string[] {
   return keys;
 }
 
-Deno.serve(async (request) => {
+async function handle(request: Request): Promise<Response> {
   const origin = requestOrigin(request);
 
   if (request.method === "OPTIONS") return json({}, 204, origin);
@@ -149,8 +149,14 @@ Deno.serve(async (request) => {
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   const adminIds = (Deno.env.get("ADMIN_USER_IDS") || "")
     .split(",").map((id) => id.trim().toLowerCase()).filter(isUserId);
-  if (!supabaseUrl || !anonKey || !serviceKey || !adminIds.length) {
-    return json({ error: "Admin statistics are not configured" }, 500, origin);
+  const missing: string[] = [];
+  if (!supabaseUrl) missing.push("SUPABASE_URL");
+  if (!anonKey) missing.push("SUPABASE_ANON_KEY");
+  if (!serviceKey) missing.push("SUPABASE_SERVICE_ROLE_KEY");
+  if (!adminIds.length) missing.push("ADMIN_USER_IDS (missing or not a valid user id)");
+  if (missing.length || !supabaseUrl || !anonKey || !serviceKey) {
+    console.error("admin-stats not configured:", missing.join(", "));
+    return json({ error: "Admin statistics are not configured", reason: "Missing: " + missing.join(", ") }, 500, origin);
   }
 
   const userId = await authenticatedUserId(supabaseUrl, anonKey, serviceKey, request);
@@ -166,6 +172,14 @@ Deno.serve(async (request) => {
     fetchAllRows(supabaseUrl, serviceKey, "/rest/v1/payment_events?select=id&order=id"),
   ]);
 
+  const failed = [
+    ["auth users", authUsers], ["profiles", profiles], ["Reviewlinks", businesses],
+    ["Feedback", feedback], ["payment_events", payments],
+  ].filter((pair) => !pair[1]).map((pair) => pair[0]);
+  if (failed.length) {
+    console.error("admin-stats could not load:", failed.join(", "));
+    return json({ error: "Statistics could not be loaded", reason: "Could not read: " + failed.join(", ") }, 500, origin);
+  }
   if (!authUsers || !profiles || !businesses || !feedback || !payments) {
     return json({ error: "Statistics could not be loaded" }, 500, origin);
   }
@@ -248,4 +262,14 @@ Deno.serve(async (request) => {
     signups_by_day: Array.from(signupDays, ([date, count]) => ({ date, count })),
     users,
   }, 200, origin);
+}
+
+Deno.serve(async (request) => {
+  try {
+    return await handle(request);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "unknown error";
+    console.error("admin-stats unexpected error:", message);
+    return json({ error: "Unexpected error", reason: "Unexpected error: " + message.slice(0, 120) }, 500, requestOrigin(request));
+  }
 });
