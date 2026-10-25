@@ -38,7 +38,7 @@
   }
   .top nav { display: flex; flex-wrap: wrap; gap: 14px; font-size: 14px; font-weight: 600; }
   .top nav a { color: #314158; text-decoration: none; }
-  main { width: min(880px, calc(100% - 40px)); margin: 36px auto 64px; }
+  main { width: min(1040px, calc(100% - 40px)); margin: 36px auto 64px; }
   .panel {
     background: #fff;
     border: 1px solid #e7edf5;
@@ -60,12 +60,29 @@
   }
   .metric span { display: block; color: #6d7c92; font-size: 13px; font-weight: 700; }
   .metric strong { display: block; margin-top: 6px; color: #10284d; font-size: 18px; overflow-wrap: anywhere; }
-  #adminApp[hidden], #adminDenied[hidden] { display: none !important; }
+  .metrics.wide { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .metric small { display: block; margin-top: 4px; color: #6d7c92; font-size: 12px; font-weight: 600; }
+  .chart { display: flex; align-items: flex-end; gap: 3px; height: 120px; padding-top: 8px; }
+  .chart .bar { flex: 1; min-width: 0; border-radius: 4px 4px 0 0; background: linear-gradient(180deg, #3ec6ff, #1d4ed8); }
+  .chart .bar.zero { background: #e3eaf3; }
+  .chart-axis { display: flex; justify-content: space-between; margin-top: 6px; color: #6d7c92; font-size: 12px; font-weight: 600; }
+  .table-wrap { overflow-x: auto; border: 1px solid #e7edf5; border-radius: 14px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { padding: 10px 12px; text-align: left; white-space: nowrap; border-bottom: 1px solid #eef2f7; }
+  th { background: #f8fbff; color: #6d7c92; font-size: 12px; font-weight: 700; }
+  tr:last-child td { border-bottom: 0; }
+  .pill { display: inline-block; padding: 2px 9px; border-radius: 999px; background: #eaf2ff; color: #1d4ed8; font-size: 12px; font-weight: 700; }
+  .pill.warn { background: #fff3e0; color: #b45309; }
+  .pill.ok { background: #e6f7ee; color: #0f7b45; }
+  .note { margin-top: 12px; font-size: 13px; }
+  .toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+  .toolbar button { border: 0; border-radius: 10px; padding: 9px 16px; background: #10284d; color: #fff; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+  #adminApp[hidden], #adminDenied[hidden], #adminError[hidden] { display: none !important; }
   @media (max-width: 700px) {
     .top { align-items: flex-start; flex-direction: column; }
     .panel { padding: 22px 16px; }
     h1 { font-size: 28px; }
-    .metrics { grid-template-columns: 1fr; }
+    .metrics, .metrics.wide { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
 </style>
 </head>
@@ -89,43 +106,55 @@
       <h1>Access denied</h1>
       <p>This page is only available to an approved ReviewRise administrator.</p>
     </section>
+    <section class="panel" id="adminError" hidden>
+      <h1>Statistics unavailable</h1>
+      <p id="adminErrorText">The statistics could not be loaded. Please try again.</p>
+    </section>
     <div id="adminApp" hidden>
       <section class="panel">
-        <h2>Overview</h2>
-        <div class="metrics">
-          <div class="metric"><span>Total users</span><strong>Admin backend required</strong></div>
-          <div class="metric"><span>Trial users</span><strong>Admin backend required</strong></div>
-          <div class="metric"><span>Pro users</span><strong>Admin backend required</strong></div>
-          <div class="metric"><span>Business users</span><strong>Admin backend required</strong></div>
-          <div class="metric"><span>Expired trials</span><strong>Admin backend required</strong></div>
+        <div class="toolbar">
+          <div><h1>Admin</h1><p id="adminUpdated">Loading…</p></div>
+          <button type="button" id="adminRefresh">Refresh</button>
         </div>
+        <h2>Users</h2>
+        <div class="metrics wide" id="metricsUsers"></div>
       </section>
       <section class="panel">
-        <h2>Businesses</h2>
-        <div class="metrics">
-          <div class="metric"><span>Total businesses</span><strong>Admin backend required</strong></div>
-        </div>
+        <h2>Who actually tried ReviewRise</h2>
+        <div class="metrics wide" id="metricsActivation"></div>
+        <p class="note">"Tried it" means the user finished onboarding, created a business, or received feedback.</p>
       </section>
       <section class="panel">
-        <h2>Feedback</h2>
-        <div class="metrics">
-          <div class="metric"><span>Total feedback count</span><strong>Admin backend required</strong></div>
-        </div>
+        <h2>Plans</h2>
+        <div class="metrics wide" id="metricsPlans"></div>
       </section>
       <section class="panel">
-        <h2>Payments</h2>
-        <div class="metrics">
-          <div class="metric"><span>Payment event count</span><strong>Admin backend required</strong></div>
+        <h2>Activity</h2>
+        <div class="metrics wide" id="metricsActivity"></div>
+      </section>
+      <section class="panel">
+        <h2>New signups, last 30 days</h2>
+        <div class="chart" id="signupChart" aria-label="New signups per day"></div>
+        <div class="chart-axis"><span id="chartStart"></span><span id="chartEnd"></span></div>
+      </section>
+      <section class="panel">
+        <h2>All users</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>Email</th><th>Name</th><th>Plan</th><th>Signed up</th><th>Last login</th>
+              <th>Onboarded</th><th>Businesses</th><th>Feedback</th>
+            </tr></thead>
+            <tbody id="usersBody"></tbody>
+          </table>
         </div>
+        <p class="note">Website visitors who did not sign up are not tracked yet. That needs a separate analytics tool.</p>
       </section>
     </div>
   </main>
   <script>
     const SUPABASE_URL = "https://intlhwmvldxdiytemjlr.supabase.co";
     const SUPABASE_KEY = "sb_publishable_0KjZZApJCuvTEJH3nNyLUg_aps6aXaA";
-    const REVIEWRISE_ADMIN_USER_IDS = [
-      // add approved admin UUIDs here later
-    ];
 
     function reviewRiseReportError(details) {
       var raw = details && details.message ? String(details.message) : "Something went wrong";
@@ -150,15 +179,162 @@
       document.getElementById("adminDenied").hidden = false;
     }
 
-    function showAdmin() {
+    function showError(text) {
+      document.getElementById("adminChecking").hidden = true;
+      document.getElementById("adminApp").hidden = true;
+      document.getElementById("adminDenied").hidden = true;
+      document.getElementById("adminErrorText").textContent = text;
+      document.getElementById("adminError").hidden = false;
+    }
+
+    function formatDate(value, withTime) {
+      var ms = Date.parse(value || "");
+      if (!isFinite(ms)) return "Never";
+      var options = withTime
+        ? { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }
+        : { year: "numeric", month: "short", day: "numeric" };
+      return new Date(ms).toLocaleString(undefined, options);
+    }
+
+    function renderMetrics(id, items) {
+      var box = document.getElementById(id);
+      box.textContent = "";
+      items.forEach(function (item) {
+        var card = document.createElement("div");
+        card.className = "metric";
+        var label = document.createElement("span");
+        label.textContent = item[0];
+        var value = document.createElement("strong");
+        value.textContent = String(item[1]);
+        card.appendChild(label);
+        card.appendChild(value);
+        if (item[2]) {
+          var hint = document.createElement("small");
+          hint.textContent = item[2];
+          card.appendChild(hint);
+        }
+        box.appendChild(card);
+      });
+    }
+
+    function percent(part, whole) {
+      return whole > 0 ? Math.round((part / whole) * 100) + "% of users" : "";
+    }
+
+    function renderSignupChart(days) {
+      var chart = document.getElementById("signupChart");
+      chart.textContent = "";
+      var max = 1;
+      days.forEach(function (day) { if (day.count > max) max = day.count; });
+      days.forEach(function (day) {
+        var bar = document.createElement("div");
+        bar.className = "bar" + (day.count === 0 ? " zero" : "");
+        bar.style.height = Math.max(4, Math.round((day.count / max) * 100)) + "%";
+        bar.title = day.date + ": " + day.count + " signup" + (day.count === 1 ? "" : "s");
+        chart.appendChild(bar);
+      });
+      document.getElementById("chartStart").textContent = days.length ? days[0].date : "";
+      document.getElementById("chartEnd").textContent = days.length ? days[days.length - 1].date : "";
+    }
+
+    function planCell(user) {
+      var cell = document.createElement("td");
+      var pill = document.createElement("span");
+      var label = user.plan === "pro" ? "Pro" : user.plan === "business" ? "Business" : user.plan === "trial" ? "Trial" : "No plan";
+      var ends = Date.parse(user.trial_ends_at || "");
+      var expired = user.plan === "trial" && isFinite(ends) && ends <= Date.now();
+      pill.className = "pill" + (expired ? " warn" : user.plan === "pro" || user.plan === "business" ? " ok" : "");
+      pill.textContent = expired ? "Trial expired" : label;
+      cell.appendChild(pill);
+      return cell;
+    }
+
+    function renderUsers(users) {
+      var body = document.getElementById("usersBody");
+      body.textContent = "";
+      users.forEach(function (user) {
+        var row = document.createElement("tr");
+        function text(value) {
+          var cell = document.createElement("td");
+          cell.textContent = value;
+          return cell;
+        }
+        row.appendChild(text(user.email || "—"));
+        row.appendChild(text(user.full_name || "—"));
+        row.appendChild(planCell(user));
+        row.appendChild(text(formatDate(user.created_at, false)));
+        row.appendChild(text(formatDate(user.last_sign_in_at, true)));
+        row.appendChild(text(user.onboarding_completed ? "Yes" : "No"));
+        row.appendChild(text(String(user.businesses)));
+        row.appendChild(text(String(user.feedback)));
+        body.appendChild(row);
+      });
+    }
+
+    function renderStats(data) {
+      var t = data.totals;
+      var tried = Math.max(t.onboarded, t.with_business, t.with_feedback);
+      document.getElementById("adminUpdated").textContent = "Updated " + formatDate(data.generated_at, true);
+      renderMetrics("metricsUsers", [
+        ["Total users", t.users],
+        ["Email confirmed", t.confirmed_users, percent(t.confirmed_users, t.users)],
+        ["New, last 7 days", t.new_7d],
+        ["New, last 30 days", t.new_30d]
+      ]);
+      renderMetrics("metricsActivation", [
+        ["Finished onboarding", t.onboarded, percent(t.onboarded, t.users)],
+        ["Created a business", t.with_business, percent(t.with_business, t.users)],
+        ["Received feedback", t.with_feedback, percent(t.with_feedback, t.users)],
+        ["Tried it (at least one step)", tried, percent(tried, t.users)]
+      ]);
+      renderMetrics("metricsPlans", [
+        ["Trial, still active", t.trial_active],
+        ["Trial expired", t.trial_expired],
+        ["Pro (paying)", t.pro],
+        ["Business (paying)", t.business]
+      ]);
+      renderMetrics("metricsActivity", [
+        ["Logged in, last 7 days", t.active_7d, percent(t.active_7d, t.users)],
+        ["Businesses created", t.businesses],
+        ["Feedback received", t.feedback, t.feedback_7d + " in the last 7 days"],
+        ["Low ratings (1-3)", t.feedback_low],
+        ["Payment events", t.payment_events]
+      ]);
+      renderSignupChart(data.signups_by_day || []);
+      renderUsers(data.users || []);
+    }
+
+    async function loadStats(token) {
+      var response = await fetch(SUPABASE_URL + "/functions/v1/admin-stats", {
+        method: "POST",
+        headers: {
+          apikey: SUPABASE_KEY,
+          Authorization: "Bearer " + token,
+          "Content-Type": "application/json"
+        },
+        body: "{}"
+      });
+      if (response.status === 401 || response.status === 403) return { denied: true };
+      if (!response.ok) return { error: true };
+      return { data: await response.json() };
+    }
+
+    async function showAdmin() {
+      var token = localStorage.getItem("reviewrise_token");
+      var result = token ? await loadStats(token) : { denied: true };
+      if (result.denied) {
+        showDenied();
+        return;
+      }
+      if (result.error || !result.data) {
+        showError("The statistics could not be loaded. Please try again.");
+        return;
+      }
       document.getElementById("adminChecking").hidden = true;
       document.getElementById("adminDenied").hidden = true;
+      document.getElementById("adminError").hidden = true;
       document.getElementById("adminApp").hidden = false;
-      // TODO: Call the secure admin-stats Edge Function here.
-      // Use the signed-in session only. Do not read a user id from the query string.
-      // Do not query every profile, business, feedback row, or payment event from the browser.
-      // Do not place the service-role key in this file.
-      // Example later: POST SUPABASE_URL + "/functions/v1/admin-stats"
+      renderStats(result.data);
     }
 
     async function sessionUserId() {
@@ -200,18 +376,25 @@
       return user && typeof user.id === "string" ? user.id : "";
     }
 
+    document.getElementById("adminRefresh").addEventListener("click", function () {
+      showAdmin().catch(function () {
+        reviewRiseReportError({ type: "admin-refresh", message: "Admin statistics could not be refreshed." });
+        showError("The statistics could not be loaded. Please try again.");
+      });
+    });
+
     (async function () {
       try {
+        // Access is decided by the admin-stats Edge Function, not by this page.
         var userId = await sessionUserId();
-        var allowed = REVIEWRISE_ADMIN_USER_IDS.indexOf(userId) !== -1 && userId !== "";
-        if (!allowed) {
+        if (!userId) {
           showDenied();
           return;
         }
-        showAdmin();
+        await showAdmin();
       } catch (error) {
         reviewRiseReportError({ type: "admin-access", message: "Admin access could not be checked." });
-        showDenied();
+        showError("The statistics could not be loaded. Please try again.");
       }
     })();
   </script>
