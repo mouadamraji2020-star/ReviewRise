@@ -319,7 +319,7 @@
         var reason = "";
         try {
           var failure = await response.json();
-          reason = failure && typeof failure.reason === "string" ? failure.reason.slice(0, 200) : "";
+          reason = failure && typeof failure.reason === "string" ? failure.reason.slice(0, 600) : "";
         } catch (parseError) {
           reason = "";
         }

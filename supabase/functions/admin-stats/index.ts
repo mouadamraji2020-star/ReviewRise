@@ -80,30 +80,29 @@ async function listAuthUsers(supabaseUrl: string, serviceKey: string): Promise<R
   return users;
 }
 
+type FetchResult = { rows: Row[]; missing: boolean } | { error: string };
+
 async function fetchAllRows(
   supabaseUrl: string,
   serviceKey: string,
   path: string,
-): Promise<{ rows: Row[]; missing: boolean } | null> {
+  allowMissingTable = false,
+): Promise<FetchResult> {
   const rows: Row[] = [];
   for (let page = 0; page < MAX_PAGES; page++) {
-    const from = page * PAGE_SIZE;
-    const response = await fetch(supabaseUrl + path, {
-      headers: {
-        ...serviceHeaders(serviceKey),
-        Range: from + "-" + (from + PAGE_SIZE - 1),
-        "Range-Unit": "items",
-      },
-    });
+    const response = await fetch(
+      supabaseUrl + path + "&limit=" + PAGE_SIZE + "&offset=" + page * PAGE_SIZE,
+      { headers: serviceHeaders(serviceKey) },
+    );
     if (!response.ok) {
       const text = await response.text();
-      if (response.status === 404 || text.includes("PGRST205") || text.includes("does not exist")) {
+      if (allowMissingTable && (response.status === 404 || text.includes("PGRST205"))) {
         return { rows: [], missing: true };
       }
-      return null;
+      return { error: "HTTP " + response.status + " " + text.replace(/\s+/g, " ").slice(0, 160) };
     }
     const batch = await response.json();
-    if (!Array.isArray(batch)) return null;
+    if (!Array.isArray(batch)) return { error: "unexpected response shape" };
     rows.push(...batch as Row[]);
     if (batch.length < PAGE_SIZE) break;
   }
@@ -169,19 +168,19 @@ async function handle(request: Request): Promise<Response> {
       "/rest/v1/profiles?select=id,full_name,plan,subscription_status,trial_ends_at,onboarding_completed&order=id"),
     fetchAllRows(supabaseUrl, serviceKey, "/rest/v1/Reviewlinks?select=id,user_id&order=id"),
     fetchAllRows(supabaseUrl, serviceKey, "/rest/v1/Feedback?select=id,user_id,rating,created_at&order=id"),
-    fetchAllRows(supabaseUrl, serviceKey, "/rest/v1/payment_events?select=id&order=id"),
+    fetchAllRows(supabaseUrl, serviceKey, "/rest/v1/payment_events?select=id&order=id", true),
   ]);
 
-  const failed = [
+  const sources: Array<[string, FetchResult | Row[] | null]> = [
     ["auth users", authUsers], ["profiles", profiles], ["Reviewlinks", businesses],
     ["Feedback", feedback], ["payment_events", payments],
-  ].filter((pair) => !pair[1]).map((pair) => pair[0]);
-  if (failed.length) {
-    console.error("admin-stats could not load:", failed.join(", "));
-    return json({ error: "Statistics could not be loaded", reason: "Could not read: " + failed.join(", ") }, 500, origin);
-  }
-  if (!authUsers || !profiles || !businesses || !feedback || !payments) {
-    return json({ error: "Statistics could not be loaded" }, 500, origin);
+  ];
+  const failures = sources.filter(([, value]) => !value || (!Array.isArray(value) && "error" in value))
+    .map(([name, value]) => name + (value && !Array.isArray(value) && "error" in value ? " (" + value.error + ")" : ""));
+  if (failures.length || !authUsers || !profiles || !businesses || !feedback || !payments ||
+      "error" in profiles || "error" in businesses || "error" in feedback || "error" in payments) {
+    console.error("admin-stats could not load:", failures.join("; "));
+    return json({ error: "Statistics could not be loaded", reason: "Could not read: " + failures.join("; ") }, 500, origin);
   }
 
   const now = Date.now();
