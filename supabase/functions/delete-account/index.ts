@@ -16,6 +16,7 @@ function json(body: unknown, status: number, origin: string | null): Response {
     "Vary": "Origin",
   };
   if (origin) headers["Access-Control-Allow-Origin"] = origin;
+  if (status === 204) return new Response(null, { status, headers });
   return new Response(JSON.stringify(body), { status, headers });
 }
 
