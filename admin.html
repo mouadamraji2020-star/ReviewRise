@@ -77,6 +77,24 @@
   .note { margin-top: 12px; font-size: 13px; }
   .toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
   .toolbar button { border: 0; border-radius: 10px; padding: 9px 16px; background: #10284d; color: #fff; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+  .row-btn { border: 1px solid #d5e2f2; border-radius: 9px; padding: 6px 12px; background: #fff; color: #1d4ed8; font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; }
+  .row-btn:hover { background: #eaf2ff; }
+  .notice { margin: 0 0 14px; padding: 12px 14px; border-radius: 12px; font-size: 14px; font-weight: 600; line-height: 1.5; }
+  .notice.ok { background: #e6f7ee; color: #0f7b45; }
+  .notice.bad { background: #fdecec; color: #b42318; }
+  .modal { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; padding: 20px; background: rgba(15, 23, 42, 0.5); z-index: 50; }
+  .modal.open { display: flex; }
+  .modal-box { width: min(440px, 100%); max-height: 100%; overflow: auto; padding: 24px; border-radius: 20px; background: #fff; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.2); }
+  .modal-box h3 { margin: 0 0 6px; font-size: 20px; }
+  .modal-box label { display: block; margin: 16px 0 6px; font-size: 13px; font-weight: 700; color: #314158; }
+  .choice { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .choice button { padding: 11px 8px; border: 1px solid #d5e2f2; border-radius: 11px; background: #fff; color: #314158; font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; }
+  .choice button.selected { background: #10284d; border-color: #10284d; color: #fff; }
+  .modal-actions { display: flex; gap: 10px; margin-top: 22px; }
+  .modal-actions button { flex: 1; padding: 12px; border: 0; border-radius: 11px; font: inherit; font-size: 14px; font-weight: 800; cursor: pointer; }
+  .modal-actions .primary { background: #1d4ed8; color: #fff; }
+  .modal-actions .ghost { background: #eef4ff; color: #1d4ed8; }
+  .modal-actions button:disabled { opacity: 0.6; cursor: default; }
   #adminApp[hidden], #adminDenied[hidden], #adminError[hidden] { display: none !important; }
   @media (max-width: 700px) {
     .top { align-items: flex-start; flex-direction: column; }
@@ -116,6 +134,7 @@
           <div><h1>Admin</h1><p id="adminUpdated">Loading…</p></div>
           <button type="button" id="adminRefresh">Refresh</button>
         </div>
+        <p class="notice" id="adminNotice" hidden></p>
         <h2>Users</h2>
         <div class="metrics wide" id="metricsUsers"></div>
       </section>
@@ -143,13 +162,35 @@
           <table>
             <thead><tr>
               <th>Email</th><th>Name</th><th>Plan</th><th>Signed up</th><th>Last login</th>
-              <th>Onboarded</th><th>Businesses</th><th>Feedback</th>
+              <th>Onboarded</th><th>Businesses</th><th>Feedback</th><th>Action</th>
             </tr></thead>
             <tbody id="usersBody"></tbody>
           </table>
         </div>
         <p class="note">Website visitors who did not sign up are not tracked yet. That needs a separate analytics tool.</p>
       </section>
+    </div>
+    <div class="modal" id="planModal" role="dialog" aria-modal="true" aria-labelledby="planModalTitle">
+      <div class="modal-box">
+        <h3 id="planModalTitle">Activate plan</h3>
+        <p id="planModalEmail"></p>
+        <label>Plan</label>
+        <div class="choice" id="planChoice">
+          <button type="button" data-value="pro" class="selected">Pro</button>
+          <button type="button" data-value="business">Business</button>
+        </div>
+        <label>Billing period</label>
+        <div class="choice" id="cycleChoice">
+          <button type="button" data-value="monthly" class="selected">Monthly</button>
+          <button type="button" data-value="yearly">Yearly</button>
+        </div>
+        <p class="note" id="planModalHint"></p>
+        <p class="notice bad" id="planModalError" hidden></p>
+        <div class="modal-actions">
+          <button type="button" class="ghost" id="planCancel">Cancel</button>
+          <button type="button" class="primary" id="planConfirm">Activate</button>
+        </div>
+      </div>
     </div>
   </main>
   <script>
@@ -267,6 +308,14 @@
         row.appendChild(text(user.onboarding_completed ? "Yes" : "No"));
         row.appendChild(text(String(user.businesses)));
         row.appendChild(text(String(user.feedback)));
+        var actionCell = document.createElement("td");
+        var activate = document.createElement("button");
+        activate.type = "button";
+        activate.className = "row-btn";
+        activate.textContent = "Activate plan";
+        activate.addEventListener("click", function () { openPlanModal(user.email); });
+        actionCell.appendChild(activate);
+        row.appendChild(actionCell);
         body.appendChild(row);
       });
     }
@@ -327,6 +376,113 @@
       }
       return { data: await response.json() };
     }
+
+    var planModalEmail = "";
+    var planModalBusy = false;
+
+    function selectedChoice(id) {
+      var chosen = document.querySelector("#" + id + " button.selected");
+      return chosen ? chosen.getAttribute("data-value") : "";
+    }
+
+    function updatePlanHint() {
+      var plan = selectedChoice("planChoice") === "business" ? "Business" : "Pro";
+      var yearly = selectedChoice("cycleChoice") === "yearly";
+      document.getElementById("planModalHint").textContent =
+        plan + " will be active for " + (yearly ? "1 year" : "1 month") +
+        " from today. If they are already on this plan, the time is added to their current end date.";
+    }
+
+    function openPlanModal(email) {
+      planModalEmail = email;
+      document.getElementById("planModalEmail").textContent =
+        "Activate a paid plan for " + email + ". Only do this after their payment has arrived.";
+      document.getElementById("planModalError").hidden = true;
+      updatePlanHint();
+      document.getElementById("planModal").classList.add("open");
+    }
+
+    function closePlanModal() {
+      if (planModalBusy) return;
+      document.getElementById("planModal").classList.remove("open");
+    }
+
+    function showAdminNotice(text, ok) {
+      var box = document.getElementById("adminNotice");
+      box.textContent = text;
+      box.className = "notice " + (ok ? "ok" : "bad");
+      box.hidden = false;
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    ["planChoice", "cycleChoice"].forEach(function (id) {
+      document.getElementById(id).addEventListener("click", function (event) {
+        var button = event.target.closest("button");
+        if (!button) return;
+        document.querySelectorAll("#" + id + " button").forEach(function (item) {
+          item.classList.toggle("selected", item === button);
+        });
+        updatePlanHint();
+      });
+    });
+    document.getElementById("planCancel").addEventListener("click", closePlanModal);
+    document.getElementById("planModal").addEventListener("click", function (event) {
+      if (event.target === this) closePlanModal();
+    });
+
+    document.getElementById("planConfirm").addEventListener("click", async function () {
+      if (planModalBusy) return;
+      var token = localStorage.getItem("reviewrise_token");
+      var errorBox = document.getElementById("planModalError");
+      var button = this;
+      errorBox.hidden = true;
+      if (!token) {
+        errorBox.textContent = "Please log in again.";
+        errorBox.hidden = false;
+        return;
+      }
+      planModalBusy = true;
+      button.disabled = true;
+      button.textContent = "Activating...";
+      try {
+        var response = await fetch(SUPABASE_URL + "/functions/v1/admin-set-plan", {
+          method: "POST",
+          headers: {
+            apikey: SUPABASE_KEY,
+            Authorization: "Bearer " + token,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            email: planModalEmail,
+            plan: selectedChoice("planChoice"),
+            billing_cycle: selectedChoice("cycleChoice")
+          })
+        });
+        var data = null;
+        try { data = await response.json(); } catch (parseError) { data = null; }
+        if (!response.ok || !data || data.ok !== true) {
+          var message = data && typeof data.reason === "string" ? data.reason
+            : response.status === 401 || response.status === 403 ? "You are not allowed to do this. Refresh the page and log in again."
+            : "The plan could not be activated. Please try again.";
+          errorBox.textContent = message.slice(0, 400);
+          errorBox.hidden = false;
+          return;
+        }
+        planModalBusy = false;
+        document.getElementById("planModal").classList.remove("open");
+        var planName = data.plan === "business" ? "Business" : "Pro";
+        showAdminNotice(planName + " (" + data.billing_cycle + ") is now active for " + data.email +
+          " until " + formatDate(data.current_period_end, false) + ".", true);
+        showAdmin().catch(function () {});
+      } catch (error) {
+        errorBox.textContent = "Could not reach ReviewRise. Check your connection and try again.";
+        errorBox.hidden = false;
+      } finally {
+        planModalBusy = false;
+        button.disabled = false;
+        button.textContent = "Activate";
+      }
+    });
 
     async function showAdmin() {
       var token = localStorage.getItem("reviewrise_token");
