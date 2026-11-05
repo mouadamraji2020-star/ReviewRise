@@ -137,6 +137,19 @@ function lastDays(days: number, now: number): string[] {
   return keys;
 }
 
+async function sha256(text: string): Promise<Uint8Array> {
+  return new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text)));
+}
+
+// Compares two passcodes without leaking how many leading characters matched.
+async function passcodeMatches(given: string, expected: string): Promise<boolean> {
+  const a = await sha256(given);
+  const b = await sha256(expected);
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a[i] ^ b[i];
+  return diff === 0;
+}
+
 async function handle(request: Request): Promise<Response> {
   const origin = requestOrigin(request);
 
@@ -153,6 +166,8 @@ async function handle(request: Request): Promise<Response> {
   if (!anonKey) missing.push("SUPABASE_ANON_KEY");
   if (!serviceKey) missing.push("SUPABASE_SERVICE_ROLE_KEY");
   if (!adminIds.length) missing.push("ADMIN_USER_IDS (missing or not a valid user id)");
+  const passcode = Deno.env.get("ADMIN_PASSCODE") || "";
+  if (passcode.length < 10) missing.push("ADMIN_PASSCODE (at least 10 characters)");
   if (missing.length || !supabaseUrl || !anonKey || !serviceKey) {
     console.error("admin-stats not configured:", missing.join(", "));
     return json({ error: "Admin statistics are not configured", reason: "Missing: " + missing.join(", ") }, 500, origin);
@@ -161,6 +176,21 @@ async function handle(request: Request): Promise<Response> {
   const userId = await authenticatedUserId(supabaseUrl, anonKey, serviceKey, request);
   if (!userId) return json({ error: "Unauthorized" }, 401, origin);
   if (!adminIds.includes(userId.toLowerCase())) return json({ error: "Forbidden" }, 403, origin);
+
+  // Second lock: the owner's passcode, checked on the server for every request.
+  let given = "";
+  try {
+    const body = await request.json();
+    if (body && typeof body.passcode === "string") given = body.passcode.slice(0, 200);
+  } catch {
+    given = "";
+  }
+  if (!given) return json({ error: "Passcode required", reason: "passcode_required" }, 403, origin);
+  if (!(await passcodeMatches(given, passcode))) {
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    console.warn("admin-stats: wrong passcode for admin", userId);
+    return json({ error: "Incorrect passcode", reason: "passcode_invalid" }, 403, origin);
+  }
 
   const [authUsers, profiles, businesses, feedback, payments] = await Promise.all([
     listAuthUsers(supabaseUrl, serviceKey),

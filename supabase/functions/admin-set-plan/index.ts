@@ -102,6 +102,19 @@ function addMonths(from: Date, months: number): Date {
   return result;
 }
 
+async function sha256(text: string): Promise<Uint8Array> {
+  return new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text)));
+}
+
+// Compares two passcodes without leaking how many leading characters matched.
+async function passcodeMatches(given: string, expected: string): Promise<boolean> {
+  const a = await sha256(given);
+  const b = await sha256(expected);
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a[i] ^ b[i];
+  return diff === 0;
+}
+
 async function handle(request: Request): Promise<Response> {
   const origin = requestOrigin(request);
 
@@ -118,6 +131,8 @@ async function handle(request: Request): Promise<Response> {
   if (!anonKey) missing.push("SUPABASE_ANON_KEY");
   if (!serviceKey) missing.push("SUPABASE_SERVICE_ROLE_KEY");
   if (!adminIds.length) missing.push("ADMIN_USER_IDS (missing or not a valid user id)");
+  const passcode = Deno.env.get("ADMIN_PASSCODE") || "";
+  if (passcode.length < 10) missing.push("ADMIN_PASSCODE (at least 10 characters)");
   if (missing.length || !supabaseUrl || !anonKey || !serviceKey) {
     console.error("admin-set-plan not configured:", missing.join(", "));
     return json({ error: "Not configured", reason: "Missing: " + missing.join(", ") }, 500, origin);
@@ -132,6 +147,15 @@ async function handle(request: Request): Promise<Response> {
     payload = await request.json();
   } catch {
     return json({ error: "Invalid request", reason: "The request was not valid JSON." }, 400, origin);
+  }
+
+  // Second lock: the owner's passcode, checked on the server for every request.
+  const given = typeof payload.passcode === "string" ? payload.passcode.slice(0, 200) : "";
+  if (!given) return json({ error: "Passcode required", reason: "passcode_required" }, 403, origin);
+  if (!(await passcodeMatches(given, passcode))) {
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    console.warn("admin-set-plan: wrong passcode for admin", adminId);
+    return json({ error: "Incorrect passcode", reason: "passcode_invalid" }, 403, origin);
   }
 
   const email = typeof payload.email === "string" ? payload.email.trim().toLowerCase() : "";

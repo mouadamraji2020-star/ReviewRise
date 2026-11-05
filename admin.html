@@ -77,6 +77,12 @@
   .note { margin-top: 12px; font-size: 13px; }
   .toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
   .toolbar button { border: 0; border-radius: 10px; padding: 9px 16px; background: #10284d; color: #fff; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+  .lock-input { width: 100%; margin-top: 16px; padding: 13px 14px; border: 1px solid #d5e2f2; border-radius: 12px; font: inherit; font-size: 16px; box-sizing: border-box; }
+  .lock-input:focus { outline: 2px solid #3ec6ff; outline-offset: 1px; }
+  .lock-btn { width: 100%; margin-top: 12px; padding: 13px; border: 0; border-radius: 12px; background: #1d4ed8; color: #fff; font: inherit; font-size: 15px; font-weight: 800; cursor: pointer; }
+  .lock-btn:disabled { opacity: 0.6; cursor: default; }
+  .toolbar .toolbar-actions { display: flex; gap: 8px; }
+  .toolbar button.quiet { background: #eef4ff; color: #1d4ed8; }
   .row-btn { border: 1px solid #d5e2f2; border-radius: 9px; padding: 6px 12px; background: #fff; color: #1d4ed8; font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; }
   .row-btn:hover { background: #eaf2ff; }
   .notice { margin: 0 0 14px; padding: 12px 14px; border-radius: 12px; font-size: 14px; font-weight: 600; line-height: 1.5; }
@@ -95,7 +101,7 @@
   .modal-actions .primary { background: #1d4ed8; color: #fff; }
   .modal-actions .ghost { background: #eef4ff; color: #1d4ed8; }
   .modal-actions button:disabled { opacity: 0.6; cursor: default; }
-  #adminApp[hidden], #adminDenied[hidden], #adminError[hidden] { display: none !important; }
+  #adminApp[hidden], #adminDenied[hidden], #adminError[hidden], #adminLock[hidden] { display: none !important; }
   @media (max-width: 700px) {
     .top { align-items: flex-start; flex-direction: column; }
     .panel { padding: 22px 16px; }
@@ -125,6 +131,15 @@
       <p id="adminDeniedText">This page is only available to an approved ReviewRise administrator.</p>
       <p class="note"><a href="dashboard.html">Go to the login page</a> to switch accounts.</p>
     </section>
+    <section class="panel" id="adminLock" hidden>
+      <h1>Admin</h1>
+      <p>Enter your admin passcode to continue.</p>
+      <form id="lockForm" autocomplete="off">
+        <input type="password" id="lockInput" class="lock-input" placeholder="Admin passcode" autocomplete="off" maxlength="200" required>
+        <button type="submit" class="lock-btn" id="lockSubmit">Unlock</button>
+      </form>
+      <p class="notice bad" id="lockError" hidden></p>
+    </section>
     <section class="panel" id="adminError" hidden>
       <h1>Statistics unavailable</h1>
       <p id="adminErrorText">The statistics could not be loaded. Please try again.</p>
@@ -133,7 +148,10 @@
       <section class="panel">
         <div class="toolbar">
           <div><h1>Admin</h1><p id="adminUpdated">Loading…</p></div>
-          <button type="button" id="adminRefresh">Refresh</button>
+          <div class="toolbar-actions">
+            <button type="button" class="quiet" id="adminLockBtn">Lock</button>
+            <button type="button" id="adminRefresh">Refresh</button>
+          </div>
         </div>
         <p class="notice" id="adminNotice" hidden></p>
         <h2>Users</h2>
@@ -224,6 +242,7 @@
         : "You are not signed in, or your session has expired. Log in with the owner account, then open this page again.";
       document.getElementById("adminChecking").hidden = true;
       document.getElementById("adminApp").hidden = true;
+      document.getElementById("adminLock").hidden = true;
       document.getElementById("adminDenied").hidden = false;
     }
 
@@ -231,6 +250,7 @@
       document.getElementById("adminChecking").hidden = true;
       document.getElementById("adminApp").hidden = true;
       document.getElementById("adminDenied").hidden = true;
+      document.getElementById("adminLock").hidden = true;
       document.getElementById("adminErrorText").textContent = text;
       document.getElementById("adminError").hidden = false;
     }
@@ -360,6 +380,22 @@
       renderUsers(data.users || []);
     }
 
+    var adminPasscode = "";
+
+    function showLock(message) {
+      var error = document.getElementById("lockError");
+      document.getElementById("adminChecking").hidden = true;
+      document.getElementById("adminApp").hidden = true;
+      document.getElementById("adminDenied").hidden = true;
+      document.getElementById("adminError").hidden = true;
+      document.getElementById("adminLock").hidden = false;
+      error.hidden = !message;
+      error.textContent = message || "";
+      var input = document.getElementById("lockInput");
+      input.value = "";
+      input.focus();
+    }
+
     async function loadStats(token) {
       var response = await fetch(SUPABASE_URL + "/functions/v1/admin-stats", {
         method: "POST",
@@ -368,9 +404,16 @@
           Authorization: "Bearer " + token,
           "Content-Type": "application/json"
         },
-        body: "{}"
+        body: JSON.stringify({ passcode: adminPasscode })
       });
-      if (response.status === 401 || response.status === 403) return { denied: true };
+      if (response.status === 401 || response.status === 403) {
+        var answer = null;
+        try { answer = await response.json(); } catch (parseError) { answer = null; }
+        if (answer && (answer.reason === "passcode_required" || answer.reason === "passcode_invalid")) {
+          return { locked: true, invalid: answer.reason === "passcode_invalid" };
+        }
+        return { denied: true };
+      }
       if (!response.ok) {
         var reason = "";
         try {
@@ -462,11 +505,19 @@
           body: JSON.stringify({
             email: planModalEmail,
             plan: selectedChoice("planChoice"),
-            billing_cycle: selectedChoice("cycleChoice")
+            billing_cycle: selectedChoice("cycleChoice"),
+            passcode: adminPasscode
           })
         });
         var data = null;
         try { data = await response.json(); } catch (parseError) { data = null; }
+        if (data && (data.reason === "passcode_required" || data.reason === "passcode_invalid")) {
+          planModalBusy = false;
+          document.getElementById("planModal").classList.remove("open");
+          adminPasscode = "";
+          showLock("Please enter your admin passcode again.");
+          return;
+        }
         if (!response.ok || !data || data.ok !== true) {
           var message = data && typeof data.reason === "string" ? data.reason
             : response.status === 401 || response.status === 403 ? "You are not allowed to do this. Refresh the page and log in again."
@@ -498,6 +549,11 @@
         showDenied();
         return;
       }
+      if (result.locked) {
+        adminPasscode = "";
+        showLock(result.invalid ? "Incorrect passcode. Please try again." : "");
+        return;
+      }
       if (result.error || !result.data) {
         showError("The statistics could not be loaded." + (result.reason ? " " + result.reason + "." : " Please try again.") + (result.status ? " (Error " + result.status + ")" : ""));
         return;
@@ -505,6 +561,7 @@
       document.getElementById("adminChecking").hidden = true;
       document.getElementById("adminDenied").hidden = true;
       document.getElementById("adminError").hidden = true;
+      document.getElementById("adminLock").hidden = true;
       document.getElementById("adminApp").hidden = false;
       renderStats(result.data);
     }
@@ -548,6 +605,27 @@
       adminSignedInEmail = user && typeof user.email === "string" ? user.email : "";
       return user && typeof user.id === "string" ? user.id : "";
     }
+
+    document.getElementById("lockForm").addEventListener("submit", function (event) {
+      event.preventDefault();
+      var input = document.getElementById("lockInput");
+      var submit = document.getElementById("lockSubmit");
+      adminPasscode = input.value;
+      input.value = "";
+      submit.disabled = true;
+      showAdmin().catch(function () {
+        reviewRiseReportError({ type: "admin-unlock", message: "Admin statistics could not be loaded." });
+        showError("The statistics could not be loaded. Please try again.");
+      }).then(function () {
+        submit.disabled = false;
+      });
+    });
+
+    document.getElementById("adminLockBtn").addEventListener("click", function () {
+      adminPasscode = "";
+      document.getElementById("adminNotice").hidden = true;
+      showLock("");
+    });
 
     document.getElementById("adminRefresh").addEventListener("click", function () {
       showAdmin().catch(function () {
