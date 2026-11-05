@@ -1769,6 +1769,8 @@ async function getValidAccessToken() {
         var row = Array.isArray(payload) ? payload[0] : payload;
         if (!row || typeof row !== "object") return { access: "unverified", state: null };
         var state = normalizeSubscriptionState(row);
+        window.__rrTrialState = state;
+        if (window.ReviewRiseUpgradeCard) window.ReviewRiseUpgradeCard.update(state);
         return { access: state.hasAccess ? "ok" : "locked", state: state };
       } catch (error) {
         return { access: "unverified", state: null };
@@ -1911,5 +1913,6 @@ async function getValidAccessToken() {
 
   </script>
 
+<script src="assets/upgrade-card.js"></script>
 </body>
 </html>
