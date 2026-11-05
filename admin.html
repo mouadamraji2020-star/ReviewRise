@@ -122,7 +122,8 @@
     </section>
     <section class="panel" id="adminDenied" hidden>
       <h1>Access denied</h1>
-      <p>This page is only available to an approved ReviewRise administrator.</p>
+      <p id="adminDeniedText">This page is only available to an approved ReviewRise administrator.</p>
+      <p class="note"><a href="dashboard.html">Go to the login page</a> to switch accounts.</p>
     </section>
     <section class="panel" id="adminError" hidden>
       <h1>Statistics unavailable</h1>
@@ -214,7 +215,13 @@
       return entry;
     }
 
+    var adminSignedInEmail = "";
+
     function showDenied() {
+      var detail = document.getElementById("adminDeniedText");
+      detail.textContent = adminSignedInEmail
+        ? "You are signed in as " + adminSignedInEmail + ", which is not an approved ReviewRise administrator. Log in with the owner account to open this page."
+        : "You are not signed in, or your session has expired. Log in with the owner account, then open this page again.";
       document.getElementById("adminChecking").hidden = true;
       document.getElementById("adminApp").hidden = true;
       document.getElementById("adminDenied").hidden = false;
@@ -538,6 +545,7 @@
           }
         }
       }
+      adminSignedInEmail = user && typeof user.email === "string" ? user.email : "";
       return user && typeof user.id === "string" ? user.id : "";
     }
 
