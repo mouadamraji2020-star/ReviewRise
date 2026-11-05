@@ -6,6 +6,7 @@
 (function () {
   var STYLE_ID = "rr-upgrade-style";
   var CARD_ID = "rrUpgradeCard";
+  var BAR_ID = "rrUpgradeBar";
   var PLANS_URL = "settings.html#subscription";
   var WHATSAPP_NUMBER = "212766315853"; // ReviewRise owner, international format without "+"
 
@@ -55,7 +56,17 @@
     ".rr-upgrade-plans { display: block; margin-top: 10px; text-align: center; font-size: 12px; font-weight: 700; color: #9cc4ff; text-decoration: none; }",
     ".rr-upgrade-plans:hover { color: #fff; text-decoration: underline; }",
     ".sidebar-collapsed .rr-upgrade { display: none; }",
-    "@media (max-width: 800px) { .sidebar-collapsed .rr-upgrade { display: block; } }"
+    "@media (max-width: 800px) { .sidebar-collapsed .rr-upgrade { display: block; } .sidebar.open { overflow-y: auto; } }",
+    ".rr-upgrade-bar { display: none; }",
+    "@media (max-width: 800px) {",
+    "  .rr-upgrade-bar:not([hidden]) { display: flex; align-items: center; justify-content: space-between; gap: 10px;",
+    "    margin: 12px 16px 0; padding: 10px 12px; border-radius: 14px; box-sizing: border-box;",
+    "    background: linear-gradient(135deg, #10284d, #1d4ed8); color: #fff; box-shadow: 0 8px 20px rgba(16, 40, 80, 0.18); }",
+    "  .rr-bar-text { min-width: 0; font-size: 13px; line-height: 1.3; }",
+    "  .rr-bar-text strong { display: block; font-weight: 800; }",
+    "  .rr-bar-text span { color: #cfe0ff; font-weight: 600; }",
+    "  .rr-bar-btn { flex: none; padding: 9px 14px; border-radius: 10px; background: #fff; color: #10284d; font-size: 13px; font-weight: 800; text-decoration: none; white-space: nowrap; }",
+    "}"
   ].join("\n");
 
   function ensureStyle() {
@@ -122,6 +133,44 @@
     return card;
   }
 
+  // On phones the sidebar is hidden behind the menu button, so a slim banner under the top bar shows the same offer.
+  function ensureBar() {
+    var existing = document.getElementById(BAR_ID);
+    if (existing) return existing;
+
+    var header = document.querySelector(".app-workspace .top-navbar") || document.querySelector(".top-navbar");
+    if (!header) return null;
+
+    var bar = document.createElement("div");
+    bar.className = "rr-upgrade-bar";
+    bar.id = BAR_ID;
+    bar.hidden = true;
+
+    var text = document.createElement("div");
+    text.className = "rr-bar-text";
+    var title = document.createElement("strong");
+    title.textContent = "Free trial";
+    var days = document.createElement("span");
+    days.id = "rrBarDays";
+    text.appendChild(title);
+    text.appendChild(days);
+
+    var button = document.createElement("a");
+    button.className = "rr-bar-btn";
+    button.href = whatsappUrl("pro");
+    button.target = "_blank";
+    button.rel = "noopener noreferrer";
+    button.textContent = "Upgrade";
+    button.addEventListener("click", function () {
+      button.href = whatsappUrl("pro");
+    });
+
+    bar.appendChild(text);
+    bar.appendChild(button);
+    header.insertAdjacentElement("afterend", bar);
+    return bar;
+  }
+
   function daysText(days) {
     if (typeof days !== "number" || !isFinite(days)) return "Trial active";
     if (days <= 0) return "Ends today";
@@ -134,10 +183,15 @@
       var onTrial = !!state && state.plan === "trial" && state.hasAccess === true;
       ensureStyle();
       var card = ensureCard();
-      if (!card) return;
-      card.hidden = !onTrial;
-      if (onTrial) {
-        document.getElementById("rrUpgradeDays").textContent = daysText(state.trialDaysRemaining);
+      var bar = ensureBar();
+      var label = onTrial ? daysText(state.trialDaysRemaining) : "";
+      if (card) {
+        card.hidden = !onTrial;
+        if (onTrial) document.getElementById("rrUpgradeDays").textContent = label;
+      }
+      if (bar) {
+        bar.hidden = !onTrial;
+        if (onTrial) document.getElementById("rrBarDays").textContent = label;
       }
     } catch (error) {
       // The card is a convenience; never let it break the page.
