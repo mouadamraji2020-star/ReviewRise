@@ -362,17 +362,37 @@ input:focus, select:focus {
   cursor: pointer;
 }
 
-.preview-stage { display: flex; gap: 8px; align-items: flex-end; justify-content: center; min-height: 96px; }
-.mini-card, .mini-qr {
-  width: 92px;
-  border-radius: 10px;
+.preview-stage { display: flex; align-items: center; justify-content: center; min-height: 96px; }
+.mini-stand {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 14px;
   background: #fff;
-  border: 1px solid #e7eef6;
-  box-shadow: 0 8px 16px rgba(16, 40, 80, 0.06);
-  text-align: center;
-  padding: 8px 6px;
+  border: 1px solid #e3ecf7;
+  box-shadow: 0 10px 24px rgba(16, 40, 80, 0.08);
 }
-
+.mini-info { min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+.mini-info .mini-logo { width: 38px; height: 38px; margin: 0; border-radius: 11px; font-size: 16px; }
+.mini-info strong {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #10284d;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+.mini-info .stars { font-size: 13px; letter-spacing: 2px; line-height: 1; }
+.mini-scan { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 84px; text-align: center; }
+.mini-code { padding: 6px; border-radius: 10px; background: #fff; border: 1px solid #e3ecf7; line-height: 0; }
+.mini-code svg { width: 56px; height: 56px; display: block; }
+.mini-scan span { color: #6d7c92; font-size: 9px; font-weight: 700; line-height: 1.25; }
 .mini-logo, .summary-logo {
   width: 28px;
   height: 28px;
@@ -388,9 +408,7 @@ input:focus, select:focus {
 }
 
 .mini-logo img, .summary-logo img { width: 100%; height: 100%; object-fit: cover; display: none; }
-.mini-card strong, .mini-qr strong { display: block; font-size: 9px; line-height: 1.2; }
 .stars { color: #f5b400; letter-spacing: 1px; font-size: 11px; }
-.mini-card .stars, .mini-qr .stars { font-size: 8px; }
 
 .later-btn {
   display: block;
@@ -415,7 +433,6 @@ input:focus, select:focus {
   text-align: center;
 }
 .later-note:empty { display: none; }
-.mini-qr svg { width: 42px; height: 42px; }
 
 .primary-btn, .ghost-btn {
   display: flex;
@@ -673,14 +690,16 @@ input:focus, select:focus {
                     <button type="button" id="largerPreviewBtn">See larger preview</button>
                   </div>
                   <div class="preview-stage">
-                    <div class="mini-card">
-                      <div class="mini-logo" id="miniLogo"><span id="miniInitial">R</span><img id="miniLogoImg" alt=""></div>
-                      <strong id="miniName">Your business</strong>
-                      <div class="stars">★★★★★</div>
-                    </div>
-                    <div class="mini-qr">
-                      <svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" fill="#fff"/><rect x="6" y="6" width="16" height="16"/><rect x="42" y="6" width="16" height="16"/><rect x="6" y="42" width="16" height="16"/><rect x="30" y="30" width="8" height="8"/><rect x="44" y="44" width="12" height="12"/></svg>
-                      <strong>QR ready</strong>
+                    <div class="mini-stand">
+                      <div class="mini-info">
+                        <div class="mini-logo" id="miniLogo"><span id="miniInitial">R</span><img id="miniLogoImg" alt=""></div>
+                        <strong id="miniName">Your business</strong>
+                        <div class="stars">★★★★★</div>
+                      </div>
+                      <div class="mini-scan">
+                        <div class="mini-code"><svg viewBox="0 0 21 21" shape-rendering="crispEdges" aria-hidden="true"><rect width="21" height="21" fill="#fff"/><path fill="#0c1424" d="M0 0h7v1h-7zM8 0h2v1h-2zM11 0h1v1h-1zM14 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM8 1h2v1h-2zM11 1h2v1h-2zM14 1h1v1h-1zM20 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM8 2h3v1h-3zM12 2h1v1h-1zM14 2h1v1h-1zM16 2h3v1h-3zM20 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h1v1h-1zM12 3h1v1h-1zM14 3h1v1h-1zM16 3h3v1h-3zM20 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM9 4h1v1h-1zM11 4h2v1h-2zM14 4h1v1h-1zM16 4h3v1h-3zM20 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h2v1h-2zM11 5h1v1h-1zM14 5h1v1h-1zM20 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h7v1h-7zM9 7h1v1h-1zM11 7h2v1h-2zM0 8h1v1h-1zM2 8h2v1h-2zM5 8h3v1h-3zM10 8h1v1h-1zM15 8h1v1h-1zM17 8h2v1h-2zM20 8h1v1h-1zM1 9h1v1h-1zM7 9h1v1h-1zM11 9h1v1h-1zM14 9h1v1h-1zM16 9h1v1h-1zM0 10h2v1h-2zM3 10h6v1h-6zM10 10h3v1h-3zM14 10h2v1h-2zM20 10h1v1h-1zM0 11h2v1h-2zM4 11h2v1h-2zM7 11h2v1h-2zM11 11h4v1h-4zM0 12h1v1h-1zM5 12h4v1h-4zM10 12h11v1h-11zM8 13h5v1h-5zM16 13h2v1h-2zM20 13h1v1h-1zM0 14h7v1h-7zM8 14h5v1h-5zM14 14h1v1h-1zM16 14h1v1h-1zM19 14h1v1h-1zM0 15h1v1h-1zM6 15h1v1h-1zM8 15h5v1h-5zM16 15h1v1h-1zM18 15h2v1h-2zM0 16h1v1h-1zM2 16h3v1h-3zM6 16h1v1h-1zM9 16h1v1h-1zM11 16h6v1h-6zM0 17h1v1h-1zM2 17h3v1h-3zM6 17h1v1h-1zM8 17h3v1h-3zM14 17h2v1h-2zM0 18h1v1h-1zM2 18h3v1h-3zM6 18h1v1h-1zM9 18h1v1h-1zM11 18h5v1h-5zM18 18h1v1h-1zM0 19h1v1h-1zM6 19h1v1h-1zM9 19h5v1h-5zM17 19h1v1h-1zM20 19h1v1h-1zM0 20h7v1h-7zM12 20h2v1h-2zM15 20h1v1h-1zM18 20h2v1h-2z"/></svg></div>
+                        <span>Scan to leave us a review</span>
+                      </div>
                     </div>
                   </div>
                 </div>
