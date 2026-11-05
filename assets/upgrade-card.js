@@ -1,11 +1,43 @@
 // Sidebar "Upgrade to Pro" card for users on the free trial.
 // Pages call window.ReviewRiseUpgradeCard.update(state) with the subscription state they already
 // loaded (plan, hasAccess, trialDaysRemaining). The card is only shown for an active trial.
-// It reads no data itself and never changes a plan; it just links to the plans in Settings.
+// It never changes a plan. Upgrades are arranged by WhatsApp: the owner sends payment details and
+// activates the plan from the admin page after the payment arrives.
 (function () {
   var STYLE_ID = "rr-upgrade-style";
   var CARD_ID = "rrUpgradeCard";
   var PLANS_URL = "settings.html#subscription";
+  var WHATSAPP_NUMBER = "212766315853"; // ReviewRise owner, international format without "+"
+
+  // The signed-in user's own email, read from their own access token, so the owner can find the account.
+  function accountEmail() {
+    try {
+      var token = localStorage.getItem("reviewrise_token") || "";
+      var part = token.split(".")[1];
+      if (!part) return "";
+      var json = atob(part.replace(/-/g, "+").replace(/_/g, "/"));
+      var email = JSON.parse(json).email;
+      return typeof email === "string" ? email : "";
+    } catch (error) {
+      return "";
+    }
+  }
+
+  function whatsappUrl(plan, cycle) {
+    var planName = plan === "business" ? "Business" : "Pro";
+    var message = "Hello ReviewRise, I'd like to upgrade to the " + planName + " plan" +
+      (cycle === "yearly" || cycle === "monthly" ? " (" + cycle + " billing)" : "") + ".";
+    var email = accountEmail();
+    if (email) message += " My account email: " + email + ".";
+    message += " Please send me the payment details.";
+    return "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(message);
+  }
+
+  function openWhatsApp(plan, cycle) {
+    var url = whatsappUrl(plan, cycle);
+    var opened = window.open(url, "_blank", "noopener,noreferrer");
+    if (!opened) window.location.href = url;
+  }
 
   var css = [
     ".rr-upgrade { margin-top: auto; padding: 16px 14px; border-radius: 16px;",
@@ -20,6 +52,8 @@
     "  background: #fff; color: #10284d; font-size: 13px; font-weight: 800; text-decoration: none; }",
     ".rr-upgrade-btn:hover { background: #eaf2ff; }",
     ".rr-upgrade-btn:focus-visible { outline: 2px solid #3ec6ff; outline-offset: 2px; }",
+    ".rr-upgrade-plans { display: block; margin-top: 10px; text-align: center; font-size: 12px; font-weight: 700; color: #9cc4ff; text-decoration: none; }",
+    ".rr-upgrade-plans:hover { color: #fff; text-decoration: underline; }",
     ".sidebar-collapsed .rr-upgrade { display: none; }",
     "@media (max-width: 800px) { .sidebar-collapsed .rr-upgrade { display: block; } }"
   ].join("\n");
@@ -58,16 +92,24 @@
 
     var button = document.createElement("a");
     button.className = "rr-upgrade-btn";
-    button.href = PLANS_URL;
+    button.href = whatsappUrl("pro");
+    button.target = "_blank";
+    button.rel = "noopener noreferrer";
     button.textContent = "Upgrade to Pro";
-    button.addEventListener("click", function (event) {
+    button.addEventListener("click", function () {
+      // Rebuild the link on click so it always carries the current account email.
+      button.href = whatsappUrl("pro");
+    });
+
+    var plans = document.createElement("a");
+    plans.className = "rr-upgrade-plans";
+    plans.href = PLANS_URL;
+    plans.textContent = "Compare plans";
+    plans.addEventListener("click", function (event) {
       // On the Settings page the link points at the page we are already on, so open the tab directly.
       if (/settings\.html$/i.test(window.location.pathname) && typeof window.showSection === "function") {
         event.preventDefault();
         window.showSection("subscription");
-        if (window.history && window.history.replaceState) {
-          window.history.replaceState(null, "", "#subscription");
-        }
       }
     });
 
@@ -75,6 +117,7 @@
     card.appendChild(days);
     card.appendChild(text);
     card.appendChild(button);
+    card.appendChild(plans);
     sidebar.appendChild(card);
     return card;
   }
@@ -102,6 +145,7 @@
   }
 
   window.ReviewRiseUpgradeCard = { update: update };
+  window.ReviewRiseWhatsApp = { open: openWhatsApp, url: whatsappUrl };
 
   // A page may have received the subscription state before this file finished loading.
   if (window.__rrTrialState) update(window.__rrTrialState);

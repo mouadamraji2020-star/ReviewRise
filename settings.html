@@ -700,6 +700,7 @@ select:focus {
   line-height: 1.45;
 }
 #subscriptionUsageWarning[hidden] { display: none !important; }
+.plan-pay-note { margin: 14px 0 0; color: #5c6b82; font-size: 13px; line-height: 1.55; }
 .plan-billing {
   display: inline-flex;
   gap: 4px;
@@ -1437,6 +1438,7 @@ body.page-leaving { opacity: 0; }
                 <button class="btn btn-secondary" type="button" id="chooseBusinessBtn">Choose Business</button>
               </article>
             </div>
+            <p class="plan-pay-note">Payment is arranged on WhatsApp. Click a paid plan, send the message, and you will receive the payment details. Your plan is activated by the ReviewRise team as soon as your payment is confirmed.</p>
             <p id="subscriptionNotice" class="settings-status" role="status"></p>
           </section>
 
@@ -3219,12 +3221,27 @@ document.getElementById("startTrialBtn").addEventListener("click", function () {
     setSettingsStatus("subscriptionNotice", "Trial activation is coming soon.", "");
 });
 
+function selectedBillingCycle() {
+    var selected = document.querySelector(".plan-billing-btn.is-selected");
+    return selected && selected.getAttribute("data-billing") === "yearly" ? "yearly" : "monthly";
+}
+
+function requestPlanByWhatsApp(plan) {
+    if (!window.ReviewRiseWhatsApp) {
+        setSettingsStatus("subscriptionNotice", "We could not open WhatsApp. Please try again.", "error");
+        return;
+    }
+
+    window.ReviewRiseWhatsApp.open(plan, selectedBillingCycle());
+    setSettingsStatus("subscriptionNotice", "WhatsApp opened. Send the message and we will reply with the payment details. Your plan is activated once your payment is confirmed.", "success");
+}
+
 document.getElementById("upgradeProBtn").addEventListener("click", function () {
-    setSettingsStatus("subscriptionNotice", "Online payment setup is coming soon.", "");
+    requestPlanByWhatsApp("pro");
 });
 
 document.getElementById("chooseBusinessBtn").addEventListener("click", function () {
-    setSettingsStatus("subscriptionNotice", "Online payment setup is coming soon.", "");
+    requestPlanByWhatsApp("business");
 });
 
 loadAccountSettings();
