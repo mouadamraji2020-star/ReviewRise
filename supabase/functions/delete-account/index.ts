@@ -170,6 +170,17 @@ Deno.serve(async (request) => {
     return json({ error: "Account could not be deleted" }, 500, origin);
   }
 
+  // Remove every feedback row owned by this user, including feedback left on businesses
+  // that were deleted earlier, then any remaining rows on the user's current businesses.
+  const ownFeedback = await removeRows(
+    supabaseUrl,
+    serviceKey,
+    "/rest/v1/Feedback?user_id=eq." + encodeURIComponent(userId),
+  );
+  if (ownFeedback === "error") {
+    return json({ error: "Account could not be deleted" }, 500, origin);
+  }
+
   if (linkIds.length) {
     const feedback = await removeRows(
       supabaseUrl,

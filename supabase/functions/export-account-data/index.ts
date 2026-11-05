@@ -176,18 +176,24 @@ Deno.serve(async (request) => {
   }
 
   const linkIds = safeIds(businessResult.rows);
-  let feedbackRows: unknown[] = [];
+  // Feedback is matched by owner as well as by business, so feedback left on a business
+  // that was deleted later is still included.
+  const feedbackPaths = ["/rest/v1/Feedback?user_id=eq." + encodeURIComponent(userId) + "&select=*"];
   if (linkIds.length) {
-    const feedbackResult = await selectRows(
-      supabaseUrl,
-      serviceKey,
-      "/rest/v1/Feedback?review_link_id=in.(" + inList(linkIds) + ")&select=*",
-    );
+    feedbackPaths.push("/rest/v1/Feedback?review_link_id=in.(" + inList(linkIds) + ")&select=*");
+  }
+  const feedbackById = new Map<string, unknown>();
+  for (const path of feedbackPaths) {
+    const feedbackResult = await selectRows(supabaseUrl, serviceKey, path);
     if (!feedbackResult.rows) {
       return json({ error: "Account data could not be exported" }, 500, origin);
     }
-    feedbackRows = feedbackResult.rows;
+    for (const row of feedbackResult.rows) {
+      const id = row && typeof row === "object" ? String((row as Row).id) : "";
+      feedbackById.set(id || String(feedbackById.size), row);
+    }
   }
+  const feedbackRows = Array.from(feedbackById.values());
 
   const paymentResult = await selectRows(
     supabaseUrl,
