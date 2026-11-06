@@ -1104,11 +1104,15 @@
 
     .pricing-block { max-width: 1080px; }
 
+    .pricing-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 34px; }
+    .pricing-head .band-intro { margin: 0; max-width: 460px; font-size: 16px; font-weight: 500; letter-spacing: 0; color: var(--muted); }
+
     .plan-billing {
       display: inline-flex;
       align-items: center;
+      flex: none;
       gap: 4px;
-      margin: 0 0 22px;
+      margin: 0;
       padding: 4px;
       background: #f4f7fb;
       border: 1px solid var(--line);
@@ -1130,122 +1134,62 @@
       cursor: pointer;
     }
 
-    .plan-billing-btn.is-selected {
-      background: #10284d;
-      color: #fff;
-    }
+    .plan-billing-btn.is-selected { background: #10284d; color: #fff; box-shadow: 0 6px 14px rgba(16, 40, 77, 0.22); }
+    .plan-billing-btn:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
 
-    .plan-billing-btn:focus-visible {
-      outline: 2px solid var(--blue);
-      outline-offset: 2px;
-    }
+    .plan-save { margin-left: 8px; padding: 2px 7px; border-radius: 999px; background: #e8f2ff; color: #1d4ed8; font-size: 11px; font-weight: 700; }
+    .plan-billing-btn.is-selected .plan-save { background: rgba(255, 255, 255, 0.16); color: #fff; }
 
-    .plan-save {
-      margin-left: 8px;
-      padding: 2px 7px;
-      border-radius: 999px;
-      background: #e8f2ff;
-      color: #1d4ed8;
-      font-size: 11px;
-      font-weight: 700;
-    }
-
-    .plan-billing-btn.is-selected .plan-save {
-      background: rgba(255, 255, 255, 0.16);
-      color: #fff;
-    }
-
-    .plan-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 16px;
-      margin: 0;
-      padding: 0;
-      list-style: none;
-    }
+    .plan-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; align-items: stretch; margin: 0; padding: 0; list-style: none; }
 
     .plan-card {
       display: flex;
       flex-direction: column;
       min-width: 0;
-      padding: 22px 20px 20px;
+      padding: 26px 24px 24px;
       background: #fff;
       border: 1px solid #e6edf5;
-      border-radius: 18px;
+      border-radius: 22px;
       box-shadow: 0 10px 28px rgba(16, 32, 63, 0.05);
+      transition: box-shadow 200ms ease, transform 200ms ease;
     }
+
+    .plan-card:hover { box-shadow: 0 18px 40px rgba(16, 32, 63, 0.09); }
 
     .plan-card.is-featured {
       position: relative;
-      border-color: #2f7cf6;
-      box-shadow: 0 16px 36px rgba(47, 124, 246, 0.14);
+      border: 1.5px solid transparent;
+      background: linear-gradient(#fff, #fff) padding-box, linear-gradient(140deg, #2f7cf6, #3ec6ff) border-box;
+      box-shadow: 0 22px 48px rgba(47, 124, 246, 0.18);
     }
+
+    .plan-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 28px; margin-bottom: 8px; }
+    .plan-card h3 { margin: 0; font-size: 20px; letter-spacing: -0.3px; }
 
     .plan-badge {
-      position: absolute;
-      top: 16px;
-      right: 16px;
-      padding: 4px 8px;
+      padding: 4px 10px;
       border-radius: 999px;
-      background: #10284d;
+      background: linear-gradient(135deg, #2f7cf6, #1d4ed8);
       color: #fff;
-      font-size: 11px;
+      font-size: 10.5px;
       font-weight: 700;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.06em;
       text-transform: uppercase;
+      white-space: nowrap;
     }
 
-    .plan-card h3 {
-      margin: 0 28px 6px 0;
-      font-size: 20px;
-      letter-spacing: -0.3px;
-    }
+    .plan-desc { margin: 0 0 22px; min-height: 42px; color: var(--muted); font-size: 14.5px; line-height: 1.45; }
 
-    .plan-desc {
-      margin: 0 0 18px;
-      color: var(--muted);
-      font-size: 14.5px;
-      line-height: 1.45;
-    }
+    .plan-price { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px; margin: 0; }
+    .plan-price strong { color: #10284d; font-size: 44px; font-weight: 800; letter-spacing: -1.4px; line-height: 1; }
+    .plan-price span { color: var(--muted); font-size: 15px; font-weight: 600; }
+    .plan-note { margin: 8px 0 0; min-height: 18px; color: var(--soft); font-size: 13px; }
 
-    .plan-price {
-      display: flex;
-      align-items: baseline;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin: 0;
-    }
-
-    .plan-price strong {
-      color: #10284d;
-      font-size: 40px;
-      font-weight: 800;
-      letter-spacing: -1.2px;
-      line-height: 1;
-    }
-
-    .plan-price span {
-      color: var(--muted);
-      font-size: 15px;
-      font-weight: 600;
-    }
-
-    .plan-note {
-      margin: 8px 0 0;
-      min-height: 18px;
-      color: var(--soft);
-      font-size: 13px;
-    }
-
-    .plan-features {
-      margin: 18px 0 22px;
-      padding: 0;
-      list-style: none;
-    }
+    .plan-features { margin: 22px 0 22px; padding: 20px 0 0; border-top: 1px solid #edf1f7; list-style: none; }
 
     .plan-features li {
       position: relative;
-      padding: 6px 0 6px 16px;
+      padding: 7px 0 7px 28px;
       color: #3c4d66;
       font-size: 14px;
       line-height: 1.45;
@@ -1255,29 +1199,23 @@
       content: "";
       position: absolute;
       left: 0;
-      top: 12px;
-      width: 6px;
-      height: 6px;
+      top: 8px;
+      width: 18px;
+      height: 18px;
       border-radius: 50%;
-      background: var(--blue);
+      background: #eaf2ff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232f7cf6' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6.5 12.5 3.8 3.8 7.2-7.6'/%3E%3C/svg%3E") center / 11px no-repeat;
     }
 
-    .plan-soon {
-      display: inline-block;
-      margin-left: 6px;
-      padding: 1px 7px;
-      border-radius: 999px;
-      background: #f4f7fb;
-      color: #5d6c84;
-      font-size: 11px;
-      font-weight: 700;
-      vertical-align: 1px;
-    }
+    .plan-soon { display: inline-block; margin-left: 6px; padding: 1px 7px; border-radius: 999px; background: #f4f7fb; color: #5d6c84; font-size: 11px; font-weight: 700; vertical-align: 1px; }
 
-    .plan-card .btn {
-      width: 100%;
-      margin-top: auto;
-    }
+    .plan-more { display: none; margin: -8px 0 18px; padding: 6px 0; border: 0; background: none; color: var(--blue); font: inherit; font-size: 13.5px; font-weight: 700; text-align: left; cursor: pointer; }
+
+    .plan-card .btn { width: 100%; margin-top: auto; }
+    .plan-card.is-featured .btn { background: linear-gradient(135deg, #2f7cf6, #1d4ed8); border-color: transparent; color: #fff; box-shadow: 0 12px 26px rgba(47, 124, 246, 0.3); }
+
+    .pricing-swipe { display: none; }
+
+    .pricing-foot { margin: 22px 0 0; color: var(--soft); font-size: 13px; line-height: 1.55; text-align: center; }
 
     .pay-soon {
       width: min(420px, calc(100% - 32px));
@@ -1300,15 +1238,40 @@
       line-height: 1.5;
     }
 
-    .pay-soon .btn {
-      width: 100%;
-      height: 46px;
-    }
+    .pay-soon h3 { margin: 0 0 10px; font-size: 20px; letter-spacing: -0.3px; }
+    .pay-soon p { font-size: 15px; color: var(--muted); }
+    .pay-soon .btn { display: flex; align-items: center; justify-content: center; width: 100%; height: 46px; margin-top: 10px; text-decoration: none; }
 
     @media (max-width: 980px) {
-      .plan-grid { grid-template-columns: 1fr; }
-      .plan-card h3 { margin-right: 0; }
-      .plan-badge { position: static; align-self: flex-start; margin-bottom: 10px; }
+      .pricing-head { flex-direction: column; align-items: flex-start; gap: 18px; }
+      .plan-grid {
+        display: flex;
+        gap: 14px;
+        margin: 0 -20px;
+        padding: 6px 20px 18px;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scroll-padding: 0 20px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+      .plan-grid::-webkit-scrollbar { display: none; }
+      .plan-card { flex: 0 0 min(84%, 360px); scroll-snap-align: center; }
+      .pricing-swipe { display: block; margin: 2px 0 0; color: var(--soft); font-size: 12.5px; text-align: center; }
+      .plan-desc { min-height: 0; margin-bottom: 16px; }
+    }
+
+    @media (max-width: 640px) {
+      .plan-grid { margin: 0 -16px; padding: 6px 16px 18px; scroll-padding: 0 16px; }
+      .plan-card { padding: 22px 18px 20px; border-radius: 20px; }
+      .plan-price strong { font-size: 38px; }
+      .plan-features { margin: 18px 0 14px; padding-top: 14px; }
+      .plan-features li { padding: 5px 0 5px 28px; }
+      .plan-features li::before { top: 6px; }
+      .plan-card:not(.is-open) .plan-features li:nth-child(n+5) { display: none; }
+      .plan-more { display: block; }
+      .plan-billing { align-self: stretch; }
+      .plan-billing-btn { flex: 1; justify-content: center; }
     }
 
     .site-footer {
@@ -1884,23 +1847,27 @@
 
     <section class="band" id="pricing">
       <div class="wrap pricing-block">
-        <p class="eyebrow">PRICING</p>
-        <h2>Simple pricing for growing businesses</h2>
-        <p class="band-intro">Upgrade when you're ready.</p>
-        <div class="plan-billing" role="group" aria-label="Billing period">
-          <button class="plan-billing-btn is-selected" type="button" data-period="monthly" aria-pressed="true">Monthly</button>
-          <button class="plan-billing-btn" type="button" data-period="yearly" aria-pressed="false">Yearly <span class="plan-save" id="homePlanSave">Save 20%</span></button>
+        <div class="pricing-head">
+          <div>
+            <p class="eyebrow">PRICING</p>
+            <h2>Simple pricing for growing businesses</h2>
+            <p class="band-intro">Start free for 7 days. Upgrade when you're ready.</p>
+          </div>
+          <div class="plan-billing" role="group" aria-label="Billing period">
+            <button class="plan-billing-btn is-selected" type="button" data-period="monthly" aria-pressed="true">Monthly</button>
+            <button class="plan-billing-btn" type="button" data-period="yearly" aria-pressed="false">Yearly <span class="plan-save" id="homePlanSave">Save 20%</span></button>
+          </div>
         </div>
         <ul class="plan-grid">
           <li class="plan-card">
-            <h3>7-Day Free Trial</h3>
+            <div class="plan-top"><h3>7-Day Free Trial</h3></div>
             <p class="plan-desc">Try ReviewRise before choosing a paid plan.</p>
             <p class="plan-price"><strong>Free</strong><span>for 7 days</span></p>
             <p class="plan-note">Core features during the trial only.</p>
             <ul class="plan-features">
               <li>1 business</li>
-              <li>review link creation</li>
-              <li>feedback collection</li>
+              <li>Review link creation</li>
+              <li>Feedback collection</li>
               <li>Google review redirect</li>
               <li>Dashboard</li>
               <li>Analytics</li>
@@ -1908,44 +1875,48 @@
               <li>QR generation</li>
               <li>Smart Alerts</li>
             </ul>
+            <button class="plan-more" type="button" aria-expanded="false">Show all features</button>
             <a class="btn btn-secondary" href="dashboard.html">Start Free Trial</a>
           </li>
           <li class="plan-card is-featured">
-            <span class="plan-badge">Most Popular</span>
-            <h3>Pro</h3>
+            <div class="plan-top"><h3>Pro</h3><span class="plan-badge">Most Popular</span></div>
             <p class="plan-desc">For growing businesses that want deeper customer intelligence.</p>
             <p class="plan-price"><strong id="homeProPrice">$20</strong><span id="homeProPeriod">/ month</span></p>
             <p class="plan-note" id="homeProNote">Billed monthly</p>
             <ul class="plan-features">
-              <li>up to 5 businesses</li>
-              <li>multiple Review Links</li>
+              <li>Up to 5 businesses</li>
+              <li>Multiple Review Links</li>
               <li>Customer Intelligence</li>
-              <li>recurring customer-problem detection</li>
+              <li>Recurring customer-problem detection</li>
               <li>Smart Alerts</li>
-              <li>advanced Analytics</li>
-              <li>advanced QR &amp; NFC</li>
-              <li>business switching</li>
-              <li>priority support</li>
+              <li>Advanced Analytics</li>
+              <li>Advanced QR &amp; NFC</li>
+              <li>Business switching</li>
+              <li>Priority support</li>
             </ul>
-            <button class="btn btn-primary" type="button" data-pay-soon>Choose Pro</button>
+            <button class="plan-more" type="button" aria-expanded="false">Show all features</button>
+            <button class="btn btn-primary" type="button" data-pay-soon data-plan="pro">Choose Pro</button>
           </li>
           <li class="plan-card">
-            <h3>Business</h3>
+            <div class="plan-top"><h3>Business</h3></div>
             <p class="plan-desc">For larger businesses and multi-location operators.</p>
             <p class="plan-price"><strong id="homeBusinessPrice">$49</strong><span id="homeBusinessPeriod">/ month</span></p>
             <p class="plan-note" id="homeBusinessNote">Billed monthly</p>
             <ul class="plan-features">
-              <li>higher business/location limits</li>
-              <li>everything in Pro</li>
-              <li>advanced multi-location reporting</li>
-              <li>priority onboarding</li>
-              <li>premium support</li>
-              <li>team access <span class="plan-soon">Coming soon</span></li>
-              <li>custom branding <span class="plan-soon">Coming soon</span></li>
+              <li>Up to 25 businesses</li>
+              <li>Everything in Pro</li>
+              <li>Advanced multi-location reporting</li>
+              <li>Priority onboarding</li>
+              <li>Premium support</li>
+              <li>Team access <span class="plan-soon">Coming soon</span></li>
+              <li>Custom branding <span class="plan-soon">Coming soon</span></li>
             </ul>
-            <button class="btn btn-secondary" type="button" data-pay-soon>Choose Business</button>
+            <button class="plan-more" type="button" aria-expanded="false">Show all features</button>
+            <button class="btn btn-secondary" type="button" data-pay-soon data-plan="business">Choose Business</button>
           </li>
         </ul>
+        <p class="pricing-swipe" aria-hidden="true">Swipe to compare plans</p>
+        <p class="pricing-foot">Prices are in US dollars. Paid plans are arranged on WhatsApp and activated once your payment is confirmed.</p>
       </div>
     </section>
 
@@ -1959,9 +1930,12 @@
     </section>
   </main>
 
-  <dialog class="pay-soon" id="paySoon" aria-labelledby="paySoonText">
-    <p id="paySoonText">Online payment setup is coming soon.</p>
-    <button class="btn btn-dark" type="button" id="paySoonClose">OK</button>
+  <dialog class="pay-soon" id="paySoon" aria-labelledby="paySoonTitle">
+    <h3 id="paySoonTitle">Choose a paid plan</h3>
+    <p id="paySoonText">Paid plans are arranged on WhatsApp. Message us to receive the payment details, and your plan is activated once your payment is confirmed. You can also start the free trial first and upgrade later from Settings.</p>
+    <a class="btn btn-primary" id="paySoonWhatsapp" href="https://wa.me/212766315853" target="_blank" rel="noopener noreferrer">Message us on WhatsApp</a>
+    <a class="btn btn-secondary" href="dashboard.html">Start Free Trial</a>
+    <button class="btn btn-dark" type="button" id="paySoonClose">Close</button>
   </dialog>
 
   <footer class="site-footer">
@@ -2059,9 +2033,35 @@
 
       var paySoon = document.getElementById("paySoon");
       var paySoonClose = document.getElementById("paySoonClose");
+      var payWhatsapp = document.getElementById("paySoonWhatsapp");
       document.querySelectorAll("[data-pay-soon]").forEach(function (button) {
         button.addEventListener("click", function () {
+          var selected = document.querySelector(".plan-billing-btn.is-selected");
+          var period = selected && selected.getAttribute("data-period") === "yearly" ? "yearly" : "monthly";
+          var planName = button.getAttribute("data-plan") === "business" ? "Business" : "Pro";
+          if (payWhatsapp) {
+            payWhatsapp.href = "https://wa.me/212766315853?text=" + encodeURIComponent(
+              "Hello ReviewRise, I'd like to upgrade to the " + planName + " plan (" + period + " billing). Please send me the payment details."
+            );
+          }
           if (paySoon) paySoon.showModal();
+        });
+      });
+
+      var planGrid = document.querySelector(".plan-grid");
+      var featuredCard = document.querySelector(".plan-card.is-featured");
+      if (planGrid && featuredCard && window.matchMedia("(max-width: 980px)").matches) {
+        var gridBox = planGrid.getBoundingClientRect();
+        var cardBox = featuredCard.getBoundingClientRect();
+        planGrid.scrollLeft += (cardBox.left - gridBox.left) - (gridBox.width - cardBox.width) / 2;
+      }
+
+      document.querySelectorAll(".plan-more").forEach(function (toggle) {
+        toggle.addEventListener("click", function () {
+          var card = toggle.closest(".plan-card");
+          var open = card.classList.toggle("is-open");
+          toggle.setAttribute("aria-expanded", open ? "true" : "false");
+          toggle.textContent = open ? "Show fewer features" : "Show all features";
         });
       });
       if (paySoon && paySoonClose) {
