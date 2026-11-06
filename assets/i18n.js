@@ -38,10 +38,31 @@
   var scriptEl = document.currentScript;
   var base = scriptEl && scriptEl.src ? scriptEl.src.replace(/[^\/]*$/, "") : "assets/";
 
+  // Smooth changes: the page fades out, reloads in the new language, and fades back in.
+  // It also stays hidden for a moment on load so English never flashes before the translation.
+  var switching = false;
+  try { switching = sessionStorage.getItem("rr_switching") === "1"; sessionStorage.removeItem("rr_switching"); } catch (e) { /* ignore */ }
+  var holdStyle = document.createElement("style");
+  holdStyle.textContent = "html { transition: opacity 0.22s ease; } html.rr-hold { opacity: 0; }";
+  document.head.appendChild(holdStyle);
+  var held = false;
+  function hold() { root.classList.add("rr-hold"); held = true; }
+  function reveal() {
+    if (!held) return;
+    held = false;
+    window.requestAnimationFrame(function () { root.classList.remove("rr-hold"); });
+  }
+  if (lang !== "en" || switching) {
+    hold();
+    setTimeout(reveal, 1500); // safety: never leave the page hidden
+    window.addEventListener("load", reveal);
+  }
+
   function setLanguage(next) {
     if (!LANGS[next] || next === lang) return;
-    try { localStorage.setItem(KEY, next); } catch (e) { /* ignore */ }
-    window.location.reload();
+    try { localStorage.setItem(KEY, next); sessionStorage.setItem("rr_switching", "1"); } catch (e) { /* ignore */ }
+    root.classList.add("rr-hold");
+    setTimeout(function () { window.location.reload(); }, 230);
   }
 
   window.ReviewRiseLang = { current: lang, set: setLanguage, dir: LANGS[lang].dir };
@@ -114,7 +135,7 @@
   }
 
   if (lang === "en") {
-    function startEnglish() { addStyle(); placeSwitcher(); }
+    function startEnglish() { addStyle(); placeSwitcher(); reveal(); }
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", startEnglish);
     else startEnglish();
     return;
@@ -304,6 +325,7 @@
     legalNote();
     if (document.body) { placeSwitcher(); walk(document.body); }
     translateTitle();
+    reveal();
   }
 
   // The dictionary file calls this as soon as it has loaded (before the page scripts run).
