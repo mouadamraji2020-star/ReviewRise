@@ -752,25 +752,86 @@
       letter-spacing: 0.04em;
     }
 
-    .review-points {
+    .reviews-grid {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 14px;
-      margin: 8px 0 0;
-      padding: 0;
-      list-style: none;
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+      gap: 56px;
+      align-items: center;
     }
 
-    .review-points li {
-      margin: 0;
-      padding: 18px 16px;
-      background: #f7faff;
-      border: 1px solid #e6edf5;
-      border-radius: 18px;
-      color: #314158;
-      font-size: 15px;
-      line-height: 1.45;
+    .reviews-lede { margin: 0 0 28px; max-width: 520px; color: var(--muted); font-size: 16px; line-height: 1.6; }
+
+    .review-steps { margin: 0; padding: 0; list-style: none; display: grid; gap: 18px; }
+
+    .review-steps li { position: relative; display: flex; align-items: flex-start; gap: 16px; }
+
+    .review-steps li:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      left: 21px;
+      top: 50px;
+      bottom: -18px;
+      width: 2px;
+      background: linear-gradient(180deg, #cfe0fb, rgba(207, 224, 251, 0.25));
     }
+
+    .rs-ico, .rv-ico {
+      width: 44px;
+      height: 44px;
+      flex: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 14px;
+      background: #eaf2ff;
+      color: var(--blue);
+      box-shadow: 0 6px 16px rgba(47, 124, 246, 0.14);
+    }
+
+    .rs-ico svg, .rv-ico svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+    .review-steps strong { display: block; color: var(--navy); font-size: 16.5px; font-weight: 700; letter-spacing: -0.2px; line-height: 1.3; }
+    .review-steps li span:not(.rs-ico) { display: block; margin-top: 4px; color: var(--muted); font-size: 14.5px; line-height: 1.55; }
+
+    .reviews-visual { position: relative; display: flex; justify-content: center; }
+
+    .reviews-visual::before {
+      content: "";
+      position: absolute;
+      inset: 4% 8%;
+      background: radial-gradient(circle, rgba(176, 208, 255, 0.8), rgba(176, 208, 255, 0) 70%);
+    }
+
+    .rv-card {
+      position: relative;
+      width: 100%;
+      max-width: 430px;
+      padding: 28px 24px 24px;
+      background: #fff;
+      border: 1px solid #e4ebf4;
+      border-radius: 26px;
+      box-shadow: 0 24px 56px rgba(15, 40, 80, 0.12);
+      text-align: center;
+    }
+
+    .rv-brand { display: inline-flex; align-items: center; gap: 8px; font-size: 18px; font-weight: 800; letter-spacing: -0.5px; color: var(--navy); }
+    .rv-brand img { height: 28px; width: auto; display: block; }
+    .rv-brand span span { background: linear-gradient(90deg, #1d4ed8 10%, #3ec6ff 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+    .rv-q { margin: 20px 0 6px; color: var(--ink); font-size: 20px; font-weight: 800; letter-spacing: -0.4px; }
+    .rv-stars { margin: 0; color: var(--gold); font-size: 34px; letter-spacing: 4px; line-height: 1; text-shadow: 0 6px 14px rgba(245, 180, 0, 0.3); }
+
+    .rv-branch { display: block; width: 100%; height: 36px; margin: 10px 0 2px; fill: none; stroke: #bcd3f5; stroke-width: 2; stroke-linecap: round; }
+
+    .rv-split { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; text-align: left; }
+
+    .rv-out { padding: 14px; border: 1px solid #e4ebf4; border-radius: 16px; background: #f8fbff; }
+    .rv-out .rv-ico { width: 36px; height: 36px; border-radius: 11px; margin-bottom: 10px; box-shadow: none; }
+    .rv-out .rv-ico svg { width: 18px; height: 18px; }
+    .rv-out strong { display: block; color: var(--navy); font-size: 14.5px; font-weight: 750; letter-spacing: -0.2px; }
+    .rv-out span:last-child { display: block; margin-top: 3px; color: var(--muted); font-size: 12.5px; line-height: 1.45; }
+    .rv-out.is-private { background: #fbf8ff; border-color: #ece4fa; }
+    .rv-out.is-private .rv-ico { background: #f1eafd; color: #7c4dd6; }
 
     .preview {
       position: relative;
@@ -1420,7 +1481,8 @@
       .feature-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .steps { grid-template-columns: 1fr; }
       .steps::before { display: none; }
-      .review-points { grid-template-columns: 1fr; }
+      .reviews-grid { grid-template-columns: minmax(0, 1fr); gap: 36px; }
+      .reviews-lede { max-width: none; }
       .app { grid-template-columns: minmax(0, 1fr); }
       .app-side, .app-main { min-width: 0; }
       .app-side nav { flex-direction: row; flex-wrap: wrap; margin-top: 16px; }
@@ -1467,6 +1529,20 @@
       .benefits { grid-template-columns: 1fr; gap: 22px; margin-top: 36px; }
       .benefits p { max-width: none; }
       .hero-visual { min-height: 500px; }
+      #reviews.band { padding: 48px 0; }
+      .reviews-grid { gap: 26px; }
+      .reviews-lede { display: none; }
+      .review-steps { gap: 12px; margin-top: 18px; }
+      .review-steps li { align-items: center; gap: 14px; }
+      .rs-ico { width: 40px; height: 40px; border-radius: 12px; }
+      .review-steps li:not(:last-child)::after { left: 19px; top: 44px; bottom: -12px; }
+      .review-steps strong { font-size: 15px; }
+      .review-steps li span:not(.rs-ico) { display: none; }
+      .rv-card { padding: 20px 14px 14px; border-radius: 22px; }
+      .rv-q { font-size: 18px; }
+      .rv-stars { font-size: 30px; letter-spacing: 3px; }
+      .rv-split { gap: 10px; }
+      .rv-out { padding: 12px; }
       .pv-top-right { display: none; }
       .pv-ci-head { flex-direction: column; gap: 8px; }
       .pv-stats { grid-template-columns: minmax(0, 1fr); }
@@ -1771,14 +1847,38 @@
     </section>
 
     <section class="band band-soft" id="reviews">
-      <div class="wrap">
-        <p class="eyebrow">REVIEWS</p>
-        <h2>Turn customer experiences into better reviews.</h2>
-        <ul class="review-points">
-          <li>Collect customer ratings.</li>
-          <li>Direct positive experiences toward public reviews.</li>
-          <li>Capture private feedback for improvement.</li>
-        </ul>
+      <div class="wrap reviews-grid">
+        <div class="reviews-copy">
+          <p class="eyebrow">REVIEWS</p>
+          <h2>Turn customer experiences into better reviews.</h2>
+          <p class="reviews-lede">A simple flow for every guest: scan a QR code or tap an NFC card, rate the experience, and be guided to the right next step.</p>
+          <ol class="review-steps">
+            <li>
+              <span class="rs-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><path d="M14 14h2v2h-2zM18 14h2v6h-6v-2h4z"/></svg></span>
+              <div><strong>Collect customer ratings.</strong><span>Guests rate their experience from one to five stars in a few taps.</span></div>
+            </li>
+            <li>
+              <span class="rs-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.4 5.4L20 9.2l-4 4.1.9 5.7L12 16.3 7.1 19l.9-5.7-4-4.1 5.6-.8L12 3z"/></svg></span>
+              <div><strong>Direct positive experiences toward public reviews.</strong><span>Happy guests are sent straight to your Google review page.</span></div>
+            </li>
+            <li>
+              <span class="rs-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span>
+              <div><strong>Capture private feedback for improvement.</strong><span>Lower ratings stay private, so you can learn and improve.</span></div>
+            </li>
+          </ol>
+        </div>
+        <div class="reviews-visual" aria-hidden="true">
+          <div class="rv-card">
+            <div class="rv-brand"><img src="assets/reviewrise-logo.png" alt=""><span>Review<span>Rise</span></span></div>
+            <p class="rv-q">How was your experience?</p>
+            <p class="rv-stars">★★★★★</p>
+            <svg class="rv-branch" viewBox="0 0 200 36" preserveAspectRatio="none"><path d="M100 0v10M100 10C100 24 50 18 50 36M100 10C100 24 150 18 150 36"/></svg>
+            <div class="rv-split">
+              <div class="rv-out is-public"><span class="rv-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.4 5.4L20 9.2l-4 4.1.9 5.7L12 16.3 7.1 19l.9-5.7-4-4.1 5.6-.8L12 3z"/></svg></span><strong>Higher ratings</strong><span>Open your Google review page</span></div>
+              <div class="rv-out is-private"><span class="rv-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span><strong>Lower ratings</strong><span>Send a private message to you</span></div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
