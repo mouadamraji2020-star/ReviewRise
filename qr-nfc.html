@@ -654,8 +654,9 @@ body {
   color: #314158;
   font-size: 12.5px;
   font-weight: 600;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.35;
 }
 
 .copy-link-btn {
@@ -748,6 +749,12 @@ body {
 .nfc-card h2 { margin: 0; color: #0c1730; font-size: 16px; font-weight: 750; letter-spacing: -0.3px; }
 .nfc-card p { margin: 6px 0 0; max-width: 640px; color: #6d7c92; font-size: 14px; line-height: 1.5; }
 .nfc-destination { margin-top: 10px; color: #314158; font-size: 13px; font-weight: 600; }
+#nfcDestination { margin-top: 4px; font-weight: 600; font-size: 12.5px; color: #314158; overflow-wrap: anywhere; line-height: 1.4; }
+.nfc-howto { margin-top: 18px; padding-top: 16px; border-top: 1px solid #e7eef6; }
+.nfc-howto h3 { margin: 0 0 8px; color: #0c1730; font-size: 14px; font-weight: 800; letter-spacing: -0.2px; }
+.nfc-howto ol { margin: 0; padding-left: 20px; color: #314158; font-size: 13.5px; line-height: 1.55; }
+.nfc-howto li + li { margin-top: 5px; }
+.nfc-note { margin: 12px 0 0; padding: 10px 12px; border-radius: 10px; background: #f5f8fc; color: #5c6b82; font-size: 12.5px; line-height: 1.5; }
 .nfc-destination strong { color: #0c1730; }
 
 #qrWorkspace[hidden],
@@ -1961,6 +1968,17 @@ body { overflow-x: hidden; }
           <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
           <span>Copy Link</span>
         </button>
+        <div class="nfc-howto">
+          <h3>How to put this link on an NFC card</h3>
+          <ol>
+            <li>Click <strong>Copy Link</strong> above.</li>
+            <li>On your phone, install a free NFC writer app, for example <strong>NFC Tools</strong> (Android or iPhone).</li>
+            <li>In the app, choose <strong>Write</strong>, then <strong>Add a record</strong>, then <strong>URL / URI</strong>. Paste the link and tap <strong>Write</strong>.</li>
+            <li>Hold a blank NFC card or sticker (type NTAG213 or NTAG215) against the back of your phone until the app confirms.</li>
+            <li>Test it: tap the card with a different phone. Your review page should open.</li>
+          </ol>
+          <p class="nfc-note">ReviewRise does not write to NFC cards from this page; the card is written with the phone app. Keep the QR code next to the card as a backup for phones without NFC.</p>
+        </div>
       </div>
     </div>
   </div>
@@ -2213,11 +2231,13 @@ function applyBusiness(link, options) {
   studio.querySelector(".qr-business-preview-name").textContent = businessName;
   document.getElementById("nfcBusinessName").textContent = businessName;
 
-  const shownUrl = visibleReviewUrl(link);
+  const fullUrl = customerReviewUrl(link);
   const urlText = document.getElementById("reviewUrlText");
-  urlText.textContent = shownUrl;
-  urlText.dataset.url = customerReviewUrl(link);
-  document.getElementById("nfcDestination").textContent = shownUrl;
+  urlText.textContent = fullUrl;
+  urlText.dataset.url = fullUrl;
+  const nfcDestinationText = document.getElementById("nfcDestination");
+  nfcDestinationText.textContent = fullUrl;
+  nfcDestinationText.dataset.url = fullUrl;
   document.getElementById("previewPrimary").hidden = link.is_primary !== true;
 
   const posterLogo = poster.querySelector(".qr-poster-logo img");
@@ -2794,7 +2814,7 @@ cardGrid.addEventListener("click", function (event) {
 
   document.getElementById("nfcBusinessName").textContent = link.business_name || "Your Business";
   const destination = document.getElementById("nfcDestination");
-  destination.textContent = visibleReviewUrl(link);
+  destination.textContent = customerReviewUrl(link);
   destination.dataset.url = customerReviewUrl(link);
   openModal(nfcModal);
 });
