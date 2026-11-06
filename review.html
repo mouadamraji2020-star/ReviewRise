@@ -433,6 +433,7 @@ async function loadBusinessFromReviewLink() {
     document.title = currentBusiness.business_name + " | ReviewRise";
     await applyLogo(currentBusiness);
     showReviewCard();
+    if (alreadyRatedHere(currentBusiness.id)) showAlreadyRated();
   } catch (error) {
     console.error("Error loading business:", error);
     showPageError("This review link could not be loaded. Please try again later.");
@@ -443,6 +444,108 @@ function highlightStars(rating) {
   stars.forEach(function (star) {
     star.classList.toggle("active", Number(star.dataset.rating) <= rating);
   });
+}
+
+// ---- One rating per device per business ----
+// The database enforces the real limit (submit_feedback). These helpers give the visitor a friendly
+// message and remember on this device that the business was already rated.
+const RATED_DAYS = 30;
+
+function deviceId() {
+  try {
+    let id = localStorage.getItem("rr_device");
+    if (!id || !/^[A-Za-z0-9_-]{16,64}$/.test(id)) {
+      id = window.crypto && crypto.randomUUID
+        ? crypto.randomUUID().replace(/-/g, "")
+        : Array.from(crypto.getRandomValues(new Uint8Array(16)), function (b) { return b.toString(16).padStart(2, "0"); }).join("");
+      localStorage.setItem("rr_device", id);
+    }
+    return id;
+  } catch (error) {
+    return null;
+  }
+}
+
+function alreadyRatedHere(linkId) {
+  try {
+    const when = Number(localStorage.getItem("rr_rated_" + linkId));
+    return when > 0 && Date.now() - when < RATED_DAYS * 86400000;
+  } catch (error) {
+    return false;
+  }
+}
+
+function rememberRated(linkId) {
+  try { localStorage.setItem("rr_rated_" + linkId, String(Date.now())); } catch (error) { /* storage may be blocked */ }
+}
+
+// Saves one rating through the controlled database function. Falls back to the previous direct
+// insert only when the function does not exist yet (HTTP 404), so the page keeps working during rollout.
+async function saveFeedbackRecord(rating, comment) {
+  const headers = { "Content-Type": "application/json", "apikey": SUPABASE_KEY };
+  let response = await fetch(SUPABASE_URL + "/rest/v1/rpc/submit_feedback", {
+    method: "POST",
+    headers: headers,
+    body: JSON.stringify({
+      p_review_link_id: currentBusiness.id,
+      p_rating: rating,
+      p_feedback: comment,
+      p_device_id: deviceId()
+    })
+  });
+  if (response.status === 404) {
+    response = await fetch(SUPABASE_URL + "/rest/v1/Feedback", {
+      method: "POST",
+      headers: Object.assign({ "Prefer": "return=minimal" }, headers),
+      body: JSON.stringify({
+        rating: rating,
+        feedback: comment,
+        business: currentBusiness.business_name,
+        review_link_id: currentBusiness.id
+      })
+    });
+  }
+  if (response.ok) {
+    rememberRated(currentBusiness.id);
+    return { ok: true };
+  }
+  let text = "";
+  try { text = await response.text(); } catch (error) { text = ""; }
+  if (text.indexOf("ALREADY_RATED") !== -1) {
+    rememberRated(currentBusiness.id);
+    return { ok: false, reason: "already" };
+  }
+  if (text.indexOf("RATE_LIMITED") !== -1) return { ok: false, reason: "limited" };
+  return { ok: false, reason: "error" };
+}
+
+function showAlreadyRated() {
+  feedbackSubmitted = true;
+  redirecting = false;
+  setStarsEnabled(false);
+  feedbackForm.style.display = "none";
+  ratingHint.style.display = "none";
+  feedbackMessage.innerHTML = "";
+  feedbackMessage.className = "is-success";
+  const icon = document.createElement("div");
+  icon.className = "success-check";
+  icon.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5 9.2 17 19 7"/></svg>';
+  const title = document.createElement("h2");
+  title.className = "success-title";
+  title.textContent = "You have already shared your feedback";
+  const note = document.createElement("p");
+  note.className = "success-note";
+  note.append("Thank you! Each guest can rate ");
+  const business = document.createElement("strong");
+  business.textContent = currentBusiness.business_name;
+  note.append(business);
+  note.append(" once.");
+  const closeLine = document.createElement("p");
+  closeLine.className = "success-close";
+  closeLine.textContent = "You can now close this page.";
+  feedbackMessage.append(icon, title, note, closeLine);
+  feedbackMessage.style.display = "block";
+  reviewCard.classList.add("is-success");
 }
 
 function showSuccess() {
@@ -471,7 +574,7 @@ function showSuccess() {
   done.type = "button";
   done.className = "done-btn";
   done.textContent = "Done";
-  done.addEventListener("click", resetReviewExperience);
+  done.addEventListener("click", showAlreadyRated);
   feedbackMessage.append(icon, title, lead, note, closeLine, done);
   feedbackMessage.style.display = "block";
   reviewCard.classList.add("is-success");
@@ -565,21 +668,16 @@ async function saveRatingThen(rating, afterSave) {
   feedbackMessage.textContent = "Saving your rating…";
 
   try {
-    const response = await fetch(SUPABASE_URL + "/rest/v1/Feedback", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "apikey": SUPABASE_KEY,
-        "Prefer": "return=minimal"
-      },
-      body: JSON.stringify({
-        rating: rating,
-        feedback: null,
-        business: currentBusiness.business_name,
-        review_link_id: currentBusiness.id
-      })
-    });
-    if (!response.ok) throw new Error("Rating could not be saved");
+    const result = await saveFeedbackRecord(rating, null);
+    if (!result.ok && result.reason === "already") {
+      savingPositiveRating = false;
+      showAlreadyRated();
+      return;
+    }
+    if (!result.ok && result.reason === "limited") {
+      throw new Error("RATE_LIMITED");
+    }
+    if (!result.ok) throw new Error("Rating could not be saved");
     positiveRatingSaved = true;
     savingPositiveRating = false;
     afterSave();
@@ -589,7 +687,9 @@ async function saveRatingThen(rating, afterSave) {
     positiveRatingSaved = false;
     setStarsEnabled(true);
     feedbackMessage.style.display = "block";
-    feedbackMessage.textContent = "Your rating could not be saved. Tap your rating again to try again.";
+    feedbackMessage.textContent = error && error.message === "RATE_LIMITED"
+      ? "We are receiving a lot of feedback right now. Please try again in a few minutes."
+      : "Your rating could not be saved. Tap your rating again to try again.";
   }
 }
 
@@ -671,21 +771,18 @@ submitFeedback.addEventListener("click", async function () {
   submitFeedback.disabled = true;
   submitFeedback.textContent = "Sending...";
   try {
-    const response = await fetch(SUPABASE_URL + "/rest/v1/Feedback", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "apikey": SUPABASE_KEY,
-        "Prefer": "return=minimal"
-      },
-      body: JSON.stringify({
-        rating: selectedRating,
-        feedback: feedback,
-        business: currentBusiness.business_name,
-        review_link_id: currentBusiness.id
-      })
-    });
-    if (!response.ok) throw new Error("Feedback could not be saved");
+    const result = await saveFeedbackRecord(selectedRating, feedback);
+    if (!result.ok && result.reason === "already") {
+      showAlreadyRated();
+      return;
+    }
+    if (!result.ok && result.reason === "limited") {
+      alert("We are receiving a lot of feedback right now. Please try again in a few minutes.");
+      submitFeedback.disabled = false;
+      submitFeedback.textContent = "Submit feedback";
+      return;
+    }
+    if (!result.ok) throw new Error("Feedback could not be saved");
     feedbackSubmitted = true;
     feedbackText.value = "";
     feedbackForm.classList.add("is-leaving");
