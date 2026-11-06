@@ -1092,15 +1092,32 @@
 
     .preview-note { position: relative; z-index: 1; margin: 12px 0 0; text-align: center; color: var(--muted); font-size: 13px; }
 
-    .contact-block {
-      max-width: 640px;
+    .contact-grid { display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); gap: 40px; align-items: start; }
+    .contact-intro p { margin: 0 0 22px; color: var(--muted); font-size: 17px; }
+    .wa-card { padding: 20px; border: 1px solid var(--line); border-radius: 18px; background: #fff; box-shadow: 0 10px 28px rgba(16, 32, 63, 0.06); }
+    .wa-card h3 { margin: 0 0 6px; font-size: 18px; letter-spacing: -0.2px; }
+    .wa-card p { margin: 0 0 14px; font-size: 14.5px; color: var(--muted); }
+    .wa-number { display: block; margin-top: 12px; text-align: center; color: var(--navy); font-weight: 800; font-size: 15px; }
+    .wa-card .btn { width: 100%; box-sizing: border-box; justify-content: center; text-align: center; }
+    .faq-search { width: 100%; box-sizing: border-box; padding: 13px 16px; border: 1px solid var(--line); border-radius: 12px; background: #fff; font: inherit; font-size: 15px; color: var(--ink); }
+    .faq-search:focus { outline: 2px solid var(--blue); outline-offset: 1px; }
+    .faq-list { margin-top: 12px; display: grid; gap: 8px; }
+    .faq-list details { border: 1px solid var(--line); border-radius: 14px; background: #fff; }
+    .faq-list summary { cursor: pointer; padding: 14px 16px; font-weight: 700; font-size: 15px; color: var(--ink); list-style: none; }
+    .faq-list summary::-webkit-details-marker { display: none; }
+    .faq-list summary::after { content: "+"; float: right; color: var(--soft); font-weight: 800; }
+    .faq-list details[open] summary::after { content: "\2212"; }
+    .faq-list details p { margin: 0; padding: 0 16px 15px; color: var(--muted); font-size: 14.5px; line-height: 1.55; }
+    .faq-list details[hidden] { display: none; }
+    .faq-empty { margin: 12px 2px 0; color: var(--muted); font-size: 14.5px; }
+    .faq-empty[hidden] { display: none; }
+    .wa-mobile { margin-top: 16px; }
+    @media (max-width: 860px) {
+      .contact-grid { grid-template-columns: minmax(0, 1fr); gap: 22px; }
+      .contact-intro p { margin-bottom: 0; }
+      .contact-intro .wa-card { display: none; }
     }
-
-    .contact-block p {
-      margin: 0 0 22px;
-      color: var(--muted);
-      font-size: 17px;
-    }
+    @media (min-width: 861px) { .wa-card.wa-mobile { display: none; } }
 
     .pricing-block { max-width: 1080px; }
 
@@ -1921,11 +1938,62 @@
     </section>
 
     <section class="band band-soft" id="contact">
-      <div class="wrap contact-block">
-        <p class="eyebrow">CONTACT</p>
-        <h2>Contact</h2>
-        <p>Questions about using ReviewRise for your business? Start with an account and we can take it from there.</p>
-        <a class="btn btn-primary" href="dashboard.html">Get Started</a>
+      <div class="wrap contact-grid">
+        <div class="contact-intro">
+          <p class="eyebrow">CONTACT</p>
+          <h2>Questions? Ask here first.</h2>
+          <p>Search the answers below. If you still need help with a plan or anything else, message us on WhatsApp.</p>
+          <div class="wa-card">
+          <h3>Still need help?</h3>
+          <p>Message us on WhatsApp and we will help you with your plan or any question. We reply as soon as we can.</p>
+          <a class="btn btn-primary" data-wa-contact href="https://wa.me/212766315853" target="_blank" rel="noopener noreferrer">Message us on WhatsApp</a>
+          <span class="wa-number">+212 766 315 853</span>
+        </div>
+        </div>
+        <div class="contact-faq">
+          <input class="faq-search" id="faqSearch" type="search" placeholder="Type your question, e.g. price, trial, QR" aria-label="Search questions" autocomplete="off">
+          <div class="faq-list" id="faqList">
+          <details data-keywords="how scan qr nfc rating stars google">
+            <summary>How does ReviewRise work?</summary>
+            <p>Customers scan your QR code or tap your NFC tag and rate their stay from 1 to 5 stars. Happy customers are sent to your Google review page. Unhappy ones leave private feedback that only you can read.</p>
+          </details>
+          <details data-keywords="free trial test try">
+            <summary>Is there a free trial?</summary>
+            <p>Yes. Every new account gets a 7-day free trial with 1 business. No payment is needed to start.</p>
+          </details>
+          <details data-keywords="price pricing cost plan pro business monthly yearly">
+            <summary>How much does it cost?</summary>
+            <p>Pro is $20 per month or $192 per year and includes up to 5 businesses. Business is $49 per month or $470 per year and includes up to 25 businesses. Prices are in US dollars.</p>
+          </details>
+          <details data-keywords="pay payment bank transfer upgrade activate">
+            <summary>How do I pay for a paid plan?</summary>
+            <p>Paid plans are arranged on WhatsApp. Message us, we send you the payment details, and your plan is activated once your payment is confirmed.</p>
+          </details>
+          <details data-keywords="equipment hardware nfc tag sticker qr print">
+            <summary>Do I need special equipment?</summary>
+            <p>No. A printed QR code works with any phone camera. NFC tags are optional if you want customers to tap instead of scan.</p>
+          </details>
+          <details data-keywords="google threshold settings private feedback redirect">
+            <summary>Can I choose which ratings go to Google?</summary>
+            <p>Yes. In your review page settings you choose the rating from which customers are sent to Google, and you can turn private feedback on or off.</p>
+          </details>
+          <details data-keywords="private feedback privacy see">
+            <summary>Who can see the private feedback?</summary>
+            <p>Only you, from the Feedback page in your account. It is not shown publicly.</p>
+          </details>
+          <details data-keywords="export delete data account privacy">
+            <summary>Can I export or delete my data?</summary>
+            <p>Yes. In Settings you can download your account data and delete your account.</p>
+          </details>
+          </div>
+          <p class="faq-empty" id="faqEmpty" hidden>No answer found for that. Message us on WhatsApp and we will help.</p>
+          <div class="wa-card wa-mobile">
+          <h3>Still need help?</h3>
+          <p>Message us on WhatsApp and we will help you with your plan or any question. We reply as soon as we can.</p>
+          <a class="btn btn-primary" data-wa-contact href="https://wa.me/212766315853" target="_blank" rel="noopener noreferrer">Message us on WhatsApp</a>
+          <span class="wa-number">+212 766 315 853</span>
+        </div>
+        </div>
       </div>
     </section>
   </main>
@@ -1945,6 +2013,7 @@
         <a href="privacy.html">Privacy Policy</a>
         <a href="terms.html">Terms of Service</a>
         <a href="support.html">Support</a>
+        <a href="https://wa.me/212766315853" target="_blank" rel="noopener noreferrer">WhatsApp</a>
         <a href="dashboard.html">Login</a>
         <a href="#pricing">Pricing</a>
         <a href="#main">Back to top</a>
@@ -2085,6 +2154,35 @@
           renderPrice(period);
         });
       });
+    })();
+  </script>
+  <script>
+    (function () {
+      var input = document.getElementById("faqSearch");
+      var list = document.getElementById("faqList");
+      var empty = document.getElementById("faqEmpty");
+      if (!input || !list) return;
+      var items = Array.prototype.slice.call(list.querySelectorAll("details"));
+      var links = document.querySelectorAll("[data-wa-contact]");
+      var base = "https://wa.me/212766315853?text=";
+      function words(text) { return text.toLowerCase().split(/[^a-z0-9$]+/).filter(function (w) { return w.length > 1; }); }
+      function update() {
+        var raw = input.value.trim();
+        var q = words(raw);
+        var shown = 0;
+        items.forEach(function (item) {
+          var hay = (item.textContent + " " + (item.getAttribute("data-keywords") || "")).toLowerCase();
+          var ok = q.every(function (w) { return hay.indexOf(w) !== -1; });
+          item.hidden = !ok;
+          if (ok) shown++;
+          if (!q.length) item.open = false;
+        });
+        if (q.length && shown <= 2) items.forEach(function (i) { if (!i.hidden) i.open = true; });
+        empty.hidden = shown !== 0;
+        var msg = "Hello ReviewRise, I have a question" + (raw ? ": " + raw.slice(0, 200) : ".");
+        links.forEach(function (a) { a.href = base + encodeURIComponent(msg); });
+      }
+      input.addEventListener("input", update);
     })();
   </script>
 </body>
