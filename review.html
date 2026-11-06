@@ -418,11 +418,16 @@ async function loadBusinessFromReviewLink() {
       showPageError("This review link is incomplete. Please contact the business.");
       return;
     }
+    const threshold = Number(link.positive_threshold);
     currentBusiness = {
       id: link.id,
       business_name: link.business_name,
       logo_url: link.logo_url || null,
-      google_review_link: link.google_review_link || ""
+      google_review_link: link.google_review_link || "",
+      // Review Settings chosen by the business owner (defaults match the dashboard defaults).
+      positive_threshold: Number.isInteger(threshold) && threshold >= 2 && threshold <= 5 ? threshold : 4,
+      private_feedback_enabled: link.private_feedback_enabled !== false,
+      google_redirect_enabled: link.google_redirect_enabled !== false
     };
     businessNameEl.textContent = currentBusiness.business_name;
     document.title = currentBusiness.business_name + " | ReviewRise";
@@ -535,7 +540,16 @@ function beginGoogleRedirect() {
   }, 150);
 }
 
-async function savePositiveRatingThenRedirect(rating) {
+// Shown when a rating is saved and nothing else is needed (no Google redirect, no comment box).
+function thankCustomer() {
+  feedbackSubmitted = true;
+  setStarsEnabled(false);
+  feedbackForm.style.display = "none";
+  ratingHint.style.display = "none";
+  showSuccess();
+}
+
+async function saveRatingThen(rating, afterSave) {
   if (savingPositiveRating || redirecting || feedbackSubmitted || positiveRatingSaved) return;
   if (!currentBusiness || !currentBusiness.id) {
     feedbackMessage.style.display = "block";
@@ -568,15 +582,20 @@ async function savePositiveRatingThenRedirect(rating) {
     if (!response.ok) throw new Error("Rating could not be saved");
     positiveRatingSaved = true;
     savingPositiveRating = false;
-    beginGoogleRedirect();
+    afterSave();
   } catch (error) {
-    console.error("Positive rating save error:", error);
+    console.error("Rating save error:", error);
     savingPositiveRating = false;
     positiveRatingSaved = false;
     setStarsEnabled(true);
     feedbackMessage.style.display = "block";
     feedbackMessage.textContent = "Your rating could not be saved. Tap your rating again to try again.";
   }
+}
+
+// Ratings at or above the owner's threshold: save, then open Google (or just say thanks if redirect is off).
+function savePositiveRatingThenRedirect(rating) {
+  return saveRatingThen(rating, currentBusiness.google_redirect_enabled ? beginGoogleRedirect : thankCustomer);
 }
 
 function handleRating(rating) {
@@ -587,12 +606,18 @@ function handleRating(rating) {
   highlightStars(rating);
   ratingLabel.textContent = labels[rating];
 
-  if (rating >= 4) {
+  if (rating >= currentBusiness.positive_threshold) {
     if (positiveRatingSaved) {
-      beginGoogleRedirect();
+      if (currentBusiness.google_redirect_enabled) beginGoogleRedirect();
       return;
     }
     savePositiveRatingThenRedirect(rating);
+    return;
+  }
+
+  if (!currentBusiness.private_feedback_enabled) {
+    // The owner turned private feedback off: keep the rating, skip the comment box.
+    saveRatingThen(rating, thankCustomer);
     return;
   }
 
