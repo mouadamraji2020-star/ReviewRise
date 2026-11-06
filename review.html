@@ -500,8 +500,19 @@ function resetReviewExperience() {
   stars.forEach(function (star) { star.classList.remove("selected", "active"); });
 }
 
+// Only a complete http(s) address is ever opened. Anything else (for example "javascript:...")
+// is treated as "no Google link", so a bad saved value can never run code on this page.
+function safeGoogleUrl(value) {
+  try {
+    const url = new URL(String(value || "").trim());
+    return url.protocol === "https:" || url.protocol === "http:" ? url.href : "";
+  } catch (error) {
+    return "";
+  }
+}
+
 function beginGoogleRedirect() {
-  const googleUrl = currentBusiness && currentBusiness.google_review_link;
+  const googleUrl = safeGoogleUrl(currentBusiness && currentBusiness.google_review_link);
   if (!googleUrl) {
     setStarsEnabled(true);
     feedbackMessage.style.display = "block";
