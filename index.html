@@ -1338,9 +1338,12 @@
       .audience-list { justify-content: flex-start; gap: 12px 18px; }
       .phone { width: 230px; height: 470px; margin-right: 0; transform: rotate(5deg); }
       .glow { width: 320px; height: 320px; right: 10%; top: 12%; }
-      .scribble { right: 0; top: auto; bottom: 18px; width: 120px; }
-      .scribble p { font-size: 18px; }
-      .scribble-arrow { left: -48px; width: 58px; }
+      /* On a phone there is no free space beside the phone picture, so the handwritten note sits below it. */
+      .hero-visual { min-height: 610px; align-items: flex-start; padding-top: 10px; }
+      .scribble { left: 0; right: 0; margin: 0 auto; top: auto; bottom: 4px; width: 250px; max-width: 100%; text-align: center; transform: rotate(-2deg); }
+      .scribble p { font-size: 20px; }
+      .scribble br:nth-of-type(1), .scribble br:nth-of-type(3) { display: none; }
+      .scribble-arrow { left: 10px; top: -48px; width: 50px; height: 44px; }
       .site-footer .wrap { flex-direction: column; align-items: flex-start; }
     }
   </style>
@@ -1465,7 +1468,7 @@
             <path d="M68 58C42 64 30 36 14 24" fill="none" stroke="#1a2744" stroke-width="1.6" stroke-linecap="round"/>
             <path d="M22 30 12 20l12-2" fill="none" stroke="#1a2744" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          <p>Happy<br>Customers.<br>Stronger<br>Business.</p>
+          <p>Happy <br>Customers. <br>Stronger <br>Business.</p>
         </div>
       </div>
     </section>
