@@ -567,9 +567,8 @@
       }
     });
 
-    // The name the function has in Supabase. (It was created with this long name; if it is ever
-    // re-created as plain "admin-support", change this one line.)
-    var SUPPORT_FUNCTION = "admin-support--all-lowercase--with-the-dash-";
+    // The name of the function in Supabase.
+    var SUPPORT_FUNCTION = "admin-support";
 
     async function supportCall(body) {
       var token = localStorage.getItem("reviewrise_token");
