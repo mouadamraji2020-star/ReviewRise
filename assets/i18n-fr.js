@@ -970,5 +970,17 @@ RR_register("fr",{
 ". Choosing a paid plan does not start a charge yet, because online payment setup is still being prepared. Billing will depend on a supported payment provider when that setup is available.": ". Le choix d'une offre payante ne déclenche pas encore de paiement, car la configuration du paiement en ligne est en cours de préparation. La facturation dépendra d'un prestataire de paiement compatible dès que cette configuration sera disponible.",
 "Open Settings → Subscription and review Pro or Business. The buttons explain that online payment setup is coming soon. They do not activate a paid plan or start billing.": "Ouvrez Paramètres → Abonnement et consultez Pro ou Business. Les boutons expliquent que la configuration du paiement en ligne arrive bientôt. Ils n'activent pas d'offre payante et ne lancent pas la facturation.",
 "New, last 7 days": "Nouveaux, 7 derniers jours",
-"New, last 30 days": "Nouveaux, 30 derniers jours"
+"New, last 30 days": "Nouveaux, 30 derniers jours",
+"Answers for trials, review links, billing, and account tools. Send us a message below and we will reply by email.": "Réponses sur l'essai, les liens d'avis, la facturation et les outils du compte. Envoyez-nous un message ci-dessous et nous vous répondrons par e-mail.",
+"Write your question here. We read every message and reply by email.": "Écrivez votre question ici. Nous lisons chaque message et répondons par e-mail.",
+"and choose Report a Problem. Your report is sent to us the same way.": "et choisir Signaler un problème. Votre signalement nous parvient de la même manière.",
+"Thank you. Your message was sent. We will reply to your email address as soon as we can.": "Merci. Votre message a bien été envoyé. Nous vous répondrons à votre adresse e-mail dès que possible.",
+"Too many messages were sent from your connection. Please try again in an hour, or": "Trop de messages ont été envoyés depuis votre connexion. Veuillez réessayer dans une heure, ou",
+"Your message could not be sent. Please try again, or": "Votre message n'a pas pu être envoyé. Veuillez réessayer, ou",
+"Your message could not be sent. Please check your connection and try again, or": "Votre message n'a pas pu être envoyé. Vérifiez votre connexion et réessayez, ou",
+"Your report was sent. Thank you, we will look into it.": "Votre signalement a été envoyé. Merci, nous allons l'examiner.",
+"Too many reports were sent from your connection. Please try again in an hour.": "Trop de signalements ont été envoyés depuis votre connexion. Veuillez réessayer dans une heure.",
+"Your account has no valid email address, so this report could not be sent.": "Votre compte n'a pas d'adresse e-mail valide, ce signalement n'a donc pas pu être envoyé.",
+"Your report could not be sent. Please try again.": "Votre signalement n'a pas pu être envoyé. Veuillez réessayer.",
+"Your report could not be sent. Please check your connection and try again.": "Votre signalement n'a pas pu être envoyé. Vérifiez votre connexion et réessayez."
 });

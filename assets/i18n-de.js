@@ -973,5 +973,17 @@ RR_register("de",{
 ". Choosing a paid plan does not start a charge yet, because online payment setup is still being prepared. Billing will depend on a supported payment provider when that setup is available.": ". Die Wahl eines bezahlten Tarifs löst noch keine Abbuchung aus, da die Einrichtung der Online-Zahlung noch vorbereitet wird. Die Abrechnung hängt von einem unterstützten Zahlungsanbieter ab, sobald diese Einrichtung verfügbar ist.",
 "Open Settings → Subscription and review Pro or Business. The buttons explain that online payment setup is coming soon. They do not activate a paid plan or start billing.": "Öffnen Sie Einstellungen → Abonnement und sehen Sie sich Pro oder Business an. Die Schaltflächen erklären, dass die Einrichtung der Online-Zahlung bald folgt. Sie aktivieren keinen bezahlten Tarif und starten keine Abrechnung.",
 "New, last 7 days": "Neu, letzte 7 Tage",
-"New, last 30 days": "Neu, letzte 30 Tage"
+"New, last 30 days": "Neu, letzte 30 Tage",
+"Answers for trials, review links, billing, and account tools. Send us a message below and we will reply by email.": "Antworten zu Testphase, Bewertungslinks, Abrechnung und Kontofunktionen. Senden Sie uns unten eine Nachricht, wir antworten per E-Mail.",
+"Write your question here. We read every message and reply by email.": "Schreiben Sie Ihre Frage hier. Wir lesen jede Nachricht und antworten per E-Mail.",
+"and choose Report a Problem. Your report is sent to us the same way.": "öffnen und „Problem melden“ wählen. Ihre Meldung erreicht uns auf demselben Weg.",
+"Thank you. Your message was sent. We will reply to your email address as soon as we can.": "Vielen Dank. Ihre Nachricht wurde gesendet. Wir antworten so bald wie möglich an Ihre E-Mail-Adresse.",
+"Too many messages were sent from your connection. Please try again in an hour, or": "Von Ihrer Verbindung wurden zu viele Nachrichten gesendet. Bitte versuchen Sie es in einer Stunde erneut, oder",
+"Your message could not be sent. Please try again, or": "Ihre Nachricht konnte nicht gesendet werden. Bitte versuchen Sie es erneut, oder",
+"Your message could not be sent. Please check your connection and try again, or": "Ihre Nachricht konnte nicht gesendet werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut, oder",
+"Your report was sent. Thank you, we will look into it.": "Ihre Meldung wurde gesendet. Vielen Dank, wir kümmern uns darum.",
+"Too many reports were sent from your connection. Please try again in an hour.": "Von Ihrer Verbindung wurden zu viele Meldungen gesendet. Bitte versuchen Sie es in einer Stunde erneut.",
+"Your account has no valid email address, so this report could not be sent.": "Ihr Konto hat keine gültige E-Mail-Adresse, daher konnte diese Meldung nicht gesendet werden.",
+"Your report could not be sent. Please try again.": "Ihre Meldung konnte nicht gesendet werden. Bitte versuchen Sie es erneut.",
+"Your report could not be sent. Please check your connection and try again.": "Ihre Meldung konnte nicht gesendet werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut."
 });
