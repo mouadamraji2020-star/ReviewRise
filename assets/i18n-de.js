@@ -985,5 +985,9 @@ RR_register("de",{
 "Too many reports were sent from your connection. Please try again in an hour.": "Von Ihrer Verbindung wurden zu viele Meldungen gesendet. Bitte versuchen Sie es in einer Stunde erneut.",
 "Your account has no valid email address, so this report could not be sent.": "Ihr Konto hat keine gültige E-Mail-Adresse, daher konnte diese Meldung nicht gesendet werden.",
 "Your report could not be sent. Please try again.": "Ihre Meldung konnte nicht gesendet werden. Bitte versuchen Sie es erneut.",
-"Your report could not be sent. Please check your connection and try again.": "Ihre Meldung konnte nicht gesendet werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut."
+"Your report could not be sent. Please check your connection and try again.": "Ihre Meldung konnte nicht gesendet werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
+"Please enter your name (up to 120 characters).": "Bitte geben Sie Ihren Namen ein (maximal 120 Zeichen).",
+"Please enter a valid email address.": "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
+"Please enter a subject (up to 160 characters).": "Bitte geben Sie einen Betreff ein (maximal 160 Zeichen).",
+"Please enter a message (up to 4000 characters).": "Bitte geben Sie eine Nachricht ein (maximal 4000 Zeichen)."
 });

@@ -214,9 +214,13 @@
       var subject = document.getElementById("supportSubject").value.trim();
       var message = document.getElementById("supportMessage").value.trim();
       notice.className = "notice";
-      if (!name || !subject || !message || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      var problem = !name ? "Please enter your name (up to 120 characters)."
+        : !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? "Please enter a valid email address."
+        : !subject ? "Please enter a subject (up to 160 characters)."
+        : !message ? "Please enter a message (up to 4000 characters)." : "";
+      if (problem) {
         notice.className = "notice error";
-        notice.textContent = "Enter your name, a valid email, a subject, and a message.";
+        notice.textContent = problem;
         return;
       }
       var button = document.querySelector("#supportForm button[type=submit]");
@@ -256,7 +260,10 @@
           showFailure("Too many messages were sent from your connection. Please try again in an hour, or");
         } else if (/INVALID_/.test(result.text)) {
           notice.className = "notice error";
-          notice.textContent = "Enter your name, a valid email, a subject, and a message.";
+          notice.textContent = /INVALID_NAME/.test(result.text) ? "Please enter your name (up to 120 characters)."
+            : /INVALID_EMAIL/.test(result.text) ? "Please enter a valid email address."
+            : /INVALID_SUBJECT/.test(result.text) ? "Please enter a subject (up to 160 characters)."
+            : "Please enter a message (up to 4000 characters).";
         } else {
           reviewRiseReportError({ type: "support-form", message: "Support message could not be saved (" + String(result.text).slice(0, 80) + ")" });
           showFailure("Your message could not be sent. Please try again, or");
