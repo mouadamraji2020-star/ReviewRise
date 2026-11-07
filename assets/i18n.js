@@ -341,35 +341,39 @@
   var switchers = [];
 
   var css = [
-    ".rr-lang { position: relative; display: inline-flex; align-items: center; margin: 0 6px; flex: none; }",
-    ".rr-lang select { appearance: none; -webkit-appearance: none; font: inherit; font-size: 13px; font-weight: 700; line-height: 1;",
-    "  padding: 8px 24px 8px 12px; border: 1px solid rgba(120, 140, 170, 0.45); border-radius: 999px; cursor: pointer;",
-    "  background: #fff url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6'><path d='M1 1l4 4 4-4' fill='none' stroke='%235d6c84' stroke-width='1.6' stroke-linecap='round'/></svg>\") no-repeat right 9px center; color: #10203f; }",
-    ".rr-lang select:focus-visible { outline: 2px solid #2f7cf6; outline-offset: 2px; }",
-    ".rr-lang-float { position: fixed; z-index: 60; bottom: 14px; right: 14px; margin: 0; }",
+    ".rr-lang { position: fixed; z-index: 60; top: 10px; right: 12px; display: inline-flex; align-items: center; gap: 2px; margin: 0;",
+    "  font-weight: 500; font-size: 14px; line-height: 1; color: #10203f; background: none; border: 0; white-space: nowrap; }",
+    ".rr-lang button { appearance: none; -webkit-appearance: none; font: inherit; color: inherit; background: none; border: 0; border-radius: 6px;",
+    "  padding: 4px 5px; margin: 0; cursor: pointer; opacity: 0.55; letter-spacing: 0.02em; }",
+    ".rr-lang button:hover { opacity: 0.9; }",
+    ".rr-lang button[aria-pressed=true] { opacity: 1; font-weight: 700; }",
+    ".rr-lang button:focus-visible { outline: 2px solid #2f7cf6; outline-offset: 1px; }",
+    ".rr-lang i { font-style: normal; opacity: 0.35; }",
+    ".rr-lang-bottom { background: #fff; border-radius: 999px; padding: 2px 8px; box-shadow: 0 6px 18px rgba(16, 32, 63, 0.18); }",
     "@media print { .rr-lang { display: none; } }",
-    ".rr-lang-float select { box-shadow: 0 6px 18px rgba(16, 32, 63, 0.18); }",
-    "@media (max-width: 520px) { .rr-lang { margin: 0 4px; } .rr-lang select { padding-top: 7px; padding-bottom: 7px; padding-left: 10px; font-size: 12.5px; } }",
     // Long German and French words may wrap instead of pushing the layout wider.
     "html[lang=de] body, html[lang=fr] body { overflow-wrap: break-word; }"
   ].join("\n");
 
   function buildSwitcher() {
-    var wrap = document.createElement("label");
+    var wrap = document.createElement("div");
     wrap.className = "rr-lang";
     wrap.setAttribute("data-no-i18n", "");
-    var select = document.createElement("select");
-    select.setAttribute("aria-label", "Language / Langue / Sprache");
-    Object.keys(LANGS).forEach(function (code) {
-      var option = document.createElement("option");
-      option.value = code;
-      option.textContent = LANGS[code].label;
-      select.appendChild(option);
+    wrap.setAttribute("role", "group");
+    wrap.setAttribute("aria-label", "Language / Langue / Sprache");
+    Object.keys(LANGS).forEach(function (code, i) {
+      if (i) { var sep = document.createElement("i"); sep.textContent = "|"; sep.setAttribute("aria-hidden", "true"); wrap.appendChild(sep); }
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = LANGS[code].short;
+      btn.setAttribute("lang", code);
+      btn.setAttribute("aria-label", LANGS[code].label);
+      btn.setAttribute("data-code", code);
+      btn.setAttribute("aria-pressed", code === lang ? "true" : "false");
+      btn.addEventListener("click", function () { setLanguage(code); });
+      wrap.appendChild(btn);
     });
-    select.value = lang;
-    select.addEventListener("change", function () { setLanguage(select.value); });
-    switchers.push(select);
-    wrap.appendChild(select);
+    switchers.push(wrap);
     return wrap;
   }
 
@@ -379,11 +383,107 @@
     style.id = "rr-i18n-style";
     style.textContent = css;
     document.head.appendChild(style);
-    // One small floating menu in the bottom corner. It is fixed in place, so it can never move or
-    // resize anything that is already on the page.
+    // One small floating menu at the top right. It is positioned on top of the page (never inside the
+    // header's layout), just left of the header's right-hand buttons, so nothing is moved or resized.
     var floating = buildSwitcher();
-    floating.classList.add("rr-lang-float");
     document.body.appendChild(floating);
+    positionSwitcher(floating);
+    window.addEventListener("resize", function () { positionSwitcher(floating); });
+    window.addEventListener("load", function () { positionSwitcher(floating); });
+    window.addEventListener("rr-language-changed", function () { positionSwitcher(floating); });
+    if (window.ResizeObserver) {
+      var ro = new ResizeObserver(function () { positionSwitcher(floating); });
+      ro.observe(document.body);
+    }
+  }
+
+  function visibleRect(el) {
+    var r = el.getBoundingClientRect();
+    if (!r.width || !r.height) return null;
+    var cs = window.getComputedStyle(el);
+    if (cs.visibility === "hidden" || cs.display === "none") return null;
+    return r;
+  }
+
+  function isPinned(el) {
+    for (var n = el; n && n.nodeType === 1; n = n.parentNode) {
+      var pos = window.getComputedStyle(n).position;
+      if (pos === "fixed" || pos === "sticky") return true;
+    }
+    return false;
+  }
+
+  // Top right, level with the header and just left of its right-hand buttons.
+  // If there is no header, or no free space beside the buttons, it sits in the top-right corner.
+  function positionSwitcher(wrap) {
+    var s = wrap.style;
+    var headers = [".site-header", ".top-navbar", ".auth-topnav", ".topbar", "header.top", "header"];
+    var header = null;
+    for (var i = 0; i < headers.length && !header; i++) {
+      var list = document.querySelectorAll(headers[i]);
+      for (var k = 0; k < list.length; k++) { if (visibleRect(list[k])) { header = list[k]; break; } }
+    }
+    if (header) {
+      // Same lettering as the header's own links (font, size, colour).
+      var links = header.querySelectorAll("a");
+      for (var li = 0; li < links.length; li++) {
+        var cs = window.getComputedStyle(links[li]);
+        if (!visibleRect(links[li]) || cs.backgroundColor !== "rgba(0, 0, 0, 0)" || links[li].querySelector("img,svg")) continue;
+        s.fontFamily = cs.fontFamily; s.fontSize = cs.fontSize; s.color = cs.color;
+        s.fontWeight = cs.fontWeight;
+        break;
+      }
+    }
+    var vw = document.documentElement.clientWidth;
+    var w = wrap.offsetWidth, h = wrap.offsetHeight;
+    var left = null, top = null, pinned = true;
+    var blockers = [];
+    if (header) {
+      var hr = header.getBoundingClientRect();
+      header.querySelectorAll("a, button, select, input, h1, h2").forEach(function (el) {
+        if (wrap.contains(el)) return;
+        var r = visibleRect(el);
+        if (r) blockers.push(r);
+      });
+      // The right-hand cluster of buttons: walk left while the gaps stay small.
+      var byRight = blockers.filter(function (r) { return r.left > vw * 0.4; }).sort(function (p, q) { return q.left - p.left; });
+      var edge = vw - 12;
+      if (byRight.length) {
+        edge = byRight[0].left;
+        for (var m = 1; m < byRight.length; m++) {
+          if (byRight[m].right >= edge - 40) edge = Math.min(edge, byRight[m].left);
+        }
+      }
+      var x = edge - 12 - w;
+      var y = hr.top + (hr.height - h) / 2;
+      if (fits(x, y)) {
+        pinned = isPinned(header);
+        left = x;
+        top = pinned ? y : y + window.pageYOffset;
+      }
+    }
+    function fits(px, py) {
+      if (px < 8) return false;
+      for (var q = 0; q < blockers.length; q++) {
+        var r = blockers[q];
+        if (px < r.right && px + w > r.left && py < r.bottom && py + h > r.top) return false;
+      }
+      return true;
+    }
+    var bottom = false;
+    if (left === null) {
+      pinned = true;
+      left = vw - w - 12;
+      if (fits(left, 10)) top = 10;
+      else if (fits(left, 5)) top = 5;
+      else { top = window.innerHeight - h - 14; bottom = true; } // crowded header: bottom corner
+    }
+    wrap.classList.toggle("rr-lang-bottom", bottom);
+    s.position = pinned ? "fixed" : "absolute";
+    s.left = Math.round(left) + "px";
+    s.top = Math.round(top) + "px";
+    s.right = "auto";
+    s.bottom = "auto";
   }
 
   // Legal texts are only published in English; say so instead of showing a half-translated page.
@@ -411,7 +511,11 @@
     applyTitle();
     legalNote();
     refreshDates();
-    switchers.forEach(function (select) { select.value = lang; });
+    switchers.forEach(function (wrap) {
+      wrap.querySelectorAll("button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.getAttribute("data-code") === lang ? "true" : "false");
+      });
+    });
   }
 
   function setLanguage(next) {
