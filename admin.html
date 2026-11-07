@@ -655,7 +655,7 @@
           ? "Messages are not set up yet. Deploy the admin-support function to see them here (they are saved in the meantime)."
           : "Support messages could not be loaded." + reason;
       } catch (error) {
-        summary.textContent = "Support messages could not be loaded. Please try again.";
+        summary.textContent = "Support messages could not be loaded: the admin-support function did not answer. Check that it is deployed with exactly that name and that \"Verify JWT with legacy secret\" is turned OFF, then press Refresh.";
       }
     }
 
