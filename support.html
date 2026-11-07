@@ -82,6 +82,15 @@
     font-size: 14px;
   }
   .notice.error { color: #b42318; }
+  #supportForm[hidden] { display: none; }
+  .support-success { margin-top: 16px; padding: 28px 20px; border: 1px solid #c9ecd6; border-radius: 16px; background: #f3fbf6; text-align: center; animation: supportSuccessIn 0.35s ease both; }
+  .support-success[hidden] { display: none; }
+  .support-check { width: 56px; height: 56px; margin: 0 auto 14px; border-radius: 50%; background: #16a34a; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(22, 163, 74, 0.25); }
+  .support-check svg { width: 28px; height: 28px; fill: none; stroke: #fff; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+  .support-success p { margin: 0 auto; max-width: 440px; color: #14532d; font-size: 16px; line-height: 1.5; font-weight: 600; }
+  .support-success button { width: auto; margin-top: 16px; background: #fff; color: #14532d; border: 1px solid #b7e0c5; }
+  @keyframes supportSuccessIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .support-success { animation: none; } }
   details {
     border-top: 1px solid #e7edf5;
     padding: 12px 0;
@@ -137,6 +146,11 @@
         <button type="submit">Send Message</button>
         <p id="supportNotice" class="notice" role="status"></p>
       </form>
+      <div class="support-success" id="supportSuccess" role="status" aria-live="polite" hidden>
+        <div class="support-check" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5 9.5 17 19 7"/></svg></div>
+        <p>Thank you. Your message was sent. We will reply to your email address as soon as we can.</p>
+        <button type="button" id="supportAnother">Send another message</button>
+      </div>
 
       <h2>Report a Problem</h2>
       <p>Include what you were trying to do, the page you were on, and what you saw. Leave out passwords, sign-in codes, and payment details. Signed-in users can also open <a href="settings.html">Settings</a> and choose Report a Problem. Your report is sent to us the same way.</p>
@@ -206,6 +220,13 @@
       return entry;
     }
 
+    document.getElementById("supportAnother").addEventListener("click", function () {
+      document.getElementById("supportSuccess").hidden = true;
+      var form = document.getElementById("supportForm");
+      form.hidden = false;
+      document.getElementById("supportName").focus();
+    });
+
     document.getElementById("supportForm").addEventListener("submit", function (event) {
       event.preventDefault();
       var notice = document.getElementById("supportNotice");
@@ -253,9 +274,14 @@
         return response.text().then(function (text) { return { ok: response.ok, text: text }; });
       }).then(function (result) {
         if (result.ok) {
-          document.getElementById("supportForm").reset();
+          var form = document.getElementById("supportForm");
+          form.reset();
           notice.className = "notice";
-          notice.textContent = "Thank you. Your message was sent. We will reply to your email address as soon as we can.";
+          notice.textContent = "";
+          form.hidden = true;
+          var success = document.getElementById("supportSuccess");
+          success.hidden = false;
+          success.scrollIntoView({ block: "nearest", behavior: "smooth" });
         } else if (/RATE_LIMITED/.test(result.text)) {
           showFailure("Too many messages were sent from your connection. Please try again in an hour, or");
         } else if (/INVALID_/.test(result.text)) {

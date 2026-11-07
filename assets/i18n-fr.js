@@ -986,5 +986,6 @@ RR_register("fr",{
 "Please enter your name (up to 120 characters).": "Veuillez saisir votre nom (120 caractères maximum).",
 "Please enter a valid email address.": "Veuillez saisir une adresse e-mail valide.",
 "Please enter a subject (up to 160 characters).": "Veuillez saisir un objet (160 caractères maximum).",
-"Please enter a message (up to 4000 characters).": "Veuillez saisir un message (4000 caractères maximum)."
+"Please enter a message (up to 4000 characters).": "Veuillez saisir un message (4000 caractères maximum).",
+"Send another message": "Envoyer un autre message"
 });
