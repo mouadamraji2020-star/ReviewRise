@@ -3225,7 +3225,17 @@ body { overflow-x: hidden; }
     .stat-card, .dash-card, .feedback-card { min-width: 0; max-width: 100%; }
 }
   
-</style>
+
+    /* Print: gradient lettering (logo, headline) prints in solid brand blue instead of disappearing. */
+    @media print {
+      .auth-logo-name span,
+      .dash-logo-name span {
+        background: none !important;
+        color: #1d4ed8 !important;
+        -webkit-text-fill-color: #1d4ed8 !important;
+      }
+    }
+  </style>
   <script src="assets/i18n.js"></script>
 </head>
 

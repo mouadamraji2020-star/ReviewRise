@@ -1548,6 +1548,18 @@
       .scribble-arrow { left: 10px; top: -48px; width: 50px; height: 44px; }
       .site-footer .wrap { flex-direction: column; align-items: flex-start; }
     }
+  
+    /* Print: gradient lettering (logo, headline) prints in solid brand blue instead of disappearing. */
+    @media print {
+      .app-side-name span,
+      .logo-name span,
+      .rv-brand span span,
+      h1 .hero-accent {
+        background: none !important;
+        color: #1d4ed8 !important;
+        -webkit-text-fill-color: #1d4ed8 !important;
+      }
+    }
   </style>
   <script src="assets/i18n.js"></script>
 </head>

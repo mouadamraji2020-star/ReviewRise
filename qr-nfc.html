@@ -1724,7 +1724,16 @@ body { overflow-x: hidden; }
   .qr-link-card { min-width: 0; max-width: 100%; }
 }
 
-</style>
+
+    /* Print: gradient lettering (logo, headline) prints in solid brand blue instead of disappearing. */
+    @media print {
+      .dash-logo-name span {
+        background: none !important;
+        color: #1d4ed8 !important;
+        -webkit-text-fill-color: #1d4ed8 !important;
+      }
+    }
+  </style>
 <script>
 (function () {
   document.documentElement.classList.add("sidebar-boot");

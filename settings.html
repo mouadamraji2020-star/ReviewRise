@@ -976,7 +976,16 @@ body { opacity: 1; transition: opacity 0.25s ease; overflow-x: hidden; }
   .subscription-summary h3, .settings-content h3 { overflow-wrap: anywhere; }
 }
 body.page-leaving { opacity: 0; }
-</style>
+
+    /* Print: gradient lettering (logo, headline) prints in solid brand blue instead of disappearing. */
+    @media print {
+      .dash-logo-name span {
+        background: none !important;
+        color: #1d4ed8 !important;
+        -webkit-text-fill-color: #1d4ed8 !important;
+      }
+    }
+  </style>
 <script>
 (function () {
   document.documentElement.classList.add("sidebar-boot");

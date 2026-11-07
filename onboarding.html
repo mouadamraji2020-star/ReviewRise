@@ -564,7 +564,16 @@ input:focus, select:focus {
   .step-index, .primary-btn, .ghost-btn, .logo-drop, input, select { transition: none; }
   .step-panel.active { animation: none; }
 }
-</style>
+
+    /* Print: gradient lettering (logo, headline) prints in solid brand blue instead of disappearing. */
+    @media print {
+      .wordmark span {
+        background: none !important;
+        color: #1d4ed8 !important;
+        -webkit-text-fill-color: #1d4ed8 !important;
+      }
+    }
+  </style>
   <script src="assets/i18n.js"></script>
 </head>
 <body>
