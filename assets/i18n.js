@@ -143,7 +143,7 @@
     var key = norm(english);
     if (!key) return;
     // The logo is written as "Review" + <span>Rise</span>; the brand name is never translated.
-    if (key === "Review" && node.nextSibling && node.nextSibling.nodeType === 1 && /^Rise$/.test(node.nextSibling.textContent)) return;
+    if (key === "Review" && node.parentNode && /^ReviewRise$/.test(norm(node.parentNode.textContent))) return;
     var out = lang === "en" ? null : lookup(key, lang);
     if (out == null) {
       // Untranslated (or English): make sure the node shows the English original.
