@@ -351,6 +351,7 @@
     ".rr-lang i { font-style: normal; opacity: 0.35; }",
     ".rr-lang-bottom { background: #fff; border-radius: 999px; padding: 2px 8px; box-shadow: 0 6px 18px rgba(16, 32, 63, 0.18); }",
     "@media print { .rr-lang { display: none; } }",
+    "::view-transition-old(root), ::view-transition-new(root) { animation-duration: 0.28s; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }",
     // Long German and French words may wrap instead of pushing the layout wider.
     "html[lang=de] body, html[lang=fr] body { overflow-wrap: break-word; }"
   ].join("\n");
@@ -518,14 +519,38 @@
     });
   }
 
+  // The change of language is a soft cross-fade, like moving between pages: the browser keeps a picture
+  // of the old page and blends it into the new one. Browsers without that feature get a quick fade.
+  var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function swapWithFade(change) {
+    if (reduceMotion) { change(); return; }
+    if (typeof document.startViewTransition === "function") {
+      try { document.startViewTransition(change); return; } catch (e) { /* fall through */ }
+    }
+    var body = document.body;
+    if (!body) { change(); return; }
+    var previous = body.style.transition;
+    body.style.transition = "opacity 0.16s ease";
+    body.style.opacity = "0";
+    setTimeout(function () {
+      try { change(); } finally {
+        body.style.opacity = "1";
+        setTimeout(function () { body.style.transition = previous; body.style.opacity = ""; }, 200);
+      }
+    }, 170);
+  }
+
   function setLanguage(next) {
     if (!LANGS[next] || next === lang) return;
     loadDict(next, function () {
-      lang = next;
-      try { localStorage.setItem(KEY, next); } catch (e) { /* ignore */ }
-      if (next !== "en") observe();
-      applyAll();
-      window.dispatchEvent(new CustomEvent("rr-language-changed", { detail: { lang: next } }));
+      swapWithFade(function () {
+        lang = next;
+        try { localStorage.setItem(KEY, next); } catch (e) { /* ignore */ }
+        if (next !== "en") observe();
+        applyAll();
+        window.dispatchEvent(new CustomEvent("rr-language-changed", { detail: { lang: next } }));
+      });
     });
   }
 
