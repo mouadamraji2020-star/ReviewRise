@@ -1551,6 +1551,12 @@
   
     /* Print: gradient lettering (logo, headline) prints in solid brand blue instead of disappearing. */
     @media print {
+      /* Print the page as it looks on screen: dark buttons and the dark sidebar keep their colour,
+         so their white text stays readable. */
+      html, body, body * {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
       .app-side-name span,
       .logo-name span,
       .rv-brand span span,
