@@ -646,7 +646,11 @@
         badge.textContent = m.status === "done" ? "Done" : "New";
         actions.appendChild(badge);
         var reply = document.createElement("a");
-        reply.href = "mailto:" + encodeURIComponent(m.email || "") + "?subject=" + encodeURIComponent("Re: " + (m.subject || ""));
+        // Opens a new message in Gmail (in the browser), addressed to the customer.
+        reply.href = "https://mail.google.com/mail/?view=cm&fs=1&to=" + encodeURIComponent(m.email || "") +
+          "&su=" + encodeURIComponent("Re: " + (m.subject || ""));
+        reply.target = "_blank";
+        reply.rel = "noopener noreferrer";
         reply.className = "support-btn" + (m.status === "new" ? " primary" : "");
         reply.textContent = "Reply by email";
         actions.appendChild(reply);
