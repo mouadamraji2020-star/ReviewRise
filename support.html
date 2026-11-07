@@ -38,70 +38,106 @@
   }
   .top nav { display: flex; flex-wrap: wrap; gap: 14px; font-size: 14px; font-weight: 600; }
   .top nav a { color: #314158; text-decoration: none; }
-  main { width: min(760px, calc(100% - 40px)); margin: 36px auto 64px; }
-  article {
+  body { background: radial-gradient(1100px 420px at 50% -120px, #e3eeff 0%, rgba(227,238,255,0) 70%), #f5f8fd; min-height: 100vh; }
+  main { width: min(1040px, calc(100% - 40px)); margin: 0 auto; padding: 44px 0 72px; }
+  .help-hero { text-align: center; max-width: 640px; margin: 0 auto 34px; }
+  h1 { margin: 0 0 12px; font-size: 44px; line-height: 1.05; letter-spacing: -1.4px; font-weight: 800; }
+  .help-hero .lead { color: #5d6c84; font-size: 17px; line-height: 1.6; }
+  .help-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); gap: 22px; align-items: start; }
+  .help-side { display: grid; gap: 14px; }
+  .help-card {
     background: #fff;
-    border: 1px solid #e7edf5;
-    border-radius: 22px;
-    padding: 36px 32px;
-    box-shadow: 0 16px 40px rgba(16, 40, 80, 0.05);
+    border: 1px solid #e6edf5;
+    border-radius: 20px;
+    padding: 26px 26px 24px;
+    box-shadow: 0 14px 34px rgba(16, 40, 80, 0.05);
   }
-  h1 { margin: 0 0 12px; font-size: 36px; letter-spacing: -1px; }
-  h2 { margin: 32px 0 8px; font-size: 18px; letter-spacing: -0.3px; }
-  p, li, summary { color: #314158; font-size: 15px; line-height: 1.65; }
+  .help-card.help-info { padding: 20px 22px; box-shadow: 0 8px 22px rgba(16, 40, 80, 0.04); }
+  h2 { display: flex; align-items: center; gap: 10px; margin: 0 0 8px; font-size: 18px; letter-spacing: -0.3px; font-weight: 800; }
+  .help-card h2 .ico { flex: none; width: 32px; height: 32px; border-radius: 10px; background: #eaf2ff; display: inline-flex; align-items: center; justify-content: center; }
+  .help-card h2 .ico svg { width: 17px; height: 17px; fill: none; stroke: #2563eb; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+  p, li, summary { color: #3d4b63; font-size: 15px; line-height: 1.65; }
+  .help-card p { margin: 0; }
+  .help-info p { font-size: 14px; line-height: 1.6; color: #5d6c84; }
+  .help-info a, .help-card p a { color: #1d4ed8; text-decoration: underline; text-decoration-color: rgba(29, 78, 216, 0.35); text-underline-offset: 2px; }
+  .help-info a:hover, .help-card p a:hover { text-decoration-color: #1d4ed8; }
   .lead { margin: 0; }
-  form { display: grid; gap: 8px; margin-top: 16px; }
-  label { font-size: 13px; font-weight: 700; color: #314158; }
+  form { display: grid; gap: 6px; margin-top: 18px; }
+  label { margin-top: 8px; font-size: 13px; font-weight: 700; color: #314158; }
   input, textarea {
     width: 100%;
-    border: 1px solid #e3eaf3;
+    border: 1px solid #dde6f1;
     border-radius: 12px;
-    background: #fff;
+    background: #fbfcfe;
     color: #0c1424;
     font: inherit;
     font-size: 15px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
   }
+  input:hover, textarea:hover { border-color: #c7d5e8; }
+  input:focus, textarea:focus { outline: none; border-color: #2f7cf6; background: #fff; box-shadow: 0 0 0 4px rgba(47, 124, 246, 0.14); }
   input { height: 46px; padding: 0 14px; }
-  textarea { min-height: 140px; padding: 12px 14px; resize: vertical; }
+  textarea { min-height: 150px; padding: 12px 14px; resize: vertical; }
+  .form-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin-top: 10px; }
   button {
     justify-self: start;
-    min-height: 44px;
-    margin-top: 6px;
-    padding: 0 16px;
+    min-height: 46px;
+    margin-top: 0;
+    padding: 0 22px;
     border: 0;
     border-radius: 12px;
-    background: #10284d;
+    background: #10203f;
     color: #fff;
     font: inherit;
     font-weight: 700;
     cursor: pointer;
+    box-shadow: 0 8px 18px rgba(16, 32, 63, 0.18);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
   }
+  button:hover { background: #0b1730; transform: translateY(-1px); box-shadow: 0 12px 22px rgba(16, 32, 63, 0.22); }
+  button:disabled { opacity: 0.65; cursor: default; transform: none; }
+  button:focus-visible, .wa-link:focus-visible { outline: 3px solid rgba(47, 124, 246, 0.45); outline-offset: 2px; }
+  .wa-link { display: inline-flex; align-items: center; min-height: 46px; padding: 0 18px; border: 1px solid #dde6f1; border-radius: 12px; background: #fff; color: #10203f; font-weight: 700; font-size: 15px; text-decoration: none; transition: border-color 0.15s ease, background 0.15s ease; }
+  .wa-link:hover { border-color: #b9c9de; background: #f7faff; }
   .notice {
-    margin: 12px 0 0;
+    margin: 10px 0 0;
     color: #3d4b63;
     font-size: 14px;
   }
   .notice.error { color: #b42318; }
+  .notice a { color: #1d4ed8; font-weight: 700; }
   #supportForm[hidden] { display: none; }
-  .support-success { margin-top: 16px; padding: 28px 20px; border: 1px solid #c9ecd6; border-radius: 16px; background: #f3fbf6; text-align: center; animation: supportSuccessIn 0.35s ease both; }
+  .support-success { margin-top: 18px; padding: 30px 20px; border: 1px solid #c9ecd6; border-radius: 16px; background: #f3fbf6; text-align: center; animation: supportSuccessIn 0.35s ease both; }
   .support-success[hidden] { display: none; }
   .support-check { width: 56px; height: 56px; margin: 0 auto 14px; border-radius: 50%; background: #16a34a; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(22, 163, 74, 0.25); }
   .support-check svg { width: 28px; height: 28px; fill: none; stroke: #fff; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
   .support-success p { margin: 0 auto; max-width: 440px; color: #14532d; font-size: 16px; line-height: 1.5; font-weight: 600; }
-  .support-success button { width: auto; margin-top: 16px; background: #fff; color: #14532d; border: 1px solid #b7e0c5; }
+  .support-success button { width: auto; margin-top: 16px; background: #fff; color: #14532d; border: 1px solid #b7e0c5; box-shadow: none; }
+  .support-success button:hover { background: #f3fbf6; box-shadow: none; }
   @keyframes supportSuccessIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
   @media (prefers-reduced-motion: reduce) { .support-success { animation: none; } }
-  details {
-    border-top: 1px solid #e7edf5;
-    padding: 12px 0;
+  .help-faq { margin-top: 34px; }
+  .help-faq > h2 { font-size: 22px; letter-spacing: -0.5px; margin-bottom: 14px; }
+  .faq-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; align-items: start; }
+  details { background: #fff; border: 1px solid #e6edf5; border-radius: 16px; padding: 0; box-shadow: 0 6px 16px rgba(16, 40, 80, 0.03); transition: border-color 0.15s ease, box-shadow 0.15s ease; }
+  details:hover { border-color: #cfdcec; }
+  details[open] { border-color: #bcd3f5; box-shadow: 0 10px 24px rgba(37, 99, 235, 0.08); }
+  summary { cursor: pointer; list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 18px; font-weight: 700; color: #10284d; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: ""; flex: none; width: 18px; height: 18px; border-radius: 50%; background: #eaf2ff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6'><path d='M1 1l4 4 4-4' fill='none' stroke='%232563eb' stroke-width='1.8' stroke-linecap='round'/></svg>") no-repeat center; transition: transform 0.2s ease; }
+  details[open] summary::after { transform: rotate(180deg); }
+  summary:focus-visible { outline: 3px solid rgba(47, 124, 246, 0.4); outline-offset: -3px; border-radius: 16px; }
+  details p { margin: 0; padding: 0 18px 18px; font-size: 14.5px; color: #5d6c84; }
+  @media (max-width: 900px) {
+    .help-grid { grid-template-columns: minmax(0, 1fr); }
+    .faq-grid { grid-template-columns: minmax(0, 1fr); }
   }
-  summary { cursor: pointer; font-weight: 700; color: #10284d; }
-  details p { margin: 8px 0 0; }
   @media (max-width: 700px) {
     .top { align-items: flex-start; flex-direction: column; }
-    article { padding: 24px 18px; }
-    h1 { font-size: 30px; }
-    button { width: 100%; }
+    main { padding: 28px 0 56px; }
+    h1 { font-size: 34px; }
+    .help-card { padding: 22px 18px; }
+    .form-actions button, .form-actions .wa-link { width: 100%; justify-content: center; }
   }
 
     /* Print: gradient lettering (logo, headline) prints in solid brand blue instead of disappearing. */
@@ -128,11 +164,13 @@
     </nav>
   </header>
   <main>
-    <article>
+    <div class="help-hero">
       <h1>Help Center</h1>
       <p class="lead">Answers for trials, review links, billing, and account tools. Send us a message below and we will reply by email.</p>
-
-      <h2 id="contact">Contact Support</h2>
+    </div>
+    <div class="help-grid">
+      <section class="help-card help-contact">
+      <h2 id="contact"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4V5z"/></svg></span>Contact Support</h2>
       <p>Write your question here. We read every message and reply by email.</p>
       <form id="supportForm">
         <label for="supportName">Name</label>
@@ -143,7 +181,10 @@
         <input id="supportSubject" name="subject" type="text" required maxlength="160">
         <label for="supportMessage">Message</label>
         <textarea id="supportMessage" name="message" required maxlength="4000"></textarea>
-        <button type="submit">Send Message</button>
+        <div class="form-actions">
+          <button type="submit">Send Message</button>
+          <a class="wa-link" href="https://wa.me/212766315853" target="_blank" rel="noopener noreferrer">Message us on WhatsApp</a>
+        </div>
         <p id="supportNotice" class="notice" role="status"></p>
       </form>
       <div class="support-success" id="supportSuccess" role="status" aria-live="polite" hidden>
@@ -151,20 +192,29 @@
         <p>Thank you. Your message was sent. We will reply to your email address as soon as we can.</p>
         <button type="button" id="supportAnother">Send another message</button>
       </div>
-
-      <h2>Report a Problem</h2>
+      </section>
+      <div class="help-side">
+        <section class="help-card help-info">
+      <h2><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 4 3 19h18L12 4z"/><path d="M12 10v4"/><path d="M12 17h.01"/></svg></span>Report a Problem</h2>
       <p>Include what you were trying to do, the page you were on, and what you saw. Leave out passwords, sign-in codes, and payment details. Signed-in users can also open <a href="settings.html">Settings</a> and choose Report a Problem. Your report is sent to us the same way.</p>
-
-      <h2>Billing Questions</h2>
+        </section>
+        <section class="help-card help-info">
+      <h2><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/></svg></span>Billing Questions</h2>
       <p>New accounts can use a 7-day free trial. After the trial, continued access uses a Pro or Business plan. Prices are shown on the <a href="index.html#pricing">homepage pricing section</a>. Paid plans are arranged on WhatsApp: you receive the payment details there, and your plan is activated once your payment is confirmed.</p>
-
-      <h2>Account Questions</h2>
+        </section>
+        <section class="help-card help-info">
+      <h2><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/></svg></span>Account Questions</h2>
       <p>Password changes and sign out are in Settings → Security. Export My Data is in Settings → Data &amp; Privacy. Delete Account is in Settings → Danger Zone and asks you to type DELETE before it continues. Those actions stay available from Settings after a trial ends.</p>
-
-      <h2>Review Link / QR Help</h2>
+        </section>
+        <section class="help-card help-info">
+      <h2><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><path d="M14 14h3v3M20 14v6h-3"/></svg></span>Review Link / QR Help</h2>
       <p>Create a business from Review Links. The trial includes 1 business, Pro includes up to 5, and Business includes up to 25. QR &amp; NFC uses a review link that already exists. If none is available yet, create one from Review Links first.</p>
-
+        </section>
+      </div>
+    </div>
+    <section class="help-faq">
       <h2>FAQ</h2>
+      <div class="faq-grid">
       <details>
         <summary>How does the 7-day trial work?</summary>
         <p>A new account can receive one free trial that lasts 7 days and includes 1 business. When the trial ends, Dashboard, Analytics, Feedback, Review Links, and QR &amp; NFC require an active Pro or Business plan. Settings stays open.</p>
@@ -197,7 +247,8 @@
         <summary>How do I export my data?</summary>
         <p>Open Settings → Data &amp; Privacy and choose Export My Data. When the export service is available, ReviewRise downloads a JSON file of your own profile, businesses, feedback, and subscription details. The file does not include your password or sign-in tokens.</p>
       </details>
-    </article>
+      </div>
+    </section>
   </main>
   <script>
     var SUPPORT_SUPABASE_URL = "https://intlhwmvldxdiytemjlr.supabase.co";

@@ -118,15 +118,28 @@
       }
     }
   
-  .support-item { border: 1px solid #e7edf5; border-radius: 14px; padding: 14px 16px; margin: 10px 0; background: #fff; }
-  .support-item.is-done { opacity: 0.6; }
-  .support-head { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: baseline; justify-content: space-between; }
-  .support-head strong { font-size: 14px; }
-  .support-meta { color: #6d7c92; font-size: 12.5px; }
-  .support-text { margin: 8px 0 10px; white-space: pre-wrap; word-break: break-word; font-size: 13.5px; line-height: 1.55; }
+  .support-item { position: relative; border: 1px solid #e3eaf3; border-radius: 16px; padding: 16px 18px 14px 22px; margin: 12px 0; background: #fff; box-shadow: 0 6px 16px rgba(16, 40, 80, 0.04); transition: box-shadow 0.15s ease; }
+  .support-item:hover { box-shadow: 0 10px 22px rgba(16, 40, 80, 0.07); }
+  .support-item::before { content: ""; position: absolute; left: 0; top: 14px; bottom: 14px; width: 4px; border-radius: 0 4px 4px 0; background: #2563eb; }
+  .support-item.is-done { background: #fafbfd; }
+  .support-item.is-done::before { background: #c5cfdd; }
+  .support-item.is-done .support-head strong, .support-item.is-done .support-text { color: #6d7c92; }
+  .support-head { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; justify-content: space-between; }
+  .support-head strong { font-size: 15px; letter-spacing: -0.2px; color: #0c1424; }
+  .support-when { color: #8a97ab; font-size: 12.5px; white-space: nowrap; }
+  .support-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; margin-top: 3px; color: #5d6c84; font-size: 13px; }
+  .support-tag { display: inline-block; padding: 2px 8px; border-radius: 999px; background: #f0f4fa; color: #4a5a73; font-size: 11.5px; font-weight: 700; }
+  .support-text { margin: 12px 0 14px; padding: 12px 14px; border-radius: 12px; background: #f7f9fc; white-space: pre-wrap; word-break: break-word; font-size: 14px; line-height: 1.6; color: #1f2d44; }
   .support-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-  .support-actions a { font-size: 13px; }
-  .support-badge { display: inline-block; padding: 2px 8px; border-radius: 999px; background: #e8f1ff; color: #1d4ed8; font-size: 11.5px; font-weight: 700; }
+  .support-badge { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; background: #e8f1ff; color: #1d4ed8; font-size: 12px; font-weight: 700; }
+  .support-badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #2563eb; }
+  .support-badge.is-done { background: #e8f6ee; color: #15803d; }
+  .support-badge.is-done::before { background: #16a34a; }
+  .support-btn { display: inline-flex; align-items: center; min-height: 34px; padding: 0 14px; border-radius: 10px; border: 1px solid #d5e0ee; background: #fff; color: #10203f; font: inherit; font-size: 13px; font-weight: 700; text-decoration: none; cursor: pointer; transition: background 0.15s ease, border-color 0.15s ease; }
+  .support-btn:hover { background: #f4f8fe; border-color: #bccde3; }
+  .support-btn.primary { background: #10203f; border-color: #10203f; color: #fff; }
+  .support-btn.primary:hover { background: #0b1730; }
+  .support-btn:disabled { opacity: 0.6; cursor: default; }
 </style>
   <script src="assets/i18n.js"></script>
 </head>
@@ -599,15 +612,28 @@
         var who = document.createElement("strong");
         who.textContent = m.subject || "(no subject)";
         var when = document.createElement("span");
-        when.className = "support-meta";
+        when.className = "support-when";
         when.textContent = formatDate(m.created_at, true);
         head.appendChild(who);
         head.appendChild(when);
 
         var meta = document.createElement("div");
         meta.className = "support-meta";
-        meta.textContent = (m.name || "") + " · " + (m.email || "") +
-          (m.category ? " · " + m.category : "") + (m.source === "settings" ? " · from Settings" : "");
+        var who2 = document.createElement("span");
+        who2.textContent = (m.name || "") + " · " + (m.email || "");
+        meta.appendChild(who2);
+        if (m.category) {
+          var tag = document.createElement("span");
+          tag.className = "support-tag";
+          tag.textContent = m.category;
+          meta.appendChild(tag);
+        }
+        if (m.source === "settings") {
+          var tag2 = document.createElement("span");
+          tag2.className = "support-tag";
+          tag2.textContent = "From Settings";
+          meta.appendChild(tag2);
+        }
 
         var text = document.createElement("div");
         text.className = "support-text";
@@ -615,19 +641,18 @@
 
         var actions = document.createElement("div");
         actions.className = "support-actions";
-        if (m.status === "new") {
-          var badge = document.createElement("span");
-          badge.className = "support-badge";
-          badge.textContent = "New";
-          actions.appendChild(badge);
-        }
+        var badge = document.createElement("span");
+        badge.className = "support-badge" + (m.status === "done" ? " is-done" : "");
+        badge.textContent = m.status === "done" ? "Done" : "New";
+        actions.appendChild(badge);
         var reply = document.createElement("a");
         reply.href = "mailto:" + encodeURIComponent(m.email || "") + "?subject=" + encodeURIComponent("Re: " + (m.subject || ""));
+        reply.className = "support-btn" + (m.status === "new" ? " primary" : "");
         reply.textContent = "Reply by email";
         actions.appendChild(reply);
         var toggle = document.createElement("button");
         toggle.type = "button";
-        toggle.className = "quiet";
+        toggle.className = "support-btn";
         toggle.textContent = m.status === "done" ? "Mark as new" : "Mark as done";
         toggle.addEventListener("click", async function () {
           toggle.disabled = true;
