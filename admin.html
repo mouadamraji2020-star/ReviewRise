@@ -117,7 +117,17 @@
         -webkit-text-fill-color: #1d4ed8 !important;
       }
     }
-  </style>
+  
+  .support-item { border: 1px solid #e7edf5; border-radius: 14px; padding: 14px 16px; margin: 10px 0; background: #fff; }
+  .support-item.is-done { opacity: 0.6; }
+  .support-head { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: baseline; justify-content: space-between; }
+  .support-head strong { font-size: 14px; }
+  .support-meta { color: #6d7c92; font-size: 12.5px; }
+  .support-text { margin: 8px 0 10px; white-space: pre-wrap; word-break: break-word; font-size: 13.5px; line-height: 1.55; }
+  .support-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .support-actions a { font-size: 13px; }
+  .support-badge { display: inline-block; padding: 2px 8px; border-radius: 999px; background: #e8f1ff; color: #1d4ed8; font-size: 11.5px; font-weight: 700; }
+</style>
   <script src="assets/i18n.js"></script>
 </head>
 <body>
@@ -184,6 +194,11 @@
         <h2>New signups, last 30 days</h2>
         <div class="chart" id="signupChart" aria-label="New signups per day"></div>
         <div class="chart-axis"><span id="chartStart"></span><span id="chartEnd"></span></div>
+      </section>
+      <section class="panel" id="supportPanel">
+        <h2>Support messages</h2>
+        <p class="note" id="supportSummary">Loading…</p>
+        <div id="supportList"></div>
       </section>
       <section class="panel">
         <h2>All users</h2>
@@ -552,6 +567,98 @@
       }
     });
 
+    async function supportCall(body) {
+      var token = localStorage.getItem("reviewrise_token");
+      body.passcode = adminPasscode;
+      var response = await fetch(SUPABASE_URL + "/functions/v1/admin-support", {
+        method: "POST",
+        headers: { apikey: SUPABASE_KEY, Authorization: "Bearer " + token, "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      });
+      var data = null;
+      try { data = await response.json(); } catch (parseError) { data = null; }
+      return { ok: response.ok, status: response.status, data: data };
+    }
+
+    function renderSupport(messages) {
+      var list = document.getElementById("supportList");
+      list.textContent = "";
+      var open = messages.filter(function (m) { return m.status === "new"; }).length;
+      document.getElementById("supportSummary").textContent = messages.length
+        ? open + " new, " + messages.length + " in total (latest 200)."
+        : "No messages yet.";
+      messages.forEach(function (m) {
+        var item = document.createElement("div");
+        item.className = "support-item" + (m.status === "done" ? " is-done" : "");
+
+        var head = document.createElement("div");
+        head.className = "support-head";
+        var who = document.createElement("strong");
+        who.textContent = m.subject || "(no subject)";
+        var when = document.createElement("span");
+        when.className = "support-meta";
+        when.textContent = formatDate(m.created_at, true);
+        head.appendChild(who);
+        head.appendChild(when);
+
+        var meta = document.createElement("div");
+        meta.className = "support-meta";
+        meta.textContent = (m.name || "") + " · " + (m.email || "") +
+          (m.category ? " · " + m.category : "") + (m.source === "settings" ? " · from Settings" : "");
+
+        var text = document.createElement("div");
+        text.className = "support-text";
+        text.textContent = m.message || "";
+
+        var actions = document.createElement("div");
+        actions.className = "support-actions";
+        if (m.status === "new") {
+          var badge = document.createElement("span");
+          badge.className = "support-badge";
+          badge.textContent = "New";
+          actions.appendChild(badge);
+        }
+        var reply = document.createElement("a");
+        reply.href = "mailto:" + encodeURIComponent(m.email || "") + "?subject=" + encodeURIComponent("Re: " + (m.subject || ""));
+        reply.textContent = "Reply by email";
+        actions.appendChild(reply);
+        var toggle = document.createElement("button");
+        toggle.type = "button";
+        toggle.className = "quiet";
+        toggle.textContent = m.status === "done" ? "Mark as new" : "Mark as done";
+        toggle.addEventListener("click", async function () {
+          toggle.disabled = true;
+          var result = await supportCall({ action: "mark", id: m.id, status: m.status === "done" ? "new" : "done" });
+          if (result.ok) { loadSupport(); } else { toggle.disabled = false; document.getElementById("supportSummary").textContent = "Could not update the message. Please try again."; }
+        });
+        actions.appendChild(toggle);
+
+        item.appendChild(head);
+        item.appendChild(meta);
+        item.appendChild(text);
+        item.appendChild(actions);
+        list.appendChild(item);
+      });
+    }
+
+    async function loadSupport() {
+      var summary = document.getElementById("supportSummary");
+      try {
+        var result = await supportCall({ action: "list" });
+        if (result.ok && result.data && Array.isArray(result.data.messages)) {
+          renderSupport(result.data.messages);
+          return;
+        }
+        document.getElementById("supportList").textContent = "";
+        var reason = result.data && typeof result.data.reason === "string" ? " " + result.data.reason.slice(0, 200) : "";
+        summary.textContent = result.status === 404
+          ? "Messages are not set up yet. Deploy the admin-support function to see them here (they are saved in the meantime)."
+          : "Support messages could not be loaded." + reason;
+      } catch (error) {
+        summary.textContent = "Support messages could not be loaded. Please try again.";
+      }
+    }
+
     async function showAdmin() {
       var token = localStorage.getItem("reviewrise_token");
       var result = token ? await loadStats(token) : { denied: true };
@@ -574,6 +681,7 @@
       document.getElementById("adminLock").hidden = true;
       document.getElementById("adminApp").hidden = false;
       renderStats(result.data);
+      loadSupport();
     }
 
     async function sessionUserId() {

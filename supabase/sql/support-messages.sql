@@ -70,14 +70,19 @@ begin
   if v_message = '' or length(v_message) > 4000 then raise exception 'INVALID_MESSAGE'; end if;
   if v_category is not null then v_category := left(v_category, 60); end if;
 
+  -- Network address, stored only as a salted one-way hash. Cloudflare's header cannot be forged by the
+  -- visitor; otherwise the LAST entry of x-forwarded-for is used (the first can be written by the visitor).
   begin
-    v_headers := coalesce(nullif(current_setting('request.headers', true), ''), '{}')::jsonb;
+    v_headers := nullif(current_setting('request.headers', true), '')::jsonb;
   exception when others then
-    v_headers := '{}'::jsonb;
+    v_headers := null;
   end;
-  v_ip := nullif(btrim(split_part(coalesce(v_headers ->> 'x-forwarded-for', ''), ',', 1)), '');
+  v_ip := nullif(btrim(coalesce(
+    v_headers ->> 'cf-connecting-ip',
+    substring(coalesce(v_headers ->> 'x-forwarded-for', '') from '([^,[:space:]]+)[[:space:]]*$')
+  )), '');
   if v_ip is not null then
-    v_ip_hash := encode(digest(c_salt || v_ip, 'sha256'), 'hex');
+    v_ip_hash := encode(sha256(convert_to(v_ip || c_salt, 'UTF8')), 'hex');
   end if;
 
   if v_ip_hash is not null and (

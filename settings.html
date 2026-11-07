@@ -3322,11 +3322,53 @@ document.getElementById("reportProblemForm").addEventListener("submit", function
         setSettingsStatus("problemStatus", "Add a category, title, and description.", "error");
         return;
     }
-    reviewRiseReportError({
-        type: "problem-report",
-        message: "Problem report was kept on the page because messaging is not connected."
+    var token = localStorage.getItem("reviewrise_token") || "";
+    var email = "";
+    try {
+        var part = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+        email = String(JSON.parse(atob(part)).email || "");
+    } catch (error) { email = ""; }
+    var nameField = document.getElementById("fullName");
+    var name = (nameField && nameField.value.trim()) || email || "ReviewRise user";
+    var location_ = document.getElementById("problemLocation").value.trim();
+    var browser = document.getElementById("problemBrowser").value.trim();
+    var body = description + (browser ? "\n\nBrowser: " + browser : "");
+    var sendButton = document.getElementById("sendProblemBtn");
+    var originalLabel = sendButton.textContent;
+    sendButton.disabled = true;
+    sendButton.textContent = "Sending...";
+    setSettingsStatus("problemStatus", "", "");
+    fetch(SUPABASE_URL + "/rest/v1/rpc/submit_support_message", {
+        method: "POST",
+        headers: {
+            "apikey": SUPABASE_KEY,
+            "Authorization": "Bearer " + (token || SUPABASE_KEY),
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            p_name: name, p_email: email, p_subject: title, p_message: body,
+            p_category: category, p_source: "settings", p_page: location_ || "settings.html"
+        })
+    }).then(function (response) {
+        return response.text().then(function (text) { return { ok: response.ok, text: text }; });
+    }).then(function (result) {
+        if (result.ok) {
+            document.getElementById("reportProblemForm").reset();
+            setSettingsStatus("problemStatus", "Your report was sent. Thank you, we will look into it.", "success");
+        } else if (/RATE_LIMITED/.test(result.text)) {
+            setSettingsStatus("problemStatus", "Too many reports were sent from your connection. Please try again in an hour.", "error");
+        } else if (/INVALID_EMAIL/.test(result.text)) {
+            setSettingsStatus("problemStatus", "Your account has no valid email address, so this report could not be sent.", "error");
+        } else {
+            reviewRiseReportError({ type: "problem-report", message: "Problem report could not be saved (" + String(result.text).slice(0, 80) + ")" });
+            setSettingsStatus("problemStatus", "Your report could not be sent. Please try again.", "error");
+        }
+    }).catch(function () {
+        setSettingsStatus("problemStatus", "Your report could not be sent. Please check your connection and try again.", "error");
+    }).then(function () {
+        sendButton.disabled = false;
+        sendButton.textContent = originalLabel;
     });
-    setSettingsStatus("problemStatus", "Support messaging is being prepared. Please save your message and contact ReviewRise through the available contact channel.", "");
 });
 
 var subscriptionRetry = document.getElementById("subscriptionRetry");
