@@ -567,10 +567,14 @@
       }
     });
 
+    // The name the function has in Supabase. (It was created with this long name; if it is ever
+    // re-created as plain "admin-support", change this one line.)
+    var SUPPORT_FUNCTION = "admin-support--all-lowercase--with-the-dash-";
+
     async function supportCall(body) {
       var token = localStorage.getItem("reviewrise_token");
       body.passcode = adminPasscode;
-      var response = await fetch(SUPABASE_URL + "/functions/v1/admin-support", {
+      var response = await fetch(SUPABASE_URL + "/functions/v1/" + SUPPORT_FUNCTION, {
         method: "POST",
         headers: { apikey: SUPABASE_KEY, Authorization: "Bearer " + token, "Content-Type": "application/json" },
         body: JSON.stringify(body)
@@ -655,7 +659,7 @@
           ? "Messages are not set up yet. Deploy the admin-support function to see them here (they are saved in the meantime)."
           : "Support messages could not be loaded." + reason;
       } catch (error) {
-        summary.textContent = "Support messages could not be loaded: the admin-support function did not answer. Check that it is deployed with exactly that name and that \"Verify JWT with legacy secret\" is turned OFF, then press Refresh.";
+        summary.textContent = "Support messages could not be loaded: the admin-support function did not answer. Check that it is deployed with the right name and that \"Verify JWT with legacy secret\" is turned OFF, then press Refresh.";
       }
     }
 
