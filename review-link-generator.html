@@ -98,6 +98,7 @@
   .qr-box { padding: 10px; background: #fff; border: 1px solid #dfe8f3; border-radius: 14px; line-height: 0; }
   .qr-box svg { width: 140px; height: 140px; display: block; }
   .qr small { color: #5d6c84; font-size: 13px; max-width: 220px; line-height: 1.5; }
+  .hint { margin: 12px 0 0; color: #5d6c84; font-size: 13.5px; }
   .cta { margin-top: 22px; text-align: center; }
   .cta .card { padding: 28px 22px; }
   .cta h2 { justify-content: center; font-size: 22px; letter-spacing: -0.5px; }
@@ -148,20 +149,20 @@
       </section>
 
       <section class="card">
-        <h2><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.1.1l1.4-1.4a5 5 0 0 0-7.1-7.1L10 5"/><path d="M14 11a5 5 0 0 0-7.1-.1L5.5 12.4a5 5 0 0 0 7.1 7.1L14 19"/></svg></span>Create it from your Place ID</h2>
+        <h2><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.1.1l1.4-1.4a5 5 0 0 0-7.1-7.1L10 5"/><path d="M14 11a5 5 0 0 0-7.1-.1L5.5 12.4a5 5 0 0 0 7.1 7.1L14 19"/></svg></span>Create it from your Google Maps link</h2>
         <p>Works for any business on Google Maps, even if you don't manage it.</p>
         <ol>
-          <li>Find your business on Google's Place ID finder and copy its Place ID.</li>
-          <li>Paste it below and click Create review link.</li>
+          <li>Open your business on Google Maps and click Share.</li>
+          <li>Click Copy link, paste it below and click Create review link.</li>
         </ol>
         <div class="row">
-          <a class="btn secondary" id="finderLink" href="https://developers.google.com/maps/documentation/places/web-service/place-id" target="_blank" rel="noopener noreferrer">Open Google's Place ID finder</a>
+          <a class="btn secondary" id="mapsLink" href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer">Open Google Maps</a>
         </div>
         <form id="genForm" novalidate>
-          <label for="placeId">Paste your Place ID here</label>
-          <input id="placeId" name="placeId" type="text" inputmode="text" autocomplete="off" spellcheck="false" placeholder="ChIJ…">
+          <label for="mapsUrl">Paste your Google Maps link here</label>
+          <input id="mapsUrl" name="mapsUrl" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="https://maps.app.goo.gl/…">
           <p class="error" id="genError" role="alert" hidden></p>
-          <div class="row"><button class="btn" type="submit">Create review link</button></div>
+          <div class="row"><button class="btn" type="submit" id="genBtn">Create review link</button></div>
         </form>
 
         <div class="result" id="result" hidden>
@@ -172,6 +173,7 @@
             <a class="btn secondary" id="testBtn" href="#" target="_blank" rel="noopener noreferrer">Test link</a>
             <button class="btn secondary" type="button" id="qrBtn">Download QR code</button>
           </div>
+          <p class="hint">Click Test link to check that it opens your business's review box.</p>
           <div class="qr">
             <div class="qr-box" id="qrBox" aria-hidden="true"></div>
             <small>Print this QR code or share the link so customers can leave a review in one tap.</small>
@@ -194,8 +196,12 @@
   <script src="assets/qrcode-generator.js"></script>
   <script>
     (function () {
+      var SUPABASE_URL = "https://intlhwmvldxdiytemjlr.supabase.co";
+      var SUPABASE_KEY = "sb_publishable_0KjZZApJCuvTEJH3nNyLUg_aps6aXaA";
+      var SHORT_HOSTS = ["maps.app.goo.gl", "goo.gl", "g.co"];
       var form = document.getElementById("genForm");
-      var input = document.getElementById("placeId");
+      var input = document.getElementById("mapsUrl");
+      var genBtn = document.getElementById("genBtn");
       var errorEl = document.getElementById("genError");
       var result = document.getElementById("result");
       var linkBox = document.getElementById("linkBox");
@@ -210,13 +216,78 @@
         return window.ReviewRiseLang && window.ReviewRiseLang.translate ? window.ReviewRiseLang.translate(text) : text;
       }
 
-      // Accepts a Place ID, or a link that already contains one.
-      function readPlaceId(raw) {
+      // Google Maps links contain the business's "feature id" (0x...:0x...). Google's review link needs the
+      // same two numbers written as a Place ID, so we convert them (two 64-bit numbers packed and base64url-encoded).
+      function findFid(text) {
+        var current = String(text || "");
+        for (var i = 0; i < 3; i++) {
+          var m = current.match(/0x[0-9a-f]{1,16}:0x[0-9a-f]{1,16}/i);
+          if (m) return m[0].toLowerCase();
+          try {
+            var decoded = decodeURIComponent(current);
+            if (decoded === current) break;
+            current = decoded;
+          } catch (error) { break; }
+        }
+        return "";
+      }
+
+      function fidToPlaceId(fid) {
+        var parts = String(fid).match(/^0x([0-9a-f]+):0x([0-9a-f]+)$/i);
+        if (!parts) return "";
+        var bytes = [0x0a, 0x12, 0x09];
+        function push64(hex) {
+          var n = BigInt("0x" + hex);
+          for (var i = 0; i < 8; i++) { bytes.push(Number(n & 0xffn)); n >>= 8n; }
+        }
+        push64(parts[1]);
+        bytes.push(0x11);
+        push64(parts[2]);
+        var binary = "";
+        bytes.forEach(function (b) { binary += String.fromCharCode(b); });
+        return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+      }
+
+      function parseUrl(raw) {
         var text = String(raw || "").trim();
-        if (!text) return "";
-        var fromUrl = text.match(/[?&]placeid=([A-Za-z0-9_-]{10,300})/i);
-        if (fromUrl) return fromUrl[1];
-        return /^[A-Za-z0-9_-]{20,300}$/.test(text) ? text : "";
+        if (!text) return null;
+        if (!/^https?:\/\//i.test(text)) text = "https://" + text;
+        try { return new URL(text); } catch (error) { return null; }
+      }
+
+      function isGoogleHost(host) {
+        return /(^|\.)google\.[a-z.]{2,6}$/i.test(host) || SHORT_HOSTS.indexOf(host.toLowerCase()) !== -1;
+      }
+
+      function showError(text) {
+        result.hidden = true;
+        errorEl.hidden = false;
+        errorEl.textContent = tr(text);
+      }
+
+      async function placeIdFromMapsLink(raw) {
+        var url = parseUrl(raw);
+        if (!url || !isGoogleHost(url.hostname)) return { error: "Please paste a Google Maps link to your business." };
+        var fid = findFid(url.href);
+        if (!fid && SHORT_HOSTS.indexOf(url.hostname.toLowerCase()) !== -1) {
+          try {
+            var response = await fetch(SUPABASE_URL + "/functions/v1/resolve-maps-link", {
+              method: "POST",
+              headers: { "apikey": SUPABASE_KEY, "Content-Type": "application/json" },
+              body: JSON.stringify({ url: url.href })
+            });
+            if (response.status === 429) return { error: "Too many tries. Please wait a few minutes and try again." };
+            if (response.status === 404) return { error: "We couldn't read that link. Open your business on Google Maps, click Share, and copy the link again." };
+            if (!response.ok) return { error: "Something went wrong. Please try again in a moment." };
+            var data = await response.json();
+            fid = data && typeof data.fid === "string" ? data.fid : "";
+          } catch (error) {
+            return { error: "Something went wrong. Please try again in a moment." };
+          }
+        }
+        var id = fid ? fidToPlaceId(fid) : "";
+        if (!id) return { error: "We couldn't read that link. Open your business on Google Maps, click Share, and copy the link again." };
+        return { id: id };
       }
 
       function showQr(link) {
@@ -253,18 +324,22 @@
         return canvas;
       }
 
-      form.addEventListener("submit", function (event) {
+      form.addEventListener("submit", async function (event) {
         event.preventDefault();
-        var id = readPlaceId(input.value);
-        if (!id) {
-          result.hidden = true;
-          errorEl.hidden = false;
-          errorEl.textContent = tr("Please paste your Place ID. It usually starts with ChIJ.");
+        if (genBtn.disabled) return;
+        var label = genBtn.textContent;
+        genBtn.disabled = true;
+        genBtn.textContent = tr("Creating your link…");
+        var found = await placeIdFromMapsLink(input.value);
+        genBtn.disabled = false;
+        genBtn.textContent = label;
+        if (!found.id) {
+          showError(found.error);
           input.focus();
           return;
         }
         errorEl.hidden = true;
-        currentLink = "https://search.google.com/local/writereview?placeid=" + encodeURIComponent(id);
+        currentLink = "https://search.google.com/local/writereview?placeid=" + encodeURIComponent(found.id);
         linkBox.textContent = currentLink;
         testBtn.href = currentLink;
         showQr(currentLink);

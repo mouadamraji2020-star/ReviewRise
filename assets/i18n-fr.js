@@ -1015,5 +1015,16 @@ RR_register("fr",{
 "ReviewRise makes it easy with a QR code or an NFC tap.": "ReviewRise simplifie tout avec un QR code ou un contact NFC.",
 "Free Review Link Tool": "Outil gratuit de lien d'avis",
 "Don't have one?": "Vous n'en avez pas ?",
-"Create it free": "Créez-le gratuitement"
+"Create it free": "Créez-le gratuitement",
+"Create it from your Google Maps link": "Créez-le à partir de votre lien Google Maps",
+"Open your business on Google Maps and click Share.": "Ouvrez votre établissement sur Google Maps et cliquez sur « Partager ».",
+"Click Copy link, paste it below and click Create review link.": "Cliquez sur « Copier le lien », collez-le ci-dessous et cliquez sur « Créer le lien d'avis ».",
+"Open Google Maps": "Ouvrir Google Maps",
+"Paste your Google Maps link here": "Collez ici votre lien Google Maps",
+"Click Test link to check that it opens your business's review box.": "Cliquez sur « Tester le lien » pour vérifier qu'il ouvre la fenêtre d'avis de votre établissement.",
+"Creating your link…": "Création de votre lien…",
+"Please paste a Google Maps link to your business.": "Veuillez coller un lien Google Maps vers votre établissement.",
+"We couldn't read that link. Open your business on Google Maps, click Share, and copy the link again.": "Nous n'avons pas pu lire ce lien. Ouvrez votre établissement sur Google Maps, cliquez sur « Partager » et copiez à nouveau le lien.",
+"Something went wrong. Please try again in a moment.": "Une erreur est survenue. Veuillez réessayer dans un instant.",
+"Too many tries. Please wait a few minutes and try again.": "Trop de tentatives. Veuillez patienter quelques minutes et réessayer."
 });
