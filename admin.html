@@ -141,6 +141,19 @@
   .support-btn.primary { background: #10203f; border-color: #10203f; color: #fff; }
   .support-btn.primary:hover { background: #0b1730; }
   .support-btn:disabled { opacity: 0.6; cursor: default; }
+  .support-count { display: inline-flex; align-items: center; padding: 2px 10px; border-radius: 999px; background: #2563eb; color: #fff; font-size: 12px; font-weight: 700; letter-spacing: 0; }
+  .support-count[hidden], .new-msg-pill[hidden] { display: none; }
+  .new-msg-pill { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; padding: 5px 12px; border-radius: 999px; background: #e8f1ff; color: #1d4ed8; font-size: 13px; font-weight: 700; text-decoration: none; }
+  .new-msg-pill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #2563eb; }
+  .new-msg-pill:hover { background: #d9e8ff; }
+  .support-tools { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 4px 0 10px; }
+  .support-tools input { flex: 1 1 240px; min-width: 0; height: 40px; padding: 0 14px; border: 1px solid #dde6f1; border-radius: 10px; background: #fbfcfe; font: inherit; font-size: 14px; color: #0c1424; }
+  .support-tools input:focus { outline: none; border-color: #2f7cf6; box-shadow: 0 0 0 4px rgba(47, 124, 246, 0.14); background: #fff; }
+  .support-filters { display: inline-flex; gap: 4px; padding: 3px; border-radius: 10px; background: #eef3fa; }
+  .support-filter { border: 0; border-radius: 8px; padding: 7px 14px; background: transparent; color: #4a5a73; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+  .support-filter.is-on { background: #fff; color: #10203f; box-shadow: 0 1px 4px rgba(16, 40, 80, 0.12); }
+  .support-btn.danger { color: #b42318; border-color: #f0c9c5; }
+  .support-btn.danger:hover { background: #fef3f2; border-color: #e3a29b; }
 </style>
   <script src="assets/i18n.js"></script>
 </head>
@@ -181,7 +194,7 @@
     <div id="adminApp" hidden>
       <section class="panel">
         <div class="toolbar">
-          <div><h1>Admin</h1><p id="adminUpdated">Loading…</p></div>
+          <div><h1>Admin</h1><p id="adminUpdated">Loading…</p><a class="new-msg-pill" id="newMsgPill" href="#supportPanel" hidden></a></div>
           <div class="toolbar-actions">
             <button type="button" class="quiet" id="adminLockBtn">Lock</button>
             <button type="button" id="adminRefresh">Refresh</button>
@@ -210,7 +223,15 @@
         <div class="chart-axis"><span id="chartStart"></span><span id="chartEnd"></span></div>
       </section>
       <section class="panel" id="supportPanel">
-        <h2>Support messages</h2>
+        <h2>Support messages <span class="support-count" id="supportNewCount" hidden></span></h2>
+        <div class="support-tools">
+          <input type="search" id="supportSearch" placeholder="Search name, email or message…" aria-label="Search support messages" autocomplete="off">
+          <div class="support-filters" role="group" aria-label="Filter messages">
+            <button type="button" class="support-filter is-on" data-filter="all">All</button>
+            <button type="button" class="support-filter" data-filter="new">New</button>
+            <button type="button" class="support-filter" data-filter="done">Done</button>
+          </div>
+        </div>
         <p class="note" id="supportSummary">Loading…</p>
         <div id="supportList"></div>
       </section>
@@ -597,13 +618,46 @@
       return { ok: response.ok, status: response.status, data: data };
     }
 
+    var allSupport = [];
+    var supportFilter = "all";
+    var supportQuery = "";
+
+    function updateSupportCounts() {
+      var open = allSupport.filter(function (m) { return m.status === "new"; }).length;
+      var badge = document.getElementById("supportNewCount");
+      var pill = document.getElementById("newMsgPill");
+      badge.hidden = open === 0;
+      badge.textContent = open + " new";
+      pill.hidden = open === 0;
+      pill.textContent = open + (open === 1 ? " new message" : " new messages");
+    }
+
     function renderSupport(messages) {
+      allSupport = messages;
+      updateSupportCounts();
+      drawSupport();
+    }
+
+    function drawSupport() {
       var list = document.getElementById("supportList");
       list.textContent = "";
-      var open = messages.filter(function (m) { return m.status === "new"; }).length;
-      document.getElementById("supportSummary").textContent = messages.length
-        ? open + " new, " + messages.length + " in total (latest 200)."
-        : "No messages yet.";
+      var q = supportQuery.trim().toLowerCase();
+      var messages = allSupport.filter(function (m) {
+        if (supportFilter !== "all" && m.status !== supportFilter) return false;
+        if (!q) return true;
+        return [m.name, m.email, m.subject, m.message, m.category].join(" ").toLowerCase().indexOf(q) !== -1;
+      });
+      var open = allSupport.filter(function (m) { return m.status === "new"; }).length;
+      document.getElementById("supportSummary").textContent = !allSupport.length
+        ? "No messages yet."
+        : (messages.length === allSupport.length ? "" : "Showing " + messages.length + " of " + allSupport.length + ". ") +
+          open + " new, " + allSupport.length + " in total (latest 200).";
+      if (allSupport.length && !messages.length) {
+        var none = document.createElement("p");
+        none.className = "note";
+        none.textContent = "No messages match.";
+        list.appendChild(none);
+      }
       messages.forEach(function (m) {
         var item = document.createElement("div");
         item.className = "support-item" + (m.status === "done" ? " is-done" : "");
@@ -665,6 +719,28 @@
           if (result.ok) { loadSupport(); } else { toggle.disabled = false; document.getElementById("supportSummary").textContent = "Could not update the message. Please try again."; }
         });
         actions.appendChild(toggle);
+        var del = document.createElement("button");
+        del.type = "button";
+        del.className = "support-btn danger";
+        del.textContent = "Delete";
+        del.addEventListener("click", async function () {
+          if (!window.confirm("Delete this message from " + (m.name || m.email || "this person") + " permanently? This cannot be undone.")) return;
+          del.disabled = true;
+          var result = await supportCall({ action: "delete", id: m.id });
+          if (result.ok) {
+            await loadSupport();
+            // An older function ignores "delete" and just returns the list: the message would still be there.
+            if (allSupport.some(function (x) { return x.id === m.id; })) {
+              document.getElementById("supportSummary").textContent = "The message was not deleted. Deleting needs the updated admin-support function and database permission (see the setup steps).";
+            }
+            return;
+          }
+          del.disabled = false;
+          document.getElementById("supportSummary").textContent = result.status === 400 || result.status === 404 || (result.data && result.data.reason === "invalid_action")
+            ? "Deleting needs the updated admin-support function and database permission (see the setup steps)."
+            : "Could not delete the message. Please try again.";
+        });
+        actions.appendChild(del);
 
         item.appendChild(head);
         item.appendChild(meta);
@@ -673,6 +749,18 @@
         list.appendChild(item);
       });
     }
+
+    document.getElementById("supportSearch").addEventListener("input", function (event) {
+      supportQuery = event.target.value;
+      drawSupport();
+    });
+    document.querySelectorAll(".support-filter").forEach(function (button) {
+      button.addEventListener("click", function () {
+        supportFilter = button.getAttribute("data-filter");
+        document.querySelectorAll(".support-filter").forEach(function (b) { b.classList.toggle("is-on", b === button); });
+        drawSupport();
+      });
+    });
 
     async function loadSupport() {
       var summary = document.getElementById("supportSummary");

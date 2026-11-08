@@ -1,4 +1,4 @@
-// Owner-only: lists support messages and marks them as done / new again.
+// Owner-only: lists support messages, marks them as done / new again, and deletes them.
 // The caller must be signed in AND their user id must be listed in the ADMIN_USER_IDS secret,
 // AND the request must carry the owner's ADMIN_PASSCODE (checked on the server every time).
 // Required secrets: ADMIN_USER_IDS, ADMIN_PASSCODE (the same ones admin-stats uses).
@@ -119,6 +119,24 @@ async function handle(request: Request): Promise<Response> {
   }
 
   const action = typeof payload.action === "string" ? payload.action : "list";
+
+  if (action === "delete") {
+    const id = Number(payload.id);
+    if (!Number.isInteger(id) || id < 1) {
+      return json({ error: "Invalid request", reason: "Invalid message id." }, 400, origin);
+    }
+    const removal = await fetch(
+      supabaseUrl + "/rest/v1/support_messages?id=eq." + id,
+      { method: "DELETE", headers: { ...serviceHeaders(serviceKey), Prefer: "return=minimal" } },
+    );
+    if (!removal.ok) {
+      const text = (await removal.text()).replace(/\s+/g, " ").slice(0, 160);
+      console.error("admin-support delete failed:", removal.status, text);
+      return json({ error: "Delete failed", reason: "Could not delete the message (HTTP " + removal.status + ")" }, 500, origin);
+    }
+    console.info("admin-support: admin", adminId, "deleted message", id);
+    return json({ ok: true, id }, 200, origin);
+  }
 
   if (action === "mark") {
     const id = Number(payload.id);

@@ -32,7 +32,7 @@ create index if not exists support_messages_email_idx on public.support_messages
 -- Private table: the website's API cannot read or write it directly.
 alter table public.support_messages enable row level security;
 revoke all on table public.support_messages from anon, authenticated;
-grant select, update on table public.support_messages to service_role;
+grant select, update, delete on table public.support_messages to service_role;
 
 create or replace function public.submit_support_message(
   p_name text,
