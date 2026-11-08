@@ -312,6 +312,10 @@ input:focus, select:focus {
 }
 
 .hint { margin: 6px 0 0; color: #7b8ba0; font-size: 12.5px; line-height: 1.4; }
+
+.hint a { color: #2b7fff; font-weight: 600; text-decoration: underline; text-decoration-color: rgba(43, 127, 255, 0.35); text-underline-offset: 2px; }
+
+.hint a:hover { text-decoration-color: #2b7fff; }
 .field-error { min-height: 0; margin: 6px 0 0; color: #b42318; font-size: 12.5px; font-weight: 650; }
 .field-error:empty { display: none; }
 
@@ -682,6 +686,7 @@ input:focus, select:focus {
                 <input id="googleReviewLink" type="url" placeholder="https://g.page/r/YOUR-BUSINESS-ID/review" inputmode="url">
               </div>
               <p class="hint">Paste your Google Business review link.</p>
+              <p class="hint">Don't have one? <a href="review-link-generator.html" target="_blank" rel="noopener noreferrer">Create it free</a></p>
               <p class="field-error" id="googleReviewLinkError"></p>
             </div>
             <div class="field">

@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free Google Review Link Generator | ReviewRise</title>
+<meta name="description" content="Create a direct link that opens your Google review box in one tap, with a QR code. Free, no account needed.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ReviewRise">
+<meta property="og:title" content="Free Google Review Link Generator | ReviewRise">
+<meta property="og:description" content="Create a direct link that opens your Google review box in one tap, with a QR code. Free, no account needed.">
+<meta property="og:url" content="https://mouadamraji2020-star.github.io/ReviewRise/review-link-generator.html">
+<meta property="og:image" content="https://mouadamraji2020-star.github.io/ReviewRise/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Free Google Review Link Generator | ReviewRise">
+<meta name="twitter:description" content="Create a direct link that opens your Google review box in one tap, with a QR code. Free, no account needed.">
+<meta name="twitter:image" content="https://mouadamraji2020-star.github.io/ReviewRise/assets/og-image.png">
+<link rel="icon" type="image/png" href="assets/reviewrise-logo.png">
+<link rel="apple-touch-icon" href="assets/reviewrise-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    overflow-x: hidden;
+    font-family: Inter, "Segoe UI", Arial, sans-serif;
+    color: #0c1424;
+    background: radial-gradient(1100px 420px at 50% -120px, #e3eeff 0%, rgba(227,238,255,0) 70%), #f5f8fd;
+    min-height: 100vh;
+  }
+  a { color: inherit; }
+  .top {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    min-height: 68px; padding: 12px 24px; background: #fff; border-bottom: 1px solid #e8edf3;
+  }
+  .brand { display: flex; align-items: center; gap: 8px; text-decoration: none; }
+  .brand img { height: 34px; width: auto; }
+  .logo-name { font-size: 20px; font-weight: 800; letter-spacing: -0.6px; color: #10284d; }
+  .logo-name span {
+    background: linear-gradient(90deg, #1d4ed8 10%, #2f8bff 55%, #3ec6ff 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .top nav { display: flex; flex-wrap: wrap; gap: 14px; font-size: 14px; font-weight: 600; }
+  .top nav a { color: #314158; text-decoration: none; }
+  main { width: min(960px, calc(100% - 40px)); margin: 0 auto; padding: 44px 0 72px; }
+  .hero { text-align: center; max-width: 660px; margin: 0 auto 34px; }
+  h1 { margin: 0 0 12px; font-size: 44px; line-height: 1.05; letter-spacing: -1.4px; font-weight: 800; }
+  h1 em, h1 span { font-style: normal; background: linear-gradient(90deg, #1d4ed8 0%, #2f8bff 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .lead { margin: 0; color: #5d6c84; font-size: 17px; line-height: 1.6; }
+  .grid { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 22px; align-items: start; }
+  .card {
+    background: #fff; border: 1px solid #e6edf5; border-radius: 20px; padding: 26px;
+    box-shadow: 0 14px 34px rgba(16, 40, 80, 0.05);
+  }
+  h2 { display: flex; align-items: center; gap: 10px; margin: 0 0 8px; font-size: 19px; letter-spacing: -0.3px; font-weight: 800; }
+  h2 .ico { flex: none; width: 32px; height: 32px; border-radius: 10px; background: #eaf2ff; display: inline-flex; align-items: center; justify-content: center; }
+  h2 .ico svg { width: 17px; height: 17px; fill: none; stroke: #2563eb; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+  p, li, label { color: #3d4b63; font-size: 15px; line-height: 1.65; }
+  .card > p { margin: 0 0 14px; color: #5d6c84; }
+  ol { margin: 0; padding: 0; list-style: none; counter-reset: step; display: grid; gap: 12px; }
+  ol li { position: relative; padding-left: 38px; counter-increment: step; }
+  ol li::before {
+    content: counter(step); position: absolute; left: 0; top: 0; width: 26px; height: 26px; border-radius: 50%;
+    background: #eaf2ff; color: #1d4ed8; font-size: 13px; font-weight: 800; display: flex; align-items: center; justify-content: center;
+  }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; min-height: 46px; padding: 0 20px; border: 0; border-radius: 12px;
+    background: #10203f; color: #fff; font: inherit; font-weight: 700; font-size: 15px; text-decoration: none; cursor: pointer;
+    box-shadow: 0 8px 18px rgba(16, 32, 63, 0.18); transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  }
+  .btn:hover { background: #0b1730; transform: translateY(-1px); box-shadow: 0 12px 22px rgba(16, 32, 63, 0.22); }
+  .btn.secondary { background: #fff; color: #10203f; border: 1px solid #dde6f1; box-shadow: none; }
+  .btn.secondary:hover { background: #f7faff; border-color: #b9c9de; transform: none; box-shadow: none; }
+  .btn:focus-visible, input:focus-visible { outline: 3px solid rgba(47, 124, 246, 0.45); outline-offset: 2px; }
+  label { display: block; margin: 14px 0 6px; font-weight: 700; font-size: 13px; color: #314158; }
+  input {
+    width: 100%; height: 46px; padding: 0 14px; border: 1px solid #dde6f1; border-radius: 12px; background: #fbfcfe;
+    color: #0c1424; font: inherit; font-size: 15px; transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  }
+  input:hover { border-color: #c7d5e8; }
+  input:focus { outline: none; border-color: #2f7cf6; background: #fff; box-shadow: 0 0 0 4px rgba(47, 124, 246, 0.14); }
+  .row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+  .error { margin: 10px 0 0; color: #b42318; font-size: 14px; }
+  .error[hidden], .result[hidden] { display: none; }
+  .result { margin-top: 20px; padding: 20px; border: 1px solid #c9ecd6; border-radius: 16px; background: #f3fbf6; animation: resultIn 0.35s ease both; }
+  @keyframes resultIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .result { animation: none; } }
+  .result h3 { margin: 0 0 10px; font-size: 16px; color: #14532d; }
+  .linkbox {
+    width: 100%; padding: 12px 14px; border: 1px solid #b7e0c5; border-radius: 12px; background: #fff; color: #10203f;
+    font-size: 14px; line-height: 1.5; word-break: break-all; user-select: all;
+  }
+  .qr { display: flex; align-items: center; gap: 16px; margin-top: 16px; flex-wrap: wrap; }
+  .qr-box { padding: 10px; background: #fff; border: 1px solid #dfe8f3; border-radius: 14px; line-height: 0; }
+  .qr-box svg { width: 140px; height: 140px; display: block; }
+  .qr small { color: #5d6c84; font-size: 13px; max-width: 220px; line-height: 1.5; }
+  .cta { margin-top: 22px; text-align: center; }
+  .cta .card { padding: 28px 22px; }
+  .cta h2 { justify-content: center; font-size: 22px; letter-spacing: -0.5px; }
+  .cta p { max-width: 520px; margin: 0 auto 16px; }
+  @media (max-width: 860px) {
+    .grid { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 700px) {
+    .top { align-items: flex-start; flex-direction: column; }
+    main { padding: 28px 0 56px; }
+    h1 { font-size: 34px; }
+    .card { padding: 22px 18px; }
+    .row .btn { width: 100%; }
+  }
+  @media print {
+    .logo-name span, h1 em, h1 span { background: none !important; color: #1d4ed8 !important; -webkit-text-fill-color: #1d4ed8 !important; }
+  }
+</style>
+<script src="assets/i18n.js"></script>
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="index.html">
+      <img src="assets/reviewrise-logo.png" alt="">
+      <span class="logo-name">Review<span>Rise</span></span>
+    </a>
+    <nav aria-label="Help">
+      <a href="index.html">Home</a>
+      <a href="support.html">Support</a>
+      <a href="dashboard.html">Login</a>
+    </nav>
+  </header>
+  <main>
+    <div class="hero">
+      <h1 data-i18n-lines="Free Google Review Link Generator">Free Google Review <em>Link Generator</em></h1>
+      <p class="lead">Create a direct link that opens your Google review box in one tap. Free, no account needed.</p>
+    </div>
+
+    <div class="grid">
+      <section class="card">
+        <h2><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 4.5 3.2 7.8 8 9 4.8-1.2 8-4.5 8-9V6l-8-3z"/><path d="m9 12 2 2 4-4"/></svg></span>If you manage your business on Google</h2>
+        <p>This is the quickest way. Google gives you the link itself.</p>
+        <ol>
+          <li>Sign in to the Google account that manages your business.</li>
+          <li>Search your business name on Google or Google Maps.</li>
+          <li>Click Ask for reviews, then copy the link.</li>
+        </ol>
+      </section>
+
+      <section class="card">
+        <h2><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.1.1l1.4-1.4a5 5 0 0 0-7.1-7.1L10 5"/><path d="M14 11a5 5 0 0 0-7.1-.1L5.5 12.4a5 5 0 0 0 7.1 7.1L14 19"/></svg></span>Create it from your Place ID</h2>
+        <p>Works for any business on Google Maps, even if you don't manage it.</p>
+        <ol>
+          <li>Find your business on Google's Place ID finder and copy its Place ID.</li>
+          <li>Paste it below and click Create review link.</li>
+        </ol>
+        <div class="row">
+          <a class="btn secondary" id="finderLink" href="https://developers.google.com/maps/documentation/places/web-service/place-id" target="_blank" rel="noopener noreferrer">Open Google's Place ID finder</a>
+        </div>
+        <form id="genForm" novalidate>
+          <label for="placeId">Paste your Place ID here</label>
+          <input id="placeId" name="placeId" type="text" inputmode="text" autocomplete="off" spellcheck="false" placeholder="ChIJ…">
+          <p class="error" id="genError" role="alert" hidden></p>
+          <div class="row"><button class="btn" type="submit">Create review link</button></div>
+        </form>
+
+        <div class="result" id="result" hidden>
+          <h3>Your review link</h3>
+          <div class="linkbox" id="linkBox"></div>
+          <div class="row">
+            <button class="btn" type="button" id="copyBtn">Copy link</button>
+            <a class="btn secondary" id="testBtn" href="#" target="_blank" rel="noopener noreferrer">Test link</a>
+            <button class="btn secondary" type="button" id="qrBtn">Download QR code</button>
+          </div>
+          <div class="qr">
+            <div class="qr-box" id="qrBox" aria-hidden="true"></div>
+            <small>Print this QR code or share the link so customers can leave a review in one tap.</small>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="cta">
+      <div class="card">
+        <h2>Want to collect feedback and track your reviews?</h2>
+        <p>ReviewRise makes it easy with a QR code or an NFC tap.</p>
+        <div class="row" style="justify-content:center">
+          <a class="btn" href="dashboard.html">Start Free Trial</a>
+          <a class="btn secondary" href="index.html#how-it-works">See How It Works</a>
+        </div>
+      </div>
+    </div>
+  </main>
+  <script src="assets/qrcode-generator.js"></script>
+  <script>
+    (function () {
+      var form = document.getElementById("genForm");
+      var input = document.getElementById("placeId");
+      var errorEl = document.getElementById("genError");
+      var result = document.getElementById("result");
+      var linkBox = document.getElementById("linkBox");
+      var testBtn = document.getElementById("testBtn");
+      var copyBtn = document.getElementById("copyBtn");
+      var qrBtn = document.getElementById("qrBtn");
+      var qrBox = document.getElementById("qrBox");
+      var currentLink = "";
+      var copyLabel = copyBtn.textContent;
+
+      function tr(text) {
+        return window.ReviewRiseLang && window.ReviewRiseLang.translate ? window.ReviewRiseLang.translate(text) : text;
+      }
+
+      // Accepts a Place ID, or a link that already contains one.
+      function readPlaceId(raw) {
+        var text = String(raw || "").trim();
+        if (!text) return "";
+        var fromUrl = text.match(/[?&]placeid=([A-Za-z0-9_-]{10,300})/i);
+        if (fromUrl) return fromUrl[1];
+        return /^[A-Za-z0-9_-]{20,300}$/.test(text) ? text : "";
+      }
+
+      function showQr(link) {
+        qrBox.textContent = "";
+        try {
+          var qr = qrcode(0, "M");
+          qr.addData(link);
+          qr.make();
+          qrBox.innerHTML = qr.createSvgTag({ cellSize: 6, margin: 0, scalable: true });
+        } catch (error) {
+          qrBox.textContent = "";
+        }
+      }
+
+      function drawQrPng(link) {
+        var qr = qrcode(0, "M");
+        qr.addData(link);
+        qr.make();
+        var count = qr.getModuleCount();
+        var cell = 12, margin = 4 * cell;
+        var size = count * cell + margin * 2;
+        var canvas = document.createElement("canvas");
+        canvas.width = size;
+        canvas.height = size;
+        var ctx = canvas.getContext("2d");
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, size, size);
+        ctx.fillStyle = "#000000";
+        for (var r = 0; r < count; r++) {
+          for (var c = 0; c < count; c++) {
+            if (qr.isDark(r, c)) ctx.fillRect(margin + c * cell, margin + r * cell, cell, cell);
+          }
+        }
+        return canvas;
+      }
+
+      form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        var id = readPlaceId(input.value);
+        if (!id) {
+          result.hidden = true;
+          errorEl.hidden = false;
+          errorEl.textContent = tr("Please paste your Place ID. It usually starts with ChIJ.");
+          input.focus();
+          return;
+        }
+        errorEl.hidden = true;
+        currentLink = "https://search.google.com/local/writereview?placeid=" + encodeURIComponent(id);
+        linkBox.textContent = currentLink;
+        testBtn.href = currentLink;
+        showQr(currentLink);
+        result.hidden = false;
+        copyBtn.textContent = copyLabel;
+        result.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      });
+
+      copyBtn.addEventListener("click", function () {
+        function done() {
+          copyBtn.textContent = tr("Copied!");
+          setTimeout(function () { copyBtn.textContent = copyLabel; }, 1800);
+        }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(currentLink).then(done, fallback);
+        } else {
+          fallback();
+        }
+        function fallback() {
+          var range = document.createRange();
+          range.selectNodeContents(linkBox);
+          var selection = window.getSelection();
+          selection.removeAllRanges();
+          selection.addRange(range);
+          try { document.execCommand("copy"); done(); } catch (error) { /* the link is selected, the visitor can copy it */ }
+        }
+      });
+
+      qrBtn.addEventListener("click", function () {
+        if (!currentLink) return;
+        try {
+          var canvas = drawQrPng(currentLink);
+          var a = document.createElement("a");
+          a.download = "google-review-qr.png";
+          a.href = canvas.toDataURL("image/png");
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+        } catch (error) { /* ignore */ }
+      });
+
+      // Keep the button label in step when the language is switched.
+      window.addEventListener("rr-language-changed", function () { copyLabel = copyBtn.textContent; });
+    })();
+  </script>
+</body>
+</html>
