@@ -639,9 +639,8 @@ function safeGoogleUrl(value) {
 function beginGoogleRedirect() {
   const googleUrl = safeGoogleUrl(currentBusiness && currentBusiness.google_review_link);
   if (!googleUrl) {
-    setStarsEnabled(true);
-    feedbackMessage.style.display = "block";
-    feedbackMessage.textContent = "A Google review link is not available for this business.";
+    // The rating is already saved; with no usable Google link the guest simply gets a thank-you.
+    thankCustomer();
     return;
   }
   redirecting = true;

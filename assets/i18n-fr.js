@@ -1028,5 +1028,6 @@ RR_register("fr",{
 "Something went wrong. Please try again in a moment.": "Une erreur est survenue. Veuillez réessayer dans un instant.",
 "Too many tries. Please wait a few minutes and try again.": "Trop de tentatives. Veuillez patienter quelques minutes et réessayer.",
 "Don't have a Google review link? Create one free": "Vous n'avez pas de lien d'avis Google ? Créez-en un gratuitement",
-"Free Tool": "Outil gratuit"
+"Free Tool": "Outil gratuit",
+"Please confirm your email first. Open the confirmation link we sent you (check your spam folder too), then sign in.": "Veuillez d'abord confirmer votre e-mail. Ouvrez le lien de confirmation que nous vous avons envoyé (vérifiez aussi vos courriers indésirables), puis connectez-vous."
 });

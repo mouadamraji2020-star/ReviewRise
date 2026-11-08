@@ -6276,7 +6276,13 @@ async function login(event) {
     const data = await response.json();
 
     if (!response.ok || !data.access_token) {
-      setAuthMessage("loginMessage", "Incorrect email or password.");
+      // Someone who signed up but has not clicked the confirmation link yet gets a clearer message.
+      const failureText = [data && data.error_code, data && data.msg, data && data.error_description, data && data.message].join(" ");
+      if (/email_not_confirmed|not confirmed/i.test(failureText)) {
+        setAuthMessage("loginMessage", "Please confirm your email first. Open the confirmation link we sent you (check your spam folder too), then sign in.");
+      } else {
+        setAuthMessage("loginMessage", "Incorrect email or password.");
+      }
       return;
     }
 
@@ -6382,6 +6388,14 @@ async function signUp(event) {
           ? "An account with this email already exists. Sign in instead."
           : "We could not create your account. Please try again."
       );
+      return;
+    }
+
+    // When the email already has an account, Supabase answers "OK" with no identities and sends nothing.
+    const noIdentities = (data && Array.isArray(data.identities) && data.identities.length === 0) ||
+      (data && data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0);
+    if (noIdentities && !(data && (data.access_token || data.session))) {
+      setAuthMessage("signUpMessage", "An account with this email already exists. Sign in instead.");
       return;
     }
 

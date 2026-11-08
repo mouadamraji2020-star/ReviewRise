@@ -1560,13 +1560,30 @@ body.page-leaving { opacity: 0; }
   gap: 6px;
 }
 
+.qr-business-preview-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .qr-business-preview-logo {
   flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 56px;
+  height: 56px;
   max-width: 56px;
   min-width: 0;
   overflow: hidden;
+  border-radius: 14px;
+  background: #eaf2ff;
+  color: #2b7fff;
+  font-size: 24px;
+  font-weight: 800;
 }
+
+.qr-business-preview-row .preview-meta { flex-wrap: wrap; }
 
 .qr-business-preview-logo img {
   width: 100%;
@@ -3076,13 +3093,18 @@ studio.querySelector('[data-action="png"]').addEventListener("click", async func
       await document.fonts.ready;
     }
 
-    const posterImages = Array.from(poster.querySelectorAll("img"));
+    // Only wait for pictures that actually have an address (a business without a logo has an empty <img>,
+    // which never finishes loading), and never wait longer than a few seconds.
+    const posterImages = Array.from(poster.querySelectorAll("img")).filter(function (img) {
+      return img.getAttribute("src") && img.style.display !== "none";
+    });
 
     await Promise.all(posterImages.map(function (img) {
       if (img.complete && img.naturalWidth > 0) return Promise.resolve();
       return new Promise(function (resolve) {
         img.addEventListener("load", function () { resolve(); }, { once: true });
         img.addEventListener("error", function () { resolve(); }, { once: true });
+        setTimeout(resolve, 4000);
       });
     }));
 
