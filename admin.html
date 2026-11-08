@@ -220,6 +220,25 @@
   @media (max-width: 420px) { .metrics.wide { grid-template-columns: minmax(0, 1fr); } }
   .pay-stats .metric strong { font-size: 21px; letter-spacing: -0.4px; }
   .toolbar { margin-bottom: 22px; }
+
+  /* Compact support list: collapsed rows, click to open, scrolls when long */
+  #supportList { max-height: 440px; overflow-y: auto; padding-right: 4px; margin-right: -4px; }
+  .support-item { margin: 8px 0; padding: 0 16px 0 20px; }
+  .support-item::before { top: 10px; bottom: 10px; }
+  .support-item .support-head { cursor: pointer; flex-wrap: nowrap; align-items: center; gap: 12px; padding: 12px 0; user-select: none; }
+  .support-item .support-head:focus-visible { outline: 2px solid #2f7cf6; outline-offset: 2px; border-radius: 10px; }
+  .support-title { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; }
+  .support-title strong { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14.5px; }
+  .support-when { flex: none; }
+  .support-chev { flex: none; width: 18px; height: 18px; border-radius: 50%; background: #eaf2ff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6'><path d='M1 1l4 4 4-4' fill='none' stroke='%232563eb' stroke-width='1.8' stroke-linecap='round'/></svg>") no-repeat center; transition: transform 0.18s ease; }
+  .support-item:not(.is-collapsed) .support-chev { transform: rotate(180deg); }
+  .support-item .support-meta { margin-top: -4px; padding-bottom: 12px; }
+  .support-item.is-collapsed .support-meta { padding-bottom: 12px; }
+  .support-item.is-collapsed .support-text,
+  .support-item.is-collapsed .support-actions { display: none; }
+  .support-item:not(.is-collapsed) .support-text { margin-top: 2px; }
+  .support-item:not(.is-collapsed) .support-actions { padding-bottom: 14px; }
+  @media (max-width: 520px) { .support-when { display: none; } }
 </style>
   <script src="assets/i18n.js"></script>
 </head>
@@ -852,15 +871,38 @@
         var item = document.createElement("div");
         item.className = "support-item" + (m.status === "done" ? " is-done" : "");
 
+        item.classList.add("is-collapsed");
         var head = document.createElement("div");
         head.className = "support-head";
+        head.setAttribute("role", "button");
+        head.setAttribute("tabindex", "0");
+        head.setAttribute("aria-expanded", "false");
         var who = document.createElement("strong");
         who.textContent = m.subject || "(no subject)";
+        var badge = document.createElement("span");
+        badge.className = "support-badge" + (m.status === "done" ? " is-done" : "");
+        badge.textContent = m.status === "done" ? "Done" : "New";
         var when = document.createElement("span");
         when.className = "support-when";
         when.textContent = formatDate(m.created_at, true);
-        head.appendChild(who);
+        var chev = document.createElement("span");
+        chev.className = "support-chev";
+        chev.setAttribute("aria-hidden", "true");
+        var title = document.createElement("span");
+        title.className = "support-title";
+        title.appendChild(badge);
+        title.appendChild(who);
+        head.appendChild(title);
         head.appendChild(when);
+        head.appendChild(chev);
+        function toggleOpen() {
+          var open = item.classList.toggle("is-collapsed") === false;
+          head.setAttribute("aria-expanded", open ? "true" : "false");
+        }
+        head.addEventListener("click", toggleOpen);
+        head.addEventListener("keydown", function (event) {
+          if (event.key === "Enter" || event.key === " ") { event.preventDefault(); toggleOpen(); }
+        });
 
         var meta = document.createElement("div");
         meta.className = "support-meta";
@@ -886,10 +928,6 @@
 
         var actions = document.createElement("div");
         actions.className = "support-actions";
-        var badge = document.createElement("span");
-        badge.className = "support-badge" + (m.status === "done" ? " is-done" : "");
-        badge.textContent = m.status === "done" ? "Done" : "New";
-        actions.appendChild(badge);
         var reply = document.createElement("a");
         // Opens a new message in Gmail (in the browser), addressed to the customer.
         reply.href = "https://mail.google.com/mail/?view=cm&fs=1&to=" + encodeURIComponent(m.email || "") +
