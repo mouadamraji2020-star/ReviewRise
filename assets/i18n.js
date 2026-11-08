@@ -197,8 +197,10 @@
       return;
     }
     while (el.firstChild) el.removeChild(el.firstChild);
-    out.split("|").forEach(function (part, i) {
+    var partsList = out.split("|");
+    partsList.forEach(function (part, i) {
       if (i) el.appendChild(document.createElement("br"));
+      if (i < partsList.length - 1) part += " ";
       // [[text]] marks the highlighted word (a span), like the original headline.
       part.split(/(\[\[.+?\]\])/).forEach(function (piece) {
         if (!piece) return;
@@ -442,7 +444,7 @@
     var blockers = [];
     if (header) {
       var hr = header.getBoundingClientRect();
-      header.querySelectorAll("a, button, select, input, h1, h2").forEach(function (el) {
+      header.querySelectorAll("a, button, select, input, h1, h2, img, svg, .brand, .wordmark, .logo-name, .secure-note").forEach(function (el) {
         if (wrap.contains(el)) return;
         var r = visibleRect(el);
         if (r) blockers.push(r);

@@ -186,7 +186,7 @@ RR_register("fr",{
 "© 2026 ReviewRise": "© 2026 ReviewRise",
 "ReviewRise — Turn Happy Customers Into 5-Star Reviews": "ReviewRise — Transformez vos clients satisfaits en avis 5 étoiles",
 "Happy": "Satisfaits",
-"Happy Customers. Stronger Business.": "Clients satisfaits.|Entreprise plus solide.",
+"Happy Customers. Stronger Business.": "Clients|satisfaits.|Entreprise|plus solide.",
 "0 of 5 completed": "0 sur 5 terminées",
 "{#0} of 5 completed": "{0} sur 5 terminées",
 "Account": "Compte",
@@ -987,5 +987,6 @@ RR_register("fr",{
 "Please enter a valid email address.": "Veuillez saisir une adresse e-mail valide.",
 "Please enter a subject (up to 160 characters).": "Veuillez saisir un objet (160 caractères maximum).",
 "Please enter a message (up to 4000 characters).": "Veuillez saisir un message (4000 caractères maximum).",
-"Send another message": "Envoyer un autre message"
+"Send another message": "Envoyer un autre message",
+"Business (table column)": "Établissement"
 });
