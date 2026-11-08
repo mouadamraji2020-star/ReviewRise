@@ -1026,5 +1026,7 @@ RR_register("fr",{
 "Please paste a Google Maps link to your business.": "Veuillez coller un lien Google Maps vers votre établissement.",
 "We couldn't read that link. Open your business on Google Maps, click Share, and copy the link again.": "Nous n'avons pas pu lire ce lien. Ouvrez votre établissement sur Google Maps, cliquez sur « Partager » et copiez à nouveau le lien.",
 "Something went wrong. Please try again in a moment.": "Une erreur est survenue. Veuillez réessayer dans un instant.",
-"Too many tries. Please wait a few minutes and try again.": "Trop de tentatives. Veuillez patienter quelques minutes et réessayer."
+"Too many tries. Please wait a few minutes and try again.": "Trop de tentatives. Veuillez patienter quelques minutes et réessayer.",
+"Don't have a Google review link? Create one free": "Vous n'avez pas de lien d'avis Google ? Créez-en un gratuitement",
+"Free Tool": "Outil gratuit"
 });

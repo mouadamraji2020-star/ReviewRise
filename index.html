@@ -1581,7 +1581,12 @@
         -webkit-text-fill-color: #1d4ed8 !important;
       }
     }
-  </style>
+  
+    /* The "Free Tool" link needs room in the top menu; on medium screens it stays in the footer and phone menu. */
+    @media (max-width: 1260px) {
+      .nav-center a[href="review-link-generator.html"] { display: none; }
+    }
+</style>
   <script src="assets/i18n.js"></script>
 </head>
 <body>
@@ -1599,6 +1604,7 @@
         <a href="#how-it-works">How It Works</a>
         <a href="#pricing">Pricing</a>
         <a href="#contact">Contact</a>
+        <a href="review-link-generator.html">Free Tool</a>
       </nav>
       <div class="header-actions">
         <button class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
@@ -1620,6 +1626,7 @@
               <a href="#how-it-works">How It Works</a>
               <a href="#pricing">Pricing</a>
               <a href="#contact">Contact</a>
+              <a href="review-link-generator.html">Free Tool</a>
               <a class="mobile-menu-login" href="dashboard.html">Login</a>
               <a class="mobile-menu-start" href="dashboard.html">Get Started</a>
             </nav>

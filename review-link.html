@@ -375,7 +375,12 @@
         -webkit-text-fill-color: #1d4ed8 !important;
       }
     }
-  </style>
+  
+.gen-btn { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; min-height: 44px; padding: 8px 16px; border: 1px dashed #a9c4f2; border-radius: 12px; background: #f5f9ff; color: #1d4ed8; font-size: 14px; font-weight: 700; line-height: 1.3; text-align: center; text-decoration: none; transition: background 0.15s ease, border-color 0.15s ease; }
+.gen-btn:hover { background: #eaf2ff; border-color: #7fa6ea; }
+.gen-btn:focus-visible { outline: 2px solid #2b7fff; outline-offset: 2px; }
+.gen-btn svg { flex: none; width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+</style>
   <script src="assets/i18n.js"></script>
 </head>
 <body>
@@ -540,6 +545,7 @@
       <label>Google review link</label>
       <input type="url" id="googleReviewLink" placeholder="https://...">
       <div id="googleReviewLinkError" class="field-error">Please enter a valid Google review link.</div>
+      <a class="gen-btn" href="review-link-generator.html" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.1.1l1.4-1.4a5 5 0 0 0-7.1-7.1L10 5"/><path d="M14 11a5 5 0 0 0-7.1-.1L5.5 12.4a5 5 0 0 0 7.1 7.1L14 19"/></svg>Don't have a Google review link? Create one free</a>
     </div>
     <div class="modal-actions">
       <button class="cancel-btn" type="button" onclick="closeReviewLinkModal()">Cancel</button>
