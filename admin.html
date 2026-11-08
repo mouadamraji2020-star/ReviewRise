@@ -165,6 +165,13 @@
   .support-btn.confirm-danger:hover { background: #b42318; border-color: #b42318; }
   @keyframes confirmIn { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: none; } }
   @media (prefers-reduced-motion: reduce) { .confirm-box { animation: none; } }
+  .modal-box input[type=text], .modal-box input[type=number], .modal-box select { width: 100%; height: 42px; padding: 0 12px; border: 1px solid #d5e2f2; border-radius: 11px; background: #fff; color: #0c1424; font: inherit; font-size: 14px; }
+  .pay-row { display: grid; grid-template-columns: 1fr 96px; gap: 8px; }
+  .row-actions { margin: 8px 0 12px; }
+  .row-actions[hidden], #paymentsCsv[hidden], #paymentsWrap[hidden] { display: none; }
+  #paymentsBody td { vertical-align: top; }
+  .pay-del { border: 0; background: none; color: #b42318; font: inherit; font-size: 12.5px; font-weight: 700; cursor: pointer; padding: 2px 4px; }
+  .pay-del:hover { text-decoration: underline; }
 </style>
   <script src="assets/i18n.js"></script>
 </head>
@@ -246,6 +253,17 @@
         <p class="note" id="supportSummary">Loading…</p>
         <div id="supportList"></div>
       </section>
+      <section class="panel" id="paymentsPanel">
+        <h2>Payments</h2>
+        <p class="note" id="paymentsSummary">Loading…</p>
+        <div class="row-actions"><button type="button" class="support-btn" id="paymentsCsv" hidden>Download CSV</button></div>
+        <div class="table-wrap" id="paymentsWrap" hidden>
+          <table>
+            <thead><tr><th>Date</th><th>Customer</th><th>Plan</th><th>Amount</th><th>Paid by</th><th>Valid until</th><th>Note</th><th></th></tr></thead>
+            <tbody id="paymentsBody"></tbody>
+          </table>
+        </div>
+      </section>
       <section class="panel">
         <h2>All users</h2>
         <div class="table-wrap">
@@ -286,6 +304,16 @@
           <button type="button" data-value="yearly">Yearly</button>
         </div>
         <p class="note" id="planModalHint"></p>
+        <label for="payAmount">Payment received</label>
+        <div class="pay-row">
+          <input type="number" id="payAmount" min="0" step="0.01" inputmode="decimal" placeholder="Amount">
+          <select id="payCurrency" aria-label="Currency"><option>USD</option><option>MAD</option><option>EUR</option></select>
+        </div>
+        <label for="payMethod">Paid by</label>
+        <select id="payMethod"><option>Bank transfer</option><option>Cash</option><option>Other</option></select>
+        <label for="payNote">Note (optional)</label>
+        <input type="text" id="payNote" maxlength="300" placeholder="For example the transfer reference">
+        <p class="note">This is saved in the Payments list on this page, so you always have a record.</p>
         <p class="notice bad" id="planModalError" hidden></p>
         <div class="modal-actions">
           <button type="button" class="ghost" id="planCancel">Cancel</button>
@@ -512,14 +540,25 @@
     var planModalEmail = "";
     var planModalBusy = false;
 
+    document.getElementById("payAmount").addEventListener("input", function () { payAmountTouched = true; });
+    document.getElementById("payCurrency").addEventListener("change", function () { payAmountTouched = true; });
+
     function selectedChoice(id) {
       var chosen = document.querySelector("#" + id + " button.selected");
       return chosen ? chosen.getAttribute("data-value") : "";
     }
 
+    var PLAN_PRICES = { pro: { monthly: 20, yearly: 192 }, business: { monthly: 49, yearly: 470 } };
+    var payAmountTouched = false;
+
     function updatePlanHint() {
       var plan = selectedChoice("planChoice") === "business" ? "Business" : "Pro";
       var yearly = selectedChoice("cycleChoice") === "yearly";
+      if (!payAmountTouched) {
+        var price = PLAN_PRICES[selectedChoice("planChoice") === "business" ? "business" : "pro"][yearly ? "yearly" : "monthly"];
+        document.getElementById("payAmount").value = price;
+        document.getElementById("payCurrency").value = "USD";
+      }
       document.getElementById("planModalHint").textContent =
         plan + " will be active for " + (yearly ? "1 year" : "1 month") +
         " from today. If they are already on this plan, the time is added to their current end date.";
@@ -527,6 +566,9 @@
 
     function openPlanModal(email) {
       planModalEmail = email;
+      payAmountTouched = false;
+      document.getElementById("payMethod").value = "Bank transfer";
+      document.getElementById("payNote").value = "";
       document.getElementById("planModalEmail").textContent =
         "Activate a paid plan for " + email + ". Only do this after their payment has arrived.";
       document.getElementById("planModalError").hidden = true;
@@ -588,6 +630,10 @@
             email: planModalEmail,
             plan: selectedChoice("planChoice"),
             billing_cycle: selectedChoice("cycleChoice"),
+            amount: document.getElementById("payAmount").value.trim(),
+            currency: document.getElementById("payCurrency").value,
+            method: document.getElementById("payMethod").value,
+            note: document.getElementById("payNote").value.trim(),
             passcode: adminPasscode
           })
         });
@@ -612,7 +658,9 @@
         document.getElementById("planModal").classList.remove("open");
         var planName = data.plan === "business" ? "Business" : "Pro";
         showAdminNotice(planName + " (" + data.billing_cycle + ") is now active for " + data.email +
-          " until " + formatDate(data.current_period_end, false) + ".", true);
+          " until " + formatDate(data.current_period_end, false) + "." +
+          (data.payment_logged ? " The payment was saved in the Payments list."
+            : " The payment could not be saved in the Payments list (has the payment-log SQL been run?)."), true);
         showAdmin().catch(function () {});
       } catch (error) {
         errorBox.textContent = "Could not reach ReviewRise. Check your connection and try again.";
@@ -823,6 +871,123 @@
       });
     });
 
+    var allPayments = [];
+
+    async function paymentsCall(body) {
+      var token = localStorage.getItem("reviewrise_token");
+      body.passcode = adminPasscode;
+      var response = await fetch(SUPABASE_URL + "/functions/v1/admin-set-plan", {
+        method: "POST",
+        headers: { apikey: SUPABASE_KEY, Authorization: "Bearer " + token, "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      });
+      var data = null;
+      try { data = await response.json(); } catch (parseError) { data = null; }
+      return { ok: response.ok, status: response.status, data: data };
+    }
+
+    function money(value, currency) {
+      if (value === null || value === undefined || value === "") return "—";
+      var n = Number(value);
+      return (isFinite(n) ? n.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 }) : String(value)) + " " + (currency || "");
+    }
+
+    function csvCell(value) {
+      var text = value === null || value === undefined ? "" : String(value);
+      if (/^[=+\-@\t\r]/.test(text)) text = "'" + text; // stops spreadsheet formulas
+      return '"' + text.replace(/"/g, '""') + '"';
+    }
+
+    function drawPayments() {
+      var body = document.getElementById("paymentsBody");
+      body.textContent = "";
+      var summary = document.getElementById("paymentsSummary");
+      var wrap = document.getElementById("paymentsWrap");
+      var csv = document.getElementById("paymentsCsv");
+      if (!allPayments.length) {
+        summary.textContent = "No payments recorded yet. They appear here when you activate a plan.";
+        wrap.hidden = true;
+        csv.hidden = true;
+        return;
+      }
+      var monthStart = new Date(); monthStart.setDate(1); monthStart.setHours(0, 0, 0, 0);
+      var month = {}, total = {};
+      allPayments.forEach(function (p) {
+        if (p.amount === null || p.amount === undefined) return;
+        var cur = p.currency || "USD";
+        total[cur] = (total[cur] || 0) + Number(p.amount);
+        if (new Date(p.created_at) >= monthStart) month[cur] = (month[cur] || 0) + Number(p.amount);
+      });
+      function list(obj) { var k = Object.keys(obj); return k.length ? k.map(function (c) { return money(obj[c], c); }).join(" + ") : "0"; }
+      summary.textContent = "This month: " + list(month) + ". All time: " + list(total) + ". " + allPayments.length + " entries.";
+      wrap.hidden = false;
+      csv.hidden = false;
+      allPayments.forEach(function (p) {
+        var tr = document.createElement("tr");
+        function cell(text) { var td = document.createElement("td"); td.textContent = text; tr.appendChild(td); return td; }
+        cell(formatDate(p.created_at, false));
+        cell(p.customer_email || "");
+        cell((p.plan === "business" ? "Business" : "Pro") + " · " + (p.billing_cycle === "yearly" ? "yearly" : "monthly"));
+        cell(money(p.amount, p.currency));
+        cell(p.method || "—");
+        cell(p.period_end ? formatDate(p.period_end, false) : "—");
+        cell(p.note || "");
+        var last = document.createElement("td");
+        var del = document.createElement("button");
+        del.type = "button";
+        del.className = "pay-del";
+        del.textContent = "Delete";
+        del.addEventListener("click", async function () {
+          var sure = await askConfirm("Delete this entry?", "The payment entry for " + (p.customer_email || "this customer") + " will be deleted from the list. Their plan is not changed.", "Delete");
+          if (!sure) return;
+          del.disabled = true;
+          var result = await paymentsCall({ action: "delete_payment", id: p.id });
+          if (result.ok && result.data && result.data.ok) { loadPayments(); return; }
+          del.disabled = false;
+          document.getElementById("paymentsSummary").textContent = "Could not delete the entry. Deleting needs the updated admin-set-plan function and database permission (see the setup steps).";
+        });
+        last.appendChild(del);
+        tr.appendChild(last);
+        body.appendChild(tr);
+      });
+    }
+
+    async function loadPayments() {
+      var summary = document.getElementById("paymentsSummary");
+      try {
+        var result = await paymentsCall({ action: "list_payments" });
+        if (result.ok && result.data && Array.isArray(result.data.payments)) {
+          allPayments = result.data.payments;
+          drawPayments();
+          return;
+        }
+        document.getElementById("paymentsWrap").hidden = true;
+        document.getElementById("paymentsCsv").hidden = true;
+        // An older function does not know "list_payments" and answers with an activation error (400).
+        summary.textContent = result.status === 400
+          ? "The payment list needs the updated admin-set-plan function (see the setup steps)."
+          : "Payments could not be loaded." + (result.data && typeof result.data.reason === "string" ? " " + result.data.reason.slice(0, 200) : "");
+      } catch (error) {
+        summary.textContent = "Payments could not be loaded. Please try again.";
+      }
+    }
+
+    document.getElementById("paymentsCsv").addEventListener("click", function () {
+      var head = ["Date", "Customer", "Plan", "Billing", "Amount", "Currency", "Paid by", "Valid until", "Note"];
+      var lines = [head.map(csvCell).join(",")];
+      allPayments.forEach(function (p) {
+        lines.push([p.created_at, p.customer_email, p.plan, p.billing_cycle, p.amount, p.currency, p.method, p.period_end, p.note].map(csvCell).join(","));
+      });
+      var blob = new Blob(["\ufeff" + lines.join("\r\n")], { type: "text/csv;charset=utf-8" });
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "reviewrise-payments.csv";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+    });
+
     async function loadSupport() {
       var summary = document.getElementById("supportSummary");
       try {
@@ -864,6 +1029,7 @@
       document.getElementById("adminApp").hidden = false;
       renderStats(result.data);
       loadSupport();
+      loadPayments();
     }
 
     async function sessionUserId() {

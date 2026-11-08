@@ -1,4 +1,4 @@
-// Owner-only: activates a paid plan (Pro or Business) for a customer after a manual payment
+// Owner-only: activates a paid plan (Pro or Business) for a customer after a manual payment, records the payment, lists/deletes payment log entries
 // (for example a bank transfer arranged on WhatsApp).
 // The caller must be signed in AND their user id must be listed in the ADMIN_USER_IDS secret.
 // The customer is identified by email and looked up on the server; no user id is trusted from the browser.
@@ -158,6 +158,43 @@ async function handle(request: Request): Promise<Response> {
     return json({ error: "Incorrect passcode", reason: "passcode_invalid" }, 403, origin);
   }
 
+  const action = typeof payload.action === "string" ? payload.action : "activate";
+
+  // Payment log: list entries / delete a mistaken entry.
+  if (action === "list_payments") {
+    const listed = await fetch(
+      supabaseUrl + "/rest/v1/payment_log?select=id,created_at,customer_email,plan,billing_cycle,amount,currency,method,note,period_end" +
+        "&order=created_at.desc&limit=500",
+      { headers: serviceHeaders(serviceKey) },
+    );
+    if (!listed.ok) {
+      const text = (await listed.text()).replace(/\s+/g, " ").slice(0, 160);
+      console.error("admin-set-plan could not read payment_log:", listed.status, text);
+      return json({
+        error: "Payments could not be loaded",
+        reason: "Could not read payment_log (HTTP " + listed.status + "). Has the payment-log SQL been run?",
+      }, 500, origin);
+    }
+    const rows = await listed.json();
+    return json({ payments: Array.isArray(rows) ? rows : [] }, 200, origin);
+  }
+  if (action === "delete_payment") {
+    const paymentId = Number(payload.id);
+    if (!Number.isInteger(paymentId) || paymentId < 1) {
+      return json({ error: "Invalid request", reason: "Invalid payment id." }, 400, origin);
+    }
+    const removed = await fetch(
+      supabaseUrl + "/rest/v1/payment_log?id=eq." + paymentId,
+      { method: "DELETE", headers: { ...serviceHeaders(serviceKey), Prefer: "return=minimal" } },
+    );
+    if (!removed.ok) {
+      console.error("admin-set-plan could not delete payment_log row:", removed.status);
+      return json({ error: "Delete failed", reason: "Could not delete the entry (HTTP " + removed.status + ")" }, 500, origin);
+    }
+    console.info("admin-set-plan: admin", adminId, "deleted payment log entry", paymentId);
+    return json({ ok: true, id: paymentId }, 200, origin);
+  }
+
   const email = typeof payload.email === "string" ? payload.email.trim().toLowerCase() : "";
   const plan = typeof payload.plan === "string" ? payload.plan : "";
   const cycle = typeof payload.billing_cycle === "string" ? payload.billing_cycle : "";
@@ -170,6 +207,20 @@ async function handle(request: Request): Promise<Response> {
   if (!CYCLES.includes(cycle)) {
     return json({ error: "Invalid request", reason: "Billing must be monthly or yearly." }, 400, origin);
   }
+
+  // Optional record of the payment received (saved to the payment log after the plan is activated).
+  let amount: number | null = null;
+  const rawAmount = typeof payload.amount === "number" ? payload.amount
+    : typeof payload.amount === "string" && payload.amount.trim() !== "" ? Number(payload.amount) : null;
+  if (rawAmount !== null) {
+    if (!isFinite(rawAmount) || rawAmount < 0 || rawAmount > 1000000) {
+      return json({ error: "Invalid request", reason: "The amount must be a number between 0 and 1,000,000." }, 400, origin);
+    }
+    amount = Math.round(rawAmount * 100) / 100;
+  }
+  const currency = typeof payload.currency === "string" && ["USD", "MAD", "EUR"].includes(payload.currency) ? payload.currency : "USD";
+  const method = typeof payload.method === "string" && ["Bank transfer", "Cash", "Other"].includes(payload.method) ? payload.method : null;
+  const note = typeof payload.note === "string" && payload.note.trim() ? payload.note.trim().slice(0, 300) : null;
 
   const found = await findUserIdByEmail(supabaseUrl, serviceKey, email);
   if (found.failed) {
@@ -234,6 +285,33 @@ async function handle(request: Request): Promise<Response> {
     return json({ error: "Update failed", reason: "No profile was updated." }, 500, origin);
   }
 
+  // Record the payment. A problem here never undoes the activation; the page is told so it can say so.
+  let paymentLogged = false;
+  try {
+    const logged = await fetch(supabaseUrl + "/rest/v1/payment_log", {
+      method: "POST",
+      headers: { ...serviceHeaders(serviceKey, true), Prefer: "return=minimal" },
+      body: JSON.stringify({
+        user_id: customerId,
+        customer_email: email,
+        plan,
+        billing_cycle: cycle,
+        amount,
+        currency,
+        method,
+        note,
+        period_end: periodEnd.toISOString(),
+      }),
+    });
+    paymentLogged = logged.ok;
+    if (!logged.ok) {
+      const text = (await logged.text()).replace(/\s+/g, " ").slice(0, 160);
+      console.error("admin-set-plan could not write payment_log:", logged.status, text);
+    }
+  } catch (error) {
+    console.error("admin-set-plan payment_log error:", error instanceof Error ? error.message : "unknown");
+  }
+
   console.info("admin-set-plan: admin", adminId, "set", plan, cycle, "for", customerId, "until", periodEnd.toISOString());
   return json({
     ok: true,
@@ -242,6 +320,7 @@ async function handle(request: Request): Promise<Response> {
     billing_cycle: cycle,
     current_period_end: periodEnd.toISOString(),
     extended: start !== now,
+    payment_logged: paymentLogged,
   }, 200, origin);
 }
 
