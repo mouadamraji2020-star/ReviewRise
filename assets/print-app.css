@@ -1,0 +1,13 @@
+/* Printing the logged-in pages (Dashboard, Feedback, Analytics, QR & NFC, Review Links, Settings).
+   Keeps the colours of bars, badges and charts, and leaves out the upgrade promotion. */
+@media print {
+  html, body, body * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .rr-upgrade,
+  .rr-upgrade-bar,
+  .rr-lang {
+    display: none !important;
+  }
+}
