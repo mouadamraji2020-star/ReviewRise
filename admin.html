@@ -172,6 +172,54 @@
   #paymentsBody td { vertical-align: top; }
   .pay-del { border: 0; background: none; color: #b42318; font: inherit; font-size: 12.5px; font-weight: 700; cursor: pointer; padding: 2px 4px; }
   .pay-del:hover { text-decoration: underline; }
+
+  /* ---- Admin look: colour themes, icon cards, badges ---- */
+  body { background: radial-gradient(1000px 380px at 50% -140px, #e3eeff 0%, rgba(227,238,255,0) 70%), #f5f8fd; }
+  .top { box-shadow: 0 6px 20px rgba(16, 40, 80, 0.04); }
+  main > .panel, #adminApp > .panel { box-shadow: 0 14px 34px rgba(16, 40, 80, 0.05); }
+  .panel > h2 { display: flex; align-items: center; gap: 10px; font-size: 18px; letter-spacing: -0.3px; }
+  .panel > h2::before { content: ""; width: 5px; height: 20px; border-radius: 4px; background: linear-gradient(180deg, #3ec6ff, #1d4ed8); flex: none; }
+  #adminApp > .panel:first-child { background: linear-gradient(135deg, #eef5ff 0%, #ffffff 55%); border-color: #d9e7fb; }
+  #adminApp > .panel:first-child h1 { background: linear-gradient(90deg, #10284d, #1d4ed8); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .metric { position: relative; display: flex; align-items: center; gap: 14px; padding: 16px 16px 16px 18px; background: #fff; border: 1px solid #e3ebf5; box-shadow: 0 6px 16px rgba(16, 40, 80, 0.04); overflow: hidden; transition: transform 0.15s ease, box-shadow 0.15s ease; }
+  .metric:hover { transform: translateY(-2px); box-shadow: 0 12px 24px rgba(16, 40, 80, 0.08); }
+  .metric::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--tone); }
+  .metric .m-ico { flex: none; width: 42px; height: 42px; border-radius: 13px; background: var(--tone-bg); display: inline-flex; align-items: center; justify-content: center; }
+  .metric .m-ico svg { width: 21px; height: 21px; fill: none; stroke: var(--tone); stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+  .metric .m-text { min-width: 0; }
+  .metric span.m-label { display: block; color: #6d7c92; font-size: 12.5px; font-weight: 700; }
+  .metric strong { margin-top: 2px; font-size: 26px; line-height: 1.1; letter-spacing: -0.6px; color: #0c1730; }
+  .metric small { display: inline-block; margin-top: 6px; padding: 2px 8px; border-radius: 999px; background: var(--tone-bg); color: var(--tone); font-size: 11.5px; font-weight: 700; }
+  .tone-blue { --tone: #2563eb; --tone-bg: #e8f1ff; }
+  .tone-green { --tone: #16a34a; --tone-bg: #e6f7ee; }
+  .tone-violet { --tone: #7c3aed; --tone-bg: #f0eafe; }
+  .tone-amber { --tone: #d97706; --tone-bg: #fff3df; }
+  .tone-red { --tone: #dc2626; --tone-bg: #fdecec; }
+  .tone-slate { --tone: #475569; --tone-bg: #eef2f7; }
+  .tone-cyan { --tone: #0891b2; --tone-bg: #e0f6fb; }
+  .pill { padding: 3px 10px; }
+  .pill.warn { background: #fff0e0; color: #c2410c; }
+  .pill.trial { background: #fff7db; color: #a16207; }
+  .pill.biz { background: #f0eafe; color: #6d28d9; }
+  .pill.none { background: #eef2f7; color: #475569; }
+  .pill.method-bank { background: #e8f1ff; color: #1d4ed8; }
+  .pill.method-cash { background: #e6f7ee; color: #0f7b45; }
+  .pill.method-other { background: #eef2f7; color: #475569; }
+  .dot-yes, .dot-no { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; }
+  .dot-yes::before, .dot-no::before { content: ""; width: 8px; height: 8px; border-radius: 50%; }
+  .dot-yes::before { background: #16a34a; }
+  .dot-no::before { background: #cbd5e1; }
+  .table-wrap { background: #fff; }
+  th { background: linear-gradient(180deg, #f6f9fe, #eff4fb); color: #55657c; text-transform: uppercase; letter-spacing: 0.04em; font-size: 11px; }
+  tbody tr { transition: background 0.12s ease; }
+  tbody tr:hover { background: #f6faff; }
+  .amount-cell { font-weight: 800; color: #0f7b45; }
+  .pay-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 4px 0 14px; }
+  .pay-stats[hidden] { display: none; }
+  @media (max-width: 760px) { .metrics.wide { grid-template-columns: repeat(2, minmax(0, 1fr)); } .pay-stats { grid-template-columns: minmax(0, 1fr); } }
+  @media (max-width: 420px) { .metrics.wide { grid-template-columns: minmax(0, 1fr); } }
+  .pay-stats .metric strong { font-size: 21px; letter-spacing: -0.4px; }
+  .toolbar { margin-bottom: 22px; }
 </style>
   <script src="assets/i18n.js"></script>
 </head>
@@ -255,6 +303,7 @@
       </section>
       <section class="panel" id="paymentsPanel">
         <h2>Payments</h2>
+        <div class="pay-stats metrics" id="paymentStats" hidden></div>
         <p class="note" id="paymentsSummary">Loading…</p>
         <div class="row-actions"><button type="button" class="support-btn" id="paymentsCsv" hidden>Download CSV</button></div>
         <div class="table-wrap" id="paymentsWrap" hidden>
@@ -374,23 +423,51 @@
       return new Date(ms).toLocaleString(undefined, options);
     }
 
-    function renderMetrics(id, items) {
+    var ICONS = {
+      users: '<path d="M16 19v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 4 17.5V19"/><circle cx="10" cy="8" r="3.2"/><path d="M20 19v-1.2a3 3 0 0 0-2.2-2.9"/><path d="M15.5 5.2a3.2 3.2 0 0 1 0 5.6"/>',
+      mail: '<rect x="3.5" y="5.5" width="17" height="13" rx="2.5"/><path d="m4 7.5 8 6 8-6"/>',
+      plus: '<circle cx="12" cy="12" r="8.5"/><path d="M12 8v8M8 12h8"/>',
+      check: '<circle cx="12" cy="12" r="8.5"/><path d="m8.5 12.3 2.4 2.4 4.6-5"/>',
+      building: '<path d="M5 20V6l7-3 7 3v14"/><path d="M3.5 20h17"/><path d="M9 10h.01M9 14h.01M15 10h.01M15 14h.01"/>',
+      chat: '<path d="M5 6h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H9l-4 3v-3H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z"/>',
+      star: '<path d="m12 4 2.4 4.9 5.4.8-3.9 3.8.9 5.4L12 16.3 7.2 18.9l.9-5.4L4.2 9.7l5.4-.8L12 4z"/>',
+      login: '<path d="M10 4H6.5A1.5 1.5 0 0 0 5 5.5v13A1.5 1.5 0 0 0 6.5 20H10"/><path d="M14 8l4 4-4 4M18 12H9"/>',
+      alert: '<path d="M12 4 3 19h18L12 4z"/><path d="M12 10v4M12 17h.01"/>',
+      money: '<rect x="3.5" y="6.5" width="17" height="11" rx="2.5"/><circle cx="12" cy="12" r="2.6"/><path d="M6.5 9.5v.01M17.5 14.5v.01"/>',
+      crown: '<path d="M4 8l4 4 4-6 4 6 4-4-1.5 10h-13L4 8z"/>',
+      clock: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
+      rocket: '<path d="M14 4c3 0 6 3 6 6-3 0-5 1-7 3l-2-2c2-2 3-4 3-7z"/><path d="M9 11l-3 1-2 4 4-1M13 15l-1 3-4 2 1-4"/>'
+    };
+
+    // item = [label, value, hint, tone, icon]; the container gives defaults.
+    function renderMetrics(id, items, defaults) {
       var box = document.getElementById(id);
       box.textContent = "";
-      items.forEach(function (item) {
+      items.forEach(function (item, index) {
+        var tone = item[3] || (defaults && defaults.tone) || "blue";
+        var icon = item[4] || (defaults && defaults.icons && defaults.icons[index]) || "users";
         var card = document.createElement("div");
-        card.className = "metric";
+        card.className = "metric tone-" + tone;
+        var chip = document.createElement("span");
+        chip.className = "m-ico";
+        chip.setAttribute("aria-hidden", "true");
+        chip.innerHTML = '<svg viewBox="0 0 24 24">' + (ICONS[icon] || ICONS.users) + "</svg>";
+        var text = document.createElement("div");
+        text.className = "m-text";
         var label = document.createElement("span");
+        label.className = "m-label";
         label.textContent = item[0];
         var value = document.createElement("strong");
         value.textContent = String(item[1]);
-        card.appendChild(label);
-        card.appendChild(value);
+        text.appendChild(label);
+        text.appendChild(value);
         if (item[2]) {
           var hint = document.createElement("small");
           hint.textContent = item[2];
-          card.appendChild(hint);
+          text.appendChild(hint);
         }
+        card.appendChild(chip);
+        card.appendChild(text);
         box.appendChild(card);
       });
     }
@@ -421,7 +498,7 @@
       var label = user.plan === "pro" ? "Pro" : user.plan === "business" ? "Business" : user.plan === "trial" ? "Trial" : "No plan";
       var ends = Date.parse(user.trial_ends_at || "");
       var expired = user.plan === "trial" && isFinite(ends) && ends <= Date.now();
-      pill.className = "pill" + (expired ? " warn" : user.plan === "pro" || user.plan === "business" ? " ok" : "");
+      pill.className = "pill" + (expired ? " warn" : user.plan === "pro" ? " ok" : user.plan === "business" ? " biz" : user.plan === "trial" ? " trial" : " none");
       pill.textContent = expired ? "Trial expired" : label;
       cell.appendChild(pill);
       return cell;
@@ -442,7 +519,12 @@
         row.appendChild(planCell(user));
         row.appendChild(text(formatDate(user.created_at, false)));
         row.appendChild(text(formatDate(user.last_sign_in_at, true)));
-        row.appendChild(text(user.onboarding_completed ? "Yes" : "No"));
+        var onboardedCell = document.createElement("td");
+        var onboardedDot = document.createElement("span");
+        onboardedDot.className = user.onboarding_completed ? "dot-yes" : "dot-no";
+        onboardedDot.textContent = user.onboarding_completed ? "Yes" : "No";
+        onboardedCell.appendChild(onboardedDot);
+        row.appendChild(onboardedCell);
         row.appendChild(text(String(user.businesses)));
         row.appendChild(text(String(user.feedback)));
         var actionCell = document.createElement("td");
@@ -466,18 +548,18 @@
         ["Email confirmed", t.confirmed_users, percent(t.confirmed_users, t.users)],
         ["New, last 7 days", t.new_7d],
         ["New, last 30 days", t.new_30d]
-      ]);
+      ], { tone: "blue", icons: ["users", "mail", "plus", "plus"] });
       renderMetrics("metricsActivation", [
         ["Finished onboarding", t.onboarded, percent(t.onboarded, t.users)],
         ["Created a business", t.with_business, percent(t.with_business, t.users)],
         ["Received feedback", t.with_feedback, percent(t.with_feedback, t.users)],
         ["Tried it (at least one step)", tried, percent(tried, t.users)]
-      ]);
+      ], { tone: "green", icons: ["check", "building", "chat", "rocket"] });
       renderMetrics("metricsPlans", [
-        ["Trial, still active", t.trial_active],
-        ["Trial expired", t.trial_expired],
-        ["Pro (paying)", t.pro],
-        ["Business (paying)", t.business]
+        ["Trial, still active", t.trial_active, "", "amber", "clock"],
+        ["Trial expired", t.trial_expired, "", "red", "alert"],
+        ["Pro (paying)", t.pro, "", "green", "star"],
+        ["Business (paying)", t.business, "", "violet", "crown"]
       ]);
       renderMetrics("metricsActivity", [
         ["Logged in, last 7 days", t.active_7d, percent(t.active_7d, t.users)],
@@ -485,7 +567,7 @@
         ["Feedback received", t.feedback, t.feedback_7d + " in the last 7 days"],
         ["Low ratings (1-3)", t.feedback_low],
         ["Payment events", t.payment_events]
-      ]);
+      ], { tone: "cyan", icons: ["login", "building", "chat", "alert", "money"] });
       renderSignupChart(data.signups_by_day || []);
       renderUsers(data.users || []);
     }
@@ -904,6 +986,7 @@
       var summary = document.getElementById("paymentsSummary");
       var wrap = document.getElementById("paymentsWrap");
       var csv = document.getElementById("paymentsCsv");
+      document.getElementById("paymentStats").hidden = true;
       if (!allPayments.length) {
         summary.textContent = "No payments recorded yet. They appear here when you activate a plan.";
         wrap.hidden = true;
@@ -919,7 +1002,14 @@
         if (new Date(p.created_at) >= monthStart) month[cur] = (month[cur] || 0) + Number(p.amount);
       });
       function list(obj) { var k = Object.keys(obj); return k.length ? k.map(function (c) { return money(obj[c], c); }).join(" + ") : "0"; }
-      summary.textContent = "This month: " + list(month) + ". All time: " + list(total) + ". " + allPayments.length + " entries.";
+      summary.textContent = "";
+      var stats = document.getElementById("paymentStats");
+      stats.hidden = false;
+      renderMetrics("paymentStats", [
+        ["This month", list(month), "", "green", "money"],
+        ["All time", list(total), "", "blue", "star"],
+        ["Entries", allPayments.length, "", "slate", "check"]
+      ]);
       wrap.hidden = false;
       csv.hidden = false;
       allPayments.forEach(function (p) {
@@ -927,9 +1017,19 @@
         function cell(text) { var td = document.createElement("td"); td.textContent = text; tr.appendChild(td); return td; }
         cell(formatDate(p.created_at, false));
         cell(p.customer_email || "");
-        cell((p.plan === "business" ? "Business" : "Pro") + " · " + (p.billing_cycle === "yearly" ? "yearly" : "monthly"));
-        cell(money(p.amount, p.currency));
-        cell(p.method || "—");
+        var planTd = cell("");
+        var planPill = document.createElement("span");
+        planPill.className = "pill " + (p.plan === "business" ? "biz" : "ok");
+        planPill.textContent = (p.plan === "business" ? "Business" : "Pro") + " · " + (p.billing_cycle === "yearly" ? "yearly" : "monthly");
+        planTd.appendChild(planPill);
+        cell(money(p.amount, p.currency)).className = "amount-cell";
+        var methodTd = cell("");
+        if (p.method) {
+          var methodPill = document.createElement("span");
+          methodPill.className = "pill " + (p.method === "Bank transfer" ? "method-bank" : p.method === "Cash" ? "method-cash" : "method-other");
+          methodPill.textContent = p.method;
+          methodTd.appendChild(methodPill);
+        } else { methodTd.textContent = "—"; }
         cell(p.period_end ? formatDate(p.period_end, false) : "—");
         cell(p.note || "");
         var last = document.createElement("td");
