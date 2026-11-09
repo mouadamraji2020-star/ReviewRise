@@ -1029,5 +1029,22 @@ RR_register("fr",{
 "Too many tries. Please wait a few minutes and try again.": "Trop de tentatives. Veuillez patienter quelques minutes et réessayer.",
 "Don't have a Google review link? Create one free": "Vous n'avez pas de lien d'avis Google ? Créez-en un gratuitement",
 "Free Tool": "Outil gratuit",
-"Please confirm your email first. Open the confirmation link we sent you (check your spam folder too), then sign in.": "Veuillez d'abord confirmer votre e-mail. Ouvrez le lien de confirmation que nous vous avons envoyé (vérifiez aussi vos courriers indésirables), puis connectez-vous."
+"Please confirm your email first. Open the confirmation link we sent you (check your spam folder too), then sign in.": "Veuillez d'abord confirmer votre e-mail. Ouvrez le lien de confirmation que nous vous avons envoyé (vérifiez aussi vos courriers indésirables), puis connectez-vous.",
+"Open": "Ouvert",
+"Handled": "Traité",
+"Export CSV": "Exporter en CSV",
+"Mark as handled": "Marquer comme traité",
+"Mark as open": "Marquer comme ouvert",
+"Add note": "Ajouter une note",
+"Edit note": "Modifier la note",
+"Save note": "Enregistrer la note",
+"Private note (only you can see it)": "Note privée (visible uniquement par vous)",
+"Private - customers never see this.": "Privé - vos clients ne voient jamais ceci.",
+"Could not save. Check your connection and try again.": "Enregistrement impossible. Vérifiez votre connexion et réessayez.",
+"Could not save. Please try again.": "Enregistrement impossible. Veuillez réessayer.",
+"This feature needs a one-time database update. Please contact support.": "Cette fonction nécessite une mise à jour unique de la base de données. Veuillez contacter le support.",
+"There is no feedback to export.": "Aucun avis à exporter.",
+"Try another rating, status or search.": "Essayez une autre note, un autre statut ou une autre recherche.",
+"Filter by status": "Filtrer par statut",
+"Private note": "Note privée"
 });

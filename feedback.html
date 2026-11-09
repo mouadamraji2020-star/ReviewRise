@@ -603,6 +603,119 @@
       box-shadow: 0 0 0 3px rgba(43, 127, 255, 0.12);
     }
 
+    .feedback-status {
+      display: inline-flex;
+      height: 34px;
+      padding: 3px;
+      border: 1px solid #e6edf5;
+      border-radius: 999px;
+      background: #fff;
+    }
+    .feedback-status button {
+      border: none;
+      border-radius: 999px;
+      padding: 0 12px;
+      background: transparent;
+      color: #5b6b82;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .feedback-status button.active { background: #eaf2ff; color: #1f6fe0; }
+
+    .feedback-export {
+      height: 38px;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 0 14px;
+      border: 1px solid #e6edf5;
+      border-radius: 12px;
+      background: #fff;
+      color: #314158;
+      font-family: inherit;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: border-color 160ms ease, background 160ms ease;
+    }
+    .feedback-export:hover { background: #f8fbff; border-color: #b9d4ff; }
+    .feedback-export svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+    .feedback-card.is-handled { background: #fafcfb; }
+    .feedback-card.is-handled .feedback-text,
+    .feedback-card.is-handled .stars,
+    .feedback-card.is-handled .sentiment { opacity: 0.6; }
+    .feedback-foot {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px 10px;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #eef2f7;
+    }
+    .handled-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: #e8f7ee;
+      color: #1c9a52;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .feedback-note-text {
+      flex: 1 1 200px;
+      min-width: 0;
+      color: #5b6b82;
+      font-size: 13px;
+      line-height: 1.4;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+    .feedback-actions { display: flex; gap: 8px; margin-left: auto; }
+    .fb-btn {
+      height: 30px;
+      padding: 0 12px;
+      border: 1px solid #e0e8f2;
+      border-radius: 9px;
+      background: #fff;
+      color: #314158;
+      font-family: inherit;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .fb-btn:hover { background: #f4f8fe; border-color: #b9d4ff; }
+    .fb-btn.primary { background: #2b7fff; border-color: #2b7fff; color: #fff; }
+    .fb-btn.primary:hover { background: #1f6fe0; }
+    .fb-btn:disabled { opacity: 0.6; cursor: default; }
+    .feedback-note-edit { grid-column: 1 / -1; display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+    .feedback-note-edit textarea {
+      width: 100%;
+      min-height: 70px;
+      padding: 10px 12px;
+      border: 1px solid #d5e4f7;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 13.5px;
+      resize: vertical;
+      box-sizing: border-box;
+    }
+    .feedback-note-edit textarea:focus { outline: none; border-color: #2b7fff; box-shadow: 0 0 0 3px rgba(43,127,255,0.12); }
+    .feedback-note-edit .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .feedback-note-edit .hint { color: #8b9bb0; font-size: 12px; margin-right: auto; }
+    .fb-toast {
+      position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%);
+      max-width: calc(100vw - 32px); padding: 11px 16px; border-radius: 12px;
+      background: #10284d; color: #fff; font-size: 13.5px; font-weight: 600; z-index: 80;
+      box-shadow: 0 10px 28px rgba(16,40,80,0.25);
+    }
+
     #feedbackList {
       min-width: 0;
       display: flex;
@@ -813,6 +926,9 @@
         white-space: normal;
       }
       .feedback-meta { grid-column: 1 / -1; }
+      .feedback-actions { margin-left: 0; width: 100%; }
+      .feedback-actions .fb-btn { flex: 1; }
+      .feedback-export { width: 100%; justify-content: center; }
 
       #feedbackPage.sidebar-collapsed .sidebar { width: 240px; }
       #feedbackPage.sidebar-collapsed .sidebar-top { flex-direction: row; }
@@ -1059,6 +1175,11 @@
       <div class="feedback-toolbar">
         <div class="feedback-chips" id="feedbackChips"></div>
         <div class="feedback-tools">
+          <div class="feedback-status" id="feedbackStatus" role="group" aria-label="Filter by status">
+            <button type="button" class="active" data-status="all">All</button>
+            <button type="button" data-status="open">Open</button>
+            <button type="button" data-status="handled">Handled</button>
+          </div>
           <label class="feedback-search">
             <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg>
             <input id="feedbackSearch" type="search" placeholder="Search feedback..." autocomplete="off">
@@ -1070,6 +1191,10 @@
               <option value="oldest">Oldest first</option>
             </select>
           </label>
+          <button type="button" class="feedback-export" id="feedbackExport">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11"/><path d="M7.5 10.5L12 15l4.5-4.5"/><path d="M5 19h14"/></svg>
+            Export CSV
+          </button>
         </div>
       </div>
       <div id="feedbackList">
@@ -1160,6 +1285,9 @@ async function getValidAccessToken() {
     var feedbackSource = [];
     var loadedFeedback = [];
     var feedbackRatingFilter = 0;
+    var feedbackStatusFilter = "all";
+    var feedbackVisibleRows = [];
+    var feedbackNoteOpen = null;
     var feedbackReviewLinks = [];
     var feedbackReviewLinksReady = false;
 
@@ -1597,10 +1725,13 @@ async function getValidAccessToken() {
       var rows = loadedFeedback.filter(function (item) {
         var stars = feedbackStarCount(item);
         if (feedbackRatingFilter && stars !== feedbackRatingFilter) return false;
+        if (feedbackStatusFilter === "open" && item.handled_at) return false;
+        if (feedbackStatusFilter === "handled" && !item.handled_at) return false;
         if (!query) return true;
         var text = String(item.feedback || "").toLowerCase();
         var business = String(item.business || "").toLowerCase();
-        return text.indexOf(query) !== -1 || business.indexOf(query) !== -1;
+        var note = String(item.owner_note || "").toLowerCase();
+        return text.indexOf(query) !== -1 || business.indexOf(query) !== -1 || note.indexOf(query) !== -1;
       });
 
       rows.sort(function (a, b) {
@@ -1609,6 +1740,7 @@ async function getValidAccessToken() {
         return newestFirst ? second - first : first - second;
       });
 
+      feedbackVisibleRows = rows;
       list.innerHTML = "";
 
       if (!loadedFeedback.length) {
@@ -1617,7 +1749,7 @@ async function getValidAccessToken() {
       }
 
       if (!rows.length) {
-        list.innerHTML = '<div class="feedback-empty"><strong>No matching feedback</strong><p>Try another rating or search.</p></div>';
+        list.innerHTML = '<div class="feedback-empty"><strong>No matching feedback</strong><p>Try another rating, status or search.</p></div>';
         return;
       }
 
@@ -1659,10 +1791,183 @@ async function getValidAccessToken() {
         card.querySelector(".feedback-text").textContent = comment ? item.feedback : "No written comment";
         if (comment) card.querySelector(".feedback-text").title = item.feedback;
         card.querySelector(".feedback-business").textContent = item.business || "";
+        buildFeedbackFooter(card, item);
 
         list.appendChild(card);
       });
     }
+
+    function fbToast(message) {
+      var old = document.querySelector(".fb-toast");
+      if (old) old.remove();
+      var el = document.createElement("div");
+      el.className = "fb-toast";
+      el.setAttribute("role", "status");
+      el.textContent = message;
+      document.body.appendChild(el);
+      setTimeout(function () { el.remove(); }, 4200);
+    }
+
+    function makeFbButton(label, cls, onClick) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "fb-btn" + (cls ? " " + cls : "");
+      b.textContent = label;
+      b.addEventListener("click", onClick);
+      return b;
+    }
+
+    function buildFeedbackFooter(card, item) {
+      var handled = !!item.handled_at;
+      var note = item.owner_note ? String(item.owner_note) : "";
+      var id = String(item.id);
+      if (handled) card.classList.add("is-handled");
+
+      if (feedbackNoteOpen === id) {
+        var edit = document.createElement("div");
+        edit.className = "feedback-note-edit";
+        var area = document.createElement("textarea");
+        area.maxLength = 1000;
+        area.value = note;
+        area.placeholder = "Private note (only you can see it)";
+        area.setAttribute("aria-label", "Private note");
+        var row = document.createElement("div");
+        row.className = "row";
+        var hint = document.createElement("span");
+        hint.className = "hint";
+        hint.textContent = "Private - customers never see this.";
+        var save = makeFbButton("Save note", "primary", function () {
+          save.disabled = true;
+          saveFeedbackStatus(item, !!item.handled_at, area.value, function (ok) {
+            if (ok) feedbackNoteOpen = null;
+            paintFeedbackView();
+          });
+        });
+        var cancel = makeFbButton("Cancel", "", function () {
+          feedbackNoteOpen = null;
+          paintFeedbackView();
+        });
+        row.appendChild(hint);
+        row.appendChild(cancel);
+        row.appendChild(save);
+        edit.appendChild(area);
+        edit.appendChild(row);
+        card.appendChild(edit);
+        setTimeout(function () { area.focus(); }, 0);
+        return;
+      }
+
+      var foot = document.createElement("div");
+      foot.className = "feedback-foot";
+      if (handled) {
+        var badge = document.createElement("span");
+        badge.className = "handled-badge";
+        badge.textContent = "Handled";
+        foot.appendChild(badge);
+      }
+      if (note) {
+        var noteEl = document.createElement("span");
+        noteEl.className = "feedback-note-text";
+        noteEl.textContent = note;
+        foot.appendChild(noteEl);
+      }
+      var actions = document.createElement("div");
+      actions.className = "feedback-actions";
+      actions.appendChild(makeFbButton(note ? "Edit note" : "Add note", "", function () {
+        feedbackNoteOpen = id;
+        paintFeedbackView();
+      }));
+      var toggle = makeFbButton(handled ? "Mark as open" : "Mark as handled", handled ? "" : "primary", function () {
+        toggle.disabled = true;
+        saveFeedbackStatus(item, !handled, note, function () { paintFeedbackView(); });
+      });
+      actions.appendChild(toggle);
+      foot.appendChild(actions);
+      card.appendChild(foot);
+    }
+
+    async function saveFeedbackStatus(item, handled, note, done) {
+      var token = await getValidAccessToken();
+      if (!token) { window.location.href = "dashboard.html"; return; }
+      var response;
+      try {
+        response = await fetch(SUPABASE_URL + "/rest/v1/rpc/update_feedback_status", {
+          method: "POST",
+          headers: {
+            "apikey": SUPABASE_KEY,
+            "Authorization": "Bearer " + token,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ p_id: String(item.id), p_handled: handled, p_note: note || null })
+        });
+      } catch (error) {
+        fbToast("Could not save. Check your connection and try again.");
+        done(false);
+        return;
+      }
+      if (response.ok) {
+        var trimmed = String(note || "").trim().slice(0, 1000);
+        var apply = function (row) {
+          if (String(row.id) !== String(item.id)) return;
+          row.handled_at = handled ? (row.handled_at || new Date().toISOString()) : null;
+          row.owner_note = trimmed || null;
+        };
+        feedbackSource.forEach(apply);
+        loadedFeedback.forEach(apply);
+        try { saveFeedbackDataCache(feedbackSource); } catch (error) {}
+        done(true);
+        return;
+      }
+      if (response.status === 401) { window.location.href = "dashboard.html"; return; }
+      if (response.status === 404) fbToast("This feature needs a one-time database update. Please contact support.");
+      else fbToast("Could not save. Please try again.");
+      done(false);
+    }
+
+    function csvCell(value) {
+      var text = value === null || value === undefined ? "" : String(value);
+      if (/^[=+\-@\t\r]/.test(text)) text = "'" + text;
+      return '"' + text.replace(/"/g, '""') + '"';
+    }
+
+    function exportFeedbackCsv() {
+      var rows = feedbackVisibleRows;
+      if (!rows.length) { fbToast("There is no feedback to export."); return; }
+      var lines = [["Date", "Business", "Rating", "Comment", "Status", "Handled on", "Private note"].map(csvCell).join(",")];
+      rows.forEach(function (item) {
+        var when = new Date(item.created_at);
+        var handledOn = item.handled_at ? new Date(item.handled_at) : null;
+        lines.push([
+          isNaN(when.getTime()) ? "" : when.toISOString().slice(0, 19).replace("T", " "),
+          item.business || "",
+          feedbackStarCount(item),
+          item.feedback || "",
+          item.handled_at ? "Handled" : "Open",
+          handledOn && !isNaN(handledOn.getTime()) ? handledOn.toISOString().slice(0, 19).replace("T", " ") : "",
+          item.owner_note || ""
+        ].map(csvCell).join(","));
+      });
+      var blob = new Blob(["\ufeff" + lines.join("\r\n")], { type: "text/csv;charset=utf-8" });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      a.href = url;
+      a.download = "reviewrise-feedback-" + new Date().toISOString().slice(0, 10) + ".csv";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+    }
+
+    document.getElementById("feedbackExport").addEventListener("click", exportFeedbackCsv);
+    document.querySelectorAll("#feedbackStatus button").forEach(function (button) {
+      button.addEventListener("click", function () {
+        feedbackStatusFilter = button.getAttribute("data-status") || "all";
+        document.querySelectorAll("#feedbackStatus button").forEach(function (other) {
+          other.classList.toggle("active", other === button);
+        });
+        paintFeedbackView();
+      });
+    });
 
     document.getElementById("feedbackSearch").addEventListener("input", paintFeedbackView);
     document.getElementById("feedbackSort").addEventListener("change", paintFeedbackView);
