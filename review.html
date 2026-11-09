@@ -362,12 +362,14 @@ const labels = {
 function showPageError(message) {
   reviewCard.style.visibility = "hidden";
   reviewCard.style.opacity = "0";
+  reviewCard.style.display = "none";
   pageError.style.display = "block";
   pageErrorText.textContent = message;
 }
 
 function showReviewCard() {
   pageError.style.display = "none";
+  reviewCard.style.display = "";
   reviewCard.style.visibility = "visible";
   requestAnimationFrame(function () {
     reviewCard.style.opacity = "1";
