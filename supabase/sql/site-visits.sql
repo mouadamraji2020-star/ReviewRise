@@ -3,7 +3,7 @@
 --
 -- How it works
 --   * Public pages (home, support, free generator, privacy, terms) tell the database "someone opened this page"
---     through public.track_visit().
+--     through public.count_page_open().
 --   * No cookies and no names. A visitor is stored only as a short anonymous code that changes every day
 --     and cannot be traced back to a person. The network address itself is never stored.
 --   * Search-engine bots and previews are ignored. The same visitor opening the same page again within
@@ -28,7 +28,10 @@ alter table public.site_visits enable row level security;
 revoke all on table public.site_visits from anon, authenticated;
 grant select, delete on table public.site_visits to service_role;
 
-create or replace function public.track_visit(
+-- Older name used in the first version of this file (removed, it is replaced by count_page_open).
+drop function if exists public.track_visit(text, text);
+
+create or replace function public.count_page_open(
   p_page text,
   p_referrer text default null
 )
@@ -101,5 +104,5 @@ begin
 end;
 $function$;
 
-revoke all on function public.track_visit(text, text) from public;
-grant execute on function public.track_visit(text, text) to anon, authenticated;
+revoke all on function public.count_page_open(text, text) from public;
+grant execute on function public.count_page_open(text, text) to anon, authenticated;
