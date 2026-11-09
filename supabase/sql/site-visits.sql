@@ -54,7 +54,7 @@ begin
   end;
 
   v_ua := lower(coalesce(v_headers ->> 'user-agent', ''));
-  if v_ua = '' or v_ua ~ '(bot|crawl|spider|slurp|preview|facebookexternalhit|headless|lighthouse|curl|wget|python|monitor|uptime|scrapy|httpclient|node-fetch)' then
+  if v_ua ~ '(bot|crawl|spider|slurp|preview|facebookexternalhit|headless|lighthouse|curl|wget|python|monitor|uptime|scrapy|httpclient|node-fetch)' then
     return jsonb_build_object('ok', true);
   end if;
 
