@@ -201,6 +201,11 @@ async function handle(request: Request): Promise<Response> {
     fetchAllRows(supabaseUrl, serviceKey, "/rest/v1/payment_events?select=id&order=id", true),
   ]);
 
+  // Visitor counter (optional: works without it until the site-visits SQL has been run).
+  const visitRows = await fetchAllRows(supabaseUrl, serviceKey,
+    "/rest/v1/site_visits?select=day,visitor,page,referrer,country&day=gte." +
+      dayKey(Date.now() - 29 * DAY_MS) + "&order=id", true);
+
   const sources: Array<[string, FetchResult | Row[] | null]> = [
     ["auth users", authUsers], ["profiles", profiles], ["Reviewlinks", businesses],
     ["Feedback", feedback], ["payment_events", payments],
@@ -225,6 +230,8 @@ async function handle(request: Request): Promise<Response> {
     new_7d: 0,
     new_30d: 0,
     active_7d: 0,
+    active_24h: 0,
+    inactive_14d: 0,
     onboarded: 0,
     with_business: 0,
     with_feedback: 0,
@@ -257,6 +264,8 @@ async function handle(request: Request): Promise<Response> {
     if (created !== null && created >= now - 7 * DAY_MS) totals.new_7d++;
     if (created !== null && created >= now - 30 * DAY_MS) totals.new_30d++;
     if (lastSignIn !== null && lastSignIn >= now - 7 * DAY_MS) totals.active_7d++;
+    if (lastSignIn !== null && lastSignIn >= now - DAY_MS) totals.active_24h++;
+    if (created !== null && created < now - 14 * DAY_MS && (lastSignIn === null || lastSignIn < now - 14 * DAY_MS)) totals.inactive_14d++;
     if (profile.onboarding_completed === true) totals.onboarded++;
     if (businessCount > 0) totals.with_business++;
     if (feedbackCount > 0) totals.with_feedback++;
@@ -285,8 +294,53 @@ async function handle(request: Request): Promise<Response> {
     };
   }).sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at));
 
+  // Visitors: a visitor code changes every day, so "visitors" are counted per day and then added up.
+  let visits: Row | null = null;
+  if (!("error" in visitRows) && !visitRows.missing) {
+    const perDay = new Map<string, Set<string>>();
+    for (const key of lastDays(30, now)) perDay.set(key, new Set());
+    const pages = new Map<string, number>();
+    const referrers = new Map<string, number>();
+    const countries = new Map<string, number>();
+    const todayKey = dayKey(now);
+    const weekKeys = new Set(lastDays(7, now));
+    let views30 = 0;
+    for (const row of visitRows.rows) {
+      const day = str(row.day);
+      const set = perDay.get(day);
+      if (!set) continue;
+      set.add(str(row.visitor));
+      views30++;
+      const page = str(row.page) || "other";
+      pages.set(page, (pages.get(page) || 0) + 1);
+      const ref = str(row.referrer) || "(direct or unknown)";
+      referrers.set(ref, (referrers.get(ref) || 0) + 1);
+      const country = str(row.country) || "Unknown";
+      countries.set(country, (countries.get(country) || 0) + 1);
+    }
+    let week = 0;
+    let month = 0;
+    for (const [day, set] of perDay) {
+      month += set.size;
+      if (weekKeys.has(day)) week += set.size;
+    }
+    const top = (map: Map<string, number>) =>
+      Array.from(map, ([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count).slice(0, 8);
+    visits = {
+      today: perDay.get(todayKey)?.size || 0,
+      week,
+      month,
+      page_views_30d: views30,
+      by_day: Array.from(perDay, ([date, set]) => ({ date, count: set.size })),
+      pages: top(pages),
+      referrers: top(referrers),
+      countries: top(countries),
+    };
+  }
+
   return json({
     generated_at: new Date(now).toISOString(),
+    visits,
     totals,
     signups_by_day: Array.from(signupDays, ([date, count]) => ({ date, count })),
     users,
