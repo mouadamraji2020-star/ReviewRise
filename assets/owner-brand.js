@@ -11,7 +11,8 @@
   var style = document.createElement("style");
   style.textContent =
     ".dash-logo-mark.ob-mark{width:34px;height:34px;border-radius:10px;overflow:hidden;justify-content:center;color:#fff;font-weight:800;font-size:16px;line-height:1}" +
-    ".dash-logo-mark.ob-mark img{height:100%;width:100%;max-width:none;object-fit:cover}" +
+    ".dash-logo-mark.ob-mark.ob-img{background:#fff;padding:3px;box-sizing:border-box}" +
+    ".dash-logo-mark.ob-mark img{height:100%;width:100%;max-width:none;object-fit:contain}" +
     ".dash-logo-name.ob-name{display:flex;flex-direction:column;gap:3px;min-width:0;max-width:140px;line-height:1.1}" +
     ".ob-name .ob-title{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff;font-size:15px;font-weight:700;letter-spacing:-0.2px}" +
     ".ob-name .ob-powered{display:block;font-size:10.5px;font-weight:500;color:#8fa3c4;letter-spacing:0;white-space:nowrap}" +
@@ -103,8 +104,9 @@
     if (typeof biz.logo_url === "string" && /^https:\/\//i.test(biz.logo_url)) {
       var img = document.createElement("img");
       img.alt = "";
-      img.onerror = function () { mark.textContent = ""; letter(); };
+      img.onerror = function () { mark.textContent = ""; mark.classList.remove("ob-img"); letter(); };
       img.src = biz.logo_url;
+      mark.classList.add("ob-img");
       mark.appendChild(img);
     } else {
       letter();
