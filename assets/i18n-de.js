@@ -1049,5 +1049,7 @@ RR_register("de",{
 "There is no feedback to export.": "Es gibt kein Feedback zum Exportieren.",
 "Try another rating, status or search.": "Versuchen Sie eine andere Bewertung, einen anderen Status oder eine andere Suche.",
 "Filter by status": "Nach Status filtern",
-"Private note": "Private Notiz"
+"Private note": "Private Notiz",
+"Share Your Experience": "Teilen Sie Ihre Erfahrung",
+"{0} - Share Your Experience": "{0} - Teilen Sie Ihre Erfahrung"
 });

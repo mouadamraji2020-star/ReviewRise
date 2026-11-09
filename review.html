@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Share Your Experience | ReviewRise</title>
+  <title>Share Your Experience</title>
   <meta name="description" content="Tell us how your experience was. It only takes a moment.">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="ReviewRise">
@@ -18,8 +18,6 @@
   <meta name="twitter:title" content="Share Your Experience | ReviewRise">
   <meta name="twitter:description" content="Tell us how your experience was. It only takes a moment.">
   <meta name="twitter:image" content="https://mouadamraji2020-star.github.io/ReviewRise/assets/og-image.png">
-  <link rel="icon" type="image/png" href="assets/reviewrise-logo.png">
-  <link rel="apple-touch-icon" href="assets/reviewrise-logo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -386,6 +384,19 @@ function setLetterLogo(name) {
   businessLogo.classList.add("is-placeholder");
 }
 
+function setTabIcon(href, type) {
+  document.querySelectorAll('link[rel="icon"], link[rel="apple-touch-icon"]').forEach(function (old) { old.remove(); });
+  ["icon", "apple-touch-icon"].forEach(function (rel) {
+    const tag = document.createElement("link");
+    tag.rel = rel;
+    if (type) tag.type = type;
+    tag.href = href;
+    document.head.appendChild(tag);
+  });
+}
+
+setTabIcon("assets/reviewrise-logo.png", "image/png");
+
 async function applyLogo(link) {
   const name = link.business_name || "";
   if (!link.logo_url) {
@@ -402,6 +413,7 @@ async function applyLogo(link) {
     businessLogoLetter.style.display = "none";
     businessLogoImage.style.display = "block";
     businessLogo.classList.remove("is-placeholder");
+    setTabIcon(link.logo_url);
   } else {
     setLetterLogo(name);
   }
@@ -449,7 +461,7 @@ async function loadBusinessFromReviewLink() {
       google_redirect_enabled: link.google_redirect_enabled !== false
     };
     businessNameEl.textContent = currentBusiness.business_name;
-    document.title = currentBusiness.business_name + " | ReviewRise";
+    document.title = currentBusiness.business_name + " - Share Your Experience";
     await applyLogo(currentBusiness);
     showReviewCard();
     if (alreadyRatedHere(currentBusiness.id)) showAlreadyRated();
