@@ -796,6 +796,26 @@
       text-overflow: ellipsis;
     }
 
+    .feedback-text.is-google {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: #1c7a47;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .feedback-text.is-google svg {
+      width: 16px;
+      height: 16px;
+      flex: none;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.9;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
     .feedback-text.is-empty {
       color: #94a3b8;
       font-size: 14px;
@@ -1354,7 +1374,9 @@ async function getValidAccessToken() {
         id: String(link.id),
         business_name: link.business_name ? String(link.business_name).trim() : "Untitled business",
         logo_url: typeof link.logo_url === "string" && /^https:\/\//i.test(link.logo_url) ? link.logo_url : "",
-        is_primary: link.is_primary === true
+        is_primary: link.is_primary === true,
+        positive_threshold: Number.isInteger(Number(link.positive_threshold)) && Number(link.positive_threshold) >= 2 && Number(link.positive_threshold) <= 5 ? Number(link.positive_threshold) : 4,
+        google_redirect_enabled: link.google_redirect_enabled !== false
       };
     }
 
@@ -1560,7 +1582,7 @@ async function getValidAccessToken() {
 
       try {
         var response = await fetch(
-          SUPABASE_URL + "/rest/v1/Reviewlinks?select=id,business_name,logo_url,is_primary,created_at,user_id&user_id=eq." + encodeURIComponent(ownerId) + "&order=created_at.desc",
+          SUPABASE_URL + "/rest/v1/Reviewlinks?select=id,business_name,logo_url,is_primary,created_at,user_id,positive_threshold,google_redirect_enabled&user_id=eq." + encodeURIComponent(ownerId) + "&order=created_at.desc",
           {
             headers: {
               "apikey": SUPABASE_KEY,
@@ -1645,6 +1667,22 @@ async function getValidAccessToken() {
       loadedFeedback = feedbackForSelectedBusiness(feedbackSource);
       renderBusinessSwitcher();
       paintFeedbackView();
+    }
+
+    // A customer who rated at or above the business's "positive" threshold was sent to Google and has no private comment.
+    function feedbackSentToGoogle(item) {
+      var text = item && item.feedback && String(item.feedback).trim();
+      if (text) return false;
+      var threshold = 4;
+      var redirect = true;
+      var id = item && item.review_link_id != null ? String(item.review_link_id) : "";
+      feedbackReviewLinks.forEach(function (link) {
+        if (link.id === id) {
+          threshold = link.positive_threshold;
+          redirect = link.google_redirect_enabled;
+        }
+      });
+      return redirect && feedbackStarCount(item) >= threshold;
     }
 
     function feedbackStarCount(item) {
@@ -1781,7 +1819,7 @@ async function getValidAccessToken() {
         card.innerHTML = `
           ${face}
           <div class="stars"><span class="star-on">${"★".repeat(filled)}</span><span class="star-off">${"★".repeat(Math.max(0, 5 - filled))}</span></div>
-          <div class="feedback-text${comment ? "" : " is-empty"}"></div>
+          <div class="feedback-text${comment || feedbackSentToGoogle(item) ? "" : " is-empty"}"></div>
           <div class="feedback-meta">
             <span class="biz-badge" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 20h16"/><path d="M6 20V7l6-3 6 3v13"/><path d="M10 20v-4h4v4"/><path d="M9 9h.01M9 12h.01M12 9h.01M12 12h.01M15 9h.01M15 12h.01"/></svg></span>
             <span>
@@ -1790,7 +1828,16 @@ async function getValidAccessToken() {
             </span>
           </div>
         `;
-        card.querySelector(".feedback-text").textContent = comment ? item.feedback : "No written comment";
+        var textBox = card.querySelector(".feedback-text");
+        if (comment) {
+          textBox.textContent = item.feedback;
+        } else if (feedbackSentToGoogle(item)) {
+          textBox.classList.add("is-google");
+          textBox.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s6.5-5.6 6.5-11A6.5 6.5 0 0 0 5.5 10C5.5 15.4 12 21 12 21z"/><circle cx="12" cy="10" r="2.3"/></svg><span></span>';
+          textBox.querySelector("span").textContent = "Sent to Google Maps";
+        } else {
+          textBox.textContent = "No written comment";
+        }
         if (comment) card.querySelector(".feedback-text").title = item.feedback;
         card.querySelector(".feedback-business").textContent = item.business || "";
         buildFeedbackFooter(card, item);
@@ -1935,7 +1982,7 @@ async function getValidAccessToken() {
     function exportFeedbackCsv() {
       var rows = feedbackVisibleRows;
       if (!rows.length) { fbToast("There is no feedback to export."); return; }
-      var lines = [["Date", "Business", "Rating", "Comment", "Status", "Handled on", "Private note"].map(csvCell).join(",")];
+      var lines = [["Date", "Business", "Rating", "Comment", "Sent to Google Maps", "Status", "Handled on", "Private note"].map(csvCell).join(",")];
       rows.forEach(function (item) {
         var when = new Date(item.created_at);
         var handledOn = item.handled_at ? new Date(item.handled_at) : null;
@@ -1944,6 +1991,7 @@ async function getValidAccessToken() {
           item.business || "",
           feedbackStarCount(item),
           item.feedback || "",
+          feedbackSentToGoogle(item) ? "Yes" : "",
           item.handled_at ? "Handled" : "Open",
           handledOn && !isNaN(handledOn.getTime()) ? handledOn.toISOString().slice(0, 19).replace("T", " ") : "",
           item.owner_note || ""

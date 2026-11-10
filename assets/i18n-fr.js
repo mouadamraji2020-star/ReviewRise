@@ -1149,5 +1149,6 @@ RR_register("fr",{
 "Demo": "Démo",
 "Exit demo": "Quitter la démo",
 "Opening the live demo...": "Ouverture de la démo en direct...",
-"Click here if nothing happens": "Cliquez ici si rien ne se passe"
+"Click here if nothing happens": "Cliquez ici si rien ne se passe",
+"Sent to Google Maps": "Envoyé vers Google Maps"
 });

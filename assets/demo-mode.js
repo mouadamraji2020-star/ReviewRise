@@ -62,7 +62,7 @@
   ];
   for (var i = 0; i < 45; i++) {
     var five = i % 5 !== 4;
-    var withText = i % 3 !== 2;
+    var withText = false; // happy customers go straight to Google, so they leave no private comment
     ratings.push({ r: five ? 5 : 4, t: withText ? (five ? POS5[i % POS5.length] : POS4[i % POS4.length]) : "", d: Math.floor((i * 29) / 45) + (i % 3) * 0.2 });
   }
   var feedback = [];
