@@ -37,28 +37,41 @@
     google_review_url: "https://search.google.com/local/writereview?placeid=demo", google_review_link: "https://search.google.com/local/writereview?placeid=demo",
     positive_threshold: 4, private_feedback_enabled: true, google_redirect_enabled: true, phone: "", city: "Tangier", country: "Morocco"
   };
-  var C = {
-    low1: ["Check-in took more than 40 minutes and nobody apologised.", "Waited a very long time at check-in again.", "The check-in process was slow and confusing.", "Check-in took too long after our long trip."],
-    low2: ["The room was noisy at night because of the street.", "Noisy at night, we could not sleep.", "Too much noise at night from the terrace."],
-    low3: ["Breakfast was cold and the coffee was weak.", "Cold breakfast, the eggs were not warm.", "The wifi did not work in our room."],
-    pos: ["Lovely stay, the staff made us feel at home.", "Beautiful rooftop and a great location.", "Best breakfast in the medina. We will come back!", "Very clean and the team was so kind.", "Perfect for a weekend in Tangier.", "Great value and a warm welcome.", "The room was spotless and quiet.", "Friendly staff and excellent mint tea."]
-  };
-  var feedback = [];
-  var plan = [
-    [1, C.low1[0], 2], [1, C.low2[0], 3], [2, C.low1[1], 4], [2, C.low2[1], 6], [2, C.low3[0], 8], [3, C.low1[2], 9], [3, C.low3[2], 12], [3, C.low2[2], 14],
-    [3, C.low3[1], 17], [3, C.low1[3], 19]
+  var POS5 = [
+    "Absolutely loved our stay. The staff made us feel at home from the first minute!",
+    "Beautiful rooftop, spotless rooms and the best breakfast in the medina.",
+    "Perfect location and the kindest team. We will definitely come back!",
+    "Everything was perfect. Thank you for the warm welcome and the mint tea.",
+    "The room was spotless and quiet. Great value for money.",
+    "Amazing hospitality. They even arranged a taxi for us at 5 am.",
+    "A real gem in Tangier. Highly recommended to everyone!",
+    "Delicious food, lovely terrace and very helpful staff.",
+    "Our favourite stay of the whole trip. Thank you!",
+    "Charming riad, super friendly owners. Five stars!"
   ];
-  var ratings = [];
-  plan.forEach(function (p) { ratings.push({ r: p[0] === 1 ? 1 : p[0], t: p[1], d: p[2] }); });
-  // fill up to 48 responses: positives (4 and 5 stars)
-  for (var i = 0; i < 38; i++) {
-    ratings.push({ r: i % 3 === 0 ? 4 : 5, t: i % 2 === 0 ? C.pos[i % C.pos.length] : "", d: Math.floor((i * 29) / 38) + (i % 3) * 0.2 });
+  var POS4 = [
+    "Great stay and a lovely team. Would stay again.",
+    "Very nice rooms and a wonderful rooftop view.",
+    "Friendly staff and excellent location.",
+    "Clean, comfortable and a great breakfast."
+  ];
+  var ratings = [
+    { r: 2, t: "Check-in took longer than expected, but the team was very kind about it.", d: 3 },
+    { r: 3, t: "Check-in was a bit slow after our long trip, the rest was lovely.", d: 11 },
+    { r: 3, t: "Breakfast was lukewarm, otherwise a great stay.", d: 16 }
+  ];
+  for (var i = 0; i < 45; i++) {
+    var five = i % 5 !== 4;
+    var withText = i % 3 !== 2;
+    ratings.push({ r: five ? 5 : 4, t: withText ? (five ? POS5[i % POS5.length] : POS4[i % POS4.length]) : "", d: Math.floor((i * 29) / 45) + (i % 3) * 0.2 });
   }
+  var feedback = [];
   ratings.forEach(function (x, idx) {
     feedback.push({ id: 1000 - idx, rating: x.r, feedback: x.t || null, business: business.business_name, review_link_id: 1, user_id: UID, created_at: iso(x.d, (idx * 7) % 13), handled_at: null, owner_note: null });
   });
-  feedback[1].handled_at = iso(1); feedback[1].owner_note = "Called the guest and offered a quiet room next time.";
-  feedback[6].handled_at = iso(5); feedback[6].owner_note = "Router replaced on the second floor.";
+  feedback[0].handled_at = iso(2); feedback[0].owner_note = "Thanked the guest and sped up our check-in routine.";
+  feedback[1].handled_at = iso(9); feedback[1].owner_note = "Added a second person at reception in the evening.";
+  feedback[2].handled_at = iso(14); feedback[2].owner_note = "New warmer for breakfast.";
   feedback.sort(function (a, b) { return Date.parse(b.created_at) - Date.parse(a.created_at); });
 
   var profile = { id: UID, full_name: "Demo Owner", onboarding_completed: true, plan: "pro", subscription_status: "active", billing_cycle: "monthly",
