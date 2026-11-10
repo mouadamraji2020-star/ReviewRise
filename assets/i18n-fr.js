@@ -1144,5 +1144,10 @@ RR_register("fr",{
 "Please tell us what went wrong. Only the business sees this message.": "Dites-nous ce qui n'a pas été. Seule l'entreprise voit ce message.",
 "Send feedback": "Envoyer l'avis",
 "Thank you": "Merci",
-"Your message goes privately to the business, not to Google. In your dashboard it appears in the Feedback page.": "Votre message va en privé à l'entreprise, pas à Google. Dans votre tableau de bord, il apparaît dans la page Avis."
+"Your message goes privately to the business, not to Google. In your dashboard it appears in the Feedback page.": "Votre message va en privé à l'entreprise, pas à Google. Dans votre tableau de bord, il apparaît dans la page Avis.",
+"Demo with example data": "Démo avec données d'exemple",
+"Demo": "Démo",
+"Exit demo": "Quitter la démo",
+"Opening the live demo...": "Ouverture de la démo en direct...",
+"Click here if nothing happens": "Cliquez ici si rien ne se passe"
 });
