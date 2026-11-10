@@ -1252,6 +1252,26 @@
     .plan-card .btn { width: 100%; margin-top: auto; }
     .plan-card.is-featured .btn { background: linear-gradient(135deg, #2f7cf6, #1d4ed8); border-color: transparent; color: #fff; box-shadow: 0 12px 26px rgba(47, 124, 246, 0.3); }
 
+    .trust-block { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 16px; margin-top: 26px; }
+    .trust-card { padding: 24px; border: 1px solid var(--line); border-radius: 20px; background: #fff; box-shadow: 0 10px 28px rgba(16, 40, 80, 0.05); }
+    .trust-card h3 { margin: 0 0 14px; font-size: 18px; letter-spacing: -0.3px; }
+    .pay-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; counter-reset: step; }
+    .pay-steps li { position: relative; padding-left: 40px; counter-increment: step; }
+    .pay-steps li::before {
+      content: counter(step); position: absolute; left: 0; top: 0; width: 28px; height: 28px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; background: #eaf2ff; color: var(--blue); font-size: 14px; font-weight: 800;
+    }
+    .pay-steps strong { display: block; font-size: 15px; }
+    .pay-steps span { display: block; margin-top: 2px; color: var(--muted); font-size: 14px; line-height: 1.5; }
+    .trust-points { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+    .trust-points li { display: flex; gap: 12px; align-items: flex-start; }
+    .trust-points .tp-ico { flex: none; width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: #e8f7ee; color: #1c9a52; }
+    .trust-points .tp-ico svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+    .trust-points strong { display: block; font-size: 15px; }
+    .trust-points span { display: block; margin-top: 2px; color: var(--muted); font-size: 14px; line-height: 1.5; }
+    .trust-cta { margin-top: 18px; }
+    @media (max-width: 860px) { .trust-block { grid-template-columns: 1fr; } }
+
     .pricing-swipe { display: none; }
 
     .pricing-foot { margin: 22px 0 0; color: var(--soft); font-size: 13px; line-height: 1.55; text-align: center; }
@@ -1981,6 +2001,25 @@
             <button class="btn btn-secondary" type="button" data-pay-soon data-plan="business">Choose Business</button>
           </li>
         </ul>
+        <div class="trust-block">
+          <div class="trust-card">
+            <h3>How payment works</h3>
+            <ol class="pay-steps">
+              <li><strong>Message us on WhatsApp</strong><span>Tell us which plan you want.</span></li>
+              <li><strong>We send you the payment details</strong><span>You pay, and we confirm your payment.</span></li>
+              <li><strong>Your plan is activated</strong><span>You get a receipt in your Settings.</span></li>
+            </ol>
+            <a class="btn btn-primary trust-cta" data-wa-contact href="https://wa.me/212766315853" target="_blank" rel="noopener noreferrer">Message us on WhatsApp</a>
+          </div>
+          <div class="trust-card">
+            <h3>Why you can feel safe</h3>
+            <ul class="trust-points">
+              <li><span class="tp-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg></span><div><strong>Try it free for 7 days first</strong><span>No payment is needed to start. Pay only if you like it.</span></div></li>
+              <li><span class="tp-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg></span><div><strong>7-day money-back guarantee</strong><span>Not happy? Ask for a refund within 7 days of your plan starting.</span></div></li>
+              <li><span class="tp-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c1-4 4-6 7-6s6 2 7 6"/></svg></span><div><strong>Built by Moad in Tangier, Morocco</strong><span>A real person you can message on WhatsApp.</span></div></li>
+            </ul>
+          </div>
+        </div>
         <p class="pricing-swipe" aria-hidden="true">Swipe to compare plans</p>
         <p class="pricing-foot">Prices are in US dollars. Paid plans are arranged on WhatsApp and activated once your payment is confirmed.</p>
       </div>
@@ -2017,6 +2056,10 @@
             <summary>How do I pay for a paid plan?</summary>
             <p>Paid plans are arranged on WhatsApp. Message us, we send you the payment details, and your plan is activated once your payment is confirmed.</p>
           </details>
+          <details data-keywords="refund money back guarantee cancel cancellation">
+            <summary>Can I get my money back or cancel?</summary>
+            <p>Yes. If ReviewRise is not right for you, ask for a refund within 7 days of your plan starting. You can also cancel at any time: you keep access until the end of the period you already paid for, and it does not renew.</p>
+          </details>
           <details data-keywords="equipment hardware nfc tag sticker qr print">
             <summary>Do I need special equipment?</summary>
             <p>No. A printed QR code works with any phone camera. NFC tags are optional if you want customers to tap instead of scan.</p>
@@ -2047,7 +2090,7 @@
 
   <dialog class="pay-soon" id="paySoon" aria-labelledby="paySoonTitle">
     <h3 id="paySoonTitle">Choose a paid plan</h3>
-    <p id="paySoonText">Paid plans are arranged on WhatsApp. Message us to receive the payment details, and your plan is activated once your payment is confirmed. You can also start the free trial first and upgrade later from Settings.</p>
+    <p id="paySoonText">Paid plans are arranged on WhatsApp. Message us to receive the payment details, and your plan is activated once your payment is confirmed. You can also start the free trial first and upgrade later from Settings. Not happy? Ask for a refund within 7 days of your plan starting.</p>
     <a class="btn btn-primary" id="paySoonWhatsapp" href="https://wa.me/212766315853" target="_blank" rel="noopener noreferrer">Message us on WhatsApp</a>
     <a class="btn btn-secondary" href="dashboard.html">Start Free Trial</a>
     <button class="btn btn-dark" type="button" id="paySoonClose">Close</button>

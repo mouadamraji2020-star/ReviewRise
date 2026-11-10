@@ -460,6 +460,11 @@ select:focus {
   box-shadow: 0 0 0 4px rgba(43, 127, 255, 0.12);
 }
 
+.pay-help { margin: 18px 0 4px; padding: 16px 18px; border: 1px solid #e6edf5; border-radius: 14px; background: #f8fbff; }
+.pay-help h3 { margin: 0 0 8px; font-size: 15px; }
+.pay-help ol { margin: 0; padding-left: 20px; color: #3b4d68; font-size: 13.5px; line-height: 1.6; }
+.pay-help p { margin: 10px 0 0; color: #1c7a47; font-size: 13px; font-weight: 600; }
+
 .pay-history { margin: 18px 0 4px; }
 .pay-history[hidden] { display: none !important; }
 .pay-history h3 { margin: 0 0 4px; font-size: 16px; }
@@ -1414,6 +1419,15 @@ body.page-leaving { opacity: 0; }
               <h3>Payment history</h3>
               <p>Your payments, with a receipt for each one.</p>
               <div id="payHistoryList"></div>
+            </div>
+            <div class="pay-help">
+              <h3>How payment works</h3>
+              <ol>
+                <li>Choose a plan below and send us the WhatsApp message.</li>
+                <li>We send you the payment details. You pay, and we confirm your payment.</li>
+                <li>Your plan is activated and you get a receipt here.</li>
+              </ol>
+              <p>7-day money-back guarantee: not happy? Ask for a refund within 7 days of your plan starting.</p>
             </div>
             <div class="plan-billing" role="group" aria-label="Paid plan billing period">
               <button class="plan-billing-btn is-selected" type="button" data-billing="monthly" aria-pressed="true">Monthly</button>
