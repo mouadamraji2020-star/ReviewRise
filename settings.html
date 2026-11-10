@@ -460,6 +460,23 @@ select:focus {
   box-shadow: 0 0 0 4px rgba(43, 127, 255, 0.12);
 }
 
+.pay-history { margin: 18px 0 4px; }
+.pay-history[hidden] { display: none !important; }
+.pay-history h3 { margin: 0 0 4px; font-size: 16px; }
+.pay-history > p { margin: 0 0 10px; color: #7b8ba0; font-size: 13px; }
+.pay-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  padding: 12px 14px; border: 1px solid #e6edf5; border-radius: 12px; background: #fff; margin-top: 8px;
+}
+.pay-row-main { min-width: 0; }
+.pay-row-main strong { display: block; color: #10284d; font-size: 14px; }
+.pay-row-main > span { display: block; margin-top: 2px; color: #7b8ba0; font-size: 12.5px; }
+.pay-row a {
+  padding: 7px 12px; border: 1px solid #cfe0fb; border-radius: 9px; background: #eaf2ff;
+  color: #1f6fe0; font-size: 13px; font-weight: 700; text-decoration: none; white-space: nowrap;
+}
+.pay-row a:hover { background: #dbe9ff; }
+
 .field-hint {
   margin: 8px 0 0;
   color: #7b8ba0;
@@ -1391,6 +1408,11 @@ body.page-leaving { opacity: 0; }
               </div>
               <p id="subscriptionAccessNote">A trial end date has not been saved for this account, so no countdown is shown.</p>
               <button class="btn btn-secondary" type="button" id="subscriptionRetry" hidden>Retry</button>
+            </div>
+            <div class="pay-history" id="payHistory" hidden>
+              <h3>Payment history</h3>
+              <p>Your payments, with a receipt for each one.</p>
+              <div id="payHistoryList"></div>
             </div>
             <div class="plan-billing" role="group" aria-label="Paid plan billing period">
               <button class="plan-billing-btn is-selected" type="button" data-billing="monthly" aria-pressed="true">Monthly</button>
@@ -3228,6 +3250,71 @@ async function loadSubscriptionAccess(token) {
     }
 
     renderSubscriptionAccess(result.state);
+    loadPaymentHistory(token);
+}
+
+async function loadPaymentHistory(token) {
+    var box = document.getElementById("payHistory");
+    var list = document.getElementById("payHistoryList");
+
+    if (!box || !list) {
+        return;
+    }
+
+    var rows = [];
+
+    try {
+        var response = await fetch(SUPABASE_URL + "/rest/v1/rpc/get_my_payments", {
+            method: "POST",
+            headers: authHeaders(token, true),
+            body: "{}"
+        });
+
+        if (response.ok) {
+            var data = await response.json();
+            rows = Array.isArray(data) ? data : [];
+        }
+    } catch (error) {
+        rows = [];
+    }
+
+    list.textContent = "";
+    box.hidden = !rows.length;
+
+    rows.forEach(function (payment) {
+        var when = new Date(payment.created_at);
+        var rrLang = "en";
+        try { rrLang = localStorage.getItem("rr_lang") || "en"; } catch (error) {}
+        var locale = rrLang === "fr" ? "fr-FR" : rrLang === "de" ? "de-DE" : "en-US";
+        var amount = Number(payment.amount);
+        var money = isFinite(amount) ? amount.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " " + String(payment.currency || "") : "";
+        var row = document.createElement("div");
+        row.className = "pay-row";
+        var main = document.createElement("div");
+        main.className = "pay-row-main";
+        var title = document.createElement("strong");
+        var planName = document.createElement("span");
+        planName.setAttribute("data-no-i18n", "");
+        planName.textContent = payment.plan === "business" ? "Business" : "Pro";
+        var cycleName = document.createElement("span");
+        cycleName.textContent = payment.billing_cycle === "yearly" ? "Yearly" : "Monthly";
+        title.appendChild(planName);
+        title.appendChild(document.createTextNode(" \u00b7 "));
+        title.appendChild(cycleName);
+        var meta = document.createElement("span");
+        meta.setAttribute("data-no-i18n", "");
+        meta.textContent = (isNaN(when.getTime()) ? "" : when.toLocaleDateString(locale, { month: "short", day: "numeric", year: "numeric" })) + (money ? " \u00b7 " + money : "");
+        main.appendChild(title);
+        main.appendChild(meta);
+        var link = document.createElement("a");
+        link.href = "receipt.html?id=" + encodeURIComponent(String(payment.id));
+        link.target = "_blank";
+        link.rel = "noopener";
+        link.textContent = "View receipt";
+        row.appendChild(main);
+        row.appendChild(link);
+        list.appendChild(row);
+    });
 }
 
 document.getElementById("startTrialBtn").addEventListener("click", function () {
