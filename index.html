@@ -1272,6 +1272,41 @@
     .trust-cta { margin-top: 18px; }
     @media (max-width: 860px) { .trust-block { grid-template-columns: 1fr; } }
 
+    .btn-demo {
+      display: inline-flex; align-items: center; justify-content: center; gap: 9px; height: 52px; padding: 0 22px;
+      border: 0; border-radius: 14px; background: linear-gradient(135deg, #2f7cf6, #1d4ed8); color: #fff;
+      font: inherit; font-size: 16px; font-weight: 700; text-decoration: none; cursor: pointer;
+      box-shadow: 0 12px 26px rgba(47, 124, 246, 0.32); transition: transform .18s ease, box-shadow .18s ease;
+    }
+    .btn-demo:hover { transform: translateY(-1px); box-shadow: 0 16px 32px rgba(47, 124, 246, 0.4); }
+    .btn-demo .play { width: 24px; height: 24px; border-radius: 50%; background: rgba(255,255,255,.22); display: inline-flex; align-items: center; justify-content: center; }
+    .btn-demo .play svg { width: 11px; height: 11px; fill: #fff; margin-left: 1px; }
+    .demo-note { margin: 12px 0 0; color: var(--muted); font-size: 14px; }
+    .demo-note a { color: var(--blue); font-weight: 700; text-decoration: none; }
+    .demo-note a:hover { text-decoration: underline; }
+    .nav-center a.nav-demo {
+      display: inline-flex; align-items: center; gap: 7px; padding: 7px 13px; border-radius: 999px;
+      background: #eaf2ff; color: #1d4ed8; font-weight: 700;
+    }
+    .nav-center a.nav-demo::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #1c9a52; box-shadow: 0 0 0 3px rgba(28, 154, 82, 0.2); }
+    .mobile-panel nav a.mobile-menu-demo { color: #1d4ed8; font-weight: 700; }
+    .demo-band { padding: 64px 0; }
+    .demo-card {
+      display: flex; align-items: center; justify-content: space-between; gap: 28px; flex-wrap: wrap;
+      padding: 38px 40px; border-radius: 26px; color: #fff;
+      background: radial-gradient(ellipse 420px 240px at 90% 0%, rgba(62, 140, 255, .45), transparent 70%), #0c1424;
+      box-shadow: 0 24px 50px rgba(12, 20, 36, .22);
+    }
+    .demo-card h2 { margin: 0 0 8px; color: #fff; font-size: 30px; letter-spacing: -0.8px; }
+    .demo-card p { margin: 0; max-width: 560px; color: #b9c8e2; font-size: 16px; line-height: 1.6; }
+    .demo-card .btn-demo { background: #fff; color: #0c1424; box-shadow: none; }
+    .demo-card .btn-demo .play { background: #2b7fff; }
+    @media (max-width: 640px) {
+      .btn-demo { width: 100%; }
+      .demo-card { padding: 28px 22px; }
+      .demo-card h2 { font-size: 24px; }
+    }
+
     .demo-link { margin: 14px 0 0; font-size: 14.5px; font-weight: 600; }
     .demo-link a { color: var(--blue); text-decoration: none; }
     .demo-link a:hover { text-decoration: underline; }
@@ -1629,6 +1664,7 @@
         <a href="#how-it-works">How It Works</a>
         <a href="#pricing">Pricing</a>
         <a href="#contact">Contact</a>
+        <a class="nav-demo" href="demo.html">Live Demo</a>
         <a href="review-link-generator.html">Free Tool</a>
       </nav>
       <div class="header-actions">
@@ -1651,6 +1687,7 @@
               <a href="#how-it-works">How It Works</a>
               <a href="#pricing">Pricing</a>
               <a href="#contact">Contact</a>
+              <a class="mobile-menu-demo" href="demo.html">Live Demo</a>
               <a href="review-link-generator.html">Free Tool</a>
               <a class="mobile-menu-login" href="dashboard.html">Login</a>
               <a class="mobile-menu-start" href="dashboard.html">Get Started</a>
@@ -1669,9 +1706,9 @@
         <p class="lede">A simple way to get more reviews and capture private feedback before it becomes public.</p>
         <div class="cta-row">
           <a class="btn btn-primary" href="dashboard.html">Get Started Free →</a>
-          <a class="btn btn-secondary" href="#how-it-works">See How It Works</a>
+          <a class="btn-demo" href="demo.html"><span class="play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 4l14 8-14 8z"/></svg></span>Try the Live Demo</a>
         </div>
-        <p class="demo-link"><a href="demo.html">Or try the live demo, no sign-up needed &rarr;</a></p>
+        <p class="demo-note">No sign-up needed. See the real dashboard with example data. <a href="#how-it-works">See How It Works</a></p>
         <ul class="benefits">
           <li>
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.4 5.4L20 9.2l-4 4.1.9 5.7L12 16.3 7.1 19l.9-5.7-4-4.1 5.6-.8L12 3z"/></svg>
@@ -1932,6 +1969,18 @@
               <div class="rv-out is-private"><span class="rv-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span><strong>Lower ratings</strong><span>Send a private message to you</span></div>
             </div>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="band demo-band" id="demo">
+      <div class="wrap">
+        <div class="demo-card">
+          <div>
+            <h2>See it before you sign up</h2>
+            <p>Open the real ReviewRise dashboard with example data for a hotel. Click around, read the feedback, and try the screen your customers see. Nothing to install, no account needed.</p>
+          </div>
+          <a class="btn-demo" href="demo.html"><span class="play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 4l14 8-14 8z"/></svg></span>Try the Live Demo</a>
         </div>
       </div>
     </section>

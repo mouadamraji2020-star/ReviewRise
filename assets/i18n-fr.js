@@ -1150,5 +1150,9 @@ RR_register("fr",{
 "Exit demo": "Quitter la démo",
 "Opening the live demo...": "Ouverture de la démo en direct...",
 "Click here if nothing happens": "Cliquez ici si rien ne se passe",
-"Sent to Google Maps": "Envoyé vers Google Maps"
+"Sent to Google Maps": "Envoyé vers Google Maps",
+"Try the Live Demo": "Essayer la démo en direct",
+"No sign-up needed. See the real dashboard with example data.": "Sans inscription. Découvrez le vrai tableau de bord avec des données d'exemple.",
+"See it before you sign up": "Voyez-le avant de vous inscrire",
+"Open the real ReviewRise dashboard with example data for a hotel. Click around, read the feedback, and try the screen your customers see. Nothing to install, no account needed.": "Ouvrez le vrai tableau de bord ReviewRise avec des données d'exemple pour un hôtel. Cliquez partout, lisez les avis et essayez l'écran que voient vos clients. Rien à installer, aucun compte nécessaire."
 });
