@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live Demo | ReviewRise</title>
+<meta name="description" content="Try the ReviewRise dashboard with example data. No sign-up needed.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ReviewRise">
+<meta property="og:title" content="Live Demo | ReviewRise">
+<meta property="og:description" content="Try the ReviewRise dashboard with example data. No sign-up needed.">
+<meta property="og:url" content="https://mouadamraji2020-star.github.io/ReviewRise/demo.html">
+<meta property="og:image" content="https://mouadamraji2020-star.github.io/ReviewRise/assets/og-image.png">
+<link rel="icon" type="image/png" href="assets/reviewrise-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Inter, "Segoe UI", Arial, sans-serif; background: #f3f6fb; color: #0c1730; }
+  button { font-family: inherit; }
+  .demo-bar {
+    position: sticky; top: 0; z-index: 50; display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap;
+    padding: 10px 16px; background: #fff7e0; border-bottom: 1px solid #f3e1a6; color: #7a5a00; font-size: 13.5px; font-weight: 600; text-align: center;
+  }
+  .demo-bar a { padding: 7px 14px; border-radius: 9px; background: #0c1424; color: #fff; font-weight: 700; text-decoration: none; font-size: 13px; }
+  .demo-bar a.ghost { background: transparent; color: #7a5a00; border: 1px solid #e6cf85; }
+  .shell { display: flex; min-height: calc(100vh - 56px); }
+  .side { width: 232px; flex: none; padding: 18px 12px; background: linear-gradient(180deg, rgba(62,140,255,.08), transparent 22%), #0c1424; color: #d5deea; position: sticky; top: 56px; height: calc(100vh - 56px); align-self: flex-start; }
+  .brand { display: flex; align-items: center; gap: 8px; padding: 0 6px 14px; color: #fff; font-size: 18px; font-weight: 800; letter-spacing: -0.5px; }
+  .brand img { height: 26px; width: auto; }
+  .brand b { background: linear-gradient(90deg, #7eb6ff 10%, #3ec6ff 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .bizcard { display: flex; align-items: center; gap: 10px; margin: 0 4px 18px; padding: 10px; border-radius: 12px; background: rgba(255,255,255,.05); }
+  .bizmark { width: 34px; height: 34px; border-radius: 10px; background: #b45309; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; }
+  .bizcard strong { display: block; color: #fff; font-size: 14px; }
+  .bizcard small { color: #8fa3c4; font-size: 11px; }
+  .nav { display: grid; gap: 4px; }
+  .nav button { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 12px; border: 0; border-radius: 10px; background: transparent; color: #c5d0de; font-size: 14px; font-weight: 500; cursor: pointer; text-align: left; }
+  .nav button:hover { background: rgba(255,255,255,.06); color: #fff; }
+  .nav button.active { background: linear-gradient(90deg, rgba(43,127,255,.22), rgba(16,36,68,.55)); color: #f5f8ff; box-shadow: inset 2px 0 0 #67b7ff, inset 0 0 0 1px rgba(120,176,255,.22); }
+  .nav svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+  .side-cta { margin: 22px 4px 0; padding: 14px; border-radius: 12px; background: rgba(43,127,255,.14); border: 1px solid rgba(120,176,255,.25); }
+  .side-cta p { margin: 0 0 10px; color: #c5d6ef; font-size: 12.5px; line-height: 1.5; }
+  .side-cta a { display: block; padding: 9px; border-radius: 9px; background: #2b7fff; color: #fff; font-size: 13px; font-weight: 700; text-align: center; text-decoration: none; }
+  main { flex: 1; min-width: 0; padding: 28px clamp(16px, 3vw, 40px) 56px; max-width: 1100px; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+  h2.title { margin: 0; font-size: 26px; font-weight: 800; letter-spacing: -0.7px; }
+  .sub { margin: 6px 0 20px; color: #6d7c92; font-size: 14.5px; }
+  .kpis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+  .card { background: #fff; border: 1px solid #e7edf5; border-radius: 18px; padding: 18px 20px; box-shadow: 0 1px 2px rgba(16,40,80,.04); }
+  .kpi small { display: block; color: #6d7c92; font-size: 13px; font-weight: 600; }
+  .kpi strong { display: block; margin: 6px 0 2px; font-size: 32px; letter-spacing: -0.8px; }
+  .kpi span { color: #8b9bb0; font-size: 12.5px; }
+  .health { margin-top: 14px; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; background: #effaf3; border-color: #cdeedb; }
+  .health small { color: #1c7a47; font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+  .health h3 { margin: 4px 0 2px; font-size: 22px; color: #15683b; }
+  .health p { margin: 0; color: #3b6b52; font-size: 14px; }
+  .grid2 { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 14px; margin-top: 14px; }
+  .card h3 { margin: 0 0 4px; font-size: 16px; }
+  .card .hint { margin: 0 0 14px; color: #7b8ba0; font-size: 13px; }
+  .bars { display: flex; align-items: flex-end; gap: 6px; height: 130px; }
+  .bars div { flex: 1; border-radius: 5px 5px 0 0; background: linear-gradient(180deg, #3ec6ff, #1d4ed8); }
+  .axis { display: flex; justify-content: space-between; margin-top: 6px; color: #8b9bb0; font-size: 12px; font-weight: 600; }
+  .problem { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid #f0f4f9; font-size: 14px; }
+  .problem:last-child { border-bottom: 0; }
+  .problem b { color: #b45309; }
+  .insight { margin-top: 14px; border-color: #d7e6fb; background: #f6faff; }
+  .insight h3 { font-size: 19px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+  .chip { height: 34px; padding: 0 13px; border: 1px solid #e6edf5; border-radius: 999px; background: #fff; color: #314158; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .chip.active { background: #2b7fff; border-color: #2b7fff; color: #fff; }
+  .fb { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 8px 14px; align-items: center; padding: 14px 16px; margin-bottom: 10px; background: #fff; border: 1px solid #e7edf5; border-radius: 16px; }
+  .fb.done { background: #fafcfb; }
+  .fb.done .fb-text, .fb.done .stars { opacity: .6; }
+  .stars { font-size: 15px; letter-spacing: 1px; white-space: nowrap; color: #f5b400; }
+  .stars i { font-style: normal; color: #d5deea; }
+  .fb-text { min-width: 0; font-size: 14.5px; line-height: 1.45; }
+  .fb-meta { text-align: right; color: #8b9bb0; font-size: 12.5px; }
+  .fb-meta strong { display: block; color: #10284d; font-size: 13.5px; }
+  .fb-foot { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding-top: 10px; border-top: 1px solid #eef2f7; }
+  .badge { padding: 3px 10px; border-radius: 999px; background: #e8f7ee; color: #1c9a52; font-size: 12px; font-weight: 700; }
+  .note { flex: 1 1 180px; color: #5b6b82; font-size: 13px; }
+  .fb-btn { margin-left: auto; height: 30px; padding: 0 12px; border: 1px solid #cfe0fb; border-radius: 9px; background: #eaf2ff; color: #1f6fe0; font-size: 12.5px; font-weight: 700; cursor: pointer; }
+  .phone-wrap { display: flex; gap: 28px; align-items: flex-start; flex-wrap: wrap; }
+  .phone { width: 330px; max-width: 100%; padding: 14px; border-radius: 34px; background: #0c1424; box-shadow: 0 24px 50px rgba(16,40,80,.25); }
+  .screen { min-height: 470px; padding: 28px 22px; border-radius: 24px; background: #f7f8fc; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .screen .mark { width: 76px; height: 76px; border-radius: 20px; background: #b45309; color: #fff; font-size: 30px; font-weight: 800; display: flex; align-items: center; justify-content: center; margin-bottom: 14px; }
+  .screen h4 { margin: 0 0 6px; font-size: 21px; letter-spacing: -0.4px; }
+  .screen p { margin: 0 0 16px; color: #6d7c92; font-size: 14px; line-height: 1.5; }
+  .starrow { display: flex; gap: 6px; }
+  .starrow button { border: 0; background: none; font-size: 38px; color: #d5deea; cursor: pointer; padding: 0; line-height: 1; transition: transform .15s, color .15s; }
+  .starrow button:hover, .starrow button.on { color: #f5b400; transform: scale(1.08); }
+  .screen textarea { width: 100%; min-height: 90px; padding: 10px 12px; border: 1px solid #d5e4f7; border-radius: 12px; font: inherit; font-size: 14px; resize: none; }
+  .screen .go { margin-top: 12px; width: 100%; height: 42px; border: 0; border-radius: 12px; background: #2b7fff; color: #fff; font-size: 14px; font-weight: 700; cursor: pointer; }
+  .screen .link { margin-top: 12px; background: none; border: 0; color: #1f6fe0; font-weight: 700; font-size: 13px; cursor: pointer; }
+  .check { width: 56px; height: 56px; border-radius: 50%; background: #e8f7ee; color: #1c9a52; display: flex; align-items: center; justify-content: center; margin-bottom: 14px; }
+  .check svg { width: 28px; height: 28px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+  .phone-help { flex: 1 1 260px; min-width: 240px; }
+  .phone-help h3 { margin: 0 0 8px; font-size: 18px; }
+  .phone-help ul { margin: 0; padding-left: 18px; color: #3b4d68; font-size: 14.5px; line-height: 1.7; }
+  .cta-end { margin-top: 26px; padding: 22px; border-radius: 18px; background: #0c1424; color: #fff; text-align: center; }
+  .cta-end h3 { margin: 0 0 6px; font-size: 20px; }
+  .cta-end p { margin: 0 0 14px; color: #b9c8e2; font-size: 14px; }
+  .cta-end a { display: inline-block; padding: 12px 22px; border-radius: 12px; background: #2b7fff; color: #fff; font-weight: 700; text-decoration: none; }
+  @media (max-width: 860px) {
+    .shell { flex-direction: column; }
+    .side { position: static; width: 100%; height: auto; padding: 12px; }
+    .bizcard, .side-cta { display: none; }
+    .brand { padding-bottom: 8px; }
+    .nav { display: flex; overflow-x: auto; gap: 6px; }
+    .nav button { width: auto; white-space: nowrap; }
+    .demo-bar { padding-top: 38px; }
+    .kpis { grid-template-columns: 1fr; }
+    .grid2 { grid-template-columns: 1fr; }
+    .fb { grid-template-columns: auto minmax(0, 1fr); }
+    .fb-meta { grid-column: 1 / -1; text-align: left; }
+    .fb-btn { margin-left: 0; width: 100%; }
+    h2.title { font-size: 23px; }
+  }
+</style>
+<script src="assets/i18n.js"></script>
+</head>
+<body>
+<div class="demo-bar">
+  <span>You are viewing a demo with example data.</span>
+  <a href="dashboard.html">Start free trial</a>
+  <a class="ghost" href="index.html">Back to home</a>
+</div>
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><img src="assets/reviewrise-logo.png" alt=""><span>Review<b>Rise</b></span></div>
+    <div class="bizcard"><div class="bizmark">D</div><div><strong data-no-i18n>Demo Riad</strong><small>Example business</small></div></div>
+    <nav class="nav" aria-label="Demo sections">
+      <button type="button" class="active" data-tab="dash"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Dashboard</button>
+      <button type="button" data-tab="fb"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H9l-4 3v-3H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z"/></svg>Feedback</button>
+      <button type="button" data-tab="cust"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 18h2"/></svg>What customers see</button>
+    </nav>
+    <div class="side-cta"><p>Like what you see? Try it with your own business for 7 days, free.</p><a href="dashboard.html">Start free trial</a></div>
+  </aside>
+  <main>
+    <section class="panel active" id="tab-dash">
+      <h2 class="title">Welcome back</h2>
+      <p class="sub">Here's what's happening with your customer feedback.</p>
+      <div class="kpis">
+        <div class="card kpi"><small>Total Feedback</small><strong>48</strong><span>All private feedback received</span></div>
+        <div class="card kpi"><small>Average Rating</small><strong>4.3</strong><span>Across received feedback</span></div>
+        <div class="card kpi"><small>1-3 Star Feedback</small><strong>9</strong><span>Lower ratings to review</span></div>
+      </div>
+      <div class="card health">
+        <div><small>Business health</small><h3>Healthy</h3><p>Your ratings are strong. 3 recurring problems are worth a look.</p></div>
+      </div>
+      <div class="grid2">
+        <div class="card">
+          <h3>Ratings, last 14 days</h3>
+          <p class="hint">How many customers rated you each day.</p>
+          <div class="bars" id="bars"></div>
+          <div class="axis"><span>14 days ago</span><span>Today</span></div>
+        </div>
+        <div class="card">
+          <h3>Recurring problems</h3>
+          <p class="hint">Found in the private comments of customers.</p>
+          <div class="problem"><span>Slow check-in</span><b>4 mentions</b></div>
+          <div class="problem"><span>Noisy rooms at night</span><b>3 mentions</b></div>
+          <div class="problem"><span>Breakfast served cold</span><b>2 mentions</b></div>
+        </div>
+      </div>
+      <div class="card insight">
+        <h3>Customers love the staff, but check-in is a recurring problem</h3>
+        <p class="hint" style="margin:0">48 feedback responses. Average rating 4.3. Fixing check-in would remove the most common complaint.</p>
+      </div>
+    </section>
+
+    <section class="panel" id="tab-fb">
+      <h2 class="title">Customer Feedback</h2>
+      <p class="sub">See what customers are saying and identify where your business can improve.</p>
+      <div class="chips" id="chips"></div>
+      <div id="fbList"></div>
+    </section>
+
+    <section class="panel" id="tab-cust">
+      <h2 class="title">What your customers see</h2>
+      <p class="sub">Try it yourself: tap a rating on the phone below.</p>
+      <div class="phone-wrap">
+        <div class="phone"><div class="screen" id="screen"></div></div>
+        <div class="phone-help">
+          <h3>How it works</h3>
+          <ul>
+            <li>Customers scan your QR code or tap your NFC tag.</li>
+            <li>Happy customers (4 or 5 stars) are sent to your Google review page.</li>
+            <li>Unhappy customers write a private message that only you see, so you can fix the problem first.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <div class="cta-end">
+      <h3>Ready to try it with your own business?</h3>
+      <p>7 days free. No payment needed to start.</p>
+      <a href="dashboard.html">Start free trial</a>
+    </div>
+  </main>
+</div>
+<script>
+(function () {
+  var data = [
+    { s: 5, t: "Lovely stay, the staff made us feel at home.", d: "2 days ago", h: false },
+    { s: 2, t: "Check-in took more than 40 minutes and nobody apologised.", d: "3 days ago", h: false },
+    { s: 1, t: "The room was noisy all night because of the street.", d: "4 days ago", h: true, n: "Called the guest and offered a quiet room next time." },
+    { s: 4, t: "Great location and beautiful rooftop. Breakfast was a bit cold.", d: "5 days ago", h: false },
+    { s: 3, t: "Clean and friendly, but the wifi was slow in the room.", d: "6 days ago", h: true, n: "Router replaced on the second floor." },
+    { s: 5, t: "", d: "6 days ago", h: false },
+    { s: 2, t: "Waited a long time at reception again.", d: "8 days ago", h: false },
+    { s: 5, t: "Best breakfast in the medina. We will come back!", d: "9 days ago", h: false }
+  ];
+  var filter = 0;
+
+  document.getElementById("bars").innerHTML = [3,5,2,6,8,4,3,7,9,5,4,6,8,10].map(function (n) {
+    return '<div style="height:' + Math.round(n / 10 * 100) + '%"></div>';
+  }).join("");
+
+  function tab(name) {
+    document.querySelectorAll(".panel").forEach(function (p) { p.classList.toggle("active", p.id === "tab-" + name); });
+    document.querySelectorAll(".nav button").forEach(function (b) { b.classList.toggle("active", b.getAttribute("data-tab") === name); });
+    window.scrollTo({ top: 0 });
+  }
+  document.querySelectorAll(".nav button").forEach(function (b) {
+    b.addEventListener("click", function () { tab(b.getAttribute("data-tab")); });
+  });
+
+  function renderFeedback() {
+    var chips = document.getElementById("chips");
+    chips.textContent = "";
+    [0, 5, 4, 3, 2, 1].forEach(function (v) {
+      var c = document.createElement("button");
+      c.type = "button";
+      c.className = "chip" + (filter === v ? " active" : "");
+      if (v === 0) c.textContent = "All";
+      else { c.setAttribute("data-no-i18n", ""); c.textContent = v + " ★"; }
+      c.addEventListener("click", function () { filter = v; renderFeedback(); });
+      chips.appendChild(c);
+    });
+    var list = document.getElementById("fbList");
+    list.textContent = "";
+    data.filter(function (x) { return !filter || x.s === filter; }).forEach(function (x) {
+      var card = document.createElement("div");
+      card.className = "fb" + (x.h ? " done" : "");
+      var stars = document.createElement("div");
+      stars.className = "stars";
+      stars.setAttribute("data-no-i18n", "");
+      stars.innerHTML = "★".repeat(x.s) + "<i>" + "★".repeat(5 - x.s) + "</i>";
+      var text = document.createElement("div");
+      text.className = "fb-text";
+      if (x.t) { text.setAttribute("data-no-i18n", ""); text.textContent = x.t; }
+      else { text.style.color = "#94a3b8"; text.style.fontStyle = "italic"; text.textContent = "No written comment"; }
+      var meta = document.createElement("div");
+      meta.className = "fb-meta";
+      meta.innerHTML = '<strong data-no-i18n>Demo Riad</strong>';
+      var when = document.createElement("span");
+      when.setAttribute("data-no-i18n", "");
+      when.textContent = x.d;
+      meta.appendChild(when);
+      card.appendChild(stars); card.appendChild(text); card.appendChild(meta);
+      var foot = document.createElement("div");
+      foot.className = "fb-foot";
+      if (x.h) { var b = document.createElement("span"); b.className = "badge"; b.textContent = "Handled"; foot.appendChild(b); }
+      if (x.n) { var n = document.createElement("span"); n.className = "note"; n.setAttribute("data-no-i18n", ""); n.textContent = x.n; foot.appendChild(n); }
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "fb-btn";
+      btn.textContent = x.h ? "Mark as open" : "Mark as handled";
+      btn.addEventListener("click", function () { x.h = !x.h; renderFeedback(); });
+      foot.appendChild(btn);
+      card.appendChild(foot);
+      list.appendChild(card);
+    });
+  }
+  renderFeedback();
+
+  var screen = document.getElementById("screen");
+  function showRating() {
+    screen.innerHTML = '<div class="mark" data-no-i18n>D</div><h4><span data-no-i18n>Demo Riad</span></h4><p>How was your experience?</p><div class="starrow" id="starrow"></div>';
+    var row = document.getElementById("starrow");
+    for (var i = 1; i <= 5; i++) {
+      (function (n) {
+        var b = document.createElement("button");
+        b.type = "button";
+        b.setAttribute("aria-label", n + " stars");
+        b.textContent = "★";
+        b.addEventListener("mouseenter", function () { row.querySelectorAll("button").forEach(function (x, k) { x.classList.toggle("on", k < n); }); });
+        b.addEventListener("click", function () { n >= 4 ? showGoogle() : showPrivate(n); });
+        row.appendChild(b);
+      })(i);
+    }
+  }
+  var CHECK = '<div class="check"><svg viewBox="0 0 24 24"><path d="M5 12.5 9.2 17 19 7"/></svg></div>';
+  function showGoogle() {
+    screen.innerHTML = CHECK + '<h4>Thank you!</h4><p>Happy customers are now sent to your Google review page, where one tap posts a public review.</p><button class="link" type="button" id="again">Try again</button>';
+    document.getElementById("again").addEventListener("click", showRating);
+  }
+  function showPrivate() {
+    screen.innerHTML = '<h4>We are sorry to hear that</h4><p>Please tell us what went wrong. Only the business sees this message.</p><textarea placeholder="What could we do better?"></textarea><button class="go" type="button" id="send">Send feedback</button>';
+    document.getElementById("send").addEventListener("click", function () {
+      screen.innerHTML = CHECK + '<h4>Thank you</h4><p>Your message goes privately to the business, not to Google. In your dashboard it appears in the Feedback page.</p><button class="link" type="button" id="again2">Try again</button>';
+      document.getElementById("again2").addEventListener("click", showRating);
+    });
+  }
+  showRating();
+})();
+</script>
+<script src="assets/site-pulse.js" defer></script>
+</body>
+</html>
